@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:copper_wire",
+    "count": 2
+  },
+  "ticks": 10,
+  "energy": 8
+}

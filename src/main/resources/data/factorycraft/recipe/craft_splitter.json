@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " R ",
+    "BGB"
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    },
+    "B": {
+      "item": "factorycraft:transport_belt"
+    }
+  },
+  "result": {
+    "id": "factorycraft:splitter",
+    "count": 1
+  }
+}

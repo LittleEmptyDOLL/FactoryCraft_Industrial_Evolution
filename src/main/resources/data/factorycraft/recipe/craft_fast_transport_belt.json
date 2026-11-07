@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RGR",
+    "BBB"
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    },
+    "B": {
+      "item": "factorycraft:transport_belt"
+    }
+  },
+  "result": {
+    "id": "factorycraft:fast_transport_belt",
+    "count": 3
+  }
+}
