@@ -78,6 +78,15 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        benchmarkServer {
+            server()
+            gameDirectory = project.file('run-benchmark')
+            programArgument '--nogui'
+            systemProperty 'factorycraft.benchmark.profile', providers.gradleProperty('benchmarkProfile').getOrElse('full')
+            systemProperty 'factorycraft.benchmark.mode', providers.gradleProperty('benchmarkMode').getOrElse('measure')
+            jvmArgument '-Xmx2G'
+        }
+
         data {
             data()
             // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
@@ -201,3 +210,68 @@ idea {
 test { useJUnitPlatform() }
 
 tasks.named("jar") { from("LICENSE") }
+
+def benchmarkDir = layout.projectDirectory.dir('run-benchmark').asFile
+def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
+def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
+def benchmarkMode = providers.gradleProperty('benchmarkMode').getOrElse('measure')
+def prepareBenchmark = tasks.register('prepareBenchmarkWorld') {
+    group = 'verification'
+    description = 'Prepare only the explicitly isolated benchmark server directory.'
+    doLast {
+        def marker = new File(benchmarkDir, 'factorycraft-benchmark.marker')
+        if (java.nio.file.Files.isSymbolicLink(benchmarkDir.toPath()) ||
+                (benchmarkDir.exists() && (!benchmarkDir.isDirectory() ||
+                (benchmarkDir.list().length > 0 && (!marker.isFile() || marker.text != benchmarkMarker))))) {
+            throw new GradleException('Refusing to use an unmarked/symlink benchmark directory.')
+        }
+        benchmarkDir.mkdirs()
+        marker.text = benchmarkMarker
+        new File(benchmarkDir, 'eula.txt').text = 'eula=true\n'
+        def properties = new File(benchmarkDir, 'server.properties')
+        if (!properties.exists()) properties.text = '''level-name=world
+level-type=minecraft:flat
+generator-settings={"layers":[{"block":"minecraft:bedrock","height":1}],"biome":"minecraft:the_void"}
+generate-structures=false
+online-mode=false
+server-ip=127.0.0.1
+server-port=25575
+spawn-protection=0
+spawn-monsters=false
+spawn-animals=false
+view-distance=2
+simulation-distance=2
+max-tick-time=120000
+'''
+        def profile = benchmarkProfile
+        def mode = benchmarkMode
+        if (!(profile in ['full', 'smoke']) || !(mode in ['measure', 'verify'])) throw new GradleException('Invalid benchmark profile/mode.')
+        def fixture = new File(benchmarkDir, 'factorycraft-fixture.json')
+        if (mode == 'measure' && fixture.exists()) throw new GradleException('Saved fixture exists. Use -PbenchmarkMode=verify or resetBenchmarkWorld; previous reports are preserved.')
+        if (mode == 'verify' && !fixture.isFile()) throw new GradleException('No saved benchmark fixture to verify.')
+        new File(benchmarkDir, "reports/${profile}-${mode}.json").delete()
+    }
+}
+tasks.named('runBenchmarkServer') {
+    dependsOn prepareBenchmark
+    doLast {
+        def profile = benchmarkProfile
+        def mode = benchmarkMode
+        def report = new File(benchmarkDir, "reports/${profile}-${mode}.json")
+        if (!report.isFile() || new groovy.json.JsonSlurper().parse(report).status != 'PASS') {
+            throw new GradleException('Benchmark failed or produced no report; inspect run-benchmark/reports and server log.')
+        }
+    }
+}
+tasks.register('resetBenchmarkWorld', Delete) {
+    group = 'verification'
+    description = 'Delete only the marked, disposable benchmark world and reports.'
+    doFirst {
+        def marker = new File(benchmarkDir, 'factorycraft-benchmark.marker')
+        if (java.nio.file.Files.isSymbolicLink(benchmarkDir.toPath()) ||
+                (benchmarkDir.exists() && (!marker.isFile() || marker.text != benchmarkMarker))) {
+            throw new GradleException('Refusing to delete an unmarked/symlink benchmark directory.')
+        }
+    }
+    delete benchmarkDir
+}

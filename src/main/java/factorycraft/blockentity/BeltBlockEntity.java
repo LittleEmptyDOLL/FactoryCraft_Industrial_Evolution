@@ -86,7 +86,9 @@ public final class BeltBlockEntity extends FactoryBlockEntity {
         queuedForSync=true;return true;
     }
     public void flushSimulationChanges(long tick) {
-        setChanged();if(contentsChanged || (tick&3)==0)sync();
+        factorycraft.diagnostics.FactoryTelemetry.beltChanged(this);
+        if(contentsChanged)setChanged();else markPersistentState();
+        if(contentsChanged || (tick&3)==0)sendUpdate();
         queuedForSync=false;contentsChanged=false;
     }
     @Override public void setBlockState(BlockState state) {

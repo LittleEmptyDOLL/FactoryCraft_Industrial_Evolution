@@ -1,6 +1,6 @@
-# Feature matrix — 0.2.1
+# Feature matrix — 0.2.2
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.2.1 makes the existing industrial multiblock a one-item, automatically formed machine.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.2.2 adds an actual dedicated-server load scenario, conservation/restart checks and profiled allocation reductions.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -32,6 +32,6 @@
 | GUI/statistics | machine inputs/outputs/recipe preview/progress/energy/assembly status; `/factorycraft profile` and `/factorycraft power` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
 | Multiplayer/server | server authority, validated menus, two viewers cannot duplicate output, dedicated startup | partial; actual two-client network play not exercised |
 | Chunk lifecycle | unload pauses/registers topology; contents survive callbacks; separate-process disk persistence | verified callbacks + disk reload; natural chunk-distance unload scenario still manual |
-| Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; power graph is budgeted/spatial; individual machine/inserter tickers and full-world profiling remain |
-| Required 10000/1000/500 load | not run in Minecraft | planned; kernel timings are not a TPS claim |
+| Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; profiled hot-loop/dirty-notification allocations reduced; individual machine/inserter tickers remain |
+| Required 10000/1000/500 load | isolated real dedicated world, all belts move, all producers return results, all inserters deliver; shared grid split/rejoin; item/FE ledger, JSON/JFR and process reload | implemented repeatable server workload; finite prefilled stocks, no connected clients in local result; not a universal TPS/FPS guarantee |
 | Compatibility | standard NeoForge item/FE capabilities and recipe tags | partial; JEI/EMI and other mod interoperability untested |

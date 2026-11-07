@@ -1,4 +1,4 @@
-# Architecture decisions — 0.2.1 (belt/assembly/casing schema 2; machine inventory schema 1)
+# Architecture decisions — 0.2.2 (belt/assembly/casing schema 2; machine inventory schema 1)
 
 ## Authority and persistence
 
@@ -70,8 +70,20 @@ The reference Powah repository's `1.16` ReactorItem/Builder was inspected only t
 
 All recipe durations are Minecraft ticks (20/s). Machine and inserter block tickers remain individual in this slice; active scheduling is implemented for belts, not all production. World mutation never runs on background threads.
 
-The JUnit kernel benchmark now exercises 10000 complete two-lane segments (20000 lane nodes) for 100 Minecraft-equivalent ticks, with one carrier per lane in two closed rings. It verifies conservation and records CPU time without a hardware-dependent pass threshold. It excludes Minecraft block entities, networking, 1000 machines and 500 inserters; the full in-game 10000/1000/500 scenario remains open.
+The JUnit kernel benchmark now exercises 10000 complete two-lane segments (20000 lane nodes) for 100 Minecraft-equivalent ticks, with one carrier per lane in two closed rings. It verifies conservation and records CPU time without a hardware-dependent pass threshold. That kernel result excludes world costs. The separate `runBenchmarkServer` harness now exercises the actual 10000/1000/500 dedicated-world scenario; see BENCHMARKS.md for its deliberately finite inventory, no-client scope and measured results.
 
 ## Extension boundaries
 
 `recipes` codecs support ordinary datapack replacement and `/reload`. `registry` owns NeoForge integration; `simulation` is independently testable; `production` adapts energy and menus; `energy` owns topology; `client` is client-only. Future fluids, research, circuits, trains, robots, pollution, combat and space require new packages and tests. No nonfunctional placeholder registrations represent these systems.
+
+## Opt-in full factory profiling (0.2.2)
+
+The Gradle `benchmarkServer` run uses a separate marked directory, flat void world and loopback port. `FactoryBenchmark` is inert unless its JVM property and directory/marker checks match. The deterministic independent `BenchmarkPlan` has 100 closed 100-block rings over ten elevations, 250 production cells and a shared graph of 499 poles. Each cell contains two ordinary furnaces, one assembler, one automatically formed industrial furnace, two real inserters, a source chest and a fueled generator. Total: 14249 blocks, including 1750 non-ticking parts. Setup uses 256 placements per tick; only this explicit test harness pins its 65 chunks. No normal factory path is granted chunk-loading behavior.
+
+After warmup and JFR settling, ServerTickEvent.Pre/ Post capture 600 work durations (sleep is excluded). Census and report serialization are outside those durations. A pole is removed/replaced inside sampled ticks; real graph rebuild/distribution costs remain included. `FactoryTelemetry` adds opt-in counters to existing active work, not a whole-factory scan per tick. Dirty belt notifications prove every segment changed; actual completed recipes/deliveries prove producer/inserter liveness. Audits scan fixed fixture positions before/after sampling and during explicit restart verification. Raw iron/plates count as one unit, gears as two; items held by inserters are included. Stored FE plus delivered FE must equal final FE plus actual recipe spending. Generation still burns real coal.
+
+`BenchmarkRecording` retains CPU/allocation/GC samples and Minecraft PacketSent/PacketReceived events. Packet totals are filtered to the measured wall interval and count encoded bytes, not TCP framing or estimated updates; a zero-client run must report zero clients explicitly. JFR setup/catch-up is allowed to settle before measurement. Reports include raw observed tick frequency (which can briefly exceed the configured target during engine catch-up), percentiles, outliers, GC, graph work and BE sync request counts. The benchmark PASS criterion is correctness/activity; it never silently skips jammed/idle equipment to obtain faster timings and never declares a hardware-independent TPS pass.
+
+Profile-guided hot-path changes preserve ownership/speeds: index incoming-node lists in the belt worklist, avoid per-node iterators, mark internal motion/progress/FE dirty without inventory comparator fanout, and avoid marking twice when sending an already-dirty belt update. Real inventory changes still use ordinary setChanged/sync neighbor notifications; states with an analog output fall back to them. Persistence formats and authoritative simulation are unchanged.
+
+The diagnostic checkpoint additionally hashes canonical authoritative NBT before shutdown and verifies it before the next process's first tick. Compound keys are sorted; generated client snapshot/animation timestamps are excluded. After an exact match and resumed audit, verify atomically advances its checkpoint to the legitimately resumed state after flushing the world. It never accepts a mismatched hash by recomputing the expected value. This metadata is confined to the disposable fixture; normal game NBT schemas are unchanged.

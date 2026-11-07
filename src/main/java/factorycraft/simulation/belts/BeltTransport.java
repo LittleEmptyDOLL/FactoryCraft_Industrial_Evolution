@@ -132,8 +132,8 @@ public final class BeltTransport<T> {
         while(!queue.isEmpty()) {
             var n=queue.removeFirst();n.queued=false;
             if(constrain(n)) {
-                for(var input:n.inputs)enqueue(input);
-                if(n.target!=null)for(var competitor:n.target.inputs)enqueue(competitor);
+                for(int i=0;i<n.inputs.size();i++)enqueue(n.inputs.get(i));
+                if(n.target!=null)for(int i=0;i<n.target.inputs.size();i++)enqueue(n.target.inputs.get(i));
             }
         }
         // Validate every destination before changing ownership anywhere in the network.
@@ -158,7 +158,7 @@ public final class BeltTransport<T> {
         }
         for(var n:dirty) {
             n.listener.changed(n.contentDirty);
-            for(var input:n.inputs)activate(input);
+            for(int i=0;i<n.inputs.size();i++)activate(n.inputs.get(i));
         }
         // A fully jammed lane sleeps; position/contents/topology changes wake its incoming lanes.
         for(int i=0;i<active.size();) {

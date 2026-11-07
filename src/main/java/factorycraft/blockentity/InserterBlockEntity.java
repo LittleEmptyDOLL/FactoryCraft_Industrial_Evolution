@@ -35,7 +35,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity {
         if (!level.hasChunkAt(sourcePos) || !level.hasChunkAt(targetPos)) return;
         var target = level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, facing.getOpposite());
         if (held().isEmpty()) {
-            if (phase > 0) { phase--; setChanged(); if (phase == 0) sync(); return; }
+            if (phase > 0) { phase--; markPersistentState(); if (phase == 0) sync(); return; }
             var source = level.getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, facing);
             if (source == null || target == null) return;
             // Belts are sampled at the front-most available carrier in either lane.
@@ -51,10 +51,11 @@ public final class InserterBlockEntity extends FactoryBlockEntity {
                 hand.setStackInSlot(0, extracted); phase = 12; sync(); break;
             }
         } else {
-            if (phase > 0) { phase--; setChanged(); return; }
+            if (phase > 0) { phase--; markPersistentState(); return; }
             if (target == null) return;
             ItemStack remainder = ItemHandlerHelper.insertItem(target, held().copy(), false);
             if (remainder.getCount() != held().getCount()) {
+                factorycraft.diagnostics.FactoryTelemetry.transferred(this,held().getCount()-remainder.getCount());
                 hand.setStackInSlot(0, remainder); phase = remainder.isEmpty() ? 12 : 0; sync();
             }
         }

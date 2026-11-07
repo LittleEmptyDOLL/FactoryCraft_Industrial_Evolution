@@ -1,0 +1,8 @@
+{
+  "existingFixtureRejected": true,
+  "successfulMeasurementReportPreserved": true,
+  "tamperedStateHashRejected": true,
+  "tamperedStateHashNotRewritten": true,
+  "verificationAfterRestoringCheckpointPassed": true,
+  "successfulCheckpointCanBeVerifiedAgain": true
+}

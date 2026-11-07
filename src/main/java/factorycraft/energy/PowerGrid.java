@@ -50,5 +50,10 @@ public final class PowerGrid {
                 ", rebuild work: "+g.lastWork()+"/"+FactoryConfig.POWER_GRAPH_WORK.get()+", snapshots: "+g.rebuilds()+
                 ", candidates: "+g.candidateChecks()+", delivered: "+s.delivered+" FE, rebuild CPU: "+String.format(Locale.ROOT,"%.3f ms",s.totalNanos/1e6);
     }
+    public record Snapshot(int nodes,int networks,boolean pending,long rebuilds,long candidates,long delivered,long rebuildNanos) {}
+    public static Snapshot snapshot(Level level) {
+        var s=STATES.get(level);if(s==null)return new Snapshot(0,0,false,0,0,0,0);
+        return new Snapshot(s.graph.size(),s.graph.networks(),s.graph.pending(),s.graph.rebuilds(),s.graph.candidateChecks(),s.delivered,s.totalNanos);
+    }
     private PowerGrid() {}
 }

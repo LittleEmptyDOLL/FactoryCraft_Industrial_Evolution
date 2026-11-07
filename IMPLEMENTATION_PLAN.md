@@ -55,9 +55,14 @@ Followed the user's one-item/one-structure requirement: item placement validates
 
 Tests include actual ItemStack placement, protected cancellation, all break positions, creative placement, collision/height/unloaded rejection, cached ports, late orphans, explosion callbacks, partial-progress reconstruction, a separate-process four-chunk fixture and the complete automatic line. See VALIDATION.md for exact results.
 
+## Delivered in 0.2.2
+
+Executed the requested real-world 10000/1000/500 workload on an isolated dedicated server, with a shared 1749-node electrical graph, 250 actual industrial multiblocks, finite stocks and normal 20 Hz scheduling. The harness builds incrementally, pins only its own test chunks, warms up, samples full server tick work, confirms every segment/producer/inserter actually works, perturbs/restores a pole, and checks iron-equivalent material plus FE conservation. Separate processes verify 20000 belt carriers, all inventories and 250 controller identities/seven bound parts per controller. JSON and JFR CPU/allocation/vanilla-packet results are retained; CI runs the full scenario and restart check. No fixed hardware timing threshold masks correctness failures.
+
+JFR located nested ArrayList iterator allocation in belt stepping and unnecessary comparator-neighbor notifications during internal persistence. Indexed incoming-lane loops and separate state/packet/inventory paths reduce those costs while keeping normal inventory notifications, dirty chunks, full belt behavior and existing NBT formats. See BENCHMARKS.md and VALIDATION.md for measured results and limits; zero connected clients is not network-throughput validation.
+
 ## Next concrete task (priority order)
 
-1. Implement an explicit, isolated in-game benchmark harness for 10000 moving belt segments / 1000 working machines / 500 inserters. Measure server tick time, graph rebuilds, packets and conservation; do not substitute kernel timings for TPS. Include industrial furnaces as controllers with non-ticking casing parts.
-2. Begin stage 3 fluids: independent storage/transfer model and NeoForge fluid capability adapters, pipes/tanks/pumps, then data-driven oil/chemistry recipes. Document the intended Factorio 2.0 throughput model before claiming parity.
-3. Exercise natural player-distance chunk unload and two real clients. The existing lifecycle and multi-process tests do not cover a live network session or every chunk-order combination.
-4. Continue underground belts, two-block splitters and inserter variants. Keep future space mechanics independent from basic production. Extend larger machines through controller/part layouts rather than duplicating inventories.
+1. Begin stage 3 fluids: an independently tested storage/transaction model and NeoForge fluid capability adapters, usable pipes/tanks/pumps, then data-driven oil/chemistry recipes. Document the chosen Factorio 2.0-inspired throughput model before claiming parity.
+2. Exercise two real connected clients and natural-distance chunk unload. Use the new JFR packet capture to measure tracking/synchronization, then implement batching/deltas from measured evidence. BE sync request counts do not measure wire traffic. The dedicated no-client workload does not establish client FPS or multiplayer bandwidth.
+3. Continue underground belts, two-block splitters and inserter variants. Keep future space mechanics independent from basic production. Extend larger machines through one-item controller/part layouts rather than duplicating inventories.

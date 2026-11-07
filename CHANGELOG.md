@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 — 2026-11-08
+
+* Added an opt-in dedicated-server load harness with real 10000 belts, 1000 producers, 500 inserters, 250 generators and a shared power grid. The marked `run-benchmark` world stays separate from normal development/GameTest saves.
+* Added live equipment counters, item/FE conservation checks, graph split/rejoin, JSON tick percentiles and JFR CPU/allocation/vanilla-packet capture. The separate verify mode checks saved inventories, carriers and multiblock identities without reseeding. CI runs both full measurement and restart verification.
+* Replaced profiled per-node iterator allocation in belt stepping with indexed access. Internal FE/progress/position persistence no longer sends unnecessary comparator-neighbor notifications; inventory mutations retain them, and dirty data/packet cadence remain intact.
+* Added independent layout, real shared-grid connectivity and timing-summary tests; benchmark results and remaining multiplayer limits are documented.
+
 ## 0.2.1 — 2026-11-08
 
 * Preserved the user's main-branch update to NeoForge 21.1.252 and validated the final release against that dependency.

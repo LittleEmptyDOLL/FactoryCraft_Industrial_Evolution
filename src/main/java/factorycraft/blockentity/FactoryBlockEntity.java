@@ -13,6 +13,16 @@ public abstract class FactoryBlockEntity extends BlockEntity {
     protected FactoryBlockEntity(BlockEntityType<?> t, BlockPos p, BlockState s) { super(t, p, s); }
     public void sync() {
         setChanged();
+        sendUpdate();
+    }
+    /** Internal motion/progress/FE changes persist without inventory comparator notifications. */
+    protected final void markPersistentState() {
+        if(level==null)return;
+        if(getBlockState().hasAnalogOutputSignal())setChanged();
+        else level.blockEntityChanged(worldPosition);
+    }
+    protected final void sendUpdate() {
+        factorycraft.diagnostics.FactoryTelemetry.synced(this);
         if (level != null && !level.isClientSide) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
     }
     @Override public CompoundTag getUpdateTag(HolderLookup.Provider r) { return saveWithoutMetadata(r); }

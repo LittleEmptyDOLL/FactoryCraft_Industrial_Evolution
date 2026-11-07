@@ -1,4 +1,39 @@
-# Validation — 0.2.1, 8 November 2026
+# Validation — 0.2.2, 8 November 2026
+
+Continues `main` commit `fd58d7f`. Target remains Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. This milestone delivers the requested real-world factory benchmark and profile-guided hot-path optimizations; it does not implement fluids or claim complete Factorio/Space Age support.
+
+## Automated checks
+
+* `./gradlew build`: successful, **45 JUnit tests**, zero failures. Eight additional tests validate exact non-overlapping full/smoke layouts, closed real belt loops, inserter endpoints/industrial footprints, actual shared-grid connectivity, timing percentiles/partial windows and invalid inputs. Existing transport/power/layout/conservation tests remain.
+* `./gradlew runGameTestServer`: **46 required tests passed** after the persistence/iterator changes, then **46 passed** in a subsequent server process. Existing belt/machine/hand and manual/automatic assembly disk fixtures report `VERIFIED`; schemas and first-factory behavior remain compatible.
+* `./gradlew runBenchmarkServer`: full, normal dedicated server **PASS** with **10000 belt segments / 1000 production machines / 500 inserters**, plus 250 generators, 499 poles and 1750 non-ticking industrial parts. All 10000 segments changed; all producers completed recipes; all inserters delivered. Includes shared-grid removal/rejoin, 20000 copper carriers, 128000 iron-equivalent units and exact FE accounting. Setup uses its separate marked `run-benchmark` world, not client or GameTest saves.
+* `./gradlew runBenchmarkServer -PbenchmarkMode=verify`: **PASS** in a new JVM. The complete canonical authoritative NBT hash matches before its first simulation tick (inventory, progress, FE, fuel, hands, carrier positions/preferences and part identities; client timestamps excluded). After resuming ten ticks, the inventory/identity audit passes and a new valid checkpoint is saved. A further verify also passes, proving checkpoint advancement works.
+* Negative checks: attempting a second measurement without reset returns nonzero and preserves the successful measurement report; changing the expected state hash returns nonzero with `Exact persisted ... changed across restart` and does not silently rewrite the bad checkpoint. Restoring the original checkpoint permits a successful subsequent verification. Raw guard outcomes are committed under docs/benchmarks.
+* The small 100-belt / 20-producer / 10-inserter prototype and a new-process reload passed before the full profile. It was used to validate wiring and lifecycle, not as evidence of full-load performance.
+
+## Full-world performance evidence
+
+See BENCHMARKS.md and committed JSON/JFR summaries in docs/benchmarks. Latest local run: two available vCPU, 2 GiB server heap, 65 forced ticking test chunks, one 1749-node electrical graph, 600 measured ticks, **zero connected clients**. Mean **24.494 ms**, p95 **32.395 ms**, p99 **56.240 ms**, maximum **91.566 ms**; eight ticks exceeded 50 ms. Every belt moved and performed **1129200** inter-segment transfers; all 1000 producers and 500 inserters performed actual work. The ledger and exact restart check pass.
+
+In the pre-optimization development profile with the same layout/warmup/recording settings, mean was 32.153 ms and p95 42.985 ms; sampled allocation weights were about 5.700 GB versus 1.216 GB after. The profile located per-node ArrayList iterators and needless comparator-neighbor work during internal dirty marking. Indexed input loops and separated internal dirty/packet paths reduce those costs. These are local statistical observations, not a controlled universal speedup or a guarantee that every tick is under 50 ms. p99/maximum did not improve in this pair.
+
+Vanilla JFR packet events are collected and filtered to the actual measurement interval. With zero clients, their counts are zero; this does **not** verify multiplayer bandwidth. BE sync request counts are retained separately and are not packet counts. Client rendering, player-driven chunk activity, other mods, long-duration factories and non-flat worlds remain different workloads. Correctness PASS has no hidden hardware timing threshold and does not skip equipment to inflate TPS.
+
+## Client and API verification
+
+`./gradlew runClient -PsmokeWorld=FactoryCraftSmoke` launched a real 0.2.2 client under Xvfb/Mesa, loaded the existing 0.2.1 QA save and opened the existing automatic industrial furnace through a part. The Russian GUI still showed formed status and 32 ticks / 20 FE. The world was saved using the menu; the benchmark remained inactive in this ordinary integrated world. Local Mojang services key retrieval remains unavailable as before, without preventing local play.
+
+The used NeoForge events, server chunk pinning, persistence/neighbor APIs and Minecraft JFR packet event names/fields were checked against the resolved target sources and then exercised on dedicated servers. No Forge-version substitutions, extra dependencies or copied assets were introduced.
+
+## Changed areas and next task
+
+New isolated benchmark run/task guards, deterministic independent plan, timing summaries, opt-in telemetry, packet/CPU/allocation JFR recording, full-world audit and canonical restart checkpoint; reusable Python JFR analysis; typed belt/power snapshots; small hot-path persistence/loop changes; CI full measurement/reload and artifact reports; version/architecture/feature/continuation documentation. Runtime factory code still never force-loads neighbor chunks, and inventory mutations retain neighbor notifications. Game data schemas are unchanged.
+
+Next: stage-3 fluid storage/transactions and usable pipe/tank/pump adapters, with a documented throughput model. Two real clients and natural-distance unload remain open; the new packet recording is available for that work.
+
+---
+
+# Historical validation — 0.2.1, 8 November 2026
 
 Continues `main` commit `5321f9d`, including the user's NeoForge change from 21.1.265 to 21.1.252 on top of merged PR #2. Final target: Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. This change implements the user's one-item/one-structure placement rule for the existing industrial furnace. Later fluid/research/space systems and the full factory TPS benchmark are not claimed.
 

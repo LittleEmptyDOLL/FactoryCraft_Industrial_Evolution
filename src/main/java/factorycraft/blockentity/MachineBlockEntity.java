@@ -34,7 +34,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
             return kind().processing();
         }
     };
-    public final PowerBuffer power = new PowerBuffer(16000, this::setChanged);
+    public final PowerBuffer power = new PowerBuffer(16000, this::markPersistentState);
     private final IItemHandler automation = new IItemHandler() {
         public int getSlots() { return 9; }
         public ItemStack getStackInSlot(int s) { return automationReady() ? items.getStackInSlot(s).copy():ItemStack.EMPTY; }
@@ -120,14 +120,14 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
                 if (!remainder.isEmpty() && fuel.getCount()>1) { setActive(false); return; }
                 items.extractItem(8,1,false);
                 if (!remainder.isEmpty()) items.setStackInSlot(8,remainder);
-                fuelTicks=burn; setChanged();
+                fuelTicks=burn; markPersistentState();
             }
         }
         boolean active=fuelTicks>0 && hasDemand;
         if(active) {
             int supplied=PowerGrid.distribute(this,FactoryConfig.GENERATOR_FE.get());
             active=supplied>0;
-            if(active) { fuelTicks--;setChanged(); }
+            if(active) { fuelTicks--;markPersistentState(); }
         }
         setActive(active);
     }
@@ -145,13 +145,15 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         int step=assembly==null ? 1:2;
         int advancing=Math.min(step,recipe.ticks()-Math.min(progress,recipe.ticks()-1));
         if(!power.spend(recipe.energy()*advancing)) return false;
-        activeRecipe=chosen.id().toString(); duration=recipe.ticks(); progress+=advancing; setChanged();
+        activeRecipe=chosen.id().toString(); duration=recipe.ticks(); progress+=advancing; markPersistentState();
+        factorycraft.diagnostics.FactoryTelemetry.worked(this,recipe.energy()*advancing);
         if(progress>=duration) {
             int[] plan=recipe.consumptionPlan(input);
             // Single server-thread commit, after every output slot and input count has been checked.
             if(plan!=null && output(recipe.result(),true).isEmpty()) {
                 for(int s=0;s<plan.length;s++) if(plan[s]>0) items.extractItem(s,plan[s],false);
                 output(recipe.result().copy(),false);
+                factorycraft.diagnostics.FactoryTelemetry.produced(this);
                 progress=0; activeRecipe=""; sync();
             }
         }
@@ -192,7 +194,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         if(oreTarget==null) return false;
         ItemStack result=oreResult(oreTarget);
         if(!output(result,true).isEmpty() || !power.spend(10)) return false;
-        progress++; setChanged();
+        progress++; markPersistentState();
         if(progress>=duration) {
             if (level.setBlock(oreTarget,Blocks.AIR.defaultBlockState(),3)) {
                 output(result,false); progress=0; oreTarget=null; sync();

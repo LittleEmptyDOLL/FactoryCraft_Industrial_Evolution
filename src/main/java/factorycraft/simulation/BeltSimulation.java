@@ -57,6 +57,11 @@ public final class BeltSimulation {
                 ", microstep visits: "+s.transport.visits()+", transfers: "+s.transport.transfers()+
                 ", CPU: "+String.format(Locale.ROOT,"%.3f ms",s.nanos/1e6);
     }
+    public record Snapshot(int loaded,int activeLanes,long visits,long transfers,long kernelNanos) {}
+    public static Snapshot snapshot(Level level) {
+        var s=STATES.get(level);return s==null ? new Snapshot(0,0,0,0,0):
+                new Snapshot(s.loaded,s.transport.activeLanes(),s.transport.visits(),s.transport.transfers(),s.nanos);
+    }
     @SubscribeEvent public static void unload(LevelEvent.Unload e) { STATES.remove(e.getLevel()); }
     private BeltSimulation() {}
 }
