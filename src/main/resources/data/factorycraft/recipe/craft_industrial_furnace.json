@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CPC",
+    "FGF",
+    "CRC"
+  ],
+  "key": {
+    "C": {
+      "item": "factorycraft:machine_casing"
+    },
+    "P": {
+      "item": "factorycraft:iron_plate"
+    },
+    "F": {
+      "item": "factorycraft:electric_furnace"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "factorycraft:industrial_furnace",
+    "count": 1
+  }
+}

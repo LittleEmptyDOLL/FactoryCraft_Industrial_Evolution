@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ISI",
+    "SPS",
+    "ISI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:stone_bricks"
+    },
+    "P": {
+      "item": "factorycraft:iron_plate"
+    }
+  },
+  "result": {
+    "id": "factorycraft:machine_casing",
+    "count": 4
+  }
+}

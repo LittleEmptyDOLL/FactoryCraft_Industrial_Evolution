@@ -38,7 +38,7 @@ def texture(name,color,style):
 colors={
  'transport_belt':(221,168,42),'fast_transport_belt':(212,63,48),'express_transport_belt':(53,156,209),'splitter':(177,126,49),
  'inserter':(215,160,50),'electric_drill':(67,135,143),'electric_furnace':(187,95,52),'assembling_machine':(55,126,161),'coal_generator':(114,127,108),'electric_pole':(162,129,88),
- 'iron_ore':(104,110,115),'copper_ore':(110,112,108)}
+ 'iron_ore':(104,110,115),'copper_ore':(110,112,108),'industrial_furnace':(187,93,43),'machine_casing':(79,99,116)}
 for name,color in colors.items():
  belt='belt' in name or name=='splitter'
  pixels=texture('block/'+name,color,'belt' if belt else 'ore' if 'ore' in name else 'machine')
@@ -50,7 +50,7 @@ for name,color in colors.items():
   model={'parent':'minecraft:block/block','textures':{'all':tex,'particle':tex},'elements':[{'from':[lo,0,lo],'to':[hi,height,hi],'faces':{f:{'texture':'#all'} for f in ['up','down','north','south','east','west']}}]}
  else:model={'parent':'minecraft:block/cube_all','textures':{'all':tex}}
  write(f'assets/factorycraft/models/block/{name}.json',model)
- active=name in ['electric_drill','electric_furnace','assembling_machine','coal_generator']
+ active=name in ['electric_drill','electric_furnace','assembling_machine','coal_generator','industrial_furnace','machine_casing']
  if active:
   frames=[]
   for frame in range(2):
@@ -71,6 +71,14 @@ for name,color in colors.items():
  write(f'assets/factorycraft/blockstates/{name}.json',{'variants':variants})
  result='minecraft:raw_iron' if name=='iron_ore' else 'minecraft:raw_copper' if name=='copper_ore' else 'factorycraft:'+name
  write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':result}],'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
+# A visible arrow and a distinct front make rotated multiblock layouts legible in game.
+top=texture('block/industrial_furnace_top',colors['industrial_furnace'],'machine')
+for yy in range(2,13):
+ for xx in range(16):
+  if (yy<=6 and abs(xx-7.5)<=yy-1.5) or (6<=yy<=12 and xx in (7,8)):top[yy][xx]=(255,194,61,255)
+png('block/industrial_furnace_top',top)
+for suffix in ['', '_active']:
+ write(f'assets/factorycraft/models/block/industrial_furnace{suffix}.json',{'parent':'minecraft:block/orientable','textures':{'front':'factorycraft:block/industrial_furnace'+suffix,'side':'factorycraft:block/machine_casing','top':'factorycraft:block/industrial_furnace_top'}})
 items={'iron_plate':(176,192,203),'copper_plate':(211,121,64),'iron_gear':(137,160,178),'copper_wire':(226,141,65),'electronic_circuit':(69,167,115),'wrench':(194,197,204)}
 for name,color in items.items():
  texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
@@ -105,12 +113,21 @@ craft('assembling_machine',['III','GCG','IRI'],{'I':'minecraft:iron_ingot','G':'
 craft('coal_generator',['III','CFC','IRI'],{'I':'minecraft:iron_ingot','C':'minecraft:cobblestone','F':'minecraft:furnace','R':'minecraft:redstone'})
 craft('electric_pole',[' C ',' S ',' S '],{'C':'minecraft:copper_ingot','S':'minecraft:stick'},count=4)
 craft('wrench',['I I',' I ',' I '],{'I':'minecraft:iron_ingot'})
+craft('machine_casing',['ISI','SPS','ISI'],{'I':'minecraft:iron_ingot','S':'minecraft:stone_bricks','P':'factorycraft:iron_plate'},count=4)
+craft('industrial_furnace',['CPC','FGF','CRC'],{'C':'factorycraft:machine_casing','P':'factorycraft:iron_plate','F':'factorycraft:electric_furnace','G':'factorycraft:iron_gear','R':'minecraft:redstone'})
 labels={
+ 'industrial_furnace':('Industrial Furnace Controller','Контроллер промышленной печи'),'machine_casing':('Machine Casing','Корпус машины'),
  'transport_belt':('Transport Belt','Конвейер'),'fast_transport_belt':('Fast Transport Belt','Быстрый конвейер'),'express_transport_belt':('Express Transport Belt','Экспресс-конвейер'),'splitter':('T-Splitter','Т-разделитель'),
  'inserter':('Mechanical Inserter','Механический манипулятор'),'electric_drill':('Electric Mining Drill','Электрический бур'),'electric_furnace':('Electric Furnace','Электрическая печь'),'assembling_machine':('Assembling Machine','Сборочный автомат'),
  'coal_generator':('Coal Generator','Угольный генератор'),'electric_pole':('Electric Pole','Электрический столб'),'iron_ore':('Industrial Iron Ore','Промышленная железная руда'),'copper_ore':('Industrial Copper Ore','Промышленная медная руда'),
  'iron_plate':('Iron Plate','Железная пластина'),'copper_plate':('Copper Plate','Медная пластина'),'iron_gear':('Iron Gear','Железная шестерня'),'copper_wire':('Copper Wire','Медный провод'),'electronic_circuit':('Electronic Circuit','Электронная схема'),'wrench':('Factory Wrench','Заводской ключ')}
-ui={'tooltip.factorycraft.belt':('Two lanes. Items follow the arrow; stopped output causes a jam.','Две полосы. Движение по стрелке; закрытый выход создаёт затор.'),
+ui={'command.factorycraft.smelter_space':('Need a loaded empty 6 x 5 x 7 area beside you.','Рядом нужна загруженная свободная область 6 x 5 x 7.'),'tooltip.factorycraft.multiblock_controls':('Right-click the controller to assemble; sneak-wrench dismantles.','ПКМ контроллера — сборка; Shift + ключ — разборка.'),'gui.factorycraft.assembly.0':('Unformed','Не собрана'),'gui.factorycraft.assembly.1':('Chunks pending','Чанк выгружен'),'gui.factorycraft.assembly.2':('Assembled','Собрана'),
+ 'message.factorycraft.assembly_missing':('Complete a 2x2x2 structure with 7 casings to the right, above and behind the controller.','Нужны 7 корпусов справа, сзади и сверху контроллера: объём 2x2x2.'),
+ 'message.factorycraft.dismantle':('Sneak + wrench dismantles the structure and keeps its inventory.','Shift + ключ: разобрать структуру с сохранением инвентаря.'),
+ 'command.factorycraft.smelter':('Multiblock smelter built at %s. Its source chest contains 12 raw iron.','Мультиблочная печь построена: %s. Во входном сундуке 12 необработанного железа.'),
+ 'tooltip.factorycraft.industrial_furnace':('2x2x2: controller + 7 casings. Twice the furnace speed; same FE per result.','2x2x2: контроллер + 7 корпусов. Скорость x2; тот же расход FE на результат.'),
+ 'tooltip.factorycraft.machine_casing':('Part of a multiblock. Shares the controller inventory and power; stores no items.','Часть мультиблока. Общий с контроллером инвентарь и энергия; своих предметов нет.'),
+ 'tooltip.factorycraft.belt':('Two lanes. Items follow the arrow; stopped output causes a jam.','Две полосы. Движение по стрелке; закрытый выход создаёт затор.'),
  'tooltip.factorycraft.splitter':('Alternates between the forward and right outputs.','Чередует передний и правый выходы.'),
  'tooltip.factorycraft.inserter':('Picks up behind, delivers ahead. Mechanical; one item per cycle.','Забирает сзади, кладёт спереди. Механический; один предмет за цикл.'),
  'tooltip.factorycraft.electric_drill':('Mines finite ore in a 3x3 area, up to 8 blocks below. Requires power.','Добывает конечную руду в области 3x3 на глубину до 8 блоков. Нужна энергия.'),
@@ -122,6 +139,7 @@ ui={'tooltip.factorycraft.belt':('Two lanes. Items follow the arrow; stopped out
 for lang,index in [('en_us',0),('ru_ru',1)]:
  d={('block' if n in colors else 'item')+'.factorycraft.'+n:pair[index] for n,pair in labels.items()};d.update({k:v[index] for k,v in ui.items()});write(f'assets/factorycraft/lang/{lang}.json',d)
 write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})
+write('data/factorycraft/advancement/recipes/multiblock_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_machine_casing','factorycraft:craft_industrial_furnace']}})
 # Empty structure used by all code-built integration tests (NBT, data version 3955 / Minecraft 1.21.1).
 def utf(s):
  b=s.encode();return struct.pack('>H',len(b))+b

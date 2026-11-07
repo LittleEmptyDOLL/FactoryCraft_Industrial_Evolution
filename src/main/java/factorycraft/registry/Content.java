@@ -41,13 +41,15 @@ public final class Content {
     static {
         ITEMS.registerSimpleBlockItem(IRON_ORE);
         ITEMS.registerSimpleBlockItem(COPPER_ORE);
-        for (String name : List.of("iron_plate", "copper_plate", "iron_gear", "copper_wire", "electronic_circuit", "wrench"))
+        for (String name : List.of("iron_plate", "copper_plate", "iron_gear", "copper_wire", "electronic_circuit"))
             ITEMS.registerSimpleItem(name, new Item.Properties());
     }
+    public static final DeferredItem<factorycraft.items.FactoryWrenchItem> WRENCH=ITEMS.register("wrench",()->new factorycraft.items.FactoryWrenchItem(new Item.Properties()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeltBlockEntity>> BELT = ENTITIES.register("belt", () -> BlockEntityType.Builder.of(BeltBlockEntity::new, blocks(FactoryKind.BELT, FactoryKind.FAST_BELT, FactoryKind.EXPRESS_BELT, FactoryKind.SPLITTER)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InserterBlockEntity>> INSERTER = ENTITIES.register("inserter", () -> BlockEntityType.Builder.of(InserterBlockEntity::new, blocks(FactoryKind.INSERTER)).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>> MACHINE = ENTITIES.register("machine", () -> BlockEntityType.Builder.of(MachineBlockEntity::new, blocks(FactoryKind.DRILL, FactoryKind.FURNACE, FactoryKind.ASSEMBLER, FactoryKind.GENERATOR)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>> MACHINE = ENTITIES.register("machine", () -> BlockEntityType.Builder.of(MachineBlockEntity::new, blocks(FactoryKind.DRILL, FactoryKind.FURNACE, FactoryKind.ASSEMBLER, FactoryKind.GENERATOR, FactoryKind.INDUSTRIAL_FURNACE)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PoleBlockEntity>> POLE = ENTITIES.register("pole", () -> BlockEntityType.Builder.of(PoleBlockEntity::new, blocks(FactoryKind.POLE)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CasingBlockEntity>> CASING = ENTITIES.register("casing", () -> BlockEntityType.Builder.of(CasingBlockEntity::new,blocks(FactoryKind.CASING)).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<FactoryMenu>> MENU = MENUS.register("machine", () -> IMenuTypeExtension.create(FactoryMenu::new));
     public static final DeferredHolder<RecipeType<?>, RecipeType<FactoryRecipe>> PROCESSING = RECIPE_TYPES.register("processing", () -> new RecipeType<>() { public String toString() { return "factorycraft:processing"; } });
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FactoryRecipe>> PROCESSING_SERIALIZER = SERIALIZERS.register("processing", FactoryRecipe.Serializer::new);
@@ -66,7 +68,9 @@ public final class Content {
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BELT.get(), (be, side) -> be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, INSERTER.get(), (be, side) -> be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), MachineBlockEntity::automation);
-        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (be, side) -> be.power);
+        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (be, side) -> be.energyPort);
+        e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,CASING.get(),(be,side)->be.inventory());
+        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,CASING.get(),(be,side)->be.energy);
     }
     private Content() {}
 }

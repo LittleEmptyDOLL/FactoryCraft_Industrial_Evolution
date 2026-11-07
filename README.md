@@ -1,14 +1,14 @@
-# FactoryCraft: Industrial Evolution — 0.1.1
+# FactoryCraft: Industrial Evolution — 0.2.0
 
 Minecraft **1.21.1**, NeoForge **21.1.265**, **Java JDK 21**. MIT; original procedural industrial textures. English and Russian UI.
 
-Это первая рабочая часть этапов 1–2, а не законченная Factorio/Space Age. Мод добывает конечную руду, питает машины через столбы и автоматически производит пластины, шестерни, провода и схемы. Двухполосные конвейеры отображают предметы без создания Entity, останавливаются при заторах и продолжают движение после освобождения выхода. Содержимое и прогресс сохраняются.
+Это играбельное ядро этапов 1–2 и начало энергетической части этапа 3, а не законченная Factorio/Space Age. Мод добывает конечную руду, питает машины через столбы и автоматически производит пластины, шестерни, провода и схемы. Двухполосные конвейеры отображают предметы без создания Entity, останавливаются при заторах и продолжают движение после освобождения выхода. Содержимое и прогресс сохраняются.
 
-В 0.1.1 переработаны стыки конвейеров: предметы сохраняют остаток движения, соблюдают расстояние между блоками и корректно движутся в заполненных кольцах. Ядро проверено на потоках 15/30/45 предметов в секунду; сохранения 0.1.0 читаются автоматически. Подробности: [CHANGELOG.md](CHANGELOG.md).
+В 0.2.0 добавлена промышленная электропечь **2×2×2**: контроллер и семь корпусов, общий инвентарь и энергия, автоматизация через любой корпус, скорость ×2 при прежней стоимости FE на результат. Электросеть теперь перестраивается по пространственному индексу с лимитом работы за такт, сохраняя независимые сети в рабочем состоянии. Подробности: [CHANGELOG.md](CHANGELOG.md).
 
 ## Установка
 
-Установите Minecraft 1.21.1 и NeoForge 21.1.265, положите `factorycraft-0.1.1.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
+Установите Minecraft 1.21.1 и NeoForge 21.1.265, положите `factorycraft-0.2.0.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
 
 ```sh
 ./gradlew build
@@ -22,7 +22,7 @@ Minecraft **1.21.1**, NeoForge **21.1.265**, **Java JDK 21**. MIT; original proc
 
 ## Первая фабрика
 
-См. [QUICKSTART.md](QUICKSTART.md): направление, подключение энергии, слот топлива, рецепты и схема линии. В творческом мире с командами `/factorycraft demo` строит проверенную линию рядом с игроком, если место свободно. `/factorycraft profile` показывает число загруженных/активных конвейеров и накопленное время их симуляции.
+См. [QUICKSTART.md](QUICKSTART.md): направление, подключение энергии, слот топлива, рецепты и схема линии. В творческом мире с командами `/factorycraft demo` строит проверенную линию рядом с игроком, если место свободно. `/factorycraft profile` показывает конвейерную симуляцию, `/factorycraft power` — перестроение электросети. `/factorycraft smelter` создаёт отдельную автоматическую линию с мультиблочной печью. Интеграционные миры сохраняются отдельно в `run-gametest/world`.
 
 ## Документация и продолжение
 
@@ -33,6 +33,8 @@ Minecraft **1.21.1**, NeoForge **21.1.265**, **Java JDK 21**. MIT; original proc
 * [AGENTS.md](AGENTS.md) — правила следующих изменений.
 
 ## English
+
+Version 0.2.0 adds a 2x2x2 industrial furnace (one controller + seven casings), shared guarded ports, chunk-safe persistence, and spatially indexed budgeted power rebuilding. `/factorycraft smelter` builds an automated example in an empty area.
 
 A working first-factory slice: finite electric mining → two-lane belts → mechanical inserters → electric smelting → assembly → a vanilla chest. Fuel the coal generator and place poles within their configured coverage (default 6 blocks). Face inserters from their source toward their destination; rotate with the factory wrench. Machine left slots accept ingredients, right slots expose outputs, and the bottom slot accepts generator fuel. Right-click a machine for recipes, energy and progress. Recipes and ore placement are datapack JSON. Later research, fluids, railways, robots, combat and space systems are explicitly unimplemented.
 

@@ -40,6 +40,7 @@ public final class FactoryBlock extends BaseEntityBlock {
         if (kind.belt()) return new BeltBlockEntity(p, s);
         if (kind == FactoryKind.INSERTER) return new InserterBlockEntity(p, s);
         if (kind == FactoryKind.POLE) return new PoleBlockEntity(p, s);
+        if (kind == FactoryKind.CASING) return new CasingBlockEntity(p,s);
         return new MachineBlockEntity(p, s);
     }
     @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState s, BlockEntityType<T> t) {
@@ -51,12 +52,30 @@ public final class FactoryBlock extends BaseEntityBlock {
     }
     @Override protected InteractionResult useWithoutItem(BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
         if (l.isClientSide) return InteractionResult.SUCCESS;
-        if (player.getMainHandItem().is(Content.ITEMS.getEntries().stream().filter(i -> i.getId().getPath().equals("wrench")).findFirst().orElseThrow().get())) {
-            l.setBlock(p, s.cycle(FACING), 3);
-            return InteractionResult.CONSUME;
+        if(player.getMainHandItem().is(Content.WRENCH.get()))return useWrench(l,p,player);
+        if (l.getBlockEntity(p) instanceof MachineBlockEntity machine) {
+            if(machine.assembly()!=null && !machine.assembly().formed() && !machine.assembly().form())
+                player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);
+            player.openMenu(machine,p);
+        } else if(l.getBlockEntity(p) instanceof CasingBlockEntity part) {
+            var owner=part.controllerForInteraction();
+            if(owner!=null)player.openMenu(owner,owner.getBlockPos());
+            else player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);
         }
-        if (l.getBlockEntity(p) instanceof MachineBlockEntity machine) player.openMenu(machine, p);
         else player.displayClientMessage(Component.translatable("message.factorycraft.direction", s.getValue(FACING).getName()), true);
+        return InteractionResult.CONSUME;
+    }
+    public InteractionResult useWrench(Level level,BlockPos pos,Player player) {
+        if(level.isClientSide)return InteractionResult.SUCCESS;
+        var state=level.getBlockState(pos);if(!state.is(this))return InteractionResult.PASS;
+        if(level.getBlockEntity(pos) instanceof MachineBlockEntity machine && machine.assembly()!=null && machine.assembly().formed()) {
+            if(player.isShiftKeyDown())machine.assembly().dismantle();
+            else player.displayClientMessage(Component.translatable("message.factorycraft.dismantle"),true);
+        } else if(level.getBlockEntity(pos) instanceof CasingBlockEntity part) {
+            var owner=part.controllerForInteraction();
+            if(owner!=null && player.isShiftKeyDown())owner.assembly().dismantle();
+            else player.displayClientMessage(Component.translatable("message.factorycraft.dismantle"),true);
+        } else level.setBlock(pos,state.cycle(FACING),3);
         return InteractionResult.CONSUME;
     }
     @Override protected void onRemove(BlockState s, Level l, BlockPos p, BlockState next, boolean moving) {

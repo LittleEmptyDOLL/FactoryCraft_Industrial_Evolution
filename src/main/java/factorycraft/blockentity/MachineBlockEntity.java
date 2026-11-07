@@ -3,6 +3,7 @@ package factorycraft.blockentity;
 import factorycraft.blocks.*;
 import factorycraft.config.FactoryConfig;
 import factorycraft.energy.PowerGrid;
+import factorycraft.multiblock.IndustrialAssembly;
 import factorycraft.production.*;
 import factorycraft.recipes.*;
 import factorycraft.registry.Content;
@@ -22,23 +23,36 @@ import net.neoforged.neoforge.items.*;
 import java.util.*;
 
 public final class MachineBlockEntity extends FactoryBlockEntity implements MenuProvider {
+    private boolean loaded;
+    public boolean loaded() { return loaded && !isRemoved(); }
+    private boolean automationReady() { return loaded() && level!=null && !level.isClientSide; }
     public final ItemStackHandler items = new ItemStackHandler(9) {
         @Override protected void onContentsChanged(int s) { setChanged(); }
         @Override public boolean isItemValid(int s, ItemStack stack) {
             if (s >= 4 && s < 8) return false;
             if (s == 8) return kind() == FactoryKind.GENERATOR && burnTime(stack) > 0;
-            return kind() == FactoryKind.FURNACE || kind() == FactoryKind.ASSEMBLER;
+            return kind().processing();
         }
     };
     public final PowerBuffer power = new PowerBuffer(16000, this::setChanged);
     private final IItemHandler automation = new IItemHandler() {
         public int getSlots() { return 9; }
-        public ItemStack getStackInSlot(int s) { return items.getStackInSlot(s).copy(); }
-        public ItemStack insertItem(int s, ItemStack stack, boolean sim) { return items.insertItem(s,stack,sim); }
-        public ItemStack extractItem(int s, int n, boolean sim) { return s >= 4 && s < 8 ? items.extractItem(s,n,sim) : ItemStack.EMPTY; }
+        public ItemStack getStackInSlot(int s) { return automationReady() ? items.getStackInSlot(s).copy():ItemStack.EMPTY; }
+        public ItemStack insertItem(int s, ItemStack stack, boolean sim) { return automationReady() ? items.insertItem(s,stack,sim):stack; }
+        public ItemStack extractItem(int s, int n, boolean sim) { return automationReady() && s >= 4 && s < 8 ? items.extractItem(s,n,sim) : ItemStack.EMPTY; }
         public int getSlotLimit(int s) { return items.getSlotLimit(s); }
-        public boolean isItemValid(int s, ItemStack stack) { return items.isItemValid(s,stack); }
+        public boolean isItemValid(int s, ItemStack stack) { return automationReady() && items.isItemValid(s,stack); }
     };
+    public final net.neoforged.neoforge.energy.IEnergyStorage energyPort=new net.neoforged.neoforge.energy.IEnergyStorage() {
+        public int receiveEnergy(int n,boolean sim) { return automationReady() ? power.receiveEnergy(n,sim):0; }
+        public int extractEnergy(int n,boolean sim) { return 0; }
+        public int getEnergyStored() { return automationReady() ? power.getEnergyStored():0; }
+        public int getMaxEnergyStored() { return power.getMaxEnergyStored(); }
+        public boolean canExtract() { return false; }
+        public boolean canReceive() { return automationReady(); }
+    };
+    private final IndustrialAssembly assembly;
+    public IndustrialAssembly assembly() { return assembly; }
     private int progress, duration = 1, fuelTicks;
     private String selected = "", activeRecipe = "";
     private List<RecipeHolder<FactoryRecipe>> recipeCache = List.of();
@@ -47,12 +61,15 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
     public final ContainerData data = new ContainerData() {
         public int get(int i) { return switch (i) {
             case 0 -> progress; case 1 -> duration; case 2 -> power.getEnergyStored(); case 3 -> fuelTicks;
-            case 4 -> selectedIndex(); case 5 -> previewIndex(); default -> 0;
+            case 4 -> selectedIndex(); case 5 -> previewIndex(); case 6 -> assembly==null ? IndustrialAssembly.READY:assembly.status(); default -> 0;
         }; }
         public void set(int i, int v) { switch(i) { case 0 -> progress=v; case 1 -> duration=v; case 2 -> power.restore(v); case 3 -> fuelTicks=v; default -> {} } }
-        public int getCount() { return 6; }
+        public int getCount() { return 7; }
     };
-    public MachineBlockEntity(BlockPos p, BlockState s) { super(Content.MACHINE.get(),p,s); }
+    public MachineBlockEntity(BlockPos p, BlockState s) {
+        super(Content.MACHINE.get(),p,s);
+        assembly=((FactoryBlock)s.getBlock()).kind==FactoryKind.INDUSTRIAL_FURNACE ? new IndustrialAssembly(this):null;
+    }
     public FactoryKind kind() { return ((FactoryBlock)getBlockState().getBlock()).kind; }
     @Override public IItemHandler inventory() { return items; }
     public IItemHandler automation(Direction side) { return automation; }
@@ -62,7 +79,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         long now = level.getGameTime();
         if (recipeCacheTick == Long.MIN_VALUE || now - recipeCacheTick >= 20) {
             recipeCache = level.getRecipeManager().getAllRecipesFor(Content.PROCESSING.get()).stream()
-                    .filter(h -> h.value().machine().equals(kind().id)).sorted(Comparator.comparing(h -> h.id().toString())).toList();
+                    .filter(h -> h.value().machine().equals(kind().recipeGroup())).sorted(Comparator.comparing(h -> h.id().toString())).toList();
             recipeCacheTick = now;
         }
         return recipeCache;
@@ -83,6 +100,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
     }
     private static int burnTime(ItemStack stack) { return stack.getBurnTime(RecipeType.SMELTING); }
     public void tick() {
+        if(!loaded())return;
+        if (assembly!=null && !assembly.ready()) { setActive(false);return; }
         if (kind() == FactoryKind.GENERATOR) { generate(); return; }
         boolean worked = kind() == FactoryKind.DRILL ? mine() : produce();
         if (worked && level.getGameTime()%20==0) sync();
@@ -105,7 +124,11 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
             }
         }
         boolean active=fuelTicks>0 && hasDemand;
-        if(active) { PowerGrid.distribute(this,FactoryConfig.GENERATOR_FE.get()); fuelTicks--; setChanged(); }
+        if(active) {
+            int supplied=PowerGrid.distribute(this,FactoryConfig.GENERATOR_FE.get());
+            active=supplied>0;
+            if(active) { fuelTicks--;setChanged(); }
+        }
         setActive(active);
     }
     private boolean produce() {
@@ -119,8 +142,10 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         if(chosen==null) return false;
         var recipe=chosen.value();
         if(!output(recipe.result(),true).isEmpty()) return false;
-        if(!power.spend(recipe.energy())) return false;
-        activeRecipe=chosen.id().toString(); duration=recipe.ticks(); progress++; setChanged();
+        int step=assembly==null ? 1:2;
+        int advancing=Math.min(step,recipe.ticks()-Math.min(progress,recipe.ticks()-1));
+        if(!power.spend(recipe.energy()*advancing)) return false;
+        activeRecipe=chosen.id().toString(); duration=recipe.ticks(); progress+=advancing; setChanged();
         if(progress>=duration) {
             int[] plan=recipe.consumptionPlan(input);
             // Single server-thread commit, after every output slot and input count has been checked.
@@ -175,18 +200,23 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         }
         return true;
     }
-    @Override public void onLoad() { super.onLoad(); if(!level.isClientSide) PowerGrid.add(this); }
-    @Override public void setRemoved() { if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.setRemoved(); }
-    @Override public void onChunkUnloaded() { if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.onChunkUnloaded(); }
+    @Override public void setBlockState(BlockState state) {
+        if(assembly!=null && assembly.formed() && getBlockState().getValue(FactoryBlock.FACING)!=state.getValue(FactoryBlock.FACING))assembly.dismantle();
+        super.setBlockState(state);
+    }
+    @Override public void dropContents() { if(assembly!=null)assembly.dismantle();super.dropContents(); }
+    @Override public void onLoad() { super.onLoad();loaded=true; if(assembly!=null)assembly.invalidate();if(!level.isClientSide) PowerGrid.add(this); }
+    @Override public void setRemoved() { loaded=false;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.setRemoved(); }
+    @Override public void onChunkUnloaded() { loaded=false;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.onChunkUnloaded(); }
     @Override public Component getDisplayName() { return Component.translatable("block.factorycraft."+kind().id); }
     @Override public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) { return new FactoryMenu(id,inv,this,data); }
     @Override protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
         super.saveAdditional(t,r); t.putInt("Schema",1); t.put("Items",items.serializeNBT(r)); t.putInt("Energy",power.getEnergyStored());
-        t.putInt("Progress",progress); t.putInt("Duration",duration); t.putInt("Fuel",fuelTicks); t.putString("Selected",selected); t.putString("ActiveRecipe",activeRecipe);
+        t.putInt("Progress",progress); t.putInt("Duration",duration); t.putInt("Fuel",fuelTicks); t.putString("Selected",selected); t.putString("ActiveRecipe",activeRecipe);if(assembly!=null)assembly.save(t);
     }
     @Override protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
         super.loadAdditional(t,r); items.deserializeNBT(r,t.getCompound("Items")); power.restore(t.getInt("Energy"));
         progress=Math.max(0,t.getInt("Progress")); duration=Math.max(1,t.getInt("Duration")); fuelTicks=Math.max(0,t.getInt("Fuel"));
-        selected=t.getString("Selected"); activeRecipe=t.getString("ActiveRecipe"); recipeCacheTick=Long.MIN_VALUE;
+        selected=t.getString("Selected"); activeRecipe=t.getString("ActiveRecipe"); recipeCacheTick=Long.MIN_VALUE;if(assembly!=null)assembly.load(t);
     }
 }

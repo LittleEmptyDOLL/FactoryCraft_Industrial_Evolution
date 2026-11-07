@@ -10,3 +10,7 @@
 * Update FEATURE_MATRIX.md honestly: implemented / partial / planned; registration alone never counts as implemented.
 * Original/properly licensed assets only. Keep scripts reproducible. No extracted Factorio assets.
 * Keep the next concrete task in IMPLEMENTATION_PLAN.md. Do not push or publish without user authorization.
+
+* Larger machine footprints may use controller/part multiblocks, as requested by the user. The controller alone owns inventory, energy, recipe and progress. Parts store an identity/anchor and expose guarded forwarding capabilities; never serialize copies of the controller inventory in parts.
+* Separate temporary chunk inactivity from a destroyed structure. Pause production while any required part is unavailable, keep identity across load ordering, invalidate cached capabilities on unload/break, and repair real orphans without forcing chunks to load.
+* Keep GameTest fixtures in `run-gametest/`; do not reuse the ordinary client/server development world for destructive integration fixtures.

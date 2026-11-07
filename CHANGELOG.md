@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 — 2026-11-08
+
+* Added an operational 2x2x2 industrial furnace: one controller, seven casings, twice the processing speed with unchanged FE per result.
+* All casing ports share the controller inventory/energy; no part owns duplicated resources. Formation checks the whole footprint, rejects overlapping owners, and persists a UUID and orientation.
+* Added safe dismantling, cached-capability guards, pause/resume on partial chunk unload, mid-production restoration and deferred orphan repair. Sneak-wrench also works with an occupied offhand.
+* Replaced quadratic all-pairs power rebuilding with spatial buckets, bounded incremental snapshots and shared component consumer lists. Independent networks remain online; removed wire components are quarantined immediately. Continuous additions do not starve snapshot publication.
+* Added `powerGraphWorkPerTick`, `/factorycraft power`, and `/factorycraft smelter`, plus original casing/controller textures, direction arrow, EN/RU status text, crafting recipes and book unlocks.
+* Added independent power/layout tests and 13 multiblock integration scenarios. Persistent GameTest worlds now use `run-gametest/`, separately from normal development worlds.
+
 ## 0.1.1 — 2026-11-07
 
 * Replaced per-block, zero-residual belt movement with an independent phased transport kernel.
