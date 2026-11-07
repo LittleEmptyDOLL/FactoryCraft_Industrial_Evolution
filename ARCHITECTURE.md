@@ -1,4 +1,4 @@
-# Architecture decisions — 0.1.1 (belt schema 2; other block entities schema 1)
+# Architecture decisions — 0.2.0 (belt schema 2; machine/assembly/casing schema 1)
 
 ## Authority and persistence
 
@@ -36,9 +36,25 @@ A legacy save or changed topology may already contain overlapping cross-block po
 
 ## Power
 
-Poles form a cached undirected graph of loaded nodes. Edges and coverage use a spherical configurable radius. Generator and consumer membership derives from nearby connected poles. Union-find rebuild occurs on node load/unload/place/break or a changed radius. It is synchronous and currently quadratic in pole count at rebuild time; a spatial index and deferred rebuild budget are required before claiming the full-scale target.
+`simulation.power.PowerTopology` is independent of Minecraft. Loaded poles use a 3D spatial hash with cell size equal to the configured radius; only 27 neighboring cells are queried. Rebuilds proceed through capture, local candidate checks/union-find, component labels, device coverage and removal quarantine. Empty bucket probes and candidates both spend work units. `powerGraphWorkPerTick` limits logical work per level (default 4096); amortized Java collection operations mean this is not a hard wall-clock deadline.
 
-A generator walks at most 32 cached recipients per tick with a round-robin cursor. Machine buffers store up to 16000 FE; process ticks require the complete per-tick cost, so shortage slows average production. Generator fuel pauses when scanned recipients have no demand. Consumers expose NeoForge FE input capabilities. The generator is an internal network source; external FE extraction, batteries, steam and nuclear power are not implemented.
+Snapshots are published atomically. Additions keep the old valid snapshot serving existing consumers. Removing a pole immediately disables its previous component; unrelated components remain online. A builder can finish while additions continue: later additions are processed in the next snapshot, and a budgeted removal queue quarantines any obsolete edges before publication. Radius changes cancel the current calculation and suspend old coverage. This avoids starving graph publication during normal continuous loading. World access stays in the server adapter; the independent graph never loads chunks.
+
+Consumer lists are shared per wire component. Routes carry a generation number rather than retaining obsolete full snapshots; detached capture links are released under the rebuild work budget. Each generator has only its covered component IDs, cursors and a bounded reusable recipient batch, rather than a copy of all reachable consumers. Demand preparation visits at most 32 candidates, deduplicates overlapping memberships and simulates acceptance. Delivery rechecks liveness and the snapshot/component before committing FE. Fuel ticks advance only when some energy was actually accepted. Sources and consumers do not merge otherwise disconnected pole networks merely because their coverage overlaps.
+
+`PowerGrid` ticks the bounded rebuild after each server level tick. All node load/unload/place/break operations are O(1) registry updates; matching graph changes are processed incrementally. The generator is still an internal network source; external FE extraction, batteries, steam and nuclear power remain future work. Diagnostics are available through `/factorycraft power`.
+
+## Multiblock ownership and lifecycle
+
+An industrial furnace is one controller and seven casings in a rotated 2x2x2 cuboid. `CuboidLayout` defines offsets; `IndustrialAssembly` owns shape validation, UUID/orientation and formed/readiness state. The controller alone stores inputs, outputs, FE, selection and progress. Casings store only the controller anchor and assembly UUID. Their stable item/energy forwarding ports resolve a live, ready owner for each operation, so a cached port cannot access a destroyed or unloaded inventory.
+
+Formation validates every required loaded cell and ownership before binding any part. All seven identities are then reserved before emitting any block/neighbor updates; capabilities remain suspended until the formation transaction ends. Incomplete and overlapping structures fail without claiming a partial footprint. Casings have no ticker. A ready controller uses its cached validation; part removal/load/unload or controller changes invalidate it. Suspended validation examines only the fixed seven positions, retries at most once per second unless an event wakes it, and never force-loads a chunk.
+
+Temporary controller inactivity is distinct from orphaning. A part loaded before its controller becomes active retains a matching UUID while capabilities remain unavailable. An actually missing or mismatched controller clears an orphan binding when both locations are loaded. Dismantling clears loaded bindings, leaves all resources in the controller, and lets remaining unloaded parts repair later. Breaking the controller drops its own inventory exactly once; breaking a casing never drops a copy of that inventory. Appearance updates check the current world block before writing, so unbinding cannot resurrect a casing already being destroyed.
+
+The controller processes two recipe work units per server tick, charging only for those units; odd-duration recipes charge a smaller final tick. This doubles furnace throughput without changing FE per result. Assembly metadata is an optional schema-1 subcompound; existing single-block machines and their schema-1 inventories remain readable. Facing changes dismantle the old footprint. Sneak-wrench is handled in the item-first NeoForge hook, including when the offhand is occupied.
+
+The current pattern is fixed in code; a datapack pattern system is not claimed. The user allows multiblocks for larger footprints, and future large machines can extend controller/part composition while retaining single ownership and bounded validation.
 
 ## Timing and performance evidence
 

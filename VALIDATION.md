@@ -1,4 +1,38 @@
-# Validation — 0.1.1, 7 November 2026
+# Validation — 0.2.0, 8 November 2026
+
+Continues the user's merged `main` commit `ec97810` (PR #1). Minecraft 1.21.1, NeoForge 21.1.265 and Java 21 remain unchanged. Larger machines may use multiblocks, as permitted by the user; this release implements a real 2x2x2 industrial furnace alongside the power topology work.
+
+## Automated checks
+
+* `./gradlew build`: successful, **37 JUnit tests**, zero failures. Existing belt/energy tests remain. Fifteen power topology tests cover negative coordinates, spherical coverage, splits/merges, independent network availability, stale-route protection, generation conservation, overlapping coverage, bounded/fair recipient scanning, configuration changes, mutations at every rebuild phase, continuous additions, brute-force connectivity comparison and a 10000-pole budget exercise. Three layout tests cover all orientations, a non-square cuboid and invalid inputs.
+* `./gradlew runGameTestServer`: **30 required tests pass**. The previous 17 transport/production tests remain. Thirteen additional scenarios exercise incomplete/atomic formation, overlapping ownership rejection, all four orientations, controller/part inventory sharing, cached ports after destruction/unload, shared FE, pause/resume, one-time controller drops, automatic production through a casing, restoration of actual partial progress, orphan repair, an occupied-offhand sneak-wrench and saved identities across four chunks.
+* Separate server processes emit `FACTORYCRAFT_MULTIBLOCK_DISK: SEEDED` then `VERIFIED`. The fixed 2x2x2 fixture crosses four chunk boundaries and preserves the controller inventory and seven matching UUID/anchor pairs. Existing belt/machine/hand disk persistence also continues to pass.
+* Integration fixtures now use **`run-gametest/world`**, separate from the ordinary development server and `run/saves/FactoryCraftSmoke`. A new isolated fixture was seeded after correcting load-order handling; verification runs use the persisted fixture without silently repairing it.
+* `git diff --check`: clean. Generated JSON and the packaged mod are checked during final packaging.
+
+The independent 10000-pole test uses 4096 logical work units per call. A representative run completes in **84 calls**, checks **30002 spatial candidates**, and uses approximately 40–133 ms aggregate local CPU time, depending on concurrent load. The budget includes empty bucket probes. This is not a hard real-time deadline and is not the Minecraft 10000-belt / 1000-machine / 500-inserter test. The belt kernel load exercise remains independent of world/network costs.
+
+## Client checks
+
+A real 0.2.0 client under Xvfb/Mesa loaded the existing 0.1.1 QA world. `/factorycraft smelter` built a controller plus seven casings, generator/pole and two chest/inserter endpoints. The output chest contained **12 iron plates** from the source chest's 12 raw iron, without hand-filling the machine. Observed the 2x2x2 model, original textures, animated hands, active-state graphics and the Russian controller GUI showing shared 16000 FE, formed status and 32 ticks / 20 FE per working tick. Casing interaction opens the same controller menu.
+
+The item-first wrench handler supports Shift+right-click even with a torch in the offhand; GameTest covers the callback with that occupied offhand. The integrated world is saved using the actual client menu. As in earlier checks, unavailable Mojang authentication in the isolated dev environment does not prevent local play; null OpenAL is used for the smoke run.
+
+## Architectural safeguards and limits
+
+Graph rebuilds are spatial and incremental, and independent valid networks remain online. A removed wire component is quarantined immediately; it resumes after a valid snapshot. Continuous additions do not restart ordinary rebuilds, but coverage changes do. Shared component lists avoid per-generator copies of every consumer. Per-generator demand work remains bounded to 32 candidates.
+
+Casings have no inventory, energy storage or ticker. The controller keeps one canonical transaction. Port access and temporary chunk inactivity are guarded separately from identity/orphan checks, so a loading controller is not mistaken for a destroyed one. All world access is on the server thread; runtime simulation never force-loads chunks.
+
+Lifecycle callbacks, actual in-memory reconstruction mid-production and four-chunk process restarts are tested. Natural player-distance unload and two real connected clients remain unverified. Pattern dimensions are fixed for this first machine; JSON-defined multiblock patterns, all later generators, fluids, research, trains, robots, pollution/combat and space remain planned. The full in-game load harness is the next task in IMPLEMENTATION_PLAN.md.
+
+## Changed areas
+
+New independent power and cuboid-layout models; rewritten server power adapter and configuration/diagnostics; industrial assembly controller composition and casing block entity/capabilities; guarded machine lifecycle and wrench interaction; the 2x recipe work rate and GUI status; two block/item registrations, original resources, recipes and translations; isolated GameTest run configuration; tests and continuation documentation. Existing IDs and inventories are retained.
+
+---
+
+# Historical validation — 0.1.1, 7 November 2026
 
 Continues the existing Git repository and 0.1.0 commit `3f39357`; no new MDK was created. Minecraft 1.21.1 / NeoForge 21.1.265 / Java 21 remain fixed. The new transport kernel is independent of Minecraft; the adapter remains entirely server-authoritative.
 

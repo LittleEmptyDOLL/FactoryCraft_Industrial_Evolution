@@ -12,6 +12,8 @@
     "factorycraft:coal_generator",
     "factorycraft:electric_pole",
     "factorycraft:iron_ore",
-    "factorycraft:copper_ore"
+    "factorycraft:copper_ore",
+    "factorycraft:industrial_furnace",
+    "factorycraft:machine_casing"
   ]
 }

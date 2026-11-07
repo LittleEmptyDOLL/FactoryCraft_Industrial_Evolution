@@ -12,7 +12,7 @@ public final class FactoryMenu extends AbstractContainerMenu {
     public final MachineBlockEntity machine;
     public final ContainerData data;
     public FactoryMenu(int id, Inventory inv, RegistryFriendlyByteBuf buf) {
-        this(id,inv,(MachineBlockEntity)inv.player.level().getBlockEntity(buf.readBlockPos()),new SimpleContainerData(6));
+        this(id,inv,(MachineBlockEntity)inv.player.level().getBlockEntity(buf.readBlockPos()),new SimpleContainerData(7));
     }
     public FactoryMenu(int id, Inventory inv, MachineBlockEntity machine, ContainerData data) {
         super(Content.MENU.get(),id); this.machine=machine;this.data=data;
@@ -23,7 +23,7 @@ public final class FactoryMenu extends AbstractContainerMenu {
         for(int col=0;col<9;col++)addSlot(new Slot(inv,col,22+col*18,224));
         addDataSlots(data);
     }
-    @Override public boolean stillValid(Player p) { return !machine.isRemoved() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getX()+.5,machine.getBlockPos().getY()+.5,machine.getBlockPos().getZ()+.5)<=64; }
+    @Override public boolean stillValid(Player p) { return machine.loaded() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getX()+.5,machine.getBlockPos().getY()+.5,machine.getBlockPos().getZ()+.5)<=64; }
     @Override public boolean clickMenuButton(Player p,int id) {
         if(id!=0 || !stillValid(p) || p.isSpectator())return false;
         machine.cycleRecipe(); return true;

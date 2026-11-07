@@ -38,3 +38,6 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+# Persistent integration fixtures are separate from the ordinary dev world.
+run-gametest/

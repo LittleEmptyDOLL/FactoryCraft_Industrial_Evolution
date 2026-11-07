@@ -12,7 +12,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
     public FactoryScreen(FactoryMenu menu,Inventory inv,Component title) { super(menu,inv,title);imageWidth=206;imageHeight=248;inventoryLabelY=154; }
     @Override protected void init() {
         super.init();
-        if(menu.machine.kind()==FactoryKind.ASSEMBLER || menu.machine.kind()==FactoryKind.FURNACE)
+        if(menu.machine.kind().processing())
             addRenderableWidget(Button.builder(Component.translatable("gui.factorycraft.select"),b->minecraft.gameMode.handleInventoryButtonClick(menu.containerId,0)).bounds(leftPos+96,topPos+80,94,20).build());
     }
     @Override protected void renderBg(GuiGraphics g,float partial,int mx,int my) {
@@ -28,6 +28,8 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
         g.drawString(font,Component.translatable("gui.factorycraft.input"),18,34,0xffc1d0d5,false);
         g.drawString(font,Component.translatable("gui.factorycraft.output"),112,34,0xffc1d0d5,false);
         g.drawString(font,menu.data.get(2)+" FE",18,22,0xff56d7d9,false);
+        if(menu.machine.kind()==FactoryKind.INDUSTRIAL_FURNACE)
+            g.drawString(font,font.plainSubstrByWidth(Component.translatable("gui.factorycraft.assembly."+menu.data.get(6)).getString(),90),100,22,menu.data.get(6)==2 ? 0xff71df9a:0xffffba55,false);
         var rs=menu.machine.recipes();int index=menu.data.get(4);
         Component label=index>0 && index<=rs.size() ? rs.get(index-1).value().result().getHoverName() : Component.translatable("gui.factorycraft.auto");
         g.drawString(font,font.plainSubstrByWidth(label.getString(),115),58,103,0xffeeeeee,false);
@@ -43,7 +45,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
                 g.renderFakeItem(stack,18+i*30,116);g.renderItemDecorations(font,stack,18+i*30,116);
             }
             g.drawString(font,"->",143,120,0xffc1d0d5,false);g.renderFakeItem(recipe.result(),163,116);g.renderItemDecorations(font,recipe.result(),163,116);
-            g.drawString(font,Component.translatable("gui.factorycraft.recipe_info",recipe.ticks(),recipe.energy()),18,138,0xffc1d0d5,false);
+            g.drawString(font,Component.translatable("gui.factorycraft.recipe_info",menu.machine.kind()==FactoryKind.INDUSTRIAL_FURNACE ? Math.ceilDiv(recipe.ticks(),2):recipe.ticks(),recipe.energy()*(menu.machine.kind()==FactoryKind.INDUSTRIAL_FURNACE ? 2:1)),18,138,0xffc1d0d5,false);
         }
         if(menu.machine.kind()==FactoryKind.GENERATOR)g.drawString(font,Component.translatable("gui.factorycraft.burn",menu.data.get(3)),42,85,0xfff5b648,false);
         g.drawString(font,playerInventoryTitle,22,154,0xffc1d0d5,false);

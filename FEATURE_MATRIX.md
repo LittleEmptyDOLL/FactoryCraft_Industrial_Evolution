@@ -1,6 +1,6 @@
-# Feature matrix — 0.1.1
+# Feature matrix — 0.2.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.2.0 extends power infrastructure and adds the first real multiblock.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -13,9 +13,10 @@
 | Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
 | Resources | iron/copper ore blocks + Overworld JSON placement; vanilla coal/stone available | partial; uranium/oil/late resources and world setup controls absent |
 | Mining | finite electric drill, 3x3x8 search, energy and configurable duration | implemented first drill; burner/advanced/pumpjack planned |
-| Production | electric furnace + assembler, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; no fluid/module slots or advanced buildings |
+| Production | electric furnace + assembler + 2x2x2 industrial furnace, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; no fluid/module slots or advanced buildings |
 | Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; advanced chains/science/rocket components absent |
-| Power | coal generator, loaded pole graph, merge/split, cached membership, bounded distribution, FE input | partial; no manual wires/graphs, steam/nuclear/solar/accumulators/heat or external FE output |
+| Power | coal generator, spatial index, budgeted loaded-node snapshots, immediate split quarantine, merge/split, bounded distribution, FE input | partial; no manual wires/graphs, steam/nuclear/solar/accumulators/heat or external FE output |
+| Multiblocks | 2x2x2 controller + 7 shared ports, atomic formation, overlap rejection, four orientations, dismantling, inactive-chunk pause, orphan repair, disk reload | implemented first machine; layout is fixed in code, not a datapack pattern system |
 | Fluids/chemistry | none | planned |
 | Research/progression | none; first-slice crafting unlocked by acquiring vanilla iron | planned: teams, labs/packs, tree GUI, recipe locks, infinite research |
 | Modules/beacons/quality | none | planned |
@@ -28,9 +29,9 @@
 | Vehicles | none | planned: car/tank/construction/remote control |
 | Space Age | none | planned as independent module: rockets/platforms/asteroids/quality/four planets |
 | Recipes/config/datapacks | counted ingredients, tag support, reload, JSON ores, server settings | implemented first-slice extension points |
-| GUI/statistics | machine inputs/outputs/recipe preview/progress/energy; `/factorycraft profile` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
+| GUI/statistics | machine inputs/outputs/recipe preview/progress/energy/assembly status; `/factorycraft profile` and `/factorycraft power` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
 | Multiplayer/server | server authority, validated menus, two viewers cannot duplicate output, dedicated startup | partial; actual two-client network play not exercised |
 | Chunk lifecycle | unload pauses/registers topology; contents survive callbacks; separate-process disk persistence | verified callbacks + disk reload; natural chunk-distance unload scenario still manual |
-| Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; quadratic graph rebuild and individual machine/inserter tickers remain |
+| Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; power graph is budgeted/spatial; individual machine/inserter tickers and full-world profiling remain |
 | Required 10000/1000/500 load | not run in Minecraft | planned; kernel timings are not a TPS claim |
 | Compatibility | standard NeoForge item/FE capabilities and recipe tags | partial; JEI/EMI and other mod interoperability untested |
