@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
@@ -15,6 +16,9 @@ import net.minecraft.world.level.block.state.*;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.*;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import java.util.List;
 
 public final class FactoryBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -79,7 +83,22 @@ public final class FactoryBlock extends BaseEntityBlock {
         return InteractionResult.CONSUME;
     }
     @Override protected void onRemove(BlockState s, Level l, BlockPos p, BlockState next, boolean moving) {
-        if (!s.is(next.getBlock()) && l.getBlockEntity(p) instanceof FactoryBlockEntity be) be.dropContents();
+        if (!s.is(next.getBlock()) && !l.restoringBlockSnapshots && l.getBlockEntity(p) instanceof FactoryBlockEntity be) be.dropContents();
         super.onRemove(s, l, p, next, moving);
+    }
+    @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder params) {
+        if(kind==FactoryKind.CASING && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CasingBlockEntity part && part.virtualPart())return List.of();
+        return super.getDrops(state,params);
+    }
+    @Override public BlockState playerWillDestroy(Level level,BlockPos pos,BlockState state,Player player) {
+        if(!level.isClientSide && player.isCreative() && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart()) {
+            var owner=part.controllerForRemoval();if(owner!=null)owner.assembly().removeWhole(false);
+        }
+        return super.playerWillDestroy(level,pos,state,player);
+    }
+    @Override public ItemStack getCloneItemStack(LevelReader level,BlockPos pos,BlockState state) {
+        if(kind==FactoryKind.CASING && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart())
+            return new ItemStack(Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get());
+        return super.getCloneItemStack(level,pos,state);
     }
 }

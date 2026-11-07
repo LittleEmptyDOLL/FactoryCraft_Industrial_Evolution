@@ -14,11 +14,12 @@ public final class IndustrialAssembly {
     private final MachineBlockEntity controller;
     private UUID identity;
     private Direction facing=Direction.NORTH;
-    private boolean formed,ready,forming,dirty=true;
+    private boolean formed,ready,forming,automatic,dirty=true;
     private long checkedAt=Long.MIN_VALUE;
     private List<BlockPos> parts=List.of();
     public IndustrialAssembly(MachineBlockEntity controller) { this.controller=controller; }
     public boolean formed() { return formed; }
+    public boolean automatic() { return automatic; }
     public UUID identity() { return identity; }
     public List<BlockPos> positions() {
         if(parts.isEmpty())parts=positions(controller.getBlockPos(),facing);
@@ -30,7 +31,9 @@ public final class IndustrialAssembly {
     public boolean owns(UUID id) { return formed && identity!=null && identity.equals(id); }
     public void invalidate() { ready=false;dirty=true; }
     /** All checks complete before any casing is bound. Formation never copies or consumes inventories. */
-    public boolean form() {
+    public boolean form() { return form(false); }
+    public boolean formAutomatic() { return form(true); }
+    private boolean form(boolean automaticPlacement) {
         var level=controller.getLevel();if(level==null || level.isClientSide)return false;
         if(formed)return ready();
         var direction=controller.getBlockState().getValue(FactoryBlock.FACING);
@@ -39,10 +42,10 @@ public final class IndustrialAssembly {
             if(!level.hasChunkAt(p) || !(level.getBlockEntity(p) instanceof CasingBlockEntity part) || !part.availableFor(controller.getBlockPos(),identity))return false;
         }
         UUID next=UUID.randomUUID();
-        facing=direction;parts=requested;identity=next;formed=true;forming=true;invalidate();
+        facing=direction;parts=requested;identity=next;automatic=automaticPlacement;formed=true;forming=true;invalidate();
         try {
             // Reserve every identity before a block update can reenter a capability or neighbor.
-            for(var p:requested)((CasingBlockEntity)level.getBlockEntity(p)).bind(controller.getBlockPos(),next);
+            for(var p:requested)((CasingBlockEntity)level.getBlockEntity(p)).bind(controller.getBlockPos(),next,automatic);
             for(var p:requested)if(level.getBlockEntity(p) instanceof CasingBlockEntity part && part.boundTo(controller.getBlockPos(),next))part.refreshAppearance();
         } finally { forming=false; }
         controller.sync();return formed;
@@ -65,6 +68,7 @@ public final class IndustrialAssembly {
     }
     public int status() { return !formed ? UNFORMED:ready() ? READY:formed ? WAITING:UNFORMED; }
     public void dismantle() {
+        if(automatic) { removeWhole(true);return; }
         if(!formed)return;
         formed=false;ready=false;dirty=true;
         var level=controller.getLevel();
@@ -73,12 +77,25 @@ public final class IndustrialAssembly {
         }
         controller.sync();
     }
+    /** Generated parts are never independent resources; only the controller can drop a machine item. */
+    public void removeWhole(boolean dropMachine) {
+        if(!formed || !automatic)return;
+        formed=false;ready=false;dirty=true;
+        var level=controller.getLevel();
+        if(level==null || level.isClientSide)return;
+        for(var p:positions())
+            if(level.hasChunkAt(p) && level.getBlockEntity(p) instanceof CasingBlockEntity part && part.boundTo(controller.getBlockPos(),identity))
+                level.removeBlock(p,false);
+        if(level.getBlockEntity(controller.getBlockPos())==controller && level.getBlockState(controller.getBlockPos()).is(controller.getBlockState().getBlock()))
+            level.destroyBlock(controller.getBlockPos(),dropMachine);
+        controller.setChanged();
+    }
     public void save(CompoundTag parent) {
-        var t=new CompoundTag();t.putInt("Schema",1);t.putBoolean("Formed",formed);t.putInt("Facing",facing.get2DDataValue());
+        var t=new CompoundTag();t.putInt("Schema",2);t.putBoolean("Formed",formed);t.putBoolean("Automatic",automatic);t.putInt("Facing",facing.get2DDataValue());
         if(identity!=null)t.putUUID("Identity",identity);parent.put("Assembly",t);
     }
     public void load(CompoundTag parent) {
-        var t=parent.getCompound("Assembly");formed=t.getBoolean("Formed");identity=t.hasUUID("Identity") ? t.getUUID("Identity"):null;
+        var t=parent.getCompound("Assembly");formed=t.getBoolean("Formed");automatic=t.getBoolean("Automatic");identity=t.hasUUID("Identity") ? t.getUUID("Identity"):null;
         if(identity==null)formed=false;
         facing=Direction.from2DDataValue(t.getInt("Facing"));parts=List.of();invalidate();
     }

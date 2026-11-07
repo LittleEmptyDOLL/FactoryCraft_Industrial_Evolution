@@ -1,10 +1,10 @@
-# Feature matrix — 0.2.0
+# Feature matrix — 0.2.1
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.2.0 extends power infrastructure and adds the first real multiblock.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.2.1 makes the existing industrial multiblock a one-item, automatically formed machine.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
-| Core | Java21/MC1.21.1/NeoForge21.1.265, ModDevGradle, registries, server config, creative tab | implemented; build + dedicated startup |
+| Core | Java21/MC1.21.1/NeoForge21.1.252, ModDevGradle, registries, server config, creative tab | implemented; build + dedicated startup |
 | UI languages/assets | EN/RU, original generated textures, active-machine texture animation, articulated inserter, item rendering | implemented first-slice visuals; not final art |
 | Persistence/network | inventories, schema-2 lane positions (reads schema 1), hand, progress/recipe/fuel/energy; vanilla BE/menu packets | implemented; NBT and separate-process disk reload tested |
 | Belts | 2 lanes, 3 speeds, residual travel, cross-block spacing, fair merges, full rings, congestion, sleeping/wakeup | implemented transport kernel; curves, advanced belt types and full-scale world profiling remain |
@@ -16,7 +16,7 @@
 | Production | electric furnace + assembler + 2x2x2 industrial furnace, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; no fluid/module slots or advanced buildings |
 | Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; advanced chains/science/rocket components absent |
 | Power | coal generator, spatial index, budgeted loaded-node snapshots, immediate split quarantine, merge/split, bounded distribution, FE input | partial; no manual wires/graphs, steam/nuclear/solar/accumulators/heat or external FE output |
-| Multiblocks | 2x2x2 controller + 7 shared ports, atomic formation, overlap rejection, four orientations, dismantling, inactive-chunk pause, orphan repair, disk reload | implemented first machine; layout is fixed in code, not a datapack pattern system |
+| Multiblocks | one item places the 2x2x2 machine; footprint validation + NeoForge cancellation, shared ports, one machine drop, creative/pick-block, generated orphan cleanup, legacy compatibility, inactive-chunk pause, disk reload | implemented first machine; layout is fixed in code, not a datapack pattern system |
 | Fluids/chemistry | none | planned |
 | Research/progression | none; first-slice crafting unlocked by acquiring vanilla iron | planned: teams, labs/packs, tree GUI, recipe locks, infinite research |
 | Modules/beacons/quality | none | planned |

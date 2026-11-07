@@ -1,6 +1,6 @@
 # FactoryCraft: Industrial Evolution — implementation plan
 
-Target: Minecraft **1.21.1**, NeoForge **21.1.265**, Java **21**, ModDevGradle **2.0.148**.
+Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle **2.0.148**.
 
 ## Architecture and invariants
 
@@ -11,7 +11,7 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.265**, Java **21**, ModDevGradle *
 * `multiblock`: controller-owned resources and progress; casing parts have only an identity and stable guarded forwarding ports. Larger machine footprints may use this design, per the user’s instruction.
 * `inserters`: a persistent held stack owns extracted items until the destination accepts them; breaking drops held items.
 * `client`: renderers interpolate server snapshots; menus send only vanilla menu button requests, validated server-side.
-* Belt NBT schema 2 reads schema 1; other block entities keep schema 1. Unloading pauses simulation; it never converts inventory to transient entities. Breaking blocks drops their contents once.
+* Belt NBT schema 2 reads schema 1; machine inventory stays schema 1; assembly/casing metadata schema 2 reads schema 1. Unloading pauses simulation; it never converts inventory to transient entities. Breaking blocks drops their contents once.
 * No off-thread world access. 20 Minecraft ticks = one simulation second. Belt basic/fast/express rates target 15/30/45 individual items per second across two lanes.
 
 ## Stages
@@ -48,6 +48,12 @@ Completed the power rebuild task: independent spatial index and incremental snap
 Added the first real multiblock as allowed by the user: industrial furnace controller + seven casings (2x2x2), shared item/FE ports and GUI, 2x throughput at the same FE per result, atomic formation and overlap checks, persistent identity/orientation, inventory-preserving dismantling, unload guards, orphan recovery and cross-chunk restart tests. Casings have no ticker or resource storage. Added recipes, original textures with a direction arrow, EN/RU status and `/factorycraft smelter`.
 
 See VALIDATION.md for checks and limits; no full Factorio/Space Age completion is implied.
+
+## Delivered in 0.2.1
+
+Followed the user's one-item/one-structure requirement: item placement validates the complete rotated footprint (loaded chunks, height, border, replaceability, entities, permissions), then creates/binds all seven internal parts inside the ordinary NeoForge multi-place snapshot transaction. No separate casing ingredient or placement is required. Protection cancellation restores the original cells and item. Destruction or sneak-wrench of any generated part removes the whole machine, returns one machine item, and drops controller contents once. Creative break and pick-block use whole-machine semantics. Inactive chunks still pause; late generated orphans self-remove. Old manual assemblies retain their original behavior using backward-readable schema-2 flags. Removed the casing crafting recipe/creative entry and updated EN/RU instructions, recipe and example command.
+
+Tests include actual ItemStack placement, protected cancellation, all break positions, creative placement, collision/height/unloaded rejection, cached ports, late orphans, explosion callbacks, partial-progress reconstruction, a separate-process four-chunk fixture and the complete automatic line. See VALIDATION.md for exact results.
 
 ## Next concrete task (priority order)
 

@@ -50,7 +50,7 @@ public final class FactoryCommands {
         level.setBlockAndUpdate(anchor,Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().defaultBlockState());
         for(var p:factorycraft.multiblock.IndustrialAssembly.positions(anchor,Direction.NORTH))
             level.setBlockAndUpdate(p,Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());
-        var machine=(MachineBlockEntity)level.getBlockEntity(anchor);machine.assembly().form();
+        var machine=(MachineBlockEntity)level.getBlockEntity(anchor);machine.assembly().formAutomatic();
         put(level,origin,3,-1,FactoryKind.GENERATOR);put(level,origin,2,0,FactoryKind.POLE);
         ((MachineBlockEntity)level.getBlockEntity(origin.offset(3,2,-1))).items.setStackInSlot(8,new ItemStack(Items.COAL,4));
         level.setBlockAndUpdate(origin.offset(3,2,1),Blocks.CHEST.defaultBlockState());

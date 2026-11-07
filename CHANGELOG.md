@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 — 2026-11-08
+
+* Preserved the user's main-branch update to NeoForge 21.1.252 and validated the final release against that dependency.
+* One industrial furnace item now automatically places/forms the entire 2x2x2 machine; no separate casing blocks are required. The crafting recipe uses ordinary stone bricks instead of casings.
+* Validate every cell for loaded chunks, height/border, replaceability, existing block entities, collision and player permissions before placement. Normal NeoForge multi-place protection can cancel and restore the entire placement/item.
+* Breaking any generated part removes the whole structure, returns at most one machine item, and drops controller inventory once. Added creative break/pick-block behavior, explosion conservation and late generated-orphan cleanup. Pistons cannot move the controller or parts.
+* Assembly/casing metadata schema 2 reads legacy schema 1; old manual structures retain their original dismantling behavior and inventory. Generated parts remain internal and are not in the creative tab or crafting recipes.
+* Added 16 GameTest scenarios for actual item placement, rejection/rollback, all cell breaks, production, persistence and resource conservation.
+
 ## 0.2.0 — 2026-11-08
 
 * Added an operational 2x2x2 industrial furnace: one controller, seven casings, twice the processing speed with unchanged FE per result.

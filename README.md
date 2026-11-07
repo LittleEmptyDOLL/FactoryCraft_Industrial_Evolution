@@ -1,14 +1,14 @@
-# FactoryCraft: Industrial Evolution — 0.2.0
+# FactoryCraft: Industrial Evolution — 0.2.1
 
-Minecraft **1.21.1**, NeoForge **21.1.265**, **Java JDK 21**. MIT; original procedural industrial textures. English and Russian UI.
+Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original procedural industrial textures. English and Russian UI.
 
 Это играбельное ядро этапов 1–2 и начало энергетической части этапа 3, а не законченная Factorio/Space Age. Мод добывает конечную руду, питает машины через столбы и автоматически производит пластины, шестерни, провода и схемы. Двухполосные конвейеры отображают предметы без создания Entity, останавливаются при заторах и продолжают движение после освобождения выхода. Содержимое и прогресс сохраняются.
 
-В 0.2.0 добавлена промышленная электропечь **2×2×2**: контроллер и семь корпусов, общий инвентарь и энергия, автоматизация через любой корпус, скорость ×2 при прежней стоимости FE на результат. Электросеть теперь перестраивается по пространственному индексу с лимитом работы за такт, сохраняя независимые сети в рабочем состоянии. Подробности: [CHANGELOG.md](CHANGELOG.md).
+В 0.2.1 промышленная электропечь **2×2×2 устанавливается одним предметом**: служебные части создаются автоматически, дополнительные корпуса не нужны. Проверяется весь объём; при нехватке места предмет не расходуется. Разрушение любой части возвращает одну машину, а содержимое выпадает один раз. Старые структуры 0.2.0 сохраняют прежнее поведение. Общие порты, GUI, скорость ×2 и пространственно индексированная электросеть сохранены. Подробности: [CHANGELOG.md](CHANGELOG.md).
 
 ## Установка
 
-Установите Minecraft 1.21.1 и NeoForge 21.1.265, положите `factorycraft-0.2.0.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
+Установите Minecraft 1.21.1 и NeoForge 21.1.252, положите `factorycraft-0.2.1.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
 
 ```sh
 ./gradlew build
@@ -34,7 +34,7 @@ Minecraft **1.21.1**, NeoForge **21.1.265**, **Java JDK 21**. MIT; original proc
 
 ## English
 
-Version 0.2.0 adds a 2x2x2 industrial furnace (one controller + seven casings), shared guarded ports, chunk-safe persistence, and spatially indexed budgeted power rebuilding. `/factorycraft smelter` builds an automated example in an empty area.
+Version 0.2.1 places a complete 2x2x2 industrial furnace from one item, with full-footprint validation and normal NeoForge placement protection. Breaking any part returns one machine and drops its contents once. Generated parts are not craftable resources. Existing manually assembled 0.2.0 structures retain their behavior; shared guarded ports, chunk-safe persistence and budgeted power rebuilding remain available. `/factorycraft smelter` builds an automated example in an empty area.
 
 A working first-factory slice: finite electric mining → two-lane belts → mechanical inserters → electric smelting → assembly → a vanilla chest. Fuel the coal generator and place poles within their configured coverage (default 6 blocks). Face inserters from their source toward their destination; rotate with the factory wrench. Machine left slots accept ingredients, right slots expose outputs, and the bottom slot accepts generator fuel. Right-click a machine for recipes, energy and progress. Recipes and ore placement are datapack JSON. Later research, fluids, railways, robots, combat and space systems are explicitly unimplemented.
 

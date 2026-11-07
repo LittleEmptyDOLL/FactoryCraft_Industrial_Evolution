@@ -31,9 +31,12 @@ public final class Content {
     public static final Map<FactoryKind, DeferredBlock<FactoryBlock>> FACTORY = new EnumMap<>(FactoryKind.class);
     static {
         for (var kind : FactoryKind.values()) {
-            var block = BLOCKS.register(kind.id, () -> new FactoryBlock(kind, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()));
+            var block = BLOCKS.register(kind.id, () -> new FactoryBlock(kind, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()
+                    .pushReaction(kind==FactoryKind.CASING || kind==FactoryKind.INDUSTRIAL_FURNACE ? net.minecraft.world.level.material.PushReaction.BLOCK:net.minecraft.world.level.material.PushReaction.NORMAL)));
             FACTORY.put(kind, block);
-            ITEMS.register(kind.id, () -> new factorycraft.items.FactoryBlockItem(block.get(),new Item.Properties()));
+            ITEMS.register(kind.id, () -> kind==FactoryKind.INDUSTRIAL_FURNACE
+                    ? new factorycraft.items.IndustrialFurnaceItem(block.get(),new Item.Properties())
+                    : new factorycraft.items.FactoryBlockItem(block.get(),new Item.Properties()));
         }
     }
     public static final DeferredBlock<Block> IRON_ORE = BLOCKS.registerSimpleBlock("iron_ore", BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE));
@@ -56,7 +59,7 @@ public final class Content {
     static {
         TABS.register("factorycraft", () -> CreativeModeTab.builder().title(Component.translatable("itemGroup.factorycraft"))
                 .icon(() -> new ItemStack(FACTORY.get(FactoryKind.ASSEMBLER).get()))
-                .displayItems((p, out) -> ITEMS.getEntries().forEach(i -> out.accept(i.get()))).build());
+                .displayItems((p, out) -> ITEMS.getEntries().stream().filter(i->!i.getId().getPath().equals(FactoryKind.CASING.id)).forEach(i -> out.accept(i.get()))).build());
     }
     private static Block[] blocks(FactoryKind... kinds) { return Arrays.stream(kinds).map(k -> FACTORY.get(k).get()).toArray(Block[]::new); }
     public static void register(IEventBus bus) {

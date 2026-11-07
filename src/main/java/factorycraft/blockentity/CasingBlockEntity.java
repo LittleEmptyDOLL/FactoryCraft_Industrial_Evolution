@@ -14,7 +14,7 @@ import java.util.UUID;
 public final class CasingBlockEntity extends FactoryBlockEntity {
     private BlockPos anchor;
     private UUID identity;
-    private boolean loaded;
+    private boolean loaded,virtualPart;
     private final IItemHandler port=new IItemHandler() {
         public int getSlots() { return 9; }
         public ItemStack getStackInSlot(int s) { check(s);var owner=owner();return owner==null ? ItemStack.EMPTY:owner.automation(null).getStackInSlot(s); }
@@ -35,12 +35,18 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
     public CasingBlockEntity(BlockPos pos,BlockState state) { super(Content.CASING.get(),pos,state); }
     @Override public IItemHandler inventory() { return port; }
     public boolean loaded() { return loaded && !isRemoved(); }
+    public boolean virtualPart() { return virtualPart; }
     public boolean boundTo(BlockPos pos,UUID id) { return anchor!=null && anchor.equals(pos) && identity!=null && identity.equals(id); }
     private MachineBlockEntity linkedController() {
         if(level==null || level.isClientSide || anchor==null || !level.hasChunkAt(anchor))return null;
         return level.getBlockEntity(anchor) instanceof MachineBlockEntity machine && machine.loaded() && machine.assembly()!=null && machine.assembly().owns(identity) ? machine:null;
     }
     public MachineBlockEntity controllerForInteraction() { return loaded() ? linkedController():null; }
+    /** Placement and destruction can happen before the first onLoad callback. */
+    public MachineBlockEntity controllerForRemoval() {
+        if(level==null || level.isClientSide || anchor==null || !level.hasChunkAt(anchor))return null;
+        return level.getBlockEntity(anchor) instanceof MachineBlockEntity machine && machine.assembly()!=null && machine.assembly().owns(identity) ? machine:null;
+    }
     public MachineBlockEntity owner() {
         if(!loaded())return null;
         var machine=linkedController();return machine!=null && machine.assembly().ready() ? machine:null;
@@ -49,7 +55,7 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
         if(anchor==null || boundTo(controller,oldId))return true;
         repairOrphan();return anchor==null;
     }
-    public void bind(BlockPos controller,UUID id) { anchor=controller.immutable();identity=id; }
+    public void bind(BlockPos controller,UUID id,boolean generated) { anchor=controller.immutable();identity=id;virtualPart=generated; }
     public void refreshAppearance() { setAppearance(anchor!=null && identity!=null);sync(); }
     public void unbind() { anchor=null;identity=null;setAppearance(false);sync(); }
     private void setAppearance(boolean formed) {
@@ -61,23 +67,26 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
         // An existing controller can be temporarily inactive while its chunk is transitioning.
         // Keep its identity; only capabilities depend on loaded()/ready().
         var existing=level.getBlockEntity(anchor);
-        if(!(existing instanceof MachineBlockEntity machine) || machine.assembly()==null || !machine.assembly().owns(identity))unbind();
+        if(!(existing instanceof MachineBlockEntity machine) || machine.assembly()==null || !machine.assembly().owns(identity)) {
+            if(virtualPart)level.removeBlock(worldPosition,false);
+            else unbind();
+        }
     }
     private void suspendOwner() { var machine=linkedController();if(machine!=null)machine.assembly().invalidate(); }
     @Override public void onLoad() { super.onLoad();loaded=true;repairOrphan();suspendOwner(); }
     @Override public void onChunkUnloaded() { loaded=false;suspendOwner();super.onChunkUnloaded(); }
     @Override public void setRemoved() { loaded=false;suspendOwner();super.setRemoved(); }
     @Override public void dropContents() {
-        // Casing has no inventory of its own. Dismantling leaves every item in the controller.
-        var machine=linkedController();if(machine!=null)machine.assembly().dismantle();
+        // Only the controller owns resources; automatic demolition drops that inventory once.
+        var machine=controllerForRemoval();if(machine!=null)machine.assembly().dismantle();
     }
     @Override protected void saveAdditional(CompoundTag t,HolderLookup.Provider r) {
-        super.saveAdditional(t,r);t.putInt("Schema",1);
+        super.saveAdditional(t,r);t.putInt("Schema",2);t.putBoolean("VirtualPart",virtualPart);
         if(anchor!=null && identity!=null) { t.putLong("Controller",anchor.asLong());t.putUUID("AssemblyIdentity",identity); }
     }
     @Override protected void loadAdditional(CompoundTag t,HolderLookup.Provider r) {
         super.loadAdditional(t,r);anchor=t.contains("Controller") ? BlockPos.of(t.getLong("Controller")):null;
-        identity=t.hasUUID("AssemblyIdentity") ? t.getUUID("AssemblyIdentity"):null;
+        identity=t.hasUUID("AssemblyIdentity") ? t.getUUID("AssemblyIdentity"):null;virtualPart=t.getBoolean("VirtualPart");
         if(identity==null)anchor=null;
         if(loaded)suspendOwner();
     }

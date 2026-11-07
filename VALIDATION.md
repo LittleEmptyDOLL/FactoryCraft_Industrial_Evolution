@@ -1,4 +1,34 @@
-# Validation — 0.2.0, 8 November 2026
+# Validation — 0.2.1, 8 November 2026
+
+Continues `main` commit `5321f9d`, including the user's NeoForge change from 21.1.265 to 21.1.252 on top of merged PR #2. Final target: Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. This change implements the user's one-item/one-structure placement rule for the existing industrial furnace. Later fluid/research/space systems and the full factory TPS benchmark are not claimed.
+
+## Automated results
+
+* `./gradlew build` on NeoForge 21.1.252: successful; **37 JUnit tests**, zero failures. The unchanged independent transport/power/layout suite remains green.
+* `./gradlew runGameTestServer`: **46 required tests passed**, followed by another separate process with **46 passed** on the final NeoForge 21.1.252 target. The same checks previously passed on 21.1.265 before integrating the user's remote update. All 30 existing tests remain, including old manual assembly behavior. Sixteen new tests cover actual survival/creative ItemStack placement, all four orientations, obstruction in every part cell, living-entity collision, full NeoForge multi-place cancellation with replaceable-plant restoration and item refund, breaking all eight cells, creative removal, cached forwarding ports and late generated orphans, occupied-offhand sneak-wrench, build-height rejection, unloaded-neighbor rejection without force loading, the complete automatic line, partial-progress BE reconstruction, four-chunk disk persistence, explosion callbacks over all cells and whole-machine pick-block.
+* New disk fixture reports `FACTORYCRAFT_AUTOMATIC_DISK: SEEDED` then `VERIFIED generated identity and inventory across four chunks` in different JVMs. Existing belt/machine/inserter disk fixture and schema-1 manual-assembly fixture also report `VERIFIED`.
+* The destruction test places/breaks eight complete structures, once through each possible cell, and checks exactly one machine, three raw iron and five diamonds per cycle, zero casing items, and no remaining machine blocks. Explosion verification invokes Minecraft's actual block explosion-hit callbacks over every cell with non-decaying drops; it is not a TNT trajectory/physics test.
+* Placement rejection checks that the machine item count and all original blocks remain unchanged. The protection test uses the real `ItemStack.useOn` snapshot transaction and a temporary EntityMultiPlaceEvent cancellation listener, not a stand-in placement method.
+
+## Client check
+
+The initial client check on NeoForge 21.1.265 (`./gradlew runClient -PsmokeWorld=FactoryCraftSmoke`) loaded the existing QA save under Xvfb/Mesa. In survival, placing one industrial furnace from a stack of two created all eight blocks immediately and left exactly one item. The controller at (61,71,61) reported `Assembly: {Schema:2, Formed:1b, Automatic:1b}`. Clicking a generated part opened the Russian GUI showing `Собрана` and the 32 ticks / 20 FE recipe preview. Shift+wrench on a part, with a torch in the offhand, removed the whole structure and left one dropped industrial-furnace item. The original 0.2.0 fixture at (42,72,42) retained `Automatic:0b` and its formed identity. The final NeoForge 21.1.252 client also loaded that save and repeated actual survival placement in an isolated area at (81,71,61): a stack of two became one, all eight cells formed with `Automatic:1b`, and a generated part opened the `Собрана` GUI. The QA world is saved through the client menu after both checks.
+
+The first broader test run caught part destruction before the controller's initial onLoad callback. Identity lookup for removal now works during that interval; automation still requires loaded/ready state. Subsequent full server runs pass. The isolated development environment still cannot retrieve Mojang services keys; local gameplay and dedicated tests work.
+
+## Migration and limits
+
+Assembly/casing metadata schema 2 reads schema 1, with missing `Automatic`/`VirtualPart` defaulting to false. Old manual structures, inventories and casing items are preserved. New placement uses one machine item and ordinary stone bricks in its crafting recipe, with no separate casing ingredients. Internal parts are hidden from the creative tab, never drop casing items, and self-remove when a genuinely missing controller becomes observable. Runtime code never loads a neighbor chunk to place, validate or demolish a machine.
+
+Wrench packing/breaking drops inventory separately; it does not store FE or unfinished progress in the returned item. Stable placed-machine saves preserve both. This release has one fixed 2x2x2 large-machine pattern; generic JSON patterns and placement-volume overlays are not implemented. Natural-distance unload and two real network clients remain open, as does the 10000/1000/500 world benchmark. See IMPLEMENTATION_PLAN.md for the next task.
+
+## Changed areas
+
+One-item placement adapter and registration; generated-part identity/loot/lifecycle; automatic dismantling and creative/pick-block behavior; piston resistance; example command; crafting/book unlocks and EN/RU resources; 16 integration scenarios; version 0.2.1 and continuation/architecture documentation. No Powah code or assets were copied; its older ReactorItem/Builder interaction was used only as a reference, and actual integration APIs were verified against the resolved NeoForge 1.21.1 sources.
+
+---
+
+# Historical validation — 0.2.0, 8 November 2026
 
 Continues the user's merged `main` commit `ec97810` (PR #1). Minecraft 1.21.1, NeoForge 21.1.265 and Java 21 remain unchanged. Larger machines may use multiblocks, as permitted by the user; this release implements a real 2x2x2 industrial furnace alongside the power topology work.
 

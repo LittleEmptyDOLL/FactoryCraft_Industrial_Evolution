@@ -1,4 +1,4 @@
-# Architecture decisions — 0.2.0 (belt schema 2; machine/assembly/casing schema 1)
+# Architecture decisions — 0.2.1 (belt/assembly/casing schema 2; machine inventory schema 1)
 
 ## Authority and persistence
 
@@ -55,6 +55,16 @@ Temporary controller inactivity is distinct from orphaning. A part loaded before
 The controller processes two recipe work units per server tick, charging only for those units; odd-duration recipes charge a smaller final tick. This doubles furnace throughput without changing FE per result. Assembly metadata is an optional schema-1 subcompound; existing single-block machines and their schema-1 inventories remain readable. Facing changes dismantle the old footprint. Sneak-wrench is handled in the item-first NeoForge hook, including when the offhand is occupied.
 
 The current pattern is fixed in code; a datapack pattern system is not claimed. The user allows multiblocks for larger footprints, and future large machines can extend controller/part composition while retaining single ownership and bounded validation.
+
+## One-item structures (0.2.1)
+
+`IndustrialFurnaceItem` is the placement adapter. It validates the complete footprint before mutating any cell, including height/world border, loaded chunks, replaceability, absence of block entities, entity collision and player permissions. The standard `ItemStack.useOn` → NeoForge `CommonHooks.onPlaceItemIntoWorld` path captures every change, exposes `EntityMultiPlaceEvent` to protection handlers, refunds the one item and restores all cells if cancelled. An internal placement failure also restores prior states with `restoringBlockSnapshots` set. `FactoryBlock.onRemove` suppresses inventory/drop/demolition side effects during snapshot restoration. Client placement is predictive only; resource ownership and formation are server-side.
+
+Assembly schema 2 adds `Automatic`; casing schema 2 adds `VirtualPart`. Missing flags read as false, preserving manual schema-1 structures. New item placement generates seven parts and binds them to the sole controller; they have no independent recipe/creative entry. The legacy casing registry/item/loot remain for old worlds. Dynamic loot suppresses generated casing drops, and pick-block returns the machine item.
+
+Automatic dismantling marks the assembly unformed before removing any part, preventing recursive destruction. It removes loaded matching parts and destroys the controller with the requested drop policy; only the controller can produce a machine item. The controller drops its one inventory through its existing removal hook. Creative part breaking requests no machine drop; wrench packing returns one machine and drops its contents separately (FE/progress are not item components). Unloaded generated parts retain an identity and remove themselves without drops after the controller disappears. Temporary controller inactivity does not count as orphaning. Destruction may happen before onLoad, so identity lookup for removal is separate from loaded/ready capability lookup. Casings/controllers resist piston moves. Existing manual structures keep their separate casings and controller on dismantle.
+
+The reference Powah repository's `1.16` ReactorItem/Builder was inspected only to understand the footprint-check/part-creation interaction. No Forge 1.16 implementation, code, textures or models were copied. NeoForge integration was checked against the resolved 1.21.1 sources.
 
 ## Timing and performance evidence
 

@@ -6,7 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.*;
 import java.util.List;
 
-public final class FactoryBlockItem extends BlockItem {
+public class FactoryBlockItem extends BlockItem {
     public FactoryBlockItem(FactoryBlock block,Properties p) { super(block,p); }
     @Override public void appendHoverText(ItemStack stack,TooltipContext context,List<Component> lines,TooltipFlag flags) {
         super.appendHoverText(stack,context,lines,flags);
