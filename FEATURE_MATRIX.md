@@ -1,4 +1,4 @@
-# Feature matrix — 0.1.0
+# Feature matrix — 0.1.1
 
 **Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete.
 
@@ -6,9 +6,9 @@
 |---|---|---|
 | Core | Java21/MC1.21.1/NeoForge21.1.265, ModDevGradle, registries, server config, creative tab | implemented; build + dedicated startup |
 | UI languages/assets | EN/RU, original generated textures, active-machine texture animation, articulated inserter, item rendering | implemented first-slice visuals; not final art |
-| Persistence/network | inventories, lane positions, hand, progress/recipe/fuel/energy; vanilla BE/menu packets | implemented; NBT and separate-process disk reload tested |
-| Belts | 2 lanes, 3 speeds, turns, side loading, congestion, no item Entities, sleeping/wakeup | partial; junction sub-tick spacing/precise throughput and full-scale profiling remain |
-| Splitter | one-block forward/right balancing and blocked-output fallback | partial; not Factorio two-block geometry; priorities/filters absent |
+| Persistence/network | inventories, schema-2 lane positions (reads schema 1), hand, progress/recipe/fuel/energy; vanilla BE/menu packets | implemented; NBT and separate-process disk reload tested |
+| Belts | 2 lanes, 3 speeds, residual travel, cross-block spacing, fair merges, full rings, congestion, sleeping/wakeup | implemented transport kernel; curves, advanced belt types and full-scale world profiling remain |
+| Splitter | one-block forward/right per-lane balancing and safe blocked-output fallback | partial; not Factorio two-block geometry; priorities/filters absent |
 | Advanced belts | none | planned: underground, filters, priorities |
 | Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
 | Resources | iron/copper ore blocks + Overworld JSON placement; vanilla coal/stone available | partial; uranium/oil/late resources and world setup controls absent |
@@ -31,6 +31,6 @@
 | GUI/statistics | machine inputs/outputs/recipe preview/progress/energy; `/factorycraft profile` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
 | Multiplayer/server | server authority, validated menus, two viewers cannot duplicate output, dedicated startup | partial; actual two-client network play not exercised |
 | Chunk lifecycle | unload pauses/registers topology; contents survive callbacks; separate-process disk persistence | verified callbacks + disk reload; natural chunk-distance unload scenario still manual |
-| Performance | active/sleeping belts, no per-item Entity, cached pole graph, 10000-lane kernel test | partial; quadratic graph rebuild and individual machine/inserter tickers remain |
+| Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; quadratic graph rebuild and individual machine/inserter tickers remain |
 | Required 10000/1000/500 load | not run in Minecraft | planned; kernel timings are not a TPS claim |
 | Compatibility | standard NeoForge item/FE capabilities and recipe tags | partial; JEI/EMI and other mod interoperability untested |

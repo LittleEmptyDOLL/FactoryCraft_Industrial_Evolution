@@ -5,12 +5,12 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.265**, Java **21**, ModDevGradle *
 ## Architecture and invariants
 
 * `factorycraft.registry`: deferred blocks/items/block entities/menus/recipes; client registration is isolated.
-* `simulation.belts`: independent two-lane kinematics; no item entities. One item per carrier, 0.25 block spacing, backpressure and a tick stamp preventing double advancement across segments.
+* `simulation.belts`: independent two-lane kinematics; no item entities. One item per carrier, 0.25 block spacing within and across segments, backpressure and phased transfers preventing double advancement.
 * `blockentity`, `production`, `recipes`: persistent item handlers, server-authoritative production, data-driven counted ingredients. Outputs are simulated before inputs are committed. Inputs are revalidated at completion.
 * `energy`: loaded-node pole graph rebuilt only on topology changes; no forced chunk loads. Machine buffers expose NeoForge FE.
 * `inserters`: a persistent held stack owns extracted items until the destination accepts them; breaking drops held items.
 * `client`: renderers interpolate server snapshots; menus send only vanilla menu button requests, validated server-side.
-* NBT schema version 1. Unloading pauses simulation; it never converts inventory to transient entities. Breaking blocks drops their contents once.
+* Belt NBT schema 2 reads schema 1; other block entities keep schema 1. Unloading pauses simulation; it never converts inventory to transient entities. Breaking blocks drops their contents once.
 * No off-thread world access. 20 Minecraft ticks = one simulation second. Belt basic/fast/express rates target 15/30/45 individual items per second across two lanes.
 
 ## Stages
@@ -36,11 +36,15 @@ Read VALIDATION.md and FEATURE_MATRIX.md first, reproduce `./gradlew build` and 
 
 Stages 1 and a playable stage-2 slice are implemented: 10 factory block variants, 2 generated ores, 6 items, 5 processing recipes, survival crafting, original textures, EN/RU GUI, server configuration, active/sleeping two-lane transport, T-splitter, mechanical inserter, electric drill/furnace/assembler, coal generator and cached pole networks. Independent energy/belt kernels have JUnit coverage. Server GameTests include the complete automatic iron-to-gear chain, menu conservation and actual disk persistence between JVM runs. Client launch, integrated world, machine GUI and save/reload were exercised with software OpenGL. See VALIDATION.md for exact limitations.
 
+## Delivered in 0.1.1
+
+Implemented the first next-session task: independent phased transport kernel, nine exact microsteps per game tick, cross-block spacing, residual travel, fair merge reservations, fully packed cycles, blocked-splitter fallback and cached lane links. Empty and jammed lanes still sleep. Carrier objects are reused across segments. Added property tests for randomized graph changes and exact 15/30/45 item/s saturated two-lane throughput, plus GameTests for mixed-tier headway, state rotation and schema-1 migration. The original end-to-end factory remains covered. See VALIDATION.md and CHANGELOG.md.
+
 ## Next concrete task (priority order)
 
-1. Refine belt junctions: preserve residual sub-tick travel, enforce spacing across segment boundaries and measure actual throughput for all three tiers. Add chain/merge/turn tests with saturated inputs and unequal speeds; retain conservation and sleeping/wakeup invariants.
-2. Replace quadratic power topology rebuild with spatial buckets and a bounded dirty-graph rebuild, then create an in-game benchmark of 10000 segments / 1000 working machines / 500 inserters. Keep buffer and output correctness under load.
-3. Exercise a natural chunk-distance unload/reload and two actual connected clients; add per-network delta packets if profiling justifies them.
-4. Complete stage 2 with underground belts, a two-block splitter and inserter variants; then begin stage 3 fluids. Use the planned independent space boundary; do not couple basic production to future space availability.
+1. Replace the quadratic power topology rebuild with spatial buckets and a bounded dirty-graph rebuild; preserve split/merge correctness and loaded-only operation. Add independent power graph tests before connecting new generators.
+2. Build the actual in-game 10000 segments / 1000 working machines / 500 inserters benchmark. The 10000-segment kernel test excludes world/network costs and is not a TPS guarantee.
+3. Exercise natural chunk-distance unload/reload and two connected clients. Profile full per-block snapshots and add deltas only if justified. Refine client rendering of curved junctions independently of server authority.
+4. Complete stage 2 with underground belts, a two-block splitter and inserter variants, then begin stage 3 fluids. Keep future space mechanics independent from basic production.
 
-The UI, graph and timing simplifications in ARCHITECTURE.md are intentional limits of this slice, not completed Factorio parity.
+The UI, graph and timing boundaries in ARCHITECTURE.md are limits of this slice, not completed Factorio parity.

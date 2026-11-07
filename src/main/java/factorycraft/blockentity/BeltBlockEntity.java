@@ -2,116 +2,138 @@ package factorycraft.blockentity;
 
 import factorycraft.blocks.*;
 import factorycraft.registry.Content;
-import factorycraft.simulation.belts.BeltLane;
+import factorycraft.simulation.belts.*;
 import factorycraft.simulation.BeltSimulation;
 import net.minecraft.core.*;
 import net.minecraft.nbt.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
-import java.util.List;
+import java.util.Objects;
 
 public final class BeltBlockEntity extends FactoryBlockEntity {
-    private final BeltLane<ItemStack> left = new BeltLane<>(), right = new BeltLane<>();
-    private boolean alternate;
-    public boolean scheduled, simulationLoaded;
+    private final BeltLane<ItemStack> left=new BeltLane<>(),right=new BeltLane<>();
+    private BeltTransport<ItemStack> transport;
+    private BeltTransport.Node<ItemStack> leftNode,rightNode;
+    private boolean alternateLeft,alternateRight,queuedForSync,contentsChanged;
+    public boolean simulationLoaded;
     private long snapshotTick;
-    private final IItemHandler handler = new IItemHandler() {
+    private final IItemHandler handler=new IItemHandler() {
         @Override public int getSlots() { return 8; }
-        @Override public ItemStack getStackInSlot(int s) { var lane = lane(s / 4); return s % 4 < lane.carriers().size() ? lane.carriers().get(s % 4).value.copy() : ItemStack.EMPTY; }
-        @Override public ItemStack insertItem(int s, ItemStack stack, boolean simulate) {
-            if (stack.isEmpty() || !lane(s / 4).canInsert()) return stack;
-            if (!simulate) { lane(s / 4).insert(stack.copyWithCount(1), level == null ? 0 : level.getGameTime()); sync(); BeltSimulation.activate(BeltBlockEntity.this); }
-            return stack.getCount() == 1 ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - 1);
+        @Override public ItemStack getStackInSlot(int s) {
+            Objects.checkIndex(s,8);var lane=lane(s/4);
+            return s%4<lane.carriers().size() ? lane.carriers().get(s%4).value.copy():ItemStack.EMPTY;
         }
-        @Override public ItemStack extractItem(int s, int n, boolean simulate) {
-            var lane = lane(s / 4);
-            if (n <= 0 || s % 4 >= lane.carriers().size()) return ItemStack.EMPTY;
-            var result = lane.carriers().get(s % 4).value.copy();
-            if (!simulate) { lane.remove(s % 4); sync(); BeltSimulation.activate(BeltBlockEntity.this); BeltSimulation.wakeInputs(BeltBlockEntity.this); }
+        @Override public ItemStack insertItem(int s,ItemStack stack,boolean simulate) {
+            Objects.checkIndex(s,8);
+            if(stack.isEmpty() || transport==null || !transport.canInsert(node(s/4)))return stack;
+            if(!simulate) {
+                if(!transport.insert(node(s/4),stack.copyWithCount(1)))return stack;
+                sync();
+            }
+            return stack.getCount()==1 ? ItemStack.EMPTY:stack.copyWithCount(stack.getCount()-1);
+        }
+        @Override public ItemStack extractItem(int s,int n,boolean simulate) {
+            Objects.checkIndex(s,8);var lane=lane(s/4);
+            if(n<=0 || s%4>=lane.carriers().size())return ItemStack.EMPTY;
+            var result=lane.carriers().get(s%4).value.copy();
+            if(!simulate) { lane.remove(s%4);sync();wakeTransport(); }
             return result;
         }
-        @Override public int getSlotLimit(int s) { return 1; }
-        @Override public boolean isItemValid(int s, ItemStack stack) { return true; }
+        @Override public int getSlotLimit(int s) { Objects.checkIndex(s,8);return 1; }
+        @Override public boolean isItemValid(int s,ItemStack stack) { Objects.checkIndex(s,8);return true; }
     };
-    public BeltBlockEntity(BlockPos p, BlockState s) { super(Content.BELT.get(), p, s); }
-    public BeltLane<ItemStack> lane(int i) { return i == 0 ? left : right; }
-    public double speed() { return ((FactoryBlock)getBlockState().getBlock()).kind.beltTier * .09375; }
+    public BeltBlockEntity(BlockPos p,BlockState s) { super(Content.BELT.get(),p,s); }
+    public BeltLane<ItemStack> lane(int i) { Objects.checkIndex(i,2);return i==0 ? left:right; }
+    private BeltTransport.Node<ItemStack> node(int i) { return i==0 ? leftNode:rightNode; }
+    public double speed() { return ((FactoryBlock)getBlockState().getBlock()).kind.beltTier*.09375; }
     public long snapshotTick() { return snapshotTick; }
     @Override public IItemHandler inventory() { return handler; }
-
-    private boolean send(ItemStack stack, int laneIndex) {
-        Direction facing = getBlockState().getValue(FactoryBlock.FACING);
-        boolean split = ((FactoryBlock)getBlockState().getBlock()).kind == FactoryKind.SPLITTER;
-        for (int attempt = 0; attempt < (split ? 2 : 1); attempt++) {
-            boolean branch = split && (alternate ^ (attempt == 1));
-            Direction output = branch ? facing.getClockWise() : facing;
-            BlockPos targetPos = worldPosition.relative(output);
-            if (!level.hasChunkAt(targetPos) || !(level.getBlockEntity(targetPos) instanceof BeltBlockEntity target)) continue;
-            Direction targetFacing = target.getBlockState().getValue(FactoryBlock.FACING);
-            if (targetFacing == output.getOpposite()) continue;
-            // Side loading merges into the near lane; straight flow preserves the lane.
-            int targetLane = targetFacing == output ? laneIndex : (output == targetFacing.getClockWise() ? 0 : 1);
-            if (target.lane(targetLane).insert(stack, level.getGameTime())) {
-                target.sync(); BeltSimulation.activate(target);
-                if (split) alternate = !branch;
-                return true;
-            }
-        }
-        return false;
-    }
     public boolean hasItems() { return !left.carriers().isEmpty() || !right.carriers().isEmpty(); }
+    public boolean isScheduled() { return transport!=null && (leftNode.isActive() || rightNode.isActive()); }
+
+    public void bindTransport(BeltTransport<ItemStack> transport) {
+        this.transport=transport;int tier=((FactoryBlock)getBlockState().getBlock()).kind.beltTier;
+        leftNode=transport.create(left,tier,c->BeltSimulation.changed(this,c));
+        rightNode=transport.create(right,tier,c->BeltSimulation.changed(this,c));
+        leftNode.restorePreference(alternateLeft);rightNode.restorePreference(alternateRight);
+    }
+    public void unbindTransport() {
+        if(transport==null)return;
+        alternateLeft=leftNode.prefersSecondary();alternateRight=rightNode.prefersSecondary();
+        transport.remove(leftNode);transport.remove(rightNode);transport=null;leftNode=null;rightNode=null;
+    }
+    public void wakeTransport() {
+        if(transport!=null) { transport.changedExternally(leftNode);transport.changedExternally(rightNode); }
+    }
+    public void refreshConnections() {
+        if(transport==null || level==null)return;
+        Direction facing=getBlockState().getValue(FactoryBlock.FACING);
+        boolean split=((FactoryBlock)getBlockState().getBlock()).kind==FactoryKind.SPLITTER;
+        for(int l=0;l<2;l++)transport.connect(node(l),target(l,facing),split ? target(l,facing.getClockWise()):null);
+    }
+    private BeltTransport.Node<ItemStack> target(int lane,Direction output) {
+        BlockPos p=worldPosition.relative(output);
+        if(!level.hasChunkAt(p) || !(level.getBlockEntity(p) instanceof BeltBlockEntity target) || !target.simulationLoaded || target.transport==null)return null;
+        Direction targetFacing=target.getBlockState().getValue(FactoryBlock.FACING);
+        if(targetFacing==output.getOpposite())return null;
+        int targetLane=targetFacing==output ? lane:(output==targetFacing.getClockWise() ? 0:1);
+        return target.node(targetLane);
+    }
+    public boolean markSimulationChanged(boolean contents) {
+        contentsChanged|=contents;
+        if(queuedForSync)return false;
+        queuedForSync=true;return true;
+    }
+    public void flushSimulationChanges(long tick) {
+        setChanged();if(contentsChanged || (tick&3)==0)sync();
+        queuedForSync=false;contentsChanged=false;
+    }
+    @Override public void setBlockState(BlockState state) {
+        boolean changed=getBlockState().getValue(FactoryBlock.FACING)!=state.getValue(FactoryBlock.FACING);
+        super.setBlockState(state);
+        // LevelChunk calls onPlace before it updates the existing block entity's state.
+        if(changed && simulationLoaded)BeltSimulation.topologyChanged(this);
+    }
     @Override public void onLoad() {
         super.onLoad();
-        if(!level.isClientSide && !simulationLoaded) { simulationLoaded=true; BeltSimulation.register(this); }
+        if(!level.isClientSide && !simulationLoaded) { simulationLoaded=true;BeltSimulation.register(this); }
     }
-    @Override public void setRemoved() {
-        if(simulationLoaded)BeltSimulation.unregister(this);
-        super.setRemoved();
-    }
-    @Override public void onChunkUnloaded() {
-        if(simulationLoaded)BeltSimulation.unregister(this);
-        super.onChunkUnloaded();
-    }
-    public boolean tickMovement() {
-        boolean wasLeft=left.canInsert(), wasRight=right.canInsert();
-        int before=left.carriers().size()+right.carriers().size();
-        long now = level.getGameTime();
-        boolean moved = left.advance(speed(), now, s -> send(s, 0));
-        moved |= right.advance(speed(), now, s -> send(s, 1));
-        if (moved) {
-            setChanged();
-            if ((now & 3) == 0 || before!=left.carriers().size()+right.carriers().size()) sync();
-        }
-        if((!wasLeft && left.canInsert()) || (!wasRight && right.canInsert()))BeltSimulation.wakeInputs(this);
-        return hasItems() && (moved || (!left.carriers().isEmpty() && left.carriers().getLast().insertedTick==now) || (!right.carriers().isEmpty() && right.carriers().getLast().insertedTick==now));
-    }
+    @Override public void setRemoved() { if(simulationLoaded)BeltSimulation.unregister(this);super.setRemoved(); }
+    @Override public void onChunkUnloaded() { if(simulationLoaded)BeltSimulation.unregister(this);super.onChunkUnloaded(); }
     @Override public void dropContents() {
         if(level==null || level.isClientSide)return;
         for(int l=0;l<2;l++)while(!lane(l).carriers().isEmpty()) {
             ItemStack stack=lane(l).remove(0);
             net.minecraft.world.Containers.dropItemStack(level,worldPosition.getX()+.5,worldPosition.getY()+.5,worldPosition.getZ()+.5,stack);
         }
-        setChanged();
+        setChanged();wakeTransport();
     }
-    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider r) {
-        super.saveAdditional(tag, r); tag.putInt("Schema", 1); tag.putBoolean("Alternate", alternate);
-        tag.putLong("SnapshotTick", level == null ? 0 : level.getGameTime());
-        for (int l = 0; l < 2; l++) {
-            ListTag list = new ListTag();
-            for (var c : lane(l).carriers()) { var n = new CompoundTag(); n.put("Stack", c.value.save(r)); n.putDouble("Position", c.position); list.add(n); }
-            tag.put("Lane" + l, list);
+    @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider r) {
+        super.saveAdditional(tag,r);tag.putInt("Schema",2);
+        tag.putBoolean("Alternate",transport==null ? alternateLeft:leftNode.prefersSecondary());
+        tag.putBoolean("AlternateRight",transport==null ? alternateRight:rightNode.prefersSecondary());
+        tag.putLong("SnapshotTick",level==null ? 0:level.getGameTime());
+        for(int l=0;l<2;l++) {
+            ListTag list=new ListTag();
+            for(var c:lane(l).carriers()) {
+                var n=new CompoundTag();n.put("Stack",c.value.save(r));n.putDouble("Position",c.position());n.putInt("Units",c.positionUnits());list.add(n);
+            }
+            tag.put("Lane"+l,list);
         }
     }
-    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider r) {
-        super.loadAdditional(tag, r); alternate = tag.getBoolean("Alternate"); snapshotTick = tag.getLong("SnapshotTick");
-        for (int l = 0; l < 2; l++) {
-            lane(l).clear();
-            ListTag list = tag.getList("Lane" + l, Tag.TAG_COMPOUND);
-            for (int i = 0; i < list.size(); i++) {
-                var n = list.getCompound(i); var stack = ItemStack.parseOptional(r, n.getCompound("Stack"));
-                if (!stack.isEmpty()) lane(l).restore(stack, n.getDouble("Position"));
+    @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider r) {
+        super.loadAdditional(tag,r);alternateLeft=tag.getBoolean("Alternate");
+        alternateRight=tag.contains("AlternateRight") ? tag.getBoolean("AlternateRight"):alternateLeft;
+        snapshotTick=tag.getLong("SnapshotTick");
+        for(int l=0;l<2;l++) {
+            lane(l).clear();ListTag list=tag.getList("Lane"+l,Tag.TAG_COMPOUND);
+            for(int i=0;i<list.size();i++) {
+                var n=list.getCompound(i);var stack=ItemStack.parseOptional(r,n.getCompound("Stack"));
+                double position=n.contains("Units") ? (double)n.getInt("Units")/BeltLane.LENGTH:n.getDouble("Position");
+                if(!stack.isEmpty())lane(l).restore(stack,position);
             }
         }
+        if(transport!=null) { leftNode.restorePreference(alternateLeft);rightNode.restorePreference(alternateRight);wakeTransport(); }
     }
 }

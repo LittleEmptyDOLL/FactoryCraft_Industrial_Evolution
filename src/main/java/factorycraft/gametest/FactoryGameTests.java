@@ -107,7 +107,7 @@ public final class FactoryGameTests {
         var beltCopy=(BeltBlockEntity)BlockEntity.loadStatic(belt.getBlockPos(),belt.getBlockState(),a,r);
         var machineCopy=(MachineBlockEntity)BlockEntity.loadStatic(machine.getBlockPos(),machine.getBlockState(),b,r);
         var handCopy=(InserterBlockEntity)BlockEntity.loadStatic(hand.getBlockPos(),hand.getBlockState(),c,r);
-        h.assertTrue(count(beltCopy)==8 && beltCopy.lane(0).carriers().get(1).position==.75,"carrier NBT mismatch");
+        h.assertTrue(count(beltCopy)==8 && beltCopy.lane(0).carriers().get(1).position()==.75,"carrier NBT mismatch");
         h.assertTrue(machineCopy.power.getEnergyStored()==777 && machineCopy.items.getStackInSlot(0).getCount()==3,"machine NBT mismatch");
         h.assertTrue(handCopy.held().is(Items.DIAMOND),"held item not persisted");h.succeed();
     }
@@ -149,7 +149,7 @@ public final class FactoryGameTests {
             BeltBlockEntity belt=(BeltBlockEntity)level.getBlockEntity(origin);
             MachineBlockEntity m=(MachineBlockEntity)level.getBlockEntity(origin.offset(2,0,0));
             InserterBlockEntity hand=(InserterBlockEntity)level.getBlockEntity(origin.offset(4,0,0));
-            h.assertTrue(count(belt)==8 && belt.lane(1).carriers().getLast().position==.25,"disk carrier state changed");
+            h.assertTrue(count(belt)==8 && belt.lane(1).carriers().getLast().position()==.25,"disk carrier state changed");
             h.assertTrue(m.power.getEnergyStored()==777 && m.items.getStackInSlot(0).getCount()==1 && m.data.get(0)==37,"disk machine state changed");
             h.assertTrue(hand.held().is(Items.DIAMOND),"disk held item changed");
             System.out.println("FACTORYCRAFT_DISK_PERSISTENCE: VERIFIED region-file reload of 8 carriers, machine inventory/progress/energy, inserter hand");
@@ -162,7 +162,7 @@ public final class FactoryGameTests {
         BeltBlockEntity target=place(h,FactoryKind.BELT,p(3,2),Direction.EAST);
         seed(source,8);seed(target,8);
         h.runAfterDelay(30,()->{
-            h.assertTrue(!source.scheduled && !target.scheduled,"jammed belts must sleep");
+            h.assertTrue(!source.isScheduled() && !target.isScheduled(),"jammed belts must sleep");
             target.inventory().extractItem(0,1,false);
         });
         h.runAfterDelay(100,()->{h.assertTrue(count(source)==7 && count(target)==8,"extraction failed to wake upstream");h.succeed();});
@@ -209,6 +209,61 @@ public final class FactoryGameTests {
             if(b.getInventory().getItem(i).is(item("iron_gear")))count+=b.getInventory().getItem(i).getCount();
         }
         h.assertTrue(count==1 && m.items.getStackInSlot(4).isEmpty(),"two viewers duplicated an output");h.succeed();
+    }
+
+    @GameTest(template="empty",timeoutTicks=180)
+    public static void mixedTierJunctionsMaintainCrossBlockSpacing(GameTestHelper h) {
+        BeltBlockEntity a=place(h,FactoryKind.EXPRESS_BELT,p(2,2),Direction.EAST);
+        BeltBlockEntity b=place(h,FactoryKind.BELT,p(3,2),Direction.EAST);
+        BeltBlockEntity c=place(h,FactoryKind.FAST_BELT,p(4,2),Direction.EAST);
+        int[] created={0};
+        h.onEachTick(()->{
+            for(int lane=0;lane<2;lane++)if(a.inventory().insertItem(lane*4,new ItemStack(Items.RAW_IRON),false).isEmpty())created[0]++;
+            for(int lane=0;lane<2;lane++) {
+                assertJunction(h,a,b,lane);assertJunction(h,b,c,lane);
+            }
+            h.assertTrue(count(a)+count(b)+count(c)==created[0],"mixed tier junction lost or duplicated items");
+        });
+        h.runAfterDelay(120,()->{h.assertTrue(count(c)>0,"flow never reached the final belt");h.succeed();});
+    }
+    private static void assertJunction(GameTestHelper h,BeltBlockEntity a,BeltBlockEntity b,int lane) {
+        var first=a.lane(lane).carriers();var second=b.lane(lane).carriers();
+        if(!first.isEmpty() && !second.isEmpty())h.assertTrue(96+second.getLast().positionUnits()-first.getFirst().positionUnits()>=24,"items overlap across the block boundary");
+    }
+    @GameTest(template="empty",timeoutTicks=180)
+    public static void rotatedBlockStateInvalidatesCachedBeltConnections(GameTestHelper h) {
+        BeltBlockEntity a=place(h,FactoryKind.BELT,p(2,2),Direction.EAST);
+        BeltBlockEntity b=place(h,FactoryKind.BELT,p(3,2),Direction.WEST);seed(a,2);
+        h.runAfterDelay(20,()->{
+            h.assertTrue(count(a)==2 && count(b)==0,"opposing belts must not exchange items");
+            var absolute=h.absolutePos(p(3,2));
+            h.getLevel().setBlockAndUpdate(absolute,b.getBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
+        });
+        h.runAfterDelay(60,()->{
+            h.assertTrue(count(a)==0 && count(b)==2,"cached connection ignored target rotation");
+            place(h,FactoryKind.BELT,p(2,3),Direction.SOUTH);
+            h.getLevel().setBlockAndUpdate(a.getBlockPos(),a.getBlockState().setValue(FactoryBlock.FACING,Direction.SOUTH));
+            seed(a,2);
+        });
+        h.runAfterDelay(110,()->{
+            var c=(BeltBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(p(2,3)));
+            h.assertTrue(count(a)==0 && count(c)==2 && count(b)==2,"cached source rotation lost the new output");h.succeed();
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=80)
+    public static void schemaOnePositionsAndSplitterPreferenceRemainReadable(GameTestHelper h) {
+        BeltBlockEntity original=place(h,FactoryKind.SPLITTER,p(2,2),Direction.NORTH);seed(original,8);
+        var r=h.getLevel().registryAccess();var legacy=original.saveWithFullMetadata(r);
+        legacy.putInt("Schema",1);legacy.putBoolean("Alternate",true);legacy.remove("AlternateRight");
+        for(int lane=0;lane<2;lane++) {
+            var list=legacy.getList("Lane"+lane,net.minecraft.nbt.Tag.TAG_COMPOUND);
+            for(int i=0;i<list.size();i++)list.getCompound(i).remove("Units");
+        }
+        var restored=(BeltBlockEntity)BlockEntity.loadStatic(original.getBlockPos(),original.getBlockState(),legacy,r);
+        var modern=restored.saveWithFullMetadata(r);
+        h.assertTrue(count(restored)==8 && restored.lane(1).carriers().getLast().positionUnits()==24,"legacy lane migration changed contents");
+        h.assertTrue(modern.getInt("Schema")==2 && modern.getBoolean("Alternate") && modern.getBoolean("AlternateRight"),"legacy splitter preference not migrated");
+        h.succeed();
     }
 
 }

@@ -1,12 +1,44 @@
-# Validation — 7 November 2026
+# Validation — 0.1.1, 7 November 2026
 
-## Scope and environment
+Continues the existing Git repository and 0.1.0 commit `3f39357`; no new MDK was created. Minecraft 1.21.1 / NeoForge 21.1.265 / Java 21 remain fixed. The new transport kernel is independent of Minecraft; the adapter remains entirely server-authoritative.
+
+## Current checks
+
+* `./gradlew build`: successful, 19 JUnit tests with zero failures. Covers exact saturated two-lane rates 15/30/45 items/s over 60 simulated seconds, residual travel with carrier object reuse, cross-block headway, unequal tiers, fair merges without backward movement, splitter fallback, packed rings, scheduling, disconnect/reconnect, legacy overlap reconciliation, activation order and randomized graph topology changes.
+* `./gradlew runGameTestServer`: all 17 required tests pass. The previous 14 scenarios (including the automatic iron-to-gear factory) remain; three new scenarios exercise mixed-tier cross-block headway, cached connection invalidation after both source and target rotation, and schema-1 NBT migration including splitter state.
+* The repeated server process reports `FACTORYCRAFT_DISK_PERSISTENCE: VERIFIED`, reloading the prior saved fixture with eight carriers and persisted machine/hand state. This also exercises an existing 0.1.0 save.
+* `./gradlew runClient -PsmokeWorld=FactoryCraftSmoke`: the actual graphical client loads the old QA world with version 0.1.1 under Xvfb/Mesa. Observed the operating factory, visible belt carriers, animated arms and machine states. The source-only changes to the renderer compile against the exact target API.
+* `git diff --check`: clean. Code and documentation are versioned in the supplied repository; CHANGELOG.md records both milestones.
+
+The new 10000-segment kernel test uses **20000 lane nodes**, one carrier per lane, two closed rings, and 100 Minecraft-equivalent ticks (900 microsteps). Representative runs took 1.6–3.2 seconds for the loop depending on concurrent server/client load. These are informational local CPU measurements with no hardware pass threshold. They exclude the Minecraft world, network, 1000 machines and 500 inserters. No full-factory TPS claim is made.
+
+## Problems found and resolved
+
+The new tests exposed an accidentally shared single-lane terminal in the two-lane throughput test; the pure collector now explicitly accepts independent outputs without imposing a fictitious shared lane. Splitters retain their approach reservation but can switch safely to a free branch when blocked. A rotation GameTest caught that `LevelChunk` invokes `onPlace` before updating the existing block entity's facing: invalidation now occurs after `setBlockState`, covering command-driven rotation as well as the wrench.
+
+All outgoing reservations are checked before any carrier changes ownership. All outgoing carriers are then removed before any incoming carrier is inserted, which permits fully occupied cycles and avoids double advancement. The hot transfer path reuses the existing carrier object.
+
+## Migration and remaining limits
+
+Belt schema 2 reads schema 1, preserves old 1/32-grid positions exactly, stores both `Units` and compatible `Position`, and restores old splitter preference for both lanes. Non-grid edited coordinates round by at most 1/192 block. Existing cross-block overlaps are conservatively reconciled on initial simulation without dropping items. Other machine/inserter schemas are unchanged.
+
+Exact transport rates are measured at a continuously supplied 180 Hz kernel input, not asserted for an arbitrary Minecraft machine/inserter line. At a tier boundary the new speed applies on the next microstep. Client extrapolation and curved junction visuals are not an authoritative collision model. Natural-distance chunk unload, real two-client multiplayer, spatially indexed power rebuilds and the full in-game 10000/1000/500 benchmark remain open. Later fluids/research/robots/trains/combat/space systems are not part of this patch.
+
+## Changed areas
+
+`simulation/belts/BeltLane` and new `BeltTransport`; loaded topology/scheduling adapter `BeltSimulation`; `BeltBlockEntity` persistence, inventory and state invalidation; the inserter's position lookup and belt renderer; JUnit and GameTests; version properties, architecture/feature/continuation documents and changelog. The next concrete task is the power graph spatial index with split/merge regression tests.
+
+---
+
+# Historical validation — 0.1.0
+
+## 0.1.0 baseline — scope and environment
 
 Base repository: `LittleEmptyDOLL/FactoryCraft_Industrial_Evolution`, initial commit `7040c68` (unmodified NeoForge MDK). Target Minecraft 1.21.1 / NeoForge 21.1.265 / Java 21. Runtime APIs were checked against the 1.21.1 docs and the resolved NeoForge/Minecraft sources, then compiled and exercised on the server.
 
 The cloud image initially provided a JRE without `javac` / `ct.sym`; NeoForm failed with `release version 21 not supported`. A full Temurin JDK 21.0.13 was downloaded into the task workspace. Proxy and JDK paths are local environment setup, not committed project requirements.
 
-## Automated results
+## 0.1.0 automated results
 
 * `./gradlew build`: successful; 8 JUnit tests, 0 failures. Includes energy simulation/capacity/conservation, congestion, exact position restoration, rejection of invalid lane state, new-arrival tick ordering, randomized unique-item conservation, and a 10000-lane kernel exercise.
 * `./gradlew runGameTestServer`: all 14 required tests passed. Repeated after the transport scheduler and GUI/recipe changes.

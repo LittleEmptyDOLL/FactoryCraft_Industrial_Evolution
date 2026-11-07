@@ -1,4 +1,4 @@
-# Architecture decisions — schema 1
+# Architecture decisions — 0.1.1 (belt schema 2; other block entities schema 1)
 
 ## Authority and persistence
 
@@ -18,13 +18,21 @@ This provides conservation during ordinary server ticks, saves and chunk unloads
 
 ## Belts
 
-Each block has two bounded lanes of four individual carriers. Front-to-back positions use doubles in [0,1], minimum intra-segment separation 0.25. Straight connections preserve lane; side loading merges into the near lane and backpressures. A new arrival's tick stamp prevents a second movement in the same game tick, independent of block processing order.
+Each block has two bounded lanes of four individual carriers. A segment has 96 integral coordinate units; spacing is 24 units. Nine server microsteps run inside each Minecraft tick (180 Hz); basic/fast/express carriers move 1/2/3 units per microstep. This preserves the existing 0.09375 / 0.1875 / 0.28125 blocks/tick speeds and gives exactly 15/30/45 items/s for two continuously supplied lanes in the independent kernel tests. Minecraft inventories and inserters operate at their own tick cadence; these kernel rates do not certify an entire in-game production line.
 
-Nominal base speeds are 0.09375 / 0.1875 / 0.28125 blocks per Minecraft tick. Their continuous-model two-lane rates are 15 / 30 / 45 items/s. **Actual inter-block throughput is reduced by 20 Hz boundary quantization and zero-position arrival; those exact nominal rates are not claimed as measured throughput.** Cross-boundary sub-tick spacing and residual distance are a next-stage correctness/performance task. Intra-segment spacing is enforced; the junction model is still discrete.
+`BeltTransport` first projects all active lanes, then resolves cross-segment headway and destination reservations with an iterative worklist. Integral projections only decrease, bounding ordinary movement corrections to three units per carrier per microstep. It removes every outgoing carrier before inserting any incoming carrier, so a completely packed ring can move without requiring an artificial empty slot. Carriers retain their residual distance on transfer and are reused rather than allocated on each segment. At a speed transition the new speed applies on the next microstep (at most 1/180 s later); remaining spatial travel is retained.
 
-The one-block T-splitter alternates forward/right and falls back if the preferred exit is blocked. Filter/priority/underground variants are not registered as empty substitutes.
+Merges reserve the last quarter block before an entry. Competing sources wait before the junction and receive round-robin service; ordinary merging never moves a waiting item backwards. The one-block T-splitter alternates forward/right independently per lane and safely falls back to a free exit. Its per-lane preferences are persisted. Filters, priorities, underground variants and two-block Factorio geometry remain future work.
 
-A per-level active queue updates moving belts. Empty and fully jammed belts sleep; insertion, extraction, topology/load and new downstream space wake neighbors. Updates use bounded arrays and reuse storage. Packets are sent on item-count changes/insertions/extractions and every four moving ticks. They currently contain a full snapshot of this small block, not network-wide deltas. Renderers extrapolate up to four ticks and respect local lane spacing.
+A per-level adapter caches loaded lane-to-lane links. Only placement, removal, load/unload and orientation changes refresh the affected block and four horizontal neighbors; there is no full-factory topology scan per tick. Facing invalidation occurs after `BlockEntity.setBlockState`, because Minecraft 1.21.1 calls `onPlace` before updating the existing block entity's state. Empty/jammed lanes sleep and are woken by inventory, position or connection changes. Neighbor lookups never force-load chunks.
+
+Changes are batched once per block per game tick. Full block snapshots are sent on item-count changes and every four moving ticks. The client renderer extrapolates for up to four ticks and uses the complete block-length path instead of compressing it by 10%. Client prediction is visual, not an independent authoritative collision solver; curved junction paths and per-network delta packets remain open.
+
+### Upgrade from 0.1.0
+
+Belt schema 2 writes integral `Units` plus the legacy normalized `Position` field. The reader accepts schema 1 and copies the old splitter preference to both lanes when `AlternateRight` is absent. Actual 0.1.0 coordinates on the 1/32 grid convert exactly. Arbitrary edited legacy positions round to the nearest 1/96 block (maximum 1/192 block adjustment).
+
+A legacy save or changed topology may already contain overlapping cross-block positions, which 0.1.0 allowed. On first simulation the solver conservatively shifts upstream carriers back to restore headway; no carrier is discarded. This one-time reconciliation can move an item back by up to a quarter block at a junction. Normal movement from a valid topology is forward only. Machine and inserter schema 1 data remain unchanged.
 
 ## Power
 
@@ -36,7 +44,7 @@ A generator walks at most 32 cached recipients per tick with a round-robin curso
 
 All recipe durations are Minecraft ticks (20/s). Machine and inserter block tickers remain individual in this slice; active scheduling is implemented for belts, not all production. World mutation never runs on background threads.
 
-The JUnit kernel benchmark exercises 10000 **lanes**, not 10000 complete in-game belt segments plus machines/inserters. It verifies conservation and records elapsed CPU time without a hardware-dependent pass threshold. Do not interpret it as a TPS certification. The required 10000/1000/500 in-game scenario remains open.
+The JUnit kernel benchmark now exercises 10000 complete two-lane segments (20000 lane nodes) for 100 Minecraft-equivalent ticks, with one carrier per lane in two closed rings. It verifies conservation and records CPU time without a hardware-dependent pass threshold. It excludes Minecraft block entities, networking, 1000 machines and 500 inserters; the full in-game 10000/1000/500 scenario remains open.
 
 ## Extension boundaries
 

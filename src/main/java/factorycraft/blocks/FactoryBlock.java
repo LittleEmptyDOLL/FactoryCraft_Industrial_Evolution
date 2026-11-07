@@ -53,10 +53,6 @@ public final class FactoryBlock extends BaseEntityBlock {
         if (l.isClientSide) return InteractionResult.SUCCESS;
         if (player.getMainHandItem().is(Content.ITEMS.getEntries().stream().filter(i -> i.getId().getPath().equals("wrench")).findFirst().orElseThrow().get())) {
             l.setBlock(p, s.cycle(FACING), 3);
-            if(l.getBlockEntity(p) instanceof BeltBlockEntity belt) {
-                factorycraft.simulation.BeltSimulation.activate(belt);
-                factorycraft.simulation.BeltSimulation.wakeInputs(belt);
-            }
             return InteractionResult.CONSUME;
         }
         if (l.getBlockEntity(p) instanceof MachineBlockEntity machine) player.openMenu(machine, p);

@@ -17,9 +17,9 @@ public final class BeltRenderer implements BlockEntityRenderer<BeltBlockEntity> 
         for(int lane=0;lane<2;lane++) {
             double limit=1;
             for(var carrier:be.lane(lane).carriers()) {
-                double position=Math.min(limit,carrier.position+elapsed*be.speed());limit=position-.25;
+                double position=Math.min(limit,carrier.position()+elapsed*be.speed());limit=position-.25;
                 pose.pushPose();pose.translate(.5,.27,.5);pose.mulPose(Axis.YP.rotationDegrees(180-facing.toYRot()));
-                pose.translate(lane==0 ? -.22 : .22,0,.45-position*.9);
+                pose.translate(lane==0 ? -.22 : .22,0,.5-position);
                 pose.mulPose(Axis.XP.rotationDegrees(90));pose.scale(.3f,.3f,.3f);
                 Minecraft.getInstance().getItemRenderer().renderStatic(carrier.value,ItemDisplayContext.FIXED,light,overlay,pose,buffers,be.getLevel(),lane);
                 pose.popPose();
