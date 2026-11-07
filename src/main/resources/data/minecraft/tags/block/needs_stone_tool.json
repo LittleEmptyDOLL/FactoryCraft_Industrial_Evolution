@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "factorycraft:iron_ore",
+    "factorycraft:copper_ore"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:iron_gear",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 8
+}

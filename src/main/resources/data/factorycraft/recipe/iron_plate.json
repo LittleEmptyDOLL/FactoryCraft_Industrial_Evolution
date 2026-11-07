@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "electric_furnace",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:raw_iron"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:iron_plate",
+    "count": 1
+  },
+  "ticks": 64,
+  "energy": 10
+}

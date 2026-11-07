@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RDR",
+    "BBB"
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "item": "factorycraft:fast_transport_belt"
+    }
+  },
+  "result": {
+    "id": "factorycraft:express_transport_belt",
+    "count": 3
+  }
+}

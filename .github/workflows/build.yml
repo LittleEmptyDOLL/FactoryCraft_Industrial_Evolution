@@ -23,3 +23,15 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Server integration tests and disk reload
+        run: |
+          ./gradlew runGameTestServer
+          ./gradlew runGameTestServer
+
+      - name: Upload mod and reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: factorycraft-build
+          path: |
+            build/libs/*.jar
+            build/reports/tests/

@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "has_iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:iron_ingot"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "factorycraft:craft_assembling_machine",
+      "factorycraft:craft_coal_generator",
+      "factorycraft:craft_electric_drill",
+      "factorycraft:craft_electric_furnace",
+      "factorycraft:craft_electric_pole",
+      "factorycraft:craft_express_transport_belt",
+      "factorycraft:craft_fast_transport_belt",
+      "factorycraft:craft_inserter",
+      "factorycraft:craft_iron_gear",
+      "factorycraft:craft_splitter",
+      "factorycraft:craft_transport_belt",
+      "factorycraft:craft_wrench"
+    ]
+  }
+}

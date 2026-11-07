@@ -1,0 +1,36 @@
+# Feature matrix — 0.1.0
+
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete.
+
+| Area | Implemented scope | Status / remaining work |
+|---|---|---|
+| Core | Java21/MC1.21.1/NeoForge21.1.265, ModDevGradle, registries, server config, creative tab | implemented; build + dedicated startup |
+| UI languages/assets | EN/RU, original generated textures, active-machine texture animation, articulated inserter, item rendering | implemented first-slice visuals; not final art |
+| Persistence/network | inventories, lane positions, hand, progress/recipe/fuel/energy; vanilla BE/menu packets | implemented; NBT and separate-process disk reload tested |
+| Belts | 2 lanes, 3 speeds, turns, side loading, congestion, no item Entities, sleeping/wakeup | partial; junction sub-tick spacing/precise throughput and full-scale profiling remain |
+| Splitter | one-block forward/right balancing and blocked-output fallback | partial; not Factorio two-block geometry; priorities/filters absent |
+| Advanced belts | none | planned: underground, filters, priorities |
+| Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
+| Resources | iron/copper ore blocks + Overworld JSON placement; vanilla coal/stone available | partial; uranium/oil/late resources and world setup controls absent |
+| Mining | finite electric drill, 3x3x8 search, energy and configurable duration | implemented first drill; burner/advanced/pumpjack planned |
+| Production | electric furnace + assembler, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; no fluid/module slots or advanced buildings |
+| Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; advanced chains/science/rocket components absent |
+| Power | coal generator, loaded pole graph, merge/split, cached membership, bounded distribution, FE input | partial; no manual wires/graphs, steam/nuclear/solar/accumulators/heat or external FE output |
+| Fluids/chemistry | none | planned |
+| Research/progression | none; first-slice crafting unlocked by acquiring vanilla iron | planned: teams, labs/packs, tree GUI, recipe locks, infinite research |
+| Modules/beacons/quality | none | planned |
+| Railways | none | planned: independent rails, wagons, signals, schedules, routing |
+| Robots | none | planned: logistics/construction/charging/task allocation |
+| Blueprints | none | planned: versioned import, selection, placement, undo/redo/book |
+| Circuits | none | planned: red/green graphs, signals, combinators and controls |
+| Pollution/enemies | none | planned: diffusion, absorption, evolution, original enemies/raids |
+| Combat | none | planned: turrets/artillery/ammunition/armor/radar/shields |
+| Vehicles | none | planned: car/tank/construction/remote control |
+| Space Age | none | planned as independent module: rockets/platforms/asteroids/quality/four planets |
+| Recipes/config/datapacks | counted ingredients, tag support, reload, JSON ores, server settings | implemented first-slice extension points |
+| GUI/statistics | machine inputs/outputs/recipe preview/progress/energy; `/factorycraft profile` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
+| Multiplayer/server | server authority, validated menus, two viewers cannot duplicate output, dedicated startup | partial; actual two-client network play not exercised |
+| Chunk lifecycle | unload pauses/registers topology; contents survive callbacks; separate-process disk persistence | verified callbacks + disk reload; natural chunk-distance unload scenario still manual |
+| Performance | active/sleeping belts, no per-item Entity, cached pole graph, 10000-lane kernel test | partial; quadratic graph rebuild and individual machine/inserter tickers remain |
+| Required 10000/1000/500 load | not run in Minecraft | planned; kernel timings are not a TPS claim |
+| Compatibility | standard NeoForge item/FE capabilities and recipe tags | partial; JEI/EMI and other mod interoperability untested |

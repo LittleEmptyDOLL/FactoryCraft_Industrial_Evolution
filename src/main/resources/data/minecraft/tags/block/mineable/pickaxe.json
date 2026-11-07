@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "factorycraft:transport_belt",
+    "factorycraft:fast_transport_belt",
+    "factorycraft:express_transport_belt",
+    "factorycraft:splitter",
+    "factorycraft:inserter",
+    "factorycraft:electric_drill",
+    "factorycraft:electric_furnace",
+    "factorycraft:assembling_machine",
+    "factorycraft:coal_generator",
+    "factorycraft:electric_pole",
+    "factorycraft:iron_ore",
+    "factorycraft:copper_ore"
+  ]
+}
