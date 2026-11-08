@@ -1,3 +1,10 @@
+# 0.6.1 — large resource veins and centered placement (8 November 2026)
+
+* Replaced tiny underground solid-resource blobs with large organic surface fields spanning chunks. Configurable nominal radius 8–20, tile stock 500–5000 and spacing six chunks by default; centers are richer than edges. Added COMMON `factorycraft-worldgen.toml`, per-resource datapack overrides and strict codec bounds.
+* Each generation call writes only its own chunk using the supplied WorldGenLevel. Pure deterministic sampling removes chunk-order seams; generated stock initializes without unsafe server callbacks, persists and never refills on decoration/reload.
+* Large items now target the horizontal base center, with the blue preview cell marking it. Even dimensions use the right/back middle cell. Full collision/protection/rollback and portable native NBT remain; obstructed controller corners cannot move placement upward.
+* Kept internal controllers, existing 0.6.0 worlds, reserves and schema-3 part identities unchanged. Natural fields appear in new chunks; no retrogen or compact-world migration. Updated fixtures, instructions and original-client screenshots; 87 JUnit / 115 GameTests pass.
+
 # 0.6.0 — finite resource tiles and full machine footprints (8 November 2026)
 
 * Iron/copper/coal/stone tiles hold finite initialized quantities (default 1000). Manual mining and powered drills extract one unit at a time; exhausted tiles disappear. Full destinations and unavailable chunks never consume stock. Added BE-aware datapack generation, stock interaction and richness configuration.

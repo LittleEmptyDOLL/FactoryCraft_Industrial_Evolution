@@ -19,7 +19,10 @@ public final class ResourceDepositBlockEntity extends FactoryBlockEntity {
     public ResourceDepositBlockEntity(BlockPos pos,BlockState state) { super(Content.RESOURCE_DEPOSIT_ENTITY.get(),pos,state); }
     public int remaining() { return reserve.remaining(); }
     public boolean available() { return loaded && FluidConnections.canonical(this); }
-    public void initializeReserve(int units) { if(initialized)throw new IllegalStateException("Already initialized");reserve.restore(units);initialized=true;dirty(); }
+    public void initializeReserve(int units) { initializeStock(units);dirty(); }
+    /** Called while the generation region exclusively owns this new BE; no ServerLevel callbacks. */
+    public void initializeGeneratedReserve(int units) { if(loaded)throw new IllegalStateException("Already loaded");initializeStock(units); }
+    private void initializeStock(int units) { if(initialized)throw new IllegalStateException("Already initialized");reserve.restore(units);initialized=true; }
     private void dirty() { if(level!=null && !level.isClientSide) { if(ownedChunk!=null)ownedChunk.setUnsaved(true);markPersistentState(); } }
     /** Caller already placed one result into its canonical, callback-free inventory. */
     public boolean extractAccepted() {

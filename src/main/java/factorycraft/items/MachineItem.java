@@ -14,6 +14,11 @@ import java.util.*;
 /** One held item, one complete protected structure; portable data never imports an old identity. */
 public final class MachineItem extends BlockItem {
     public MachineItem(Block block,Properties properties) { super(block,properties); }
+    @Override public BlockPlaceContext updatePlacementContext(BlockPlaceContext context) {
+        if(context instanceof CenteredPlacementContext)return context;
+        var state=getBlock().getStateForPlacement(context);if(state==null)return null;
+        var profile=MachineProfile.of(state);return new CenteredPlacementContext(context,profile.anchorAtCenter(context.getClickedPos(),profile.facing(state)));
+    }
     protected boolean canPlace(BlockPlaceContext context,BlockState state) {
         if(!super.canPlace(context,state))return false;boolean valid=PlacementPlan.inspect(context,state).valid();
         if(!valid && context.getPlayer()!=null)context.getPlayer().displayClientMessage(Component.translatable("message.factorycraft.placement_space"),true);return valid;

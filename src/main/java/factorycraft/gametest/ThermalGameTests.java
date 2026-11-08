@@ -105,7 +105,7 @@ public final class ThermalGameTests {
             level.removeBlock(pos,false);var at=h.absolutePos(new BlockPos(8,2,4));level.setBlockAndUpdate(at.below(),Blocks.STONE.defaultBlockState());
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.setItemInHand(InteractionHand.MAIN_HAND,drops.getFirst());
             var hit=new BlockHitResult(Vec3.atCenterOf(at.below()),Direction.UP,at.below(),false);
-            h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(level,player,InteractionHand.MAIN_HAND,player.getMainHandItem(),hit)).consumesAction(),"harvested block placement failed");
+            h.assertTrue(PlacementTestSupport.place(player,at).consumesAction(),"harvested block placement failed");
             var restored=(ThermalBlockEntity)level.getBlockEntity(at);
             h.assertTrue(restored.water.amount()==250 && restored.steam.amount()==600 && restored.boiler.fuel()==43 && restored.boiler.progress()==7 && restored.items.getStackInSlot(0).getCount()==3,"portable machine lost canonical resources");h.succeed();
         });

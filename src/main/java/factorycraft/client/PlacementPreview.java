@@ -34,8 +34,8 @@ public final class PlacementPreview {
         LevelRenderer.renderLineBox(pose,lines,volume.inflate(.005),red,green,.3f,.85f);
         for(var cell:current.cells())if(cell.getY()==current.anchor().getY())LevelRenderer.renderLineBox(pose,lines,new AABB(cell).setMaxY(cell.getY()+.025).inflate(.004),red,green,.3f,.7f);
         for(var cell:current.blocked())LevelRenderer.renderLineBox(pose,lines,new AABB(cell).inflate(.012),1f,.05f,.05f,1f);
-        // The blue controller cube identifies the front-left placement anchor in every orientation.
-        LevelRenderer.renderLineBox(pose,lines,new AABB(current.anchor()).inflate(.025),.2f,.65f,1f,1f);
+        // Highlight the selected central base cell, independently of the internal controller.
+        LevelRenderer.renderLineBox(pose,lines,new AABB(current.center()).inflate(.025),.2f,.65f,1f,1f);
         buffers.endBatch(RenderType.lines());pose.popPose();
     }
     @SubscribeEvent public static void hud(RenderGuiEvent.Post event) {

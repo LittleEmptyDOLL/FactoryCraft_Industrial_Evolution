@@ -121,7 +121,7 @@
   "message.factorycraft.resource_remaining": "%s — remaining: %s",
   "message.factorycraft.resource_inventory_full": "No room for mined resource",
   "tooltip.factorycraft.machine_dimensions": "Footprint: %s × %s blocks; height %s",
-  "tooltip.factorycraft.machine_preview": "One item builds the complete machine. Preview: green = clear, red = obstructed.",
+  "tooltip.factorycraft.machine_preview": "Places around the base center. Blue cell = selected center; red = obstruction.",
   "command.factorycraft.full_size_space": "Need a loaded, empty 30 × 8 × 13 area beside you.",
   "command.factorycraft.full_size_built": "Built %s at %s",
   "preview.factorycraft.valid": "%s × %s × %s — ready to place",

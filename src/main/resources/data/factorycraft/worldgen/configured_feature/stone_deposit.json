@@ -1,18 +1,17 @@
 {
   "type": "factorycraft:resource_patch",
   "config": {
-    "size": 32,
-    "discard_chance_on_air_exposure": 0.0,
-    "targets": [
-      {
-        "target": {
-          "predicate_type": "minecraft:tag_match",
-          "tag": "minecraft:stone_ore_replaceables"
-        },
-        "state": {
-          "Name": "factorycraft:stone_deposit"
-        }
-      }
-    ]
+    "state": {
+      "Name": "factorycraft:stone_deposit"
+    },
+    "salt": 3358547,
+    "use_world_settings": true,
+    "vein": {
+      "min_radius": 8,
+      "max_radius": 20,
+      "min_stock": 500,
+      "max_stock": 5000,
+      "spacing_chunks": 6
+    }
   }
 }

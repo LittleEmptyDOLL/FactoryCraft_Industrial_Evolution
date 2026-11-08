@@ -121,7 +121,7 @@
   "message.factorycraft.resource_remaining": "%s — запас: %s",
   "message.factorycraft.resource_inventory_full": "Нет места для добытого ресурса",
   "tooltip.factorycraft.machine_dimensions": "Габариты: %s × %s блоков; высота %s",
-  "tooltip.factorycraft.machine_preview": "Один предмет создаёт всю машину. Превью: зелёное — свободно, красное — препятствие.",
+  "tooltip.factorycraft.machine_preview": "Установка от центра основания. Синяя ячейка — выбранный центр; красное — препятствие.",
   "command.factorycraft.full_size_space": "Нужна загруженная свободная область 30 × 8 × 13 рядом с вами.",
   "command.factorycraft.full_size_built": "Построено: %s, координаты %s",
   "preview.factorycraft.valid": "%s × %s × %s — можно установить",

@@ -25,6 +25,7 @@ public enum MachineProfile implements StringRepresentable {
     public List<BlockPos> cells(BlockPos anchor,Direction facing) { var list=new ArrayList<BlockPos>();list.add(anchor.immutable());list.addAll(parts(anchor,facing));return List.copyOf(list); }
     public BlockPos offset(BlockPos anchor,Direction facing,int right,int up,int back) { return anchor.relative(facing.getClockWise(),right).above(up).relative(facing.getOpposite(),back).immutable(); }
     public BlockPos center(BlockPos anchor,Direction facing) { return offset(anchor,facing,layout.width()/2,0,layout.depth()/2); }
+    public BlockPos anchorAtCenter(BlockPos center,Direction facing) { return center.relative(facing.getCounterClockWise(),layout.width()/2).relative(facing,layout.depth()/2).immutable(); }
     public Direction placementFacing(Direction look) { return this==SPLITTER ? look:look.getOpposite(); }
     public Direction facing(BlockState state) { return state.getValue(FactoryBlock.FACING); }
 }

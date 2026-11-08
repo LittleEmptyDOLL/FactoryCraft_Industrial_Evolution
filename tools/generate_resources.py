@@ -369,3 +369,12 @@ for lang in ['en_us','ru_ru']:
  'preview.factorycraft.blocked':'%s × %s × %s — занятых ячеек: %s' if ru else '%s × %s × %s — blocked cells: %s',
  })
  write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.6.1: one deterministic large surface-field sampler per resource and chunk.
+for index,name in enumerate(['iron_ore','copper_ore','coal_deposit','stone_deposit']):
+ write(f'data/factorycraft/worldgen/configured_feature/{name}.json',{'type':'factorycraft:resource_patch','config':{'state':{'Name':'factorycraft:'+name},'salt':920174+(index*812791),'use_world_settings':True,'vein':{'min_radius':8,'max_radius':20,'min_stock':500,'max_stock':5000,'spacing_chunks':6}}})
+ write(f'data/factorycraft/worldgen/placed_feature/{name}.json',{'feature':'factorycraft:'+name,'placement':[{'type':'minecraft:biome'}]})
+for lang in ['en_us','ru_ru']:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
+ data['tooltip.factorycraft.machine_preview']='Установка от центра основания. Синяя ячейка — выбранный центр; красное — препятствие.' if ru else 'Places around the base center. Blue cell = selected center; red = obstruction.'
+ write(f'assets/factorycraft/lang/{lang}.json',data)

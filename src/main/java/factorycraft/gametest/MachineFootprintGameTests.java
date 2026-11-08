@@ -25,8 +25,8 @@ public final class MachineFootprintGameTests {
             var placement=new BlockPlaceContext(context);var state=block.getStateForPlacement(placement);var preview=PlacementPlan.inspect(placement,state);
             h.assertTrue(preview.valid() && preview.cells().size()==profile.layout.width()*profile.layout.height()*profile.layout.depth(),"preview volume differs from profile");
             h.assertTrue(player.getMainHandItem().useOn(context).consumesAction() && player.getMainHandItem().getCount()==1,"one-item formation failed: "+id+" "+direction);
-            var owner=AssemblyAccess.owner(h.getLevel().getBlockEntity(anchor));h.assertTrue(owner!=null && owner.assembly().formed(),"controller failed to form");
-            for(var cell:preview.cells())h.assertTrue(cell.equals(anchor) || h.getLevel().getBlockEntity(cell) instanceof CasingBlockEntity part && part.boundTo(anchor,owner.assembly().identity()),"preview does not match actual parts");
+            var controller=preview.anchor();h.assertTrue(preview.center().equals(anchor),"preview is not centered on selected base cell");var owner=AssemblyAccess.owner(h.getLevel().getBlockEntity(controller));h.assertTrue(owner!=null && owner.assembly().formed(),"controller failed to form");
+            for(var cell:preview.cells())h.assertTrue(cell.equals(controller) || h.getLevel().getBlockEntity(cell) instanceof CasingBlockEntity part && part.boundTo(controller,owner.assembly().identity()),"preview does not match actual parts");
             for(var cell:preview.cells())h.getLevel().getBlockEntity(cell).onLoad();h.assertTrue(owner.assembly().ready(),"full structure failed availability check");
             var part=(CasingBlockEntity)h.getLevel().getBlockEntity(owner.assembly().positions().getLast());part.onChunkUnloaded();h.assertTrue(!owner.assembly().ready(),"unloaded cell did not suspend machine");part.onLoad();h.assertTrue(owner.assembly().ready(),"reloaded cell did not resume machine");
             owner.assembly().removeWhole(false);for(var cell:preview.cells())h.assertTrue(h.getLevel().getBlockState(cell).isAir(),"demolition left a generated block");
@@ -60,13 +60,21 @@ public final class MachineFootprintGameTests {
     @GameTest(template="empty",timeoutTicks=100)
     public static void splitterMatchesPreviewInEveryOrientation(GameTestHelper h) { verify(h,"splitter"); }
     @GameTest(template="empty",timeoutTicks=100)
-    public static void survivalRefineryFitsAtNormalReachAndGrowsAwayFromThePlayer(GameTestHelper h) {
+    public static void survivalRefineryFitsAtNormalReachAndIsCenteredWithoutIntersectingThePlayer(GameTestHelper h) {
         var anchor=h.absolutePos(new BlockPos(10,2,10));var player=h.makeMockPlayer(GameType.SURVIVAL);player.getAbilities().instabuild=false;
-        player.moveTo(anchor.getX()+.5,anchor.getY(),anchor.getZ()-2.5,0,25);player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"oil_refinery"))));
+        player.moveTo(anchor.getX()+.5,anchor.getY(),anchor.getZ()-3.5,0,25);player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"oil_refinery"))));
         // A real collidable body at the player's feet catches a structure extending back through them.
         var body=net.minecraft.world.entity.EntityType.COW.create(h.getLevel());body.moveTo(player.getX(),player.getY(),player.getZ(),0,0);h.getLevel().addFreshEntity(body);
         var hit=new BlockHitResult(Vec3.atCenterOf(anchor),Direction.UP,anchor,false);var context=new UseOnContext(player,InteractionHand.MAIN_HAND,hit);
         h.assertTrue(player.getMainHandItem().useOn(context).consumesAction() && player.getMainHandItem().isEmpty(),"5x5 refinery could not be placed from normal survival reach");
-        var owner=AssemblyAccess.owner(h.getLevel().getBlockEntity(anchor));h.assertTrue(owner!=null && owner.assembly().positions().size()==99,"wrong refinery volume");body.discard();h.succeed();
+        var controller=MachineProfile.REFINERY.anchorAtCenter(anchor,Direction.NORTH);var owner=AssemblyAccess.owner(h.getLevel().getBlockEntity(controller));h.assertTrue(owner!=null && owner.assembly().positions().size()==99,"wrong refinery volume");body.discard();h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=100)
+    public static void centeredPlacementRejectsAnUnloadedCornerWithoutLoadingIt(GameTestHelper h) {
+        var center=new BlockPos(60015,75,60015);var level=h.getLevel();level.getChunkAt(center);var outside=center.east();
+        h.assertTrue(!level.hasChunkAt(outside),"test corner already loaded");level.setBlock(center.below(),net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(),18);h.assertTrue(!level.hasChunkAt(outside),"fixture floor loaded outside chunk");
+        var player=h.makeMockPlayer(GameType.SURVIVAL);player.getAbilities().instabuild=false;player.setYRot(Direction.SOUTH.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(factorycraft.registry.Content.FACTORY.get(factorycraft.blocks.FactoryKind.ASSEMBLER).get()));
+        var floor=center.below();var result=player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(floor),Direction.UP,floor,false)));
+        h.assertTrue(!result.consumesAction() && player.getMainHandItem().getCount()==1 && !level.hasChunkAt(outside),"centered footprint consumed item or loaded corner");h.succeed();
     }
 }

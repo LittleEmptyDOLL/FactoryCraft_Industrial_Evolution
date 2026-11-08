@@ -13,6 +13,7 @@ public final class FactoryCraft {
 
     public FactoryCraft(IEventBus bus, ModContainer container) {
         Content.register(bus);
+        container.registerConfig(ModConfig.Type.COMMON,factorycraft.config.ResourceWorldgenConfig.SPEC,"factorycraft-worldgen.toml");
         container.registerConfig(ModConfig.Type.SERVER, FactoryConfig.SPEC);
     }
 }

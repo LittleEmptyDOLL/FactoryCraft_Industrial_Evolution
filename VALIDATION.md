@@ -1,3 +1,19 @@
+# Validation — 0.6.1 (8 November 2026)
+
+* `./gradlew build`: PASS; **87 JUnit tests**, including connected deterministic fields, radius/stock bounds, different seeds/salts and chunk sampling.
+* Two separate `./gradlew runGameTestServer` JVMs: PASS; **115 required GameTests** each. All existing automation, recipe, native item placement, protection, portable resources, fluid/thermal/petroleum and disk fixtures remain active. Generated vein disk marker emits VERIFIED without reinitializing stock.
+* Actual configured iron/copper/coal/stone features generate large multi-chunk fields with correct per-coordinate stock; only the decorating chunk changes, seams are filled, repeat/reversed decoration does not refill resources. Explicit datapack stock 71–83/radius 6 and codec rejection of inverted bounds pass. This supplements pure sampling tests with real blocks/BEs/native persistence.
+* All 13 machine profiles in four facings: raw selected base center matches preview and actual generated volume; native survival item use consumes one item and preserves portable controller data. Every obstructed industrial part rejects placement. Center-loaded/corner-unloaded placement rejects without spending an item or loading that corner. Test fixture floor uses UPDATE_KNOWN_SHAPE to avoid its own neighbor updates loading the test corner before item use.
+* `./gradlew runBenchmarkServer -PbenchmarkMode=verify`: PASS against the unchanged full 0.6.0 checkpoint, including exact authoritative NBT hash, 10000 belts, 1000 producers, 500 inserters and 32500 parts. Geometry, contents, FE and identities of existing worlds stay unchanged. Fresh full measurement/reload also runs in GitHub CI; no new hardware timing claim is made.
+* `./gradlew runClient -PsmokeWorld=FactoryCraftScale`: graphical software-OpenGL client loaded the 0.6.0 save on 0.6.1. Verified centered 3×3×3 preview (selected cell inside the footprint), obstructed-corner rejection retaining 4 assembler items, clearing it consuming one (4 → 3), and schema-3 owner/part data at the derived corner/selected center. World saved normally.
+* Created a fresh **normal-terrain** client world `FactoryCraftVeins`, seed `123456789`. Worldgen workers naturally generated large surface fields without manual feature placement or block seeding. Iron at (74,62,68) held 4608 units; a larger coal field and neighboring copper field were visually inspected. Native-stock command and screenshots confirm actual generation through WorldGenRegion, beyond the server-feature fixtures. After saving/closing and reopening the world, iron remained exactly 4608 and coal at (23,68,47) remained 4583; no reserve reinitialization.
+
+Evidence: docs/screenshots/centered-placement-0.6.1.png, centered-blocked-0.6.1.png, resource-veins-0.6.1.png. Configuration: config/factorycraft-worldgen.toml; docs/config/factorycraft-worldgen.example.toml. Updated configured-feature format is documented in RESOURCE_FIELDS.md.
+
+Limits: no retrogen, separate create-world settings GUI, guaranteed spawn starter fields or new uranium/oil-field model. Water/terrain may reduce a candidate field. Tiled machine shells and two shared splitter lanes remain the previously documented partial systems. Old initialized resources do not adopt new stock ranges; worlds before 0.6.0 remain unsupported. Historical version entries below describe their own geometry and evidence.
+
+---
+
 # Validation — 0.6.0 (8 November 2026)
 
 Target: JDK 21, Minecraft 1.21.1, NeoForge 21.1.252 / ModDevGradle. No Forge or other-version API is assumed. Native mining/destruction, block snapshots, chunk lifecycle and render-stage APIs were checked against these exact dependency sources; runtime exercised dedicated and integrated server paths.

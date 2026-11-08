@@ -1,0 +1,7 @@
+# Copy settings into config/factorycraft-worldgen.toml before starting the world.
+# Only newly generated chunks change; saved resource quantities never reset.
+minVeinRadius = 8
+maxVeinRadius = 20
+minTileStock = 500
+maxTileStock = 5000
+veinSpacingChunks = 6

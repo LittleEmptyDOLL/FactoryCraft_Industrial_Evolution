@@ -37,7 +37,7 @@ public final class AutomaticMultiblockGameTests {
     private static UseOnContext context(Player player,BlockPos pos) {
         return new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(pos),Direction.UP,pos,false));
     }
-    private static InteractionResult place(Player player,BlockPos pos) { return player.getMainHandItem().useOn(context(player,pos)); }
+    private static InteractionResult place(Player player,BlockPos pos) { return PlacementTestSupport.place(player,pos); }
     private static MachineBlockEntity machine(GameTestHelper h,BlockPos pos) { return (MachineBlockEntity)h.getLevel().getBlockEntity(pos); }
     private static List<BlockPos> cells(BlockPos pos,Direction direction) {
         var cells=new ArrayList<>(IndustrialAssembly.positions(pos,direction));cells.addFirst(pos);return cells;

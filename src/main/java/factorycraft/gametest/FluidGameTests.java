@@ -123,7 +123,7 @@ public final class FluidGameTests {
             h.assertTrue(port.drain(7000,EXEC).isEmpty(),"old tank capability still owns dropped water");
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.getAbilities().instabuild=false;player.setItemInHand(InteractionHand.MAIN_HAND,drops.getFirst().getItem().copy());drops.getFirst().discard();
             var target=h.absolutePos(new BlockPos(8,2,3));var hit=new BlockHitResult(Vec3.atCenterOf(target),Direction.UP,target,false);
-            var result=player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,hit));
+            var result=PlacementTestSupport.place(player,target);
             h.assertTrue(result.consumesAction() && player.getMainHandItem().isEmpty(),"filled tank item was not placed/consumed");
             h.runAfterDelay(5,()->{var restored=(FluidBlockEntity)h.getLevel().getBlockEntity(target);h.assertTrue(restored.cell().amount()==7000,"tank item lost or duplicated its fluid");h.succeed();});
         });

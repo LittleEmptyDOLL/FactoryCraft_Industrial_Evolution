@@ -35,7 +35,7 @@ public final class PetroleumGameTests {
         if(kind.large()) {
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.WEST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(kind).get()));
             var hit=new BlockHitResult(Vec3.atCenterOf(pos),Direction.UP,pos,false);
-            h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,hit)).consumesAction(),"one-item refinery placement failed");
+            h.assertTrue(PlacementTestSupport.place(player,pos).consumesAction(),"one-item refinery placement failed");
         } else h.getLevel().setBlockAndUpdate(pos,Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
         return (MachineBlockEntity)h.getLevel().getBlockEntity(pos);
     }
@@ -124,7 +124,7 @@ public final class PetroleumGameTests {
             var items=entities.stream().filter(e->e.getItem().is(Content.FACTORY.get(FactoryKind.REFINERY).get().asItem())).toList();
             h.assertTrue(items.size()==1 && items.getFirst().getItem().getCount()==1 && entities.stream().noneMatch(e->e.getItem().is(Items.DIAMOND)),"refinery destruction duplicated or lost owner");
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.WEST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,items.getFirst().getItem().copy());items.getFirst().discard();
-            var at=h.absolutePos(new BlockPos(11,2,5));h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(at),Direction.UP,at,false))).consumesAction(),"portable refinery would not place");
+            var at=h.absolutePos(new BlockPos(11,2,5));h.assertTrue(PlacementTestSupport.place(player,at).consumesAction(),"portable refinery would not place");
             var restored=(MachineBlockEntity)h.getLevel().getBlockEntity(at);
             h.assertTrue(restored.petroleum().cells.get(0).amount()==250 && count(restored,Items.DIAMOND)==3 && restored.assembly().formed(),"portable refinery lost state or overwrote fresh identity");
             for(var pos:restored.assembly().positions())h.assertTrue(((CasingBlockEntity)h.getLevel().getBlockEntity(pos)).boundTo(at,restored.assembly().identity()),"portable NBT orphaned new parts");h.succeed();
@@ -163,7 +163,7 @@ public final class PetroleumGameTests {
         java.util.function.Consumer<net.neoforged.neoforge.event.level.BlockEvent.EntityMultiPlaceEvent> listener=e->e.setCanceled(true);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(listener);
         try {
-            player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(pos),Direction.UP,pos,false)));
+            PlacementTestSupport.place(player,pos);
             h.assertTrue(player.getMainHandItem().getCount()==1 && h.getLevel().getBlockState(pos).isAir(),"protection consumed refinery or left controller");
             for(var part:IndustrialAssembly.positions(pos,Direction.EAST))h.assertTrue(h.getLevel().getBlockState(part).isAir(),"canceled placement left generated part");
         } finally { net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(listener); }
@@ -175,7 +175,7 @@ public final class PetroleumGameTests {
         var all=new ArrayList<>(factorycraft.multiblock.MachineProfile.REFINERY.parts(anchor,Direction.NORTH));all.addAll(List.of(anchor,plantPos,resource,exhausted));all.addAll(factorycraft.multiblock.MachineProfile.CHEMICAL.parts(plantPos,Direction.NORTH));for(var p:all)level.getChunkAt(p);
         if(level.getBlockEntity(anchor)==null && level.getBlockEntity(plantPos)==null && level.getBlockEntity(resource)==null && level.getBlockEntity(exhausted)==null) {
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.SOUTH.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(FactoryKind.REFINERY).get()));
-            h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(anchor),Direction.UP,anchor,false))).consumesAction(),"disk refinery placement failed");
+            h.assertTrue(PlacementTestSupport.place(player,anchor).consumesAction(),"disk refinery placement failed");
             var refinery=(MachineBlockEntity)level.getBlockEntity(anchor);refinery.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.CRUDE.stack(1)),731);refinery.petroleum().cells.get(2).restore(new FluidKey(PetroleumFluids.GAS.stack(1)),389);refinery.items.setStackInSlot(0,new ItemStack(Items.DIAMOND,3));refinery.power.restore(7312);
             factorycraft.multiblock.StructurePlacement.place(level,plantPos,Content.FACTORY.get(FactoryKind.CHEMICAL_PLANT).get().defaultBlockState());var plant=(MachineBlockEntity)level.getBlockEntity(plantPos);plant.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.GAS.stack(1)),11);plant.items.setStackInSlot(0,new ItemStack(Items.COAL,2));
             var tag=plant.saveWithFullMetadata(level.registryAccess());tag.getCompound("Petroleum").putInt("Progress",7);tag.getCompound("Petroleum").putInt("Duration",20);plant.loadWithComponents(tag,level.registryAccess());
