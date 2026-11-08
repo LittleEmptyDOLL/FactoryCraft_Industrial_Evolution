@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "factorycraft:block/boiler",
+    "side": "factorycraft:block/boiler",
+    "top": "factorycraft:block/boiler_top"
+  }
+}

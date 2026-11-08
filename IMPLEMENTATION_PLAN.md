@@ -31,7 +31,7 @@ Maintain the delivered stages 1–2 vertical slice while expanding stage 3 with 
 
 ## Next session
 
-Read VALIDATION.md, FEATURE_MATRIX.md and FLUIDS.md first. Reproduce `./gradlew build` and two separate `./gradlew runGameTestServer` processes before extending stage 3. Preserve existing factory, fluid and multiblock fixtures. Do not claim the full Factorio/Space Age implementation is complete.
+Read VALIDATION.md, FEATURE_MATRIX.md, FLUIDS.md and STEAM_POWER.md first. Reproduce `./gradlew build` and two separate `./gradlew runGameTestServer` processes before extending stage 3. Preserve existing factory, fluid and multiblock fixtures. Do not claim the full Factorio/Space Age implementation is complete.
 
 ## Delivered in 0.1.0
 
@@ -67,6 +67,10 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Continue stage 3 with a real water → steam boiler and steam engine, then counted item/fluid processing recipes and oil/refining/chemistry. Define energy/material balances first; extend recipe codecs and guarded machine ports without breaking old processing JSON. Larger machines use one-item automatic multiblocks. Verify powered water intake → boiler → steam → generator, blocked outputs, no-input/no-fuel cases and separate-process restart.
+1. Continue stage 3 with mixed item/fluid processing transactions, oil deposits/pumpjack and refinery/chemistry. Keep old item-processing and boiling JSON readable. Define counted inputs/outputs, multiple fluid ports and reserved output space before adding machines; test blocked outputs, power loss, fluid components and restart. Large refineries use the existing one-item automatic multiblock layout. Oil must have a real finite resource source, not a free tank-fill tool.
 2. Exercise two real connected clients and natural-distance chunk unload. Use the new JFR packet capture to measure tracking/synchronization, then implement batching/deltas from measured evidence. BE sync request counts do not measure wire traffic. The dedicated no-client workload does not establish client FPS or multiplayer bandwidth.
 3. Continue underground belts, two-block splitters and inserter variants. Keep future space mechanics independent from basic production. Extend larger machines through one-item controller/part layouts rather than duplicating inventories.
+
+## Delivered in 0.4.0 — steam power
+
+Implemented compact single-block boiler and steam engine, container-only steam/bucket, standard guarded fluid/item/FE capabilities, original animated assets, EN/RU and working menus. The fueled boiler uses an independent sized/tagged fluid recipe type with atomic conversion, bounded codecs and canonical persisted recipe identity. Engine generation supplies the existing pole graph and preserves integer FE/steam balance. Fuel remainders, unspent burn ticks, progress, fluids/components and generated FE survive portable placement and separate server processes. Native buckets refuse lossy component transfer; filled tanks remain the portable option. See STEAM_POWER.md and VALIDATION.md for exact ratios, tests and limits. Next work remains mixed item/fluid transactions and finite oil/refining, as prioritized above.

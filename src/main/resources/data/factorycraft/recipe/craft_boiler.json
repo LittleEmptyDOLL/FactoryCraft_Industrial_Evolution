@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "BFB",
+    "PGP"
+  ],
+  "key": {
+    "P": {
+      "item": "factorycraft:iron_plate"
+    },
+    "B": {
+      "item": "factorycraft:fluid_pipe"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    }
+  },
+  "result": {
+    "id": "factorycraft:boiler",
+    "count": 1
+  }
+}

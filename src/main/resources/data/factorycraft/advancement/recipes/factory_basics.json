@@ -16,6 +16,7 @@
   "rewards": {
     "recipes": [
       "factorycraft:craft_assembling_machine",
+      "factorycraft:craft_boiler",
       "factorycraft:craft_coal_generator",
       "factorycraft:craft_electric_drill",
       "factorycraft:craft_electric_furnace",
@@ -29,6 +30,7 @@
       "factorycraft:craft_inserter",
       "factorycraft:craft_iron_gear",
       "factorycraft:craft_splitter",
+      "factorycraft:craft_steam_engine",
       "factorycraft:craft_transport_belt",
       "factorycraft:craft_wrench"
     ]

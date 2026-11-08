@@ -1,4 +1,39 @@
-# Validation — 0.3.0, 8 November 2026
+# Validation — 0.4.0, 8 November 2026
+
+Continues `main` commit `e693b7a` (0.3.0), preserving all previous IDs/data. Target remains **Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21**. This milestone delivers the steam-power part of stage 3. General oil/chemistry and later stages remain incomplete.
+
+## Automated results
+
+* Baseline before implementation: existing **62 JUnit / 62 GameTests** pass; a second original server process also passes and verifies the old fluid/machine/multiblock region fixtures.
+* `./gradlew build`: **73 JUnit tests**, zero failures/errors/skips. Eleven new tests cover simulated/atomic fluid conversion and callback ordering, incompatible/blocked outputs, exact fuel/progress/material counts, partial reconstruction, edited recipe identity, engine FE quanta/overflow, read-only energy simulation, and a complete 4000-mB → 48000-FE finite ledger. All existing tests remain green.
+* `./gradlew runGameTestServer`: **76 required tests pass** with the final codecs/commands/menu changes and component guard, followed by **76 passed in another JVM**. Fourteen new scenarios cover real boiling JSON/fuel, blocked-output pause/resume, finite steam/FE extraction, near-full energy rounding without wasted steam, cached rotation/unload guards, actual steam buckets, fuel-container remainder automation, harvested-item placement with all resources, partial recipe reconstruction, pipe/engine conservation, source-water-powered production, recipe JSON/wire validation and exact disk state, plus a regression guard against native buckets erasing fluid data components. An earlier 74-test run and its separate-process reload passed before the extra codec scenario was added.
+* Separate JVMs emit `FACTORYCRAFT_THERMAL_DISK: SEEDED` then `VERIFIED exact fuel/progress/fluids/FE across chunks`. The intentionally detached fixture stores 731 mB input, 389 mB output, 913 fuel ticks, progress 7, three coal, and a second engine's 523 mB steam/7312 FE. Verification refuses to reseed a partially missing fixture. Old 8000-mB component-bearing fluid, belt, machine, hand and both multiblock disk fixtures also continue to report `VERIFIED`.
+* The source-water scenario gives the pump a finite **400 FE** bootstrap, with **no coal generator** in the structure. Water → pump → pipes → fueled boiler → steam pipes → engine → pole grid produces four plates in the existing electric furnace and recharges the pump above its starting level. No intermediate fluid or machine output is manually supplied.
+* `./gradlew runBenchmarkServer -PbenchmarkMode=verify`: **PASS** on the real saved 0.3.0 full-factory world (10000 belts, 1000 producers, 500 inserters and 250 industrial multiblocks). The exact authoritative hash matches before the first simulation tick; resumed ledgers/identities pass. This checks GridGenerator compatibility, not large thermal-world TPS.
+
+## Client and API checks
+
+`./gradlew runClient -PsmokeWorld=FactoryCraftSmoke` launches the actual 0.4.0 client under Xvfb/Mesa and loads the existing 0.3.0 QA save. `/factorycraft steamworks` builds the new chain at (142,70,102). Opened the Russian boiler menu: water input reached 4000 mB, progress advanced and fuel decreased with three coal retained. The engine menu showed generated FE and stored steam. Removed the bootstrap generator with `/setblock`; the engine continued supplying the grid. The world was saved with the ordinary menu, then reopened with the final screen changes. The same world also loads with the final bucket-component guard. Supplying another eight raw iron after reload (with the bootstrap generator absent) increases the furnace output from eight to **sixteen plates**, confirming resumed production. New slot borders are visible; the engine uses an FE bar and hides the unused fuel slot. The client smoke scenario uses local software OpenGL and null audio, not an FPS/audio/network-authentication benchmark.
+
+NeoForge BaseFlowingFluid/FluidType, RegisterClientExtensionsEvent, SizedFluidIngredient.FLAT_CODEC/STREAM_CODEC, native FluidStack codecs, bucket/item/FE ports, registry-aware buffers, block-item NBT and chunk lifecycle were checked against the resolved **21.1.252 / Minecraft 1.21.1** sources and compiled/exercised. Steam has no LiquidBlock and its native FluidType rejects world placement. No client classes load on dedicated test/benchmark servers. The first compile exposed two incorrectly named local variables in the wrench branch; those were corrected before server testing. No copied Factorio assets or new external libraries were introduced.
+
+## Native bucket component guard
+
+Source inspection showed NeoForge's default FluidBucketWrapper reconstructs a plain FluidStack and cannot retain additional fluid components. Steam FluidType therefore refuses that lossy conversion for component-bearing steam, and actual FactoryCraft empty-bucket interaction similarly preserves component-bearing water/other fluids in place with a translated explanation. The new GameTest checks that no volume/components/container are changed. Plain steam/water buckets remain usable; component-bearing fluids can travel in portable tanks or through component-aware capabilities.
+
+## Persistence/model and limits
+
+New thermal schema 1 owns fuel inventory/container remainders, unspent fuel ticks, progress and canonical recipe-definition identity, both native component-bearing FluidStacks, and generated FE. Existing schemas and item-processing recipes are unchanged. Harvested equipment stores one canonical state in one block item. Loaded canonical ownership and early chunk-event detachment prevent stale capability mutation during saves. Input/output conversion commits both cells before observers; engine FE is owned before steam notification. Restored overflow volume/energy is retained, not truncated.
+
+STEAM_POWER.md specifies ratios, startup, ports and exact limitations: nominal 165 °C label only, fixed 12 FE/mB, no ambient heat/cooling, no thermal multiblocks yet, no general mixed item/fluid chemistry, and no automatic external fluid/FE-neighbor discovery/push. Compact machines have normal server BE tickers, not a batched thermal scheduler. Two real network clients, natural player-distance unloading and a large active thermal factory remain unverified. The detached exact-value fixture complements live reconstruction tests; it is not a player-distance unload claim.
+
+## Changed areas and continuation
+
+Independent boiler/engine kernels and atomic cell conversion; steam fluid/bucket registration; guarded persistent thermal BE, blocks/items, menus/screens and lifecycle; shared grid-source interface; boiling recipes/codecs and original resources/EN-RU/book unlocks; steamworks command; JUnit/GameTests; version 0.4.0 and model/continuation documents. Next concrete task in IMPLEMENTATION_PLAN.md: counted mixed item/fluid transactions, finite oil deposits/pumpjack, then refinery/chemistry using one-item multiblocks for larger footprints.
+
+---
+
+# Historical validation — 0.3.0, 8 November 2026
 
 Continues `main` commit `9f96696` (0.2.2). Target remains Minecraft **1.21.1 / NeoForge 21.1.252 / Java 21**. This release implements the first stage-3 fluid logistics slice, alongside the existing automated factory. It does not implement oil/chemistry or complete Factorio/Space Age.
 

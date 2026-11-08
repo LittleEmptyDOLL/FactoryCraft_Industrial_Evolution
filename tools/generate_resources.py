@@ -207,3 +207,62 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';content=json.loads(path.read_text());content.update({key:value[index] for key,value in fluid_lang.items()});write(str(path.relative_to(ROOT)),content)
 write('data/factorycraft/advancement/recipes/fluid_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_'+name for name in ['fluid_pipe','fluid_tank','electric_pump']]}})
 write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})
+
+# Compact steam equipment: original procedural textures, container-only steam and data-driven boiling.
+for name,color in [('boiler',(161,104,53)),('steam_engine',(56,133,150))]:
+ base=texture('block/'+name,color,'machine')
+ top=[row.copy() for row in base]
+ for y in range(4,13):
+  for x in [7,8]:top[y][x]=(245,190,58,255)
+ for y in range(2,6):
+  for x in range(7-(y-2),9+(y-2)):top[y][x]=(245,190,58,255)
+ png('block/'+name+'_top',top)
+ frames=[]
+ for f in range(2):
+  image=[row.copy() for row in base]
+  for y in [5,8,11]:
+   for x in range(5,11):image[y][x]=(252,143+f*65,43,255) if name=='boiler' else (62,186+f*50,222,255)
+  frames.extend(image)
+ png('block/'+name+'_active',frames)
+ write(f'assets/factorycraft/textures/block/{name}_active.png.mcmeta',{'animation':{'frametime':6,'interpolate':True}})
+ variants={}
+ for facing,angle in [('north',0),('east',90),('south',180),('west',270)]:
+  for lit in ['false','true']:variants[f'facing={facing},lit={lit}']={'model':'factorycraft:block/'+name+('_active' if lit=='true' else ''),'y':angle}
+ write(f'assets/factorycraft/blockstates/{name}.json',{'variants':variants})
+ for suffix in ['','_active']:
+  write(f'assets/factorycraft/models/block/{name}{suffix}.json',{'parent':'minecraft:block/orientable','textures':{'front':'factorycraft:block/'+name+suffix,'side':'factorycraft:block/'+name,'top':'factorycraft:block/'+name+'_top'}})
+ write(f'assets/factorycraft/models/item/{name}.json',{'parent':'factorycraft:block/'+name})
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
+texture('block/steam',(186,213,219),'ore')
+texture('item/steam_bucket',(191,215,219),'item')
+write('assets/factorycraft/models/item/steam_bucket.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/steam_bucket'}})
+craft('boiler',['PPP','BFB','PGP'],{'P':'factorycraft:iron_plate','B':'factorycraft:fluid_pipe','F':'minecraft:furnace','G':'factorycraft:iron_gear'})
+craft('steam_engine',['PGP','BCB','PGP'],{'P':'factorycraft:iron_plate','G':'factorycraft:iron_gear','B':'factorycraft:fluid_pipe','C':'factorycraft:copper_plate'})
+write('data/factorycraft/recipe/boil_water.json',{'type':'factorycraft:boiling','input':{'fluid':'minecraft:water','amount':200},'result':{'id':'factorycraft:steam','amount':200},'ticks':20})
+steam_lang={
+ 'message.factorycraft.component_bucket':('This bucket cannot preserve fluid components. Move the filled tank instead.','Ведро не сохраняет свойства жидкости. Перенесите заполненный резервуар.'),
+ 'block.factorycraft.boiler':('Boiler','Котёл'),
+ 'block.factorycraft.steam_engine':('Steam Engine','Паровой двигатель'),
+ 'fluid.factorycraft.steam':('Steam (165 °C)','Пар (165 °C)'),
+ 'item.factorycraft.steam_bucket':('Steam Bucket','Ведро пара'),
+ 'gui.factorycraft.thermal_water':('Input: %s mB','Вход: %s mB'),
+ 'gui.factorycraft.thermal_energy':('Energy: %s FE','Энергия: %s FE'),
+ 'gui.factorycraft.thermal_steam':('Steam/output: %s mB','Пар/выход: %s mB'),
+ 'gui.factorycraft.thermal_fuel':('Fuel: %s working ticks','Топливо: %s раб. тактов'),
+ 'gui.factorycraft.engine_rate':('Up to 120 FE/t; 12 FE/mB','До 120 FE/т; 12 FE/mB'),
+ 'gui.factorycraft.boiler_ports':('In behind; out ahead','Сзади → спереди'),
+ 'gui.factorycraft.engine_ports':('Steam behind; FE to poles','Пар сзади; FE к столбам'),
+ 'gui.factorycraft.engine_buffer':('Stops at full FE buffer','Полный буфер: остановка'),
+ 'gui.factorycraft.boiler_status_0':('Waiting','Ожидание'),
+ 'gui.factorycraft.boiler_status_1':('Needs fuel','Нет топлива'),
+ 'gui.factorycraft.boiler_status_2':('Needs recipe input','Нет сырья для рецепта'),
+ 'gui.factorycraft.boiler_status_3':('Output blocked','Выход заполнен'),
+ 'gui.factorycraft.boiler_status_4':('Boiling','Кипячение'),
+ 'tooltip.factorycraft.boiler':('Water behind, steam ahead. Fuel and fluids stay in the harvested block.','Вода сзади, пар спереди. Топливо и жидкости сохраняются при добыче.'),
+ 'tooltip.factorycraft.steam_engine':('Steam behind. 12 FE/mB, up to 120 FE/t; supplies poles or FE extraction.','Пар сзади. 12 FE/mB, до 120 FE/т; питание столбов или выдача FE.'),
+ 'command.factorycraft.steam_space':('Need a loaded empty 13 x 4 x 7 area beside you.','Рядом нужна свободная загруженная область 13 x 4 x 7.'),
+ 'command.factorycraft.steam_demo':('Steam-powered furnace built at %s. The coal generator only bootstraps the pump.','Паровая электростанция с печью: %s. Угольный генератор нужен для запуска насоса.')}
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';content=json.loads(path.read_text());content.update({k:v[index] for k,v in steam_lang.items()});write(str(path.relative_to(ROOT)),content)
+write('data/factorycraft/advancement/recipes/steam_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_boiler','factorycraft:craft_steam_engine']}})
+write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})

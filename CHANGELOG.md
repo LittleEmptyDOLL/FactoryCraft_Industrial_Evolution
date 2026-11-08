@@ -1,3 +1,13 @@
+# 0.4.0 — steam power (8 November 2026)
+
+* Added compact fuel-fired boiler, container-only steam/steam bucket and steam engine, original animated textures/models, EN/RU tooltips and fuel/fluid/FE menus. `/factorycraft steamworks` builds a working source → pump → boiler → steam → engine → pole-powered furnace example.
+* Boiler defaults to 200 mB water → 200 mB steam over 20 fueled ticks; blocks safely on insufficient input/output. Engine consumes up to 10 mB/t at 12 FE/mB (120 FE/t), retains generated energy, stops before overflow and supplies existing poles or guarded FE extraction.
+* Added independent boiling JSON recipes with NeoForge sized/tagged fluid ingredients, native component-bearing results, codec bounds and stream synchronization. Existing item recipes/schemas stay unchanged.
+* Atomic fluid conversion, stored unspent fuel heat/progress, fuel-container remainders, directional cached-port guards, early chunk freeze and portable full machine contents.
+* Added 11 independent JUnit and 14 GameTests for conversion/energy ledgers, backpressure, fuel, buckets, rotation/unload, portable actual placement, codecs, partial production, a self-sustaining pump/furnace line and exact separate-process persistence.
+* Prevented native buckets from silently erasing fluid components in block interaction; component-bearing steam refuses native bucket conversion. Filled portable blocks retain the original stack.
+* Oil, general mixed item/fluid chemistry, temperature/heat networks and large thermal footprints remain planned; see STEAM_POWER.md.
+
 # 0.3.0 — fluid logistics (8 November 2026)
 
 * Added six-way fluid pipes (1000 mB), tanks (16000 mB) and directional electric pumps (1000 mB, 20 FE/working tick, up to 100 mB/port/tick), native water intake and integration with the existing pole grid.

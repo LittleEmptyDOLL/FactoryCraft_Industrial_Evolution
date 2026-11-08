@@ -1,4 +1,4 @@
-# Architecture decisions — 0.3.0 (belt/assembly/casing schema 2; machine/fluid schema 1)
+# Architecture decisions — 0.4.0 (belt/assembly/casing schema 2; machine/fluid/thermal schema 1)
 
 ## Authority and persistence
 
@@ -95,3 +95,13 @@ The diagnostic checkpoint additionally hashes canonical authoritative NBT before
 Before mutation, the adapter checks the canonical LevelChunk/BE identity through ServerChunkCache.getChunkNow. Dirty changes mark the owned chunk unsaved immediately. ChunkEvent.Unload freezes/removes fluid nodes before ChunkMap serializes outgoing chunks; ordinary BE unload callbacks occur too late for this guarantee. Client reads use the client mirror, while all mutations require the server-owned loaded node.
 
 New fluid NBT schema 1 uses the native FluidStack codec, retaining data components. Restored over-capacity volume remains drainable instead of being discarded. Harvested fluid blocks use vanilla BLOCK_ENTITY_DATA; empty, unpowered blocks stay ordinary stackable items. Existing machine, belt and assembly schemas are unchanged. Menu volume/capacity/registry IDs are split into 16-bit words for vanilla data slots; BE snapshots are staggered to at most once per five ticks for fluid changes. This is full BE synchronization, not a measured delta protocol. FLUIDS.md specifies pressure math, pump order, energy and the distinction from Factorio 2.0.
+
+## Thermal slice (0.4.0)
+
+`simulation.thermal.BoilerProcess` holds unspent fuel heat, recipe-definition identity and progress. `FluidCell.convertTo` validates/reserves and commits both fluid stores before observers; input is consumed only when the full result fits. Fuel and final progress are updated before conversion callbacks. `SteamEngine` owns generated FE before draining/notifying the steam cell; integer 12-FE quanta avoid discarded steam at a nearly full buffer. Oversized saved FE remains extractable.
+
+`ThermalBlockEntity` owns its sole inventory, two cells and both kernels. Directional transfer resolves only its two precomputed neighboring positions through getChunkNow and canonical BE identity; no forced loads or world scan. It pulls/pushes finite volumes into the existing fluid cells, rather than adding a second pressure model. Stable capability objects recheck lifecycle and facing on each mutation. ThermalLifecycle detaches at the pre-serialization chunk event. Inventory notifications are deferred during refueling until the fuel remainder and stored burn ticks have an owner, then normal inventory notifications resume.
+
+The independent `factorycraft:boiling` recipe type uses SizedFluidIngredient.FLAT_CODEC, native FluidStack components and a bounded validated stream codec. Existing item-processing codecs are unchanged. Sorted definitions refresh at most once/20 ticks per boiler; a canonical codec-encoded definition in saved recipe identity prevents object identities from corrupting restart progress or edited datapacks from reusing another recipe's work.
+
+GridGenerator classifies the existing coal generator and new steam engine as sources in the same cached graph; GridConsumer behavior is retained. Engine output uses stored generated FE only. The 0.4.0 dedicated benchmark reload checks old authoritative hashes. Thermal menus use validated vanilla slots/data and split 32-bit values; only changed state requests BE synchronization on a five-tick cadence. New equipment has normal per-BE server tickers; large fluid/thermal-world profiling and batched thermal scheduling remain future optimization work.

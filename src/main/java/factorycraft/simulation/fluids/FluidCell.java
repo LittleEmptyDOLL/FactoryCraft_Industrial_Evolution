@@ -41,6 +41,16 @@ public final class FluidCell<K> {
         }
         return moved;
     }
+    /** Recipe conversion commits both stores before either callback; no intermediate unowned fluid. */
+    public boolean convertTo(FluidCell<K> target,int consumed,K output,int produced,boolean simulate) {
+        Objects.requireNonNull(target);Objects.requireNonNull(output);
+        if(target==this || consumed<1 || produced<1 || amount<consumed || target.space()<produced || !target.accepts(output))return false;
+        if(!simulate) {
+            removeReserved(consumed);target.addReserved(output,produced);
+            try { notifyChanged(); }finally { target.notifyChanged(); }
+        }
+        return true;
+    }
     /** Oversized legacy saves retain volume; further filling waits until overflow is drained. */
     public void restore(K fluid,int volume) {
         if(volume<0 || volume>0 && fluid==null)throw new IllegalArgumentException("Invalid persisted fluid");

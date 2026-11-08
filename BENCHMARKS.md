@@ -115,3 +115,7 @@ CI повторяет сценарий на другом оборудовани�
 The old 0.2.2 saved full-factory checkpoint passes exact-state verification on 0.3.0, before the old marked world is preserved separately. A fresh full 0.3.0 workload and a new-process reload also pass. Raw results: [measurement](docs/benchmarks/v030-full-measure.json), [restart](docs/benchmarks/v030-full-verify.json).
 
 The fresh local 600-tick run averaged 34.474 ms (p95 76.391 ms, p99 101.825 ms, max 290.202 ms, 103 ticks above 50 ms). A concurrent Gradle task listing overlapped the measurement; this is not a controlled performance comparison with 0.2.2. All belts moved, all producers returned results and all inserters delivered, with exact material/FE conservation. It contains no fluid nodes or connected clients. The new 10000-cell fluid JUnit exercise proves finite-volume conservation, not in-world fluid throughput/TPS.
+
+## 0.4.0 compatibility check
+
+`runBenchmarkServer -PbenchmarkMode=verify` passes on the saved 0.3.0 full-factory checkpoint with the new GridGenerator source classification. Exact authoritative state hashes, resumed material/FE ledgers and all multiblock identities remain valid. This workload still has no active thermal machines, so it does not establish thermal-world TPS or a new timing comparison. CI continues running a fresh full measurement and separate-process verification.

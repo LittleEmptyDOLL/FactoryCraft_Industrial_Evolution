@@ -39,6 +39,13 @@ public final class Content {
             FLUID_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->new factorycraft.items.FluidBlockItem(block.get(),new Item.Properties()));
         }
     }
+    public static final Map<factorycraft.thermal.ThermalKind,DeferredBlock<Block>> THERMAL_BLOCKS=new EnumMap<>(factorycraft.thermal.ThermalKind.class);
+    static {
+        for(var kind:factorycraft.thermal.ThermalKind.values()) {
+            var block=BLOCKS.<Block>register(kind.id,()->new factorycraft.blocks.ThermalBlock(kind,BlockBehaviour.Properties.of().strength(3).noOcclusion().pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)));
+            THERMAL_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->new factorycraft.items.ThermalBlockItem(block.get(),new Item.Properties()));
+        }
+    }
     static {
         for (var kind : FactoryKind.values()) {
             var block = BLOCKS.register(kind.id, () -> new FactoryBlock(kind, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()
@@ -66,6 +73,10 @@ public final class Content {
     public static final DeferredHolder<MenuType<?>, MenuType<FactoryMenu>> MENU = MENUS.register("machine", () -> IMenuTypeExtension.create(FactoryMenu::new));
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<FluidBlockEntity>> FLUID=ENTITIES.register("fluid",()->BlockEntityType.Builder.of(FluidBlockEntity::new,FLUID_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
     public static final DeferredHolder<MenuType<?>,MenuType<factorycraft.fluids.FluidMenu>> FLUID_MENU=MENUS.register("fluid",()->IMenuTypeExtension.create(factorycraft.fluids.FluidMenu::new));
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ThermalBlockEntity>> THERMAL=ENTITIES.register("thermal",()->BlockEntityType.Builder.of(ThermalBlockEntity::new,THERMAL_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<MenuType<?>,MenuType<factorycraft.thermal.ThermalMenu>> THERMAL_MENU=MENUS.register("thermal",()->IMenuTypeExtension.create(factorycraft.thermal.ThermalMenu::new));
+    public static final DeferredHolder<RecipeType<?>,RecipeType<factorycraft.recipes.BoilingRecipe>> BOILING=RECIPE_TYPES.register("boiling",()->new RecipeType<>() { public String toString() { return "factorycraft:boiling"; } });
+    public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<factorycraft.recipes.BoilingRecipe>> BOILING_SERIALIZER=SERIALIZERS.register("boiling",factorycraft.recipes.BoilingRecipe.Serializer::new);
     public static final DeferredHolder<RecipeType<?>, RecipeType<FactoryRecipe>> PROCESSING = RECIPE_TYPES.register("processing", () -> new RecipeType<>() { public String toString() { return "factorycraft:processing"; } });
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FactoryRecipe>> PROCESSING_SERIALIZER = SERIALIZERS.register("processing", FactoryRecipe.Serializer::new);
     static {
@@ -75,11 +86,15 @@ public final class Content {
     }
     private static Block[] blocks(FactoryKind... kinds) { return Arrays.stream(kinds).map(k -> FACTORY.get(k).get()).toArray(Block[]::new); }
     public static void register(IEventBus bus) {
+        factorycraft.thermal.SteamFluids.register(bus);
         BLOCKS.register(bus); ITEMS.register(bus); ENTITIES.register(bus); MENUS.register(bus);
         RECIPE_TYPES.register(bus); SERIALIZERS.register(bus); TABS.register(bus);
         bus.addListener(Content::capabilities);
     }
     private static void capabilities(RegisterCapabilitiesEvent e) {
+        e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,THERMAL.get(),(be,side)->be.automation());
+        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,THERMAL.get(),(be,side)->be.generatesElectricity() ? be.energyPort:null);
+        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,THERMAL.get(),(be,side)->side==null || ((factorycraft.blocks.ThermalBlock)be.getBlockState().getBlock()).port(be.getBlockState(),side) ? be.port(side):null);
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BELT.get(), (be, side) -> be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, INSERTER.get(), (be, side) -> be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), MachineBlockEntity::automation);

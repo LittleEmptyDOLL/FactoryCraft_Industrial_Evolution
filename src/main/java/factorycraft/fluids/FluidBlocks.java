@@ -18,11 +18,19 @@ import java.util.List;
 public final class FluidBlocks {
     public static FluidKind kind(BlockState state) { return state.getBlock() instanceof FluidDeviceBlock device ? device.kind:FluidKind.PIPE; }
     public static boolean port(BlockState state,Direction face) {
-        return state.getBlock() instanceof FluidPipeBlock || state.getBlock() instanceof FluidDeviceBlock device &&
+        return state.getBlock() instanceof ThermalBlock thermal && thermal.port(state,face) || state.getBlock() instanceof FluidPipeBlock || state.getBlock() instanceof FluidDeviceBlock device &&
                 (device.kind==FluidKind.TANK || face==state.getValue(FluidDeviceBlock.FACING) || face==state.getValue(FluidDeviceBlock.FACING).getOpposite());
     }
     public static ItemInteractionResult useItem(ItemStack stack,Level level,BlockPos pos,Player player,InteractionHand hand,Direction side) {
         if(FluidUtil.getFluidHandler(stack).isEmpty())return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if(!level.isClientSide && stack.is(net.minecraft.world.item.Items.BUCKET)) {
+            var handler=level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,pos,side);
+            var sampled=handler==null ? net.neoforged.neoforge.fluids.FluidStack.EMPTY:handler.drain(1000,net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE);
+            if(!sampled.isEmpty() && !sampled.getComponentsPatch().isEmpty()) {
+                player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.factorycraft.component_bucket"),true);
+                return ItemInteractionResult.sidedSuccess(false);
+            }
+        }
         if(level.isClientSide || FluidUtil.interactWithFluidHandler(player,hand,level,pos,side))return ItemInteractionResult.sidedSuccess(level.isClientSide);
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }

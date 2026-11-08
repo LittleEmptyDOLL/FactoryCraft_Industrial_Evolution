@@ -1,0 +1,22 @@
+{
+  "criteria": {
+    "has_iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:iron_ingot"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "factorycraft:craft_boiler",
+      "factorycraft:craft_steam_engine"
+    ]
+  }
+}
