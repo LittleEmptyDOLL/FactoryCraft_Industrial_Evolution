@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PGP",
+    "CDC",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "factorycraft:iron_plate"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    },
+    "C": {
+      "item": "factorycraft:electronic_circuit"
+    },
+    "D": {
+      "item": "factorycraft:electric_drill"
+    }
+  },
+  "result": {
+    "id": "factorycraft:pumpjack",
+    "count": 1
+  }
+}

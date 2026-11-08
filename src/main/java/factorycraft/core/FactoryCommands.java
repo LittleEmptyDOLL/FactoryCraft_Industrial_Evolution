@@ -20,6 +20,7 @@ public final class FactoryCommands {
         e.getDispatcher().register(Commands.literal("factorycraft").requires(s->s.hasPermission(2))
                 .then(Commands.literal("smelter").executes(c->smelter(c.getSource())))
                 .then(Commands.literal("fluids").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.fluids.FluidSimulation.statistics(c.getSource().getLevel())),false);return 1;}))
+                .then(Commands.literal("oilworks").executes(c->oilworks(c.getSource())))
                 .then(Commands.literal("steamworks").executes(c->steamworks(c.getSource())))
                 .then(Commands.literal("waterworks").executes(c->waterworks(c.getSource())))
                 .then(Commands.literal("power").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.energy.PowerGrid.statistics(c.getSource().getLevel())),false);return 1;}))
@@ -108,6 +109,29 @@ public final class FactoryCommands {
         level.setBlockAndUpdate(origin.offset(10,1,2),Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
         ((MachineBlockEntity)level.getBlockEntity(origin.offset(10,1,2))).items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,8));
         source.sendSuccess(()->Component.translatable("command.factorycraft.steam_demo",origin.toShortString()),true);return 1;
+    }
+    private static int oilworks(net.minecraft.commands.CommandSourceStack source) {
+        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(2,0,2);
+        for(var pos:BlockPos.betweenClosed(origin,origin.offset(21,5,8)))if(!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) { source.sendFailure(Component.translatable("command.factorycraft.oil_space"));return 0; }
+        for(int x=0;x<22;x++)for(int z=0;z<9;z++)for(int y=0;y<2;y++)level.setBlockAndUpdate(origin.offset(x,y,z),Blocks.STONE_BRICKS.defaultBlockState());
+        level.setBlockAndUpdate(origin.offset(3,1,4),Content.OIL_DEPOSIT.get().defaultBlockState());
+        for(var entry:java.util.Map.of(3,FactoryKind.PUMPJACK,9,FactoryKind.REFINERY,13,FactoryKind.CHEMICAL_PLANT).entrySet()) {
+            var pos=origin.offset(entry.getKey(),2,4);level.setBlockAndUpdate(pos,Content.FACTORY.get(entry.getValue()).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
+            if(entry.getValue().large()) {
+                for(var part:factorycraft.multiblock.IndustrialAssembly.positions(pos,Direction.EAST))level.setBlockAndUpdate(part,Content.FACTORY.get(FactoryKind.REFINERY_CASING).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
+                ((MachineBlockEntity)level.getBlockEntity(pos)).assembly().formAutomatic();
+            }
+        }
+        for(int x:new int[]{4,5,6,7,10,11,12})level.setBlockAndUpdate(origin.offset(x,2,4),Content.FLUID_BLOCKS.get(factorycraft.fluids.FluidKind.PIPE).get().defaultBlockState());
+        level.setBlockAndUpdate(origin.offset(13,2,2),Blocks.CHEST.defaultBlockState());
+        ((net.minecraft.world.level.block.entity.ChestBlockEntity)level.getBlockEntity(origin.offset(13,2,2))).setItem(0,new ItemStack(Items.COAL,32));
+        level.setBlockAndUpdate(origin.offset(13,2,3),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.SOUTH));
+        level.setBlockAndUpdate(origin.offset(14,2,4),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
+        level.setBlockAndUpdate(origin.offset(15,2,4),Blocks.CHEST.defaultBlockState());
+        level.setBlockAndUpdate(origin.offset(6,2,1),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
+        ((MachineBlockEntity)level.getBlockEntity(origin.offset(6,2,1))).items.setStackInSlot(8,new ItemStack(Items.COAL,8));
+        for(var p:java.util.List.of(origin.offset(5,2,2),origin.offset(10,2,1),origin.offset(14,2,2)))level.setBlockAndUpdate(p,Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
+        source.sendSuccess(()->Component.translatable("command.factorycraft.oil_demo",origin.toShortString()),true);return 1;
     }
     private static void put(net.minecraft.server.level.ServerLevel level,BlockPos origin,int x,int z,FactoryKind kind) {
         level.setBlockAndUpdate(origin.offset(x,2,z),Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PBP",
+    "CFC",
+    "PBP"
+  ],
+  "key": {
+    "P": {
+      "item": "factorycraft:iron_plate"
+    },
+    "B": {
+      "item": "factorycraft:fluid_pipe"
+    },
+    "C": {
+      "item": "factorycraft:electronic_circuit"
+    },
+    "F": {
+      "item": "factorycraft:electric_furnace"
+    }
+  },
+  "result": {
+    "id": "factorycraft:oil_refinery",
+    "count": 1
+  }
+}

@@ -44,7 +44,7 @@ public final class FactoryBlock extends BaseEntityBlock {
         if (kind.belt()) return new BeltBlockEntity(p, s);
         if (kind == FactoryKind.INSERTER) return new InserterBlockEntity(p, s);
         if (kind == FactoryKind.POLE) return new PoleBlockEntity(p, s);
-        if (kind == FactoryKind.CASING) return new CasingBlockEntity(p,s);
+        if (kind.casing()) return new CasingBlockEntity(p,s);
         return new MachineBlockEntity(p, s);
     }
     @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState s, BlockEntityType<T> t) {
@@ -53,6 +53,10 @@ public final class FactoryBlock extends BaseEntityBlock {
         if (kind == FactoryKind.INSERTER) return createTickerHelper(t, Content.INSERTER.get(), (a,b,c,d) -> d.tick());
         if (kind.machine()) return createTickerHelper(t, Content.MACHINE.get(), (a,b,c,d) -> d.tick());
         return null;
+    }
+    @Override protected ItemInteractionResult useItemOn(ItemStack stack,BlockState state,Level level,BlockPos pos,Player player,InteractionHand hand,BlockHitResult hit) {
+        if(kind.petroleum() || kind==FactoryKind.REFINERY_CASING)return factorycraft.fluids.FluidBlocks.useItem(stack,level,pos,player,hand,hit.getDirection());
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
     @Override protected InteractionResult useWithoutItem(BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
         if (l.isClientSide) return InteractionResult.SUCCESS;
@@ -87,8 +91,15 @@ public final class FactoryBlock extends BaseEntityBlock {
         super.onRemove(s, l, p, next, moving);
     }
     @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder params) {
-        if(kind==FactoryKind.CASING && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CasingBlockEntity part && part.virtualPart())return List.of();
-        return super.getDrops(state,params);
+        if(kind.casing() && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CasingBlockEntity part && part.virtualPart())return List.of();
+        var drops=super.getDrops(state,params);
+        if(kind.petroleum() && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof MachineBlockEntity machine && machine.petroleum()!=null && machine.petroleum().hasPortableState())
+            for(var item:drops)if(item.is(asItem())) {
+                machine.saveToItem(item,params.getLevel().registryAccess());
+                var tag=item.get(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA).copyTag();tag.remove("Assembly");
+                item.set(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA,net.minecraft.world.item.component.CustomData.of(tag));
+            }
+        return drops;
     }
     @Override public BlockState playerWillDestroy(Level level,BlockPos pos,BlockState state,Player player) {
         if(!level.isClientSide && player.isCreative() && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart()) {
@@ -97,8 +108,8 @@ public final class FactoryBlock extends BaseEntityBlock {
         return super.playerWillDestroy(level,pos,state,player);
     }
     @Override public ItemStack getCloneItemStack(LevelReader level,BlockPos pos,BlockState state) {
-        if(kind==FactoryKind.CASING && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart())
-            return new ItemStack(Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get());
+        if(kind.casing() && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart())
+            return part.controllerItem();
         return super.getCloneItemStack(level,pos,state);
     }
 }

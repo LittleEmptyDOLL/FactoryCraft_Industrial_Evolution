@@ -1,3 +1,12 @@
+# 0.5.0 — finite petroleum and mixed chemistry (8 November 2026)
+
+* Added persistent finite oil deposits, bounded BE-aware Overworld generation, configurable initial richness and a 10 mB/t / 15 FE/t electric pumpjack. Exhausted reserves do not refill.
+* Added a one-item automatic 2×2×2 oil refinery using the existing protected placement/identity system, guarded nozzle ports and dedicated internal parts. Portable removal keeps the sole inventory, FE, progress and fluids while placement assigns fresh part identities.
+* Added counted mixed item/fluid recipes, two input/two output fluid ports, atomic result reservations and deferred inventory callbacks. Basic refining, plastic, sulfur and assembler-made advanced circuits are usable in survival.
+* Added original animated textures, buckets, EN/RU menus/tooltips and recipe requirement previews; `/factorycraft oilworks` builds a powered finite-source line with inserter-fed coal and chest output.
+* Added 8 independent JUnit and 16 GameTests, including full-chain conservation, protection/portable placement, generated reserves and exact four-chunk process reload. Fixed an active-state update resetting the pump's target cache, exposed by the rate tests.
+* Heavy/light oil, advanced refining/cracking, acid/batteries, research and the other later systems remain planned; see PETROLEUM.md.
+
 # 0.4.0 — steam power (8 November 2026)
 
 * Added compact fuel-fired boiler, container-only steam/steam bucket and steam engine, original animated textures/models, EN/RU tooltips and fuel/fluid/FE menus. `/factorycraft steamworks` builds a working source → pump → boiler → steam → engine → pole-powered furnace example.

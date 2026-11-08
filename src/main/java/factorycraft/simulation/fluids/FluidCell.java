@@ -51,6 +51,25 @@ public final class FluidCell<K> {
         }
         return true;
     }
+    public record Mutation<K>(FluidCell<K> cell,K key,int amount) {}
+    /** All fluid owners update before the caller's validated, callback-free item/progress commit and observers. */
+    public static <K> boolean commitBatch(java.util.List<Mutation<K>> changes,Runnable otherCommit,boolean simulate) {
+        var seen=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<FluidCell<K>,Boolean>());
+        for(var change:changes) {
+            var cell=Objects.requireNonNull(change.cell());
+            if(!seen.add(cell) || change.amount()<0 || change.amount()>0 && change.key()==null ||
+                    change.amount()>cell.capacity && change.amount()>cell.amount)return false;
+        }
+        if(simulate)return true;
+        for(var change:changes) { change.cell.amount=change.amount;change.cell.key=change.amount==0 ? null:change.key; }
+        // The adapter only writes prevalidated slots/primitive fields here; world callbacks are deferred.
+        otherCommit.run();
+        RuntimeException failure=null;
+        for(var change:changes)try { change.cell.notifyChanged(); }catch(RuntimeException error) {
+            if(failure==null)failure=error;else if(failure!=error)failure.addSuppressed(error);
+        }
+        if(failure!=null)throw failure;return true;
+    }
     /** Oversized legacy saves retain volume; further filling waits until overflow is drained. */
     public void restore(K fluid,int volume) {
         if(volume<0 || volume>0 && fluid==null)throw new IllegalArgumentException("Invalid persisted fluid");

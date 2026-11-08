@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "oil_refinery",
+  "fluids": [
+    {
+      "fluid": "factorycraft:crude_oil",
+      "amount": 100
+    }
+  ],
+  "fluid_results": [
+    {
+      "id": "factorycraft:petroleum_gas",
+      "amount": 45
+    }
+  ],
+  "ticks": 100,
+  "energy": 30
+}

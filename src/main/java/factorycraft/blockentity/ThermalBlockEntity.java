@@ -127,6 +127,8 @@ public final class ThermalBlockEntity extends FactoryBlockEntity implements Menu
             var key=cell.key();return key.stack(cell.drain(amount,action.simulate()));
         }
     }
+    public FluidCell<FluidKey> externalInput(Direction side,FluidKey key) { return available() && (kind()==ThermalKind.BOILER || acceptsSteam(key)) ? input(side):null; }
+    public FluidCell<FluidKey> externalOutput(Direction side) { return available() ? output(side):null; }
     private BlockEntity neighbor(BlockPos pos) {
         var server=(net.minecraft.server.level.ServerLevel)level;
         var chunk=server.getChunkSource().getChunkNow(pos.getX()>>4,pos.getZ()>>4);

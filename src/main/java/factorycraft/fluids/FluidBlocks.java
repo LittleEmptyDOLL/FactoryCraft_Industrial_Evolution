@@ -18,7 +18,7 @@ import java.util.List;
 public final class FluidBlocks {
     public static FluidKind kind(BlockState state) { return state.getBlock() instanceof FluidDeviceBlock device ? device.kind:FluidKind.PIPE; }
     public static boolean port(BlockState state,Direction face) {
-        return state.getBlock() instanceof ThermalBlock thermal && thermal.port(state,face) || state.getBlock() instanceof FluidPipeBlock || state.getBlock() instanceof FluidDeviceBlock device &&
+        return state.getBlock() instanceof FactoryBlock machine && machine.kind.petroleum() && face.getAxis().isHorizontal() || state.getBlock() instanceof FactoryBlock part && part.kind==FactoryKind.REFINERY_CASING && face.getAxis().isHorizontal() || state.getBlock() instanceof ThermalBlock thermal && thermal.port(state,face) || state.getBlock() instanceof FluidPipeBlock || state.getBlock() instanceof FluidDeviceBlock device &&
                 (device.kind==FluidKind.TANK || face==state.getValue(FluidDeviceBlock.FACING) || face==state.getValue(FluidDeviceBlock.FACING).getOpposite());
     }
     public static ItemInteractionResult useItem(ItemStack stack,Level level,BlockPos pos,Player player,InteractionHand hand,Direction side) {

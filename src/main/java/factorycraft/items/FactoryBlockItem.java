@@ -13,6 +13,6 @@ public class FactoryBlockItem extends BlockItem {
         var kind=((FactoryBlock)getBlock()).kind;
         String key=kind.belt() && kind!=factorycraft.blocks.FactoryKind.SPLITTER ? "belt" : kind.id;
         lines.add(Component.translatable("tooltip.factorycraft."+key).withStyle(ChatFormatting.GRAY));
-        lines.add(Component.translatable(kind==factorycraft.blocks.FactoryKind.CASING || kind==factorycraft.blocks.FactoryKind.INDUSTRIAL_FURNACE ? "tooltip.factorycraft.multiblock_controls":"tooltip.factorycraft.rotate").withStyle(ChatFormatting.DARK_GRAY));
+        lines.add(Component.translatable(kind.casing() || kind.large() ? "tooltip.factorycraft.multiblock_controls":"tooltip.factorycraft.rotate").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

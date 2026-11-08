@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "factorycraft:block/oil_refinery",
+    "side": "factorycraft:block/oil_refinery",
+    "top": "factorycraft:block/oil_refinery_top"
+  }
+}

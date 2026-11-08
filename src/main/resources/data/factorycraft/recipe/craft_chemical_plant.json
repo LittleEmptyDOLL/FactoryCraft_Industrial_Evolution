@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PBP",
+    "CAC",
+    "PBP"
+  ],
+  "key": {
+    "P": {
+      "item": "factorycraft:iron_plate"
+    },
+    "B": {
+      "item": "factorycraft:fluid_pipe"
+    },
+    "C": {
+      "item": "factorycraft:electronic_circuit"
+    },
+    "A": {
+      "item": "factorycraft:assembling_machine"
+    }
+  },
+  "result": {
+    "id": "factorycraft:chemical_plant",
+    "count": 1
+  }
+}

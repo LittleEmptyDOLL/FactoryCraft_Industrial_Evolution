@@ -37,6 +37,10 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
     public boolean loaded() { return loaded && !isRemoved(); }
     public boolean virtualPart() { return virtualPart; }
     public boolean boundTo(BlockPos pos,UUID id) { return anchor!=null && anchor.equals(pos) && identity!=null && identity.equals(id); }
+    public ItemStack controllerItem() {
+        if(level!=null && anchor!=null && level.hasChunkAt(anchor) && level.getBlockEntity(anchor) instanceof MachineBlockEntity owner && owner.assembly()!=null && owner.assembly().owns(identity))return new ItemStack(owner.getBlockState().getBlock().asItem());
+        return ItemStack.EMPTY;
+    }
     private MachineBlockEntity linkedController() {
         if(level==null || level.isClientSide || anchor==null || !level.hasChunkAt(anchor))return null;
         return level.getBlockEntity(anchor) instanceof MachineBlockEntity machine && machine.loaded() && machine.assembly()!=null && machine.assembly().owns(identity) ? machine:null;

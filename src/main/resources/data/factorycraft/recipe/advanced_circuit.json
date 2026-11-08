@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_wire"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:plastic_bar"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:advanced_circuit",
+    "count": 1
+  },
+  "ticks": 120,
+  "energy": 24
+}

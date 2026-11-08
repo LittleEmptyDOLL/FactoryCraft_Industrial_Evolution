@@ -21,7 +21,7 @@ public final class IndustrialFurnaceItem extends FactoryBlockItem {
         var collision=player==null ? CollisionContext.empty():CollisionContext.of(player);
         var cells=new ArrayList<>(IndustrialAssembly.positions(context.getClickedPos(),state.getValue(FactoryBlock.FACING)));
         cells.add(context.getClickedPos());
-        var part=Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState();
+        var part=Content.FACTORY.get(((FactoryBlock)getBlock()).kind==FactoryKind.REFINERY ? FactoryKind.REFINERY_CASING:FactoryKind.CASING).get().defaultBlockState();
         for(var pos:cells) {
             if(level.isOutsideBuildHeight(pos) || !level.getWorldBorder().isWithinBounds(pos) || !level.hasChunkAt(pos)
                     || level.getBlockEntity(pos)!=null || !level.getBlockState(pos).canBeReplaced(BlockPlaceContext.at(context,pos,context.getClickedFace()))
@@ -45,7 +45,7 @@ public final class IndustrialFurnaceItem extends FactoryBlockItem {
         try {
             if(!super.placeBlock(context,state))return false;
             for(int i=1;i<cells.size();i++)
-                if(!level.setBlock(cells.get(i),Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState(),2))return false;
+                if(!level.setBlock(cells.get(i),Content.FACTORY.get(((FactoryBlock)getBlock()).kind==FactoryKind.REFINERY ? FactoryKind.REFINERY_CASING:FactoryKind.CASING).get().defaultBlockState().setValue(FactoryBlock.FACING,state.getValue(FactoryBlock.FACING)),2))return false;
             if(!(level.getBlockEntity(context.getClickedPos()) instanceof MachineBlockEntity machine))return false;
             success=machine.assembly().formAutomatic();
             return success;

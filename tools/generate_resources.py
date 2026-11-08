@@ -266,3 +266,62 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';content=json.loads(path.read_text());content.update({k:v[index] for k,v in steam_lang.items()});write(str(path.relative_to(ROOT)),content)
 write('data/factorycraft/advancement/recipes/steam_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_boiler','factorycraft:craft_steam_engine']}})
 write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})
+
+# Petroleum stage: original refinery machinery, finite reservoir and mixed recipes.
+for name,color in [('pumpjack',(99,135,99)),('oil_refinery',(128,124,83)),('chemical_plant',(100,132,161)),('refinery_casing',(96,111,123))]:
+ pixels=texture('block/'+name,color,'machine');top=[row.copy() for row in pixels]
+ for y in range(4,12):
+  for x in [7,8]:top[y][x]=(244,191,62,255)
+ for y in range(2,6):
+  for x in range(7-(y-2),9+(y-2)):top[y][x]=(244,191,62,255)
+ png('block/'+name+'_top',top);frames=[]
+ for frame in range(2):
+  image=[row.copy() for row in pixels]
+  for y in [5,8,11]:
+   for x in range(5,11):image[y][x]=(180+frame*50,197,83,255)
+  frames.extend(image)
+ png('block/'+name+'_active',frames);write(f'assets/factorycraft/textures/block/{name}_active.png.mcmeta',{'animation':{'frametime':6,'interpolate':True}})
+ for suffix in ['','_active']:
+  write(f'assets/factorycraft/models/block/{name}{suffix}.json',{'parent':'minecraft:block/orientable','textures':{'front':'factorycraft:block/'+name+suffix,'side':'factorycraft:block/'+name,'top':'factorycraft:block/'+name+'_top'}})
+ variants={}
+ for facing,angle in [('north',0),('east',90),('south',180),('west',270)]:
+  for lit in ['false','true']:variants[f'facing={facing},lit={lit}']={'model':'factorycraft:block/'+name+('_active' if lit=='true' else ''),'y':angle}
+ write(f'assets/factorycraft/blockstates/{name}.json',{'variants':variants})
+ write(f'assets/factorycraft/models/item/{name}.json',{'parent':'factorycraft:block/'+name})
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
+for name,color in [('crude_oil',(64,54,39)),('petroleum_gas',(208,177,113))]:
+ texture('block/'+name,color,'ore');texture('item/'+name+'_bucket',color,'item')
+ write(f'assets/factorycraft/models/item/{name}_bucket.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name+'_bucket'}})
+for name,color in [('plastic_bar',(222,223,213)),('sulfur',(221,209,51)),('advanced_circuit',(185,63,62))]:
+ texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
+texture('block/oil_deposit',(53,55,47),'ore');texture('block/oil_deposit_depleted',(112,116,110),'ore')
+for suffix in ['','_depleted']:write(f'assets/factorycraft/models/block/oil_deposit{suffix}.json',{'parent':'minecraft:block/cube_all','textures':{'all':'factorycraft:block/oil_deposit'+suffix}})
+write('assets/factorycraft/blockstates/oil_deposit.json',{'variants':{'depleted=false':{'model':'factorycraft:block/oil_deposit'},'depleted=true':{'model':'factorycraft:block/oil_deposit_depleted'}}})
+write('data/factorycraft/loot_table/blocks/oil_deposit.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'minecraft:cobblestone'}],'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
+write('data/factorycraft/worldgen/configured_feature/oil_deposit.json',{'type':'factorycraft:oil_deposit','config':{'size':4,'discard_chance_on_air_exposure':0.0,'targets':[{'target':{'predicate_type':'minecraft:tag_match','tag':tag},'state':{'Name':'factorycraft:oil_deposit','Properties':{'depleted':'false'}}} for tag in ['minecraft:stone_ore_replaceables','minecraft:deepslate_ore_replaceables']]}})
+write('data/factorycraft/worldgen/placed_feature/oil_deposit.json',{'feature':'factorycraft:oil_deposit','placement':[{'type':'minecraft:rarity_filter','chance':8},{'type':'minecraft:in_square'},{'type':'minecraft:height_range','height':{'type':'minecraft:uniform','min_inclusive':{'absolute':16},'max_inclusive':{'absolute':80}}},{'type':'minecraft:biome'}]})
+write('data/factorycraft/neoforge/biome_modifier/oil_deposit.json',{'type':'neoforge:add_features','biomes':'#minecraft:is_overworld','features':['factorycraft:oil_deposit'],'step':'underground_ores'})
+craft('pumpjack',['PGP','CDC','PPP'],{'P':'factorycraft:iron_plate','G':'factorycraft:iron_gear','C':'factorycraft:electronic_circuit','D':'factorycraft:electric_drill'})
+craft('oil_refinery',['PBP','CFC','PBP'],{'P':'factorycraft:iron_plate','B':'factorycraft:fluid_pipe','C':'factorycraft:electronic_circuit','F':'factorycraft:electric_furnace'})
+craft('chemical_plant',['PBP','CAC','PBP'],{'P':'factorycraft:iron_plate','B':'factorycraft:fluid_pipe','C':'factorycraft:electronic_circuit','A':'factorycraft:assembling_machine'})
+write('data/factorycraft/recipe/basic_oil_processing.json',{'type':'factorycraft:chemistry','machine':'oil_refinery','fluids':[{'fluid':'factorycraft:crude_oil','amount':100}],'fluid_results':[{'id':'factorycraft:petroleum_gas','amount':45}],'ticks':100,'energy':30})
+write('data/factorycraft/recipe/plastic.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','items':[{'ingredient':{'item':'minecraft:coal'},'count':1}],'fluids':[{'fluid':'factorycraft:petroleum_gas','amount':20}],'results':[{'id':'factorycraft:plastic_bar','count':2}],'ticks':20,'energy':20})
+write('data/factorycraft/recipe/sulfur.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','fluids':[{'fluid':'factorycraft:petroleum_gas','amount':30},{'fluid':'minecraft:water','amount':30}],'results':[{'id':'factorycraft:sulfur','count':2}],'ticks':20,'energy':20})
+process('advanced_circuit','assembling_machine',[('factorycraft:electronic_circuit',2),('factorycraft:copper_wire',4),('factorycraft:plastic_bar',2)],'advanced_circuit',1,120,24)
+oil_lang={
+ 'gui.factorycraft.chemical_recipe_info':('%s — %s t / %s FE/t','%s — %s т / %s FE/т'),
+ 'block.factorycraft.pumpjack':('Electric Pumpjack','Нефтяная помпа'),'block.factorycraft.oil_refinery':('Oil Refinery','Нефтеперерабатывающий завод'),'block.factorycraft.chemical_plant':('Chemical Plant','Химический завод'),'block.factorycraft.refinery_casing':('Refinery Part','Часть НПЗ'),'block.factorycraft.oil_deposit':('Finite Oil Deposit','Конечная нефтяная залежь'),
+ 'fluid.factorycraft.crude_oil':('Crude Oil','Сырая нефть'),'fluid.factorycraft.petroleum_gas':('Petroleum Gas','Нефтяной газ'),'item.factorycraft.crude_oil_bucket':('Crude Oil Bucket','Ведро нефти'),'item.factorycraft.petroleum_gas_bucket':('Petroleum Gas Bucket','Ведро нефтяного газа'),
+ 'item.factorycraft.plastic_bar':('Plastic Bar','Пластик'),'item.factorycraft.sulfur':('Sulfur','Сера'),'item.factorycraft.advanced_circuit':('Advanced Circuit','Продвинутая схема'),
+ 'message.factorycraft.oil_remaining':('Remaining oil: %s mB. Pump above; mining destroys unused reserve.','Нефти осталось: %s mB. Помпа сверху; добыча блока уничтожает остаток.'),
+ 'tooltip.factorycraft.pumpjack':('10 mB/t, 15 FE/t. Finite deposits in 3x3, up to 8 blocks below. Output ahead.','10 mB/т, 15 FE/т. Залежи в 3x3 до 8 блоков ниже. Выход спереди.'),
+ 'tooltip.factorycraft.oil_refinery':('One item forms 2x2x2. Crude behind the rear part; gas from the controller front.','Один предмет создаёт 2x2x2. Нефть сзади задней части, газ — спереди контроллера.'),
+ 'tooltip.factorycraft.chemical_plant':('Gas behind, second fluid on left; items via inserters. Open for recipes.','Газ сзади, вторая жидкость слева; предметы — манипуляторами. Рецепты в окне.'),
+ 'tooltip.factorycraft.refinery_casing':('Internal refinery part; resources belong to the controller.','Служебная часть НПЗ; ресурсы хранятся только в контроллере.'),
+ 'gui.factorycraft.chemical_fluid_0':('In 1: %s — %s mB','Вход 1: %s — %s mB'),'gui.factorycraft.chemical_fluid_1':('In 2: %s — %s mB','Вход 2: %s — %s mB'),'gui.factorycraft.chemical_fluid_2':('Out 1: %s — %s mB','Выход 1: %s — %s mB'),'gui.factorycraft.chemical_fluid_3':('Out 2: %s — %s mB','Выход 2: %s — %s mB'),
+ 'gui.factorycraft.petroleum_status_0':('Waiting','Ожидание'),'gui.factorycraft.petroleum_status_1':('Needs input/recipe','Нет сырья/рецепта'),'gui.factorycraft.petroleum_status_2':('Output blocked','Выход заполнен'),'gui.factorycraft.petroleum_status_3':('Needs energy','Нет энергии'),'gui.factorycraft.petroleum_status_4':('Working','Работает'),'gui.factorycraft.pumpjack_rate':('10 mB/t / 15 FE/t; finite oil','10 mB/т / 15 FE/т; конечная нефть'),
+ 'command.factorycraft.oil_space':('Need a loaded empty 22 x 6 x 9 area beside you.','Рядом нужна свободная загруженная область 22 x 6 x 9.'),'command.factorycraft.oil_demo':('Finite oil-to-plastic factory built at %s.','Фабрика из конечной нефти в пластик: %s.')}
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';content=json.loads(path.read_text());content.update({k:v[index] for k,v in oil_lang.items()});write(str(path.relative_to(ROOT)),content)
+write('data/factorycraft/advancement/recipes/petroleum_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_'+name for name in ['pumpjack','oil_refinery','chemical_plant']]}})
+write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})

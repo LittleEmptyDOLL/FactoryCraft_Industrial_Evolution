@@ -1,6 +1,6 @@
-# Feature matrix — 0.4.0
+# Feature matrix — 0.5.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.4.0 adds fuel-fired water-to-steam boiling, steam generation into the existing pole graph and counted fluid recipe JSON; stage 3 remains partial.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.5.0 adds finite oil deposits, an electric pumpjack, automatic 2×2×2 refinery, mixed item/fluid processing, plastic/sulfur and advanced circuits. Stage 3 remains partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -11,14 +11,15 @@
 | Splitter | one-block forward/right per-lane balancing and safe blocked-output fallback | partial; not Factorio two-block geometry; priorities/filters absent |
 | Advanced belts | none | planned: underground, filters, priorities |
 | Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
-| Resources | iron/copper ore blocks + Overworld JSON placement; vanilla coal/stone available | partial; uranium/oil/late resources and world setup controls absent |
-| Mining | finite electric drill, 3x3x8 search, energy and configurable duration | implemented first drill; burner/advanced/pumpjack planned |
-| Production | electric furnace + assembler + 2x2x2 industrial furnace, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; no fluid/module slots or advanced buildings |
-| Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; advanced chains/science/rocket components absent |
+| Resources | iron/copper ore blocks + Overworld JSON placement; vanilla coal/stone available | partial; uranium/late resources and world setup controls absent |
+| Mining | finite electric drill, 3x3x8 search, energy and configurable duration | implemented first drill; finite oil pumpjack implemented; burner/advanced drills planned |
+| Production | electric furnace + assembler + 2x2x2 industrial furnace, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; fixed-port mixed fluid/item machines added; modules and other advanced buildings remain planned |
+| Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; plastic, sulfur and advanced circuits added; processors/engines/batteries/science/rocket components remain planned |
 | Power | coal generator, spatial index, budgeted loaded-node snapshots, immediate split quarantine, merge/split, bounded distribution, FE input | partial; steam engine (up to 120 FE/t) and guarded FE output implemented; manual wires/graphs, nuclear/solar/accumulators/heat remain planned |
-| Multiblocks | one item places the 2x2x2 machine; footprint validation + NeoForge cancellation, shared ports, one machine drop, creative/pick-block, generated orphan cleanup, legacy compatibility, inactive-chunk pause, disk reload | implemented first machine; layout is fixed in code, not a datapack pattern system |
+| Multiblocks | one item places the 2x2x2 machine; footprint validation + NeoForge cancellation, shared ports, one machine drop, creative/pick-block, generated orphan cleanup, legacy compatibility, inactive-chunk pause, disk reload | industrial furnace and oil refinery implemented; layout is fixed in code, not a datapack pattern system |
 | Fluids | six-way pipes, tanks, directional electric pumps, native water intake, buckets/portable filled blocks, component-sensitive NeoForge fluid capabilities, cached active-edge graph, GUI and restart conservation | implemented first fluid slice; see FLUIDS.md; underground pipes/external adjacency discovery/temperature remain planned |
-| Thermal/fluid recipes | compact fueled boiler, container-only steam, steam engine, backpressure, fuel remainders, portable full state, menus, sized fluid ingredients/tags and JSON boiling recipes | implemented water → steam → pole-powered factory; larger thermal multiblocks, general mixed item/fluid chemistry, oil/refining/cracking remain planned |
+| Thermal/fluid recipes | compact fueled boiler, container-only steam, steam engine, backpressure, fuel remainders, portable full state, menus, sized fluid ingredients/tags and JSON boiling recipes | implemented water → steam → pole-powered factory; larger thermal multiblocks, counted mixed item/fluid chemistry implemented in 0.5.0; advanced refining/cracking/heat remain planned |
+| Petroleum | finite BE-backed Overworld deposits with preserved exhaustion, electric pumpjack, 100 crude → 45 gas refinery, coal + gas → plastic, gas + water → sulfur, original resources/menus, atomic inputs/outputs and portable controller state | implemented first petroleum chain; heavy/light oil, cracking, lubricant, acid/batteries and sampled world distribution remain planned |
 | Research/progression | none; first-slice crafting unlocked by acquiring vanilla iron | planned: teams, labs/packs, tree GUI, recipe locks, infinite research |
 | Modules/beacons/quality | none | planned |
 | Railways | none | planned: independent rails, wagons, signals, schedules, routing |

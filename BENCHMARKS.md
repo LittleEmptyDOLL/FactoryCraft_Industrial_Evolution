@@ -119,3 +119,7 @@ The fresh local 600-tick run averaged 34.474 ms (p95 76.391 ms, p99 101.825 ms, 
 ## 0.4.0 compatibility check
 
 `runBenchmarkServer -PbenchmarkMode=verify` passes on the saved 0.3.0 full-factory checkpoint with the new GridGenerator source classification. Exact authoritative state hashes, resumed material/FE ledgers and all multiblock identities remain valid. This workload still has no active thermal machines, so it does not establish thermal-world TPS or a new timing comparison. CI continues running a fresh full measurement and separate-process verification.
+
+## 0.5.0 compatibility check
+
+The saved 0.3.0/0.4.0 full-factory checkpoint passes `runBenchmarkServer -PbenchmarkMode=verify` on 0.5.0: exact authoritative hash, material/FE and multiblock identity checks remain valid. The full benchmark still contains no petroleum machines or oil deposits; this is old-factory compatibility, not measured petroleum TPS. CI retains the fresh full measurement/reload scenario.

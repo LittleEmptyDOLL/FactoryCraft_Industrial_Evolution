@@ -1,4 +1,41 @@
-# Validation — 0.4.0, 8 November 2026
+# Validation — 0.5.0, 8 November 2026
+
+Continues `main` commit `ad3e2d1` (0.4.0). Target stays **Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21**. This milestone delivers finite oil extraction, automatic refinery construction and mixed item/fluid processing. Stage 3 and later stages remain incomplete.
+
+## Automated checks
+
+* Before implementation, `./gradlew build runGameTestServer` passed the existing **73 JUnit / 76 GameTests**, followed by another successful original server process. Existing thermal/fluid/machine/multiblock disk fixtures report `VERIFIED`.
+* `./gradlew build`: **81 JUnit tests**, zero failures/errors/skips. Eight new independent tests cover shared item ingredient reservations, simultaneous output slot reservations, native-style stack limits, component-key separation, atomic multi-fluid/item/progress ownership, invalid duplicate/overflow mutations, observer failures and drainable restored overflow. All previous kernels/layout/benchmark tests remain green.
+* `./gradlew runGameTestServer`: **92 required tests pass** after the pump-cache/worldgen fixes, followed by a separate server with **92 passed**. Sixteen new scenarios exercise finite extraction/FE, full output, exhausted reload, one-item refinery/part identity, fluid and item backpressure, mixed coal/gas completion, two-fluid sulfur, cached part ports, portable removal and actual placement, partial recipe reconstruction, native recipe codecs/API fluid matching, actual configured-feature placement, full production ledgers, protected cancellation and exact disk persistence. Repeated after the GUI/nozzle/caching updates.
+* The complete source-to-chest test uses a real finite deposit, powered pumpjack, pipes, refinery, coal chest/inserter, chemical plant and output inserter/chest. It delivers at least 20 plastic without injecting crude/gas/intermediate product. Its exact ledger is **9 × crude (including remaining reserve) + 20 × gas + 200 × plastic = 9 × initial reserve**, including machine/pipe buffers and held output. No depletion, pressure or work-budget shortcut discards volume.
+* Separate processes emit `FACTORYCRAFT_PETROLEUM_DISK: SEEDED` then `VERIFIED exact resources, depleted reserve and four-chunk identity`. The intentionally inactive fixture preserves 731 mB crude, 389 mB gas, 7312 FE, three diamonds, a chemical plant's 11 mB gas/two coal/progress 7, a 7117-mB reserve and an initialized zero reserve. All seven generated parts retain the controller UUID across four chunks. Partial missing fixtures fail rather than being silently replenished. This is exact saved-state evidence, not natural player-distance unloading.
+* `./gradlew runBenchmarkServer -PbenchmarkMode=verify`: **PASS** on the saved full 0.3.0/0.4.0 factory checkpoint (10000 belts, 1000 producers, 500 inserters, 250 industrial multiblocks). Exact pre-tick hash and resumed material/FE/identity checks remain valid. This workload contains no petroleum equipment; no petroleum TPS claim is made.
+
+## Defects exposed by tests
+
+Three initial new GameTests failed while old tests remained green. Active/lit block updates were clearing the pumpjack's cached deposit and throttling it to search cadence; geometry/target invalidation now happens only on real facing changes. Vanilla OreFeature writes chunk sections directly and does not properly register these BE-bearing reservoirs; a bounded custom OilDepositFeature now uses worldgen-region block writes. The actual configured-feature test verifies placed resources initialize with finite stock. No failed disk checkpoint was repaired/reseeded.
+
+Portable refinery data explicitly excludes Assembly before native item-tag merging, so fresh placed parts keep their new UUID. Refinery removal keeps one canonical full inventory inside the returned machine item, rather than also dropping loose contents. Protected cancellation restores every generated block/item. Existing furnace/manual structures keep their original IDs, item recipe codecs and data formats.
+
+## Client and API evidence
+
+`./gradlew runClient -PsmokeWorld=FactoryCraftSmoke` launches the real graphical client under Xvfb/Mesa and loads the old 0.4.0 QA world. `/factorycraft oilworks` builds the new finite-source line at (202,80,162). The Russian refinery menu shows crude, powered progress and formed assembly; chemical slots and gas state are visible. The output chest at (217,82,166) contains **64 factorycraft:plastic_bar** from the 32-coal feed, with no hand-filled intermediate fluids. The world is saved through the normal menu and loaded again. Adding eight more coal to the supply chest resumes automation; the chest then holds 64 + 16 plastic. Screenshots under docs/screenshots show the final refinery and recipe-ingredient tooltip. New recipe previews use translated result names and show counted item/fluid requirements on hover; the final menu is reduced to 240 GUI units to fit the ordinary minimum scaled height.
+
+NeoForge fluid/capability/crafting APIs, native component codecs and registry-aware buffers remain the resolved target APIs. OreConfiguration/FeaturePlaceContext, protected block-item snapshots, block entities, chunk lifecycle and menu/tooltips were compiled and exercised on **21.1.252 / 1.21.1**. Dedicated tests/benchmark start without client class loading. Original procedural assets/JSON are generated by the existing reproducible Python script; no external dependency or proprietary resource is introduced. Local Mojang public-key lookup remains unavailable without preventing local play; software OpenGL/null audio do not establish client FPS, sound or network-authentication performance.
+
+## Data, scope and next work
+
+Old machine inventory schema 1, belt/assembly/casing schema 2 and thermal/fluid schemas stay compatible. Petroleum adds a schema-1 subtag (Fluid0..3, progress, duration, selected recipe ID, active definition); deposits save Initialized independently from Remaining. Loaded canonical ownership and early chunk freeze protect new controllers/reservoirs and affected parts; authoritative changes immediately mark their owning chunk unsaved. Side ports are fixed, inputs/results component-sensitive and all result space reserved before work. Native bucket component guards also apply to crude/gas. Item ingredient overlap uses shared greedy reservation, with specific requirements ordered first.
+
+PETROLEUM.md records deliberate limits: basic oil only, two input/two output tanks, no heavy/light oil/cracking/lubricant/acid/batteries yet, no tank-flush GUI, no automatic arbitrary external fluid-node discovery, and no statistically surveyed natural deposit distribution. Mining a deposit deliberately destroys its unused oil and gives cobblestone; transport/chunk reload do not lose it. Individual machines still tick; two actual network clients, natural distance unload and large active chemical/thermal factories remain unverified. Next task: third output / advanced refining and further chemistry, then research gating.
+
+## Changed areas
+
+Mixed recipe/input codecs; independent item reservation and multi-fluid commit; finite reservoir block/BE/custom feature/configuration; petroleum fluid/bucket types; MachineBlockEntity composition and cached nozzles; shared automatic refinery placement/parts/portable loot; guarded standard capabilities and lifecycle; new menus/screens/recipe previews/commands; original resources/recipes/translations; tests and continuation/model documentation; version 0.5.0.
+
+---
+
+# Historical validation — 0.4.0, 8 November 2026
 
 Continues `main` commit `e693b7a` (0.3.0), preserving all previous IDs/data. Target remains **Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21**. This milestone delivers the steam-power part of stage 3. General oil/chemistry and later stages remain incomplete.
 
