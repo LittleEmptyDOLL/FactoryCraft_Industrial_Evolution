@@ -10,7 +10,7 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle *
 * `energy` / `simulation.power`: spatially indexed, work-budgeted snapshots rebuilt only on topology changes. Removed components are quarantined immediately; independent components keep working. No forced chunk loads.
 * `multiblock`: controller-owned resources and progress; casing parts have only an identity and stable guarded forwarding ports. Larger machine footprints may use this design, per the user’s instruction.
 * `inserters`: a persistent held stack owns extracted items until the destination accepts them; breaking drops held items.
-* `client`: renderers interpolate server snapshots; menus send only vanilla menu button requests, validated server-side.
+* `client`: renderers interpolate server snapshots; production menus use vanilla buttons; research uses bounded native payloads. Every request is validated server-side.
 * Ordinary belt NBT schema 2 reads schema 1; splitters use schema 3/four lanes and read old two-lane data. Machine inventory stays schema 1, assembly/casing schema 3; refinery Petroleum schema 2 appends Fluid4 while other petroleum machines stay schema 1. Unloading pauses simulation. Whole-machine demolition retains resources in one portable owner.
 * No off-thread world access. 20 Minecraft ticks = one simulation second. Belt basic/fast/express rates target 15/30/45 individual items per second across two lanes.
 
