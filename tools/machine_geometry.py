@@ -6,7 +6,7 @@ import json,math,random,re
 
 def generate(root,write,png):
  source=(root.parents[2]/'src/main/java/factorycraft/multiblock/MachineProfile.java').read_text()
- dimensions={name:(int(w),int(h),int(d)) for name,w,h,d in re.findall(r'\("([a-z_]+)",\s*(\d+),\s*(\d+),\s*(\d+)\)',source)}
+ dimensions={name:(int(w),int(h),int(d)) for name,w,h,d in re.findall(r'\("([a-z0-9_]+)",\s*(\d+),\s*(\d+),\s*(\d+)\)',source)}
  palette={'shell':(72,87,101),'steel':(145,160,167),'dark':(23,32,41),'teal':(46,136,146),'orange':(196,107,47),'red':(161,62,51),'yellow':(218,174,51),'glass':(35,72,85),'hazard':(219,174,46),'inlet':(44,132,215),'outlet':(226,135,52),'outlet3':(226,135,52),'bidi':(55,176,157),'indicator_off':(36,60,63),'indicator_on':(72,230,163),'flame':(249,125,36),'belt':(156,120,43),'piston':(121,144,153)}
  for name,color in palette.items():
   frames=4 if name in ['flame','belt','piston'] else 2 if name=='indicator_on' else 1
@@ -85,12 +85,14 @@ def generate(root,write,png):
     for x in [.12,2.7]:box((x,.5,.55),(x+.18,2.35,2.5),'steel')
     column(2.2,2.2,.28,2.6,2.98,'steel')
     box((.63,.84,.085),(2.37,1.66,.095),'flame',parts)
-   elif name=='assembling_machine':
+   elif name in ['assembling_machine','assembling_machine_2']:
     box((.27,.34,.27),(2.73,.75,2.73),'teal');box((.45,.75,.45),(2.55,.85,2.55),'steel')
     for x in [.16,2.64]:
      for z in [.16,2.64]:box((x,.34,z),(x+.2,2.88,z+.2),'steel')
     box((.15,2.55,.15),(2.85,2.96,2.85),'teal');box((.55,.85,.55),(2.45,1.02,2.45),'hazard')
     box((.85,1.65,.85),(2.15,1.93,2.15),'steel',parts);box((1.34,1.93,1.34),(1.66,2.58,1.66),'orange',parts)
+    if name=='assembling_machine_2':
+     box((.35,1.05,2.65),(.75,2.4,2.95),'inlet');box((2.25,1.05,2.65),(2.65,2.4,2.95),'inlet')
    elif name=='lab':
     box((.3,.34,.3),(2.7,.78,2.7),'teal');box((.55,.78,.55),(2.45,.88,2.45),'steel')
     for x in [.25,2.55]:
@@ -137,10 +139,10 @@ def generate(root,write,png):
    elif name=='electric_pump':
     box((.18,.34,.3),(.82,.77,1.7),'teal');box((.26,.77,.4),(.74,.96,.98),'shell')
     box((.32,.44,.18),(.68,.67,.62),'piston')
-   if name in ['pumpjack','oil_refinery','chemical_plant','boiler','steam_engine','electric_pump']:
+   if name in ['pumpjack','oil_refinery','chemical_plant','assembling_machine_2','boiler','steam_engine','electric_pump']:
     if name!='pumpjack':port('rear','inlet')
     if name!='steam_engine':port('front','outlet')
-    if name in ['oil_refinery','chemical_plant']:port('left','inlet');port('right','outlet')
+    if name in ['oil_refinery','chemical_plant','assembling_machine_2']:port('left','inlet');port('right','outlet')
    if name=='oil_refinery':port('front','outlet3',.5)
    if name=='fluid_tank':
     for side in ['front','rear','left','right']:port(side,'bidi')

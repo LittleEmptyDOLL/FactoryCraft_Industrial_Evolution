@@ -1,3 +1,12 @@
+# 0.10.0 — chemical science and exact fluid recovery (8 November 2026)
+
+* Added steel/engines, electric engines, processors and chemical science with real production recipes and six prerequisite technologies. Original six technologies/partial work stay intact.
+* Added a one-item centered 3×3×3 assembling machine 2 with original marked geometry/moving press, item/FE/fluid ports, mixed recipe transactions and inherited dry assembler recipes. The old assembler's simulation/NBT remain unchanged. EMI/JEI expose the new mixed category and the second machine as a catalyst for original dry recipes.
+* Added a native component-preserving 4000-mB canister and server-validated input-recovery buttons. Sub-bucket volumes, components, full-container remainders and restored overflow are conserved; stale/distant/spectator/unloaded menus cannot drain fluid or ordinary item slots.
+* Added `/factorycraft chemicalworks`, a finite powered component→engine→blue-science line, plus production/gating/energy/pipe/three-pack research/portable/live/disk/capability/network/asset tests. JSON validation now reports malformed definitions as codec errors; numeric tier profile names are covered by bundled geometry validation.
+* Fixed research text entry consuming the inventory shortcut and wrapped long JEI/EMI requirements inside recipe cards with full hover help.
+* Later modules/beacons, further science and advanced component consumers remain planned. See PROGRESSION.md and VALIDATION.md for balance, evidence and limits.
+
 # 0.9.0 — shared research and recipe viewers (8 November 2026)
 
 * Added a centered one-item 3×3×3 laboratory with original geometry, animated vessels, FE/science inventories and a searchable dependency graph. Six datapack technologies, red/green science production and repeatable lab efficiency form the first research progression.

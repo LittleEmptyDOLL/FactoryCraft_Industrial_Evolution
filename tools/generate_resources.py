@@ -453,3 +453,31 @@ for lang in ['en_us','ru_ru']:
 
 for lang,index in [('en_us',0),('ru_ru',1)]:
  p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text());data['gui.factorycraft.needs_research']=('Research needed','Исследование')[index];data['gui.factorycraft.petroleum_status_5']=('Research needed','Нужно исследование')[index];write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.10: fluid assembler, chemical science and exact-volume recovery.
+for name,color in [('steel_plate',(123,140,157)),('engine_unit',(177,145,67)),('electric_engine_unit',(73,135,191)),('processing_unit',(65,106,194)),('chemical_science_pack',(62,141,204)),('fluid_canister',(135,166,181))]:
+ texture('item/'+name,color,'item')
+ write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
+process('steel_plate','electric_furnace',[('factorycraft:iron_plate',5)],'steel_plate',1,320,12)
+process('engine_unit','assembling_machine',[('factorycraft:steel_plate',1),('factorycraft:iron_gear',1),('factorycraft:fluid_pipe',2)],'engine_unit',1,200,24)
+process('assembling_machine_2','assembling_machine',[('factorycraft:steel_plate',5),('factorycraft:advanced_circuit',3),('factorycraft:iron_gear',5)],'assembling_machine_2',1,200,24)
+process('chemical_science_pack','assembling_machine',[('factorycraft:advanced_circuit',2),('factorycraft:engine_unit',3),('factorycraft:sulfur',1)],'chemical_science_pack',2,480,24)
+for name,ingredients,fluid,amount,energy in [('electric_engine_unit',[('engine_unit',1),('electronic_circuit',2)],'lubricant',15,30),('processing_unit',[('electronic_circuit',20),('advanced_circuit',2)],'sulfuric_acid',5,40)]:
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:chemistry','machine':'assembling_machine_2','items':[{'ingredient':{'item':'factorycraft:'+i},'count':n} for i,n in ingredients],'fluids':[{'fluid':'factorycraft:'+fluid,'amount':amount}],'results':[{'id':'factorycraft:'+name,'count':1}],'ticks':200,'energy':energy})
+craft('fluid_canister',['IPI','IGI','III'],{'I':'factorycraft:iron_plate','P':'factorycraft:fluid_pipe','G':'minecraft:glass'})
+write('data/factorycraft/loot_table/blocks/assembling_machine_2.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:assembling_machine_2'}]}]})
+p=ROOT/'data/minecraft/tags/block/mineable/pickaxe.json';tag=json.loads(p.read_text());tag['values'].append('factorycraft:assembling_machine_2');write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
+new_techs=[('steel_processing',['automation'],10,60,['steel_plate'],1,2,False),('engine',['steel_processing','logistics'],20,60,['engine_unit'],2,2,False),('automation_2',['electronics'],20,60,['assembling_machine_2'],2,3,False),('chemical_science',['engine','batteries'],30,80,['chemical_science_pack'],3,2,False),('advanced_electronics_2',['chemical_science','automation_2'],50,120,['processing_unit'],4,2,True),('electric_engine',['chemical_science','automation_2'],40,100,['electric_engine_unit'],4,3,True)]
+for name,parents,units,ticks,unlocks,x,y,blue in new_techs:
+ packs={'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1}
+ if blue:packs['factorycraft:chemical_science_pack']=1
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:research','prerequisites':['factorycraft:'+p for p in parents],'packs':packs,'units':units,'ticks':ticks,'repeatable':False,'unlocks':['factorycraft:'+p for p in unlocks],'x':x,'y':y})
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text())
+ for name,en,ru in [('steel_plate','Steel Plate','Стальная пластина'),('engine_unit','Engine Unit','Двигатель'),('electric_engine_unit','Electric Engine Unit','Электродвигатель'),('processing_unit','Processing Unit','Процессор'),('chemical_science_pack','Chemical Science Pack','Химический научный пакет'),('fluid_canister','Fluid Canister','Канистра')]:
+  data['item.factorycraft.'+name]=(en,ru)[index];data['recipe.factorycraft.'+name]=(en,ru)[index]
+ for name,en,ru in [('steel_processing','Steel processing','Обработка стали'),('engine','Engines','Двигатели'),('automation_2','Automation 2','Автоматизация 2'),('chemical_science','Chemical science','Химическая наука'),('advanced_electronics_2','Advanced electronics 2','Продвинутая электроника 2'),('electric_engine','Electric engines','Электродвигатели')]:data['technology.factorycraft.'+name]=(en,ru)[index]
+ values={'block.factorycraft.assembling_machine_2':('Assembling Machine 2','Сборочный автомат 2'),'recipe.factorycraft.assembling_machine_2':('Assembling Machine 2','Сборочный автомат 2'),'tooltip.factorycraft.assembling_machine_2':('3×3 fluid assembler. Feed lubricant/acid at the rear input; recipes in its menu.','Сборщик 3×3 с жидкостями. Смазка/кислота — через вход сзади; рецепты в меню.'),'gui.factorycraft.recover_fluid':('Carry a canister on the cursor; recover this input fluid without loss.','Возьмите канистру курсором: извлечь жидкость этого входа без потерь.'),'tooltip.factorycraft.canister_contents':('%s: %s / %s mB','%s: %s / %s mB'),'tooltip.factorycraft.canister_recovery':('Recover input leftovers in a machine menu; right-click a fluid port to transfer.','Остатки входов — кнопками в меню машины; перенос — ПКМ по патрубку.')}
+ data.update({k:v[index] for k,v in values.items()});data['emi.category.factorycraft.assembling_machine_2']=data['block.factorycraft.assembling_machine_2'];write(f'assets/factorycraft/lang/{lang}.json',data)
+# Include the canister in the ordinary recipe book on the first generation as well.
+p=ROOT/'data/factorycraft/advancement/recipes/factory_basics.json';adv=json.loads(p.read_text());adv['rewards']['recipes']=sorted(set(adv['rewards']['recipes']+['factorycraft:craft_fluid_canister']));write('data/factorycraft/advancement/recipes/factory_basics.json',adv)

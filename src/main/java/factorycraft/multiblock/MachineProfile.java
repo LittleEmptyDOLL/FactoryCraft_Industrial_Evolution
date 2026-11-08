@@ -13,7 +13,7 @@ public enum MachineProfile implements StringRepresentable {
     GENERATOR("coal_generator",3,3,3),INDUSTRIAL("industrial_furnace",3,3,3),
     PUMPJACK("pumpjack",3,4,3),REFINERY("oil_refinery",5,4,5),CHEMICAL("chemical_plant",3,3,3),
     BOILER("boiler",3,2,2),ENGINE("steam_engine",3,2,5),TANK("fluid_tank",3,3,3),PUMP("electric_pump",1,1,2),
-    SPLITTER("splitter",2,1,1),LAB("lab",3,3,3);
+    SPLITTER("splitter",2,1,1),LAB("lab",3,3,3),ADVANCED_ASSEMBLER("assembling_machine_2",3,3,3);
     public final String id;public final CuboidLayout layout;
     MachineProfile(String id,int width,int height,int depth) { this.id=id;layout=new CuboidLayout(width,height,depth); }
     public String getSerializedName() { return id; }

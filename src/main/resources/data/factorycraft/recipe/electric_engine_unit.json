@@ -1,0 +1,32 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "assembling_machine_2",
+  "items": [
+    {
+      "ingredient": {
+        "item": "factorycraft:engine_unit"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 2
+    }
+  ],
+  "fluids": [
+    {
+      "fluid": "factorycraft:lubricant",
+      "amount": 15
+    }
+  ],
+  "results": [
+    {
+      "id": "factorycraft:electric_engine_unit",
+      "count": 1
+    }
+  ],
+  "ticks": 200,
+  "energy": 30
+}

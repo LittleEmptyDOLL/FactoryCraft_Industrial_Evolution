@@ -120,12 +120,39 @@ public final class PetroleumProduction {
         oil.reserve().transferTo(cells.get(2),n,false);status=4;changed();return true;
     }
     public void refreshRecipes() {
-        if(pump() || machine.getLevel()==null)return;long now=machine.getLevel().getGameTime();if(recipesAt!=Long.MIN_VALUE && now-recipesAt<20)return;
+        if(pump() || machine.getLevel()==null)return;
+        long now=machine.getLevel().getGameTime();
+        if(recipesAt!=Long.MIN_VALUE && now-recipesAt<20)return;
+        var manager=machine.getLevel().getRecipeManager();
+        var candidates=new ArrayList<RecipeHolder<ChemicalRecipe>>();
+        for(var holder:manager.getAllRecipesFor(Content.CHEMISTRY.get()))
+            if(holder.value().machine().equals(machine.kind().id))candidates.add(holder);
+        // Tier two also executes the original dry definitions with their native IDs/gates.
+        // Projection never registers duplicate recipes or changes the old assembler's data.
+        if(machine.kind()==FactoryKind.ADVANCED_ASSEMBLER)
+            for(var holder:manager.getAllRecipesFor(Content.PROCESSING.get())) {
+                var recipe=holder.value();
+                if(!recipe.machine().equals(FactoryKind.ASSEMBLER.id))continue;
+                var result=recipe.result();
+                // Original processing results may span several output slots.
+                if(result.isEmpty() || result.getCount()>4*result.getMaxStackSize())continue;
+                var outputs=new ArrayList<ItemStack>();
+                for(int remaining=result.getCount();remaining>0;remaining-=result.getMaxStackSize())
+                    outputs.add(result.copyWithCount(Math.min(remaining,result.getMaxStackSize())));
+                candidates.add(new RecipeHolder<>(holder.id(),new ChemicalRecipe(machine.kind().id,recipe.inputs(),
+                        List.of(),outputs,List.of(),recipe.ticks(),recipe.energy())));
+            }
         var ops=net.minecraft.resources.RegistryOps.create(com.mojang.serialization.JsonOps.INSTANCE,machine.getLevel().registryAccess());
-        recipes=machine.getLevel().getRecipeManager().getAllRecipesFor(Content.CHEMISTRY.get()).stream().filter(h->h.value().machine().equals(machine.kind().id)).sorted(Comparator.comparing(h->h.id().toString())).map(h->{
-            var r=h.value();var result=r.results().stream().map(s->new BatchInventory.Stack<>(new ItemKey(s),s.getCount(),s.getMaxStackSize())).toList();var output=r.fluidResults();
-            return new Cached(h,h.id()+"|"+ChemicalRecipe.CODEC.codec().encodeStart(ops,r).getOrThrow(),r.items().stream().map(i->new BatchInventory.Ingredient<ItemKey>(k->i.ingredient().test(k.stack(1)),i.count())).toList(),result,output.stream().map(FluidKey::new).toList(),output.stream().map(FluidStack::getAmount).toList());
-        }).toList();recipesAt=now;selected=selectedId.isEmpty() ? 0:-1;for(int i=0;i<recipes.size();i++)if(recipes.get(i).holder.id().toString().equals(selectedId))selected=i+1;
+        recipes=candidates.stream().sorted(Comparator.comparing(h->h.id().toString())).map(holder->{
+            var recipe=holder.value();
+            var outputs=recipe.results().stream().map(stack->new BatchInventory.Stack<>(new ItemKey(stack),stack.getCount(),stack.getMaxStackSize())).toList();
+            var fluids=recipe.fluidResults();
+            return new Cached(holder,holder.id()+"|"+ChemicalRecipe.CODEC.codec().encodeStart(ops,recipe).getOrThrow(),
+                    recipe.items().stream().map(i->new BatchInventory.Ingredient<ItemKey>(key->i.ingredient().test(key.stack(1)),i.count())).toList(),
+                    outputs,fluids.stream().map(FluidKey::new).toList(),fluids.stream().map(FluidStack::getAmount).toList());
+        }).toList();
+        recipesAt=now;selected=selectedId.isEmpty() ? 0:-1;
+        for(int i=0;i<recipes.size();i++)if(recipes.get(i).holder.id().toString().equals(selectedId))selected=i+1;
     }
     private void chooseRecipe(int index) {
         selected=index;selectedId=index==0 ? "":recipes.get(index-1).holder.id().toString();progress=0;active="";changed();

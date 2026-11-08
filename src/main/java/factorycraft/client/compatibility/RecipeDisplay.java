@@ -10,6 +10,9 @@ import java.util.*;
 
 /** Shared viewer projection: counted alternatives and full native fluid components, never recipe execution. */
 public record RecipeDisplay(ResourceLocation id,String machine,List<List<ItemStack>> items,List<List<FluidStack>> fluids,List<ItemStack> results,List<FluidStack> outputs,int ticks,int energy,String note) {
+    public List<net.minecraft.util.FormattedCharSequence> noteLines() {
+        return Minecraft.getInstance().font.split(net.minecraft.network.chat.Component.literal(note),164).stream().limit(3).toList();
+    }
     public ItemStack catalyst(){return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("factorycraft",machine)));}
     public static List<RecipeDisplay> all(){var level=Minecraft.getInstance().level;if(level==null)return List.of();var manager=level.getRecipeManager();var all=new ArrayList<RecipeDisplay>();
         for(var h:manager.getAllRecipesFor(Content.PROCESSING.get())){var r=h.value();all.add(new RecipeDisplay(h.id(),r.machine(),r.inputs().stream().map(i->Arrays.stream(i.ingredient().getItems()).map(s->s.copyWithCount(i.count())).toList()).toList(),List.of(),List.of(r.result().copy()),List.of(),r.ticks(),r.energy(),""));}

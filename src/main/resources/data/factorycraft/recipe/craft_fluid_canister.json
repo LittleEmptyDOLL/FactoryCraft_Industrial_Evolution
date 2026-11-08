@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IPI",
+    "IGI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "factorycraft:iron_plate"
+    },
+    "P": {
+      "item": "factorycraft:fluid_pipe"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "id": "factorycraft:fluid_canister",
+    "count": 1
+  }
+}

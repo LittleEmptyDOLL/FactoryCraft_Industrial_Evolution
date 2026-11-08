@@ -1,4 +1,6 @@
-# FactoryCraft: Industrial Evolution — 0.9.0
+# FactoryCraft: Industrial Evolution — 0.10.0
+
+В **0.10.0** добавлены сталь, двигатели, электродвигатели, процессоры и синяя химическая наука. **Сборочный автомат 2** строится одним предметом в габаритах 3×3×3, выполняет прежние сборочные рецепты и новые рецепты со смазкой/кислотой. Шесть новых технологий расширяют командные исследования. Канистра на **4000 mB** позволяет забирать остатки из входов машин без округления и потери компонентов: возьмите её курсором и нажмите ↑ у нужного бака. `/factorycraft chemicalworks` строит линию компонентов → двигатели → синяя наука; исследования команда проходит самостоятельно. См. [PROGRESSION.md](PROGRESSION.md) и [FLUIDS.md](FLUIDS.md).
 
 Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original procedural industrial textures. English and Russian UI.
 
@@ -20,7 +22,7 @@ Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original proc
 
 ## Установка
 
-Установите Minecraft 1.21.1 и NeoForge 21.1.252, положите `factorycraft-0.9.0.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
+Установите Minecraft 1.21.1 и NeoForge 21.1.252, положите `factorycraft-0.10.0.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
 
 ```sh
 ./gradlew build
@@ -49,6 +51,8 @@ Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original proc
 * [AGENTS.md](AGENTS.md) — правила следующих изменений.
 
 ## English
+
+0.10.0 adds steel/engines, fluid-consuming electric engines/processors, chemical science and six more team technologies. A full-size second assembler supports the original dry recipes and new fluid recipes. A native 4000-mB canister recovers exact input leftovers through validated menu buttons while preserving fluid components. See PROGRESSION.md / FLUIDS.md.
 
 0.9.0 adds full-size labs, automation/logistic science, shared team research, prerequisite/search UI, persistent units and repeatable lab-efficiency research. Optional FTB Teams has priority; vanilla scoreboard teams and personal UUIDs are the fallback when absent. Team/provider changes never silently copy progress. New player-owned machines enforce technology production locks; legacy factories/admin fixtures stay compatible. Optional EMI/JEI expose all native processing, chemistry, boiling and research definitions without requiring either viewer. See RESEARCH.md and RECIPE_VIEWERS.md.
 

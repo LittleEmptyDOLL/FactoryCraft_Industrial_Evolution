@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:engine",
+    "factorycraft:batteries"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 30,
+  "ticks": 80,
+  "repeatable": false,
+  "unlocks": [
+    "factorycraft:chemical_science_pack"
+  ],
+  "x": 3,
+  "y": 2
+}

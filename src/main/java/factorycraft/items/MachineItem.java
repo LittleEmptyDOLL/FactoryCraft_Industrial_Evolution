@@ -45,6 +45,6 @@ public final class MachineItem extends BlockItem {
         lines.add(Component.translatable("tooltip.factorycraft.machine_dimensions",profile.layout.width(),profile.layout.depth(),profile.layout.height()));
         lines.add(Component.translatable("tooltip.factorycraft.machine_preview"));
         lines.add(Component.translatable("tooltip.factorycraft."+profile.id));
-        switch(profile) {case PUMPJACK,REFINERY,CHEMICAL,BOILER,ENGINE,TANK,PUMP -> lines.add(Component.translatable("tooltip.factorycraft.fluid_nozzles"));default -> {}}
+        switch(profile) {case ADVANCED_ASSEMBLER,PUMPJACK,REFINERY,CHEMICAL,BOILER,ENGINE,TANK,PUMP -> lines.add(Component.translatable("tooltip.factorycraft.fluid_nozzles"));default -> {}}
     }
 }

@@ -77,7 +77,7 @@ public final class Content {
     public static final DeferredItem<factorycraft.items.FactoryWrenchItem> WRENCH=ITEMS.register("wrench",()->new factorycraft.items.FactoryWrenchItem(new Item.Properties()));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeltBlockEntity>> BELT = ENTITIES.register("belt", () -> BlockEntityType.Builder.of(BeltBlockEntity::new, blocks(FactoryKind.BELT, FactoryKind.FAST_BELT, FactoryKind.EXPRESS_BELT, FactoryKind.SPLITTER)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InserterBlockEntity>> INSERTER = ENTITIES.register("inserter", () -> BlockEntityType.Builder.of(InserterBlockEntity::new, blocks(FactoryKind.INSERTER)).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>> MACHINE = ENTITIES.register("machine", () -> BlockEntityType.Builder.of(MachineBlockEntity::new, blocks(FactoryKind.DRILL, FactoryKind.FURNACE, FactoryKind.ASSEMBLER, FactoryKind.GENERATOR, FactoryKind.INDUSTRIAL_FURNACE,FactoryKind.PUMPJACK,FactoryKind.REFINERY,FactoryKind.CHEMICAL_PLANT)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>> MACHINE = ENTITIES.register("machine", () -> BlockEntityType.Builder.of(MachineBlockEntity::new, blocks(FactoryKind.DRILL, FactoryKind.FURNACE, FactoryKind.ASSEMBLER, FactoryKind.GENERATOR, FactoryKind.INDUSTRIAL_FURNACE,FactoryKind.PUMPJACK,FactoryKind.REFINERY,FactoryKind.CHEMICAL_PLANT,FactoryKind.ADVANCED_ASSEMBLER)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PoleBlockEntity>> POLE = ENTITIES.register("pole", () -> BlockEntityType.Builder.of(PoleBlockEntity::new, blocks(FactoryKind.POLE)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CasingBlockEntity>> CASING = ENTITIES.register("casing", () -> BlockEntityType.Builder.of(CasingBlockEntity::new,blocks(FactoryKind.CASING,FactoryKind.REFINERY_CASING)).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<FactoryMenu>> MENU = MENUS.register("machine", () -> IMenuTypeExtension.create(FactoryMenu::new));
@@ -89,6 +89,16 @@ public final class Content {
     public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<factorycraft.recipes.BoilingRecipe>> BOILING_SERIALIZER=SERIALIZERS.register("boiling",factorycraft.recipes.BoilingRecipe.Serializer::new);
     public static final DeferredHolder<RecipeType<?>, RecipeType<FactoryRecipe>> PROCESSING = RECIPE_TYPES.register("processing", () -> new RecipeType<>() { public String toString() { return "factorycraft:processing"; } });
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FactoryRecipe>> PROCESSING_SERIALIZER = SERIALIZERS.register("processing", FactoryRecipe.Serializer::new);
+    public static final DeferredRegister<net.minecraft.core.component.DataComponentType<?>> COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, FactoryCraft.ID);
+    public static final DeferredHolder<net.minecraft.core.component.DataComponentType<?>, net.minecraft.core.component.DataComponentType<net.neoforged.neoforge.fluids.SimpleFluidContent>> CANISTER_FLUID = COMPONENTS.register("canister_fluid", () -> net.minecraft.core.component.DataComponentType.<net.neoforged.neoforge.fluids.SimpleFluidContent>builder()
+            .persistent(net.neoforged.neoforge.fluids.SimpleFluidContent.CODEC)
+            .networkSynchronized(net.neoforged.neoforge.fluids.SimpleFluidContent.STREAM_CODEC).build());
+    public static final DeferredItem<factorycraft.items.FluidCanisterItem> FLUID_CANISTER = ITEMS.register("fluid_canister", () -> new factorycraft.items.FluidCanisterItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> STEEL_PLATE = ITEMS.registerSimpleItem("steel_plate");
+    public static final DeferredItem<Item> ENGINE_UNIT = ITEMS.registerSimpleItem("engine_unit");
+    public static final DeferredItem<Item> ELECTRIC_ENGINE_UNIT = ITEMS.registerSimpleItem("electric_engine_unit");
+    public static final DeferredItem<Item> PROCESSING_UNIT = ITEMS.registerSimpleItem("processing_unit");
+    public static final DeferredItem<Item> SCIENCE_BLUE = ITEMS.registerSimpleItem("chemical_science_pack");
     public static final DeferredItem<Item> SCIENCE_RED=ITEMS.registerSimpleItem("automation_science_pack");
     public static final DeferredItem<Item> SCIENCE_GREEN=ITEMS.registerSimpleItem("logistic_science_pack");
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<LabBlockEntity>> LAB=ENTITIES.register("lab",()->BlockEntityType.Builder.of(LabBlockEntity::new,blocks(FactoryKind.LAB)).build(null));
@@ -103,11 +113,12 @@ public final class Content {
     private static Block[] blocks(FactoryKind... kinds) { return Arrays.stream(kinds).map(k -> FACTORY.get(k).get()).toArray(Block[]::new); }
     public static void register(IEventBus bus) {
         factorycraft.thermal.SteamFluids.register(bus);factorycraft.petroleum.PetroleumFluids.register(bus);
-        FEATURES.register(bus);BLOCKS.register(bus); ITEMS.register(bus); ENTITIES.register(bus); MENUS.register(bus);
+        COMPONENTS.register(bus);FEATURES.register(bus);BLOCKS.register(bus); ITEMS.register(bus); ENTITIES.register(bus); MENUS.register(bus);
         RECIPE_TYPES.register(bus); SERIALIZERS.register(bus); TABS.register(bus);
         bus.addListener(Content::capabilities);
     }
     private static void capabilities(RegisterCapabilitiesEvent e) {
+        e.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> factorycraft.items.FluidCanisterItem.handler(stack), FLUID_CANISTER.get());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,LAB.get(),(be,side)->be.inventory());
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,LAB.get(),(be,side)->be.energy);
         e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,MACHINE.get(),(be,side)->factorycraft.multiblock.AssemblyAccess.fluid(be,be.getBlockPos(),side));

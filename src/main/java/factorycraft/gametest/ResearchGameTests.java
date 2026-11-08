@@ -20,7 +20,7 @@ import java.util.*;
 public final class ResearchGameTests {
     private static ResourceLocation id(String path){return ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,path);}
     private static LabBlockEntity lab(GameTestHelper h,int x,String scope){var pos=h.absolutePos(new BlockPos(x,2,4));StructurePlacement.place(h.getLevel(),pos,Content.FACTORY.get(FactoryKind.LAB).get().defaultBlockState());var lab=(LabBlockEntity)h.getLevel().getBlockEntity(pos);lab.bind(scope);return lab;}
-    private static String personal(GameTestHelper h,String name){var uuid=UUID.nameUUIDFromBytes((h.absolutePos(BlockPos.ZERO)+name).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    static String personal(GameTestHelper h,String name){var uuid=UUID.nameUUIDFromBytes((h.absolutePos(BlockPos.ZERO)+name).getBytes(java.nio.charset.StandardCharsets.UTF_8));
         if(net.neoforged.fml.ModList.get().isLoaded("ftbteams"))try{var api=Class.forName("dev.ftb.mods.ftbteams.api.FTBTeamsAPI").getMethod("api").invoke(null);var manager=Class.forName("dev.ftb.mods.ftbteams.api.FTBTeamsAPI$API").getMethod("getManager").invoke(api);if(!factorycraft.compatibility.FtbTeamsBridge.exists(uuid))Class.forName("dev.ftb.mods.ftbteams.api.TeamManager").getMethod("createServerTeam",net.minecraft.commands.CommandSourceStack.class,String.class,String.class,Class.forName("dev.ftb.mods.ftblibrary.icon.Color4I"),UUID.class).invoke(manager,h.getLevel().getServer().createCommandSourceStack(),"FactoryCraft QA "+name,null,null,uuid);return "ftb:"+uuid;}catch(ReflectiveOperationException e){throw new IllegalStateException("FTB Teams QA setup failed",e);}
         return "player:"+uuid;}
     @GameTest(template="empty",timeoutTicks=650)

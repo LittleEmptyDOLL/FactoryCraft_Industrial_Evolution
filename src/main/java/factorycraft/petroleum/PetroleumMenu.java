@@ -20,10 +20,19 @@ public final class PetroleumMenu extends AbstractContainerMenu {
     }
     public int progress() { return (data.get(0)&65535)|((data.get(1)&65535)<<16); }
     public int duration() { return (data.get(2)&65535)|((data.get(3)&65535)<<16); }
-    public boolean stillValid(Player p) { return machine.petroleum()!=null && machine.petroleumAvailable() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getCenter())<=64; }
-    public boolean clickMenuButton(Player p,int id) { if(id!=0 || !stillValid(p) || p.isSpectator())return false;machine.petroleum().cycleRecipe();return true; }
+    public boolean stillValid(Player p) { if(p.level().isClientSide)return true;return machine.petroleum()!=null && machine.petroleum().ready() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getCenter())<=64; }
+    public boolean clickMenuButton(Player p,int id) {
+        if(p.containerMenu!=this || !stillValid(p) || p.isSpectator())return false;
+        if(id==1 || id==2)return FluidRecovery.recover(this,p,id-1);
+        if(id!=0)return false;
+        machine.petroleum().cycleRecipe();return true;
+    }
+    @Override public void clicked(int slot,int button,ClickType type,Player player) {
+        if(!player.level().isClientSide && (!stillValid(player) || player.isSpectator()))return;
+        super.clicked(slot,button,type,player);
+    }
     public ItemStack quickMoveStack(Player player,int index) {
-        if(index<0 || index>=slots.size())return ItemStack.EMPTY;var slot=slots.get(index);if(!slot.hasItem())return ItemStack.EMPTY;
+        if(!stillValid(player) || player.isSpectator() || index<0 || index>=slots.size())return ItemStack.EMPTY;var slot=slots.get(index);if(!slot.hasItem())return ItemStack.EMPTY;
         var stack=slot.getItem();var original=stack.copy();
         if(index<8) { if(!moveItemStackTo(stack,8,44,true))return ItemStack.EMPTY; }
         else if(!machine.kind().processing() || !moveItemStackTo(stack,0,4,false))return ItemStack.EMPTY;

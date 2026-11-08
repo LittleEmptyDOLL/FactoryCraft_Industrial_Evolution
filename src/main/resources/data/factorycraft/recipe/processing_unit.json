@@ -1,0 +1,32 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "assembling_machine_2",
+  "items": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 20
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 2
+    }
+  ],
+  "fluids": [
+    {
+      "fluid": "factorycraft:sulfuric_acid",
+      "amount": 5
+    }
+  ],
+  "results": [
+    {
+      "id": "factorycraft:processing_unit",
+      "count": 1
+    }
+  ],
+  "ticks": 200,
+  "energy": 40
+}

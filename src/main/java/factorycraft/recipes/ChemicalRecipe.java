@@ -17,8 +17,8 @@ import java.util.*;
 public record ChemicalRecipe(String machine,List<FactoryRecipe.CountedIngredient> items,List<SizedFluidIngredient> fluids,
                              List<ItemStack> results,List<FluidStack> fluidResults,int ticks,int energy) implements Recipe<ChemicalInput> {
     public ChemicalRecipe {
-        if(!List.of("oil_refinery","chemical_plant").contains(machine) || items.size()>4 || fluids.size()>2 || results.size()>4 || fluidResults.size()>(machine.equals("oil_refinery") ? 3:2) ||
-                items.isEmpty() && fluids.isEmpty() || results.isEmpty() && fluidResults.isEmpty() || ticks<1 || ticks>72000 || energy<1 || energy>16000 ||
+        if(!List.of("oil_refinery","chemical_plant","assembling_machine_2").contains(machine) || items.size()>4 || fluids.size()>2 || results.size()>4 || fluidResults.size()>(machine.equals("oil_refinery") ? 3:2) ||
+                items.isEmpty() && fluids.isEmpty() || results.isEmpty() && fluidResults.isEmpty() || ticks<1 || ticks>72000 || energy<(machine.equals("assembling_machine_2") ? 0:1) || energy>(machine.equals("assembling_machine_2") ? 100000:16000) ||
                 items.stream().anyMatch(i->i.count()<1 || i.count()>64) || fluids.stream().anyMatch(f->f.amount()<1 || f.amount()>4000) ||
                 results.stream().anyMatch(s->s.isEmpty() || s.getCount()>s.getMaxStackSize()) || fluidResults.stream().anyMatch(f->f.isEmpty() || f.getAmount()>4000))throw new IllegalArgumentException("Invalid chemical recipe bounds");
         items=List.copyOf(items);fluids=List.copyOf(fluids);results=results.stream().map(ItemStack::copy).toList();fluidResults=fluidResults.stream().map(FluidStack::copy).toList();
@@ -27,14 +27,24 @@ public record ChemicalRecipe(String machine,List<FactoryRecipe.CountedIngredient
     @Override public List<FluidStack> fluidResults() { return fluidResults.stream().map(FluidStack::copy).toList(); }
     private static final Codec<SizedFluidIngredient> FLUID= SizedFluidIngredient.FLAT_CODEC.validate(f->f.amount()<=4000 ? DataResult.success(f):DataResult.error(()->"Fluid input exceeds 4000 mB"));
     private static final Codec<FluidStack> OUTPUT=FluidStack.CODEC.validate(f->f.getAmount()<=4000 ? DataResult.success(f):DataResult.error(()->"Fluid result exceeds 4000 mB"));
-    public static final MapCodec<ChemicalRecipe> CODEC=RecordCodecBuilder.mapCodec(i->i.group(
-            Codec.STRING.fieldOf("machine").forGetter(ChemicalRecipe::machine),
-            FactoryRecipe.CountedIngredient.CODEC.listOf(0,4).optionalFieldOf("items",List.of()).forGetter(ChemicalRecipe::items),
-            FLUID.listOf(0,2).optionalFieldOf("fluids",List.of()).forGetter(ChemicalRecipe::fluids),
-            ItemStack.CODEC.listOf(0,4).optionalFieldOf("results",List.of()).forGetter(ChemicalRecipe::results),
-            OUTPUT.listOf(0,3).optionalFieldOf("fluid_results",List.of()).forGetter(ChemicalRecipe::fluidResults),
-            Codec.intRange(1,72000).fieldOf("ticks").forGetter(ChemicalRecipe::ticks),
-            Codec.intRange(1,16000).fieldOf("energy").forGetter(ChemicalRecipe::energy)).apply(i,ChemicalRecipe::new));
+    /** Parse untrusted datapack fields before constructor validation, returning a codec error. */
+    private record Definition(String machine,List<FactoryRecipe.CountedIngredient> items,List<SizedFluidIngredient> fluids,
+                              List<ItemStack> results,List<FluidStack> fluidResults,int ticks,int energy) {}
+    private static final MapCodec<Definition> DEFINITION=RecordCodecBuilder.mapCodec(i->i.group(
+            Codec.STRING.fieldOf("machine").forGetter(Definition::machine),
+            FactoryRecipe.CountedIngredient.CODEC.listOf(0,4).optionalFieldOf("items",List.of()).forGetter(Definition::items),
+            FLUID.listOf(0,2).optionalFieldOf("fluids",List.of()).forGetter(Definition::fluids),
+            ItemStack.CODEC.listOf(0,4).optionalFieldOf("results",List.of()).forGetter(Definition::results),
+            OUTPUT.listOf(0,3).optionalFieldOf("fluid_results",List.of()).forGetter(Definition::fluidResults),
+            Codec.intRange(1,72000).fieldOf("ticks").forGetter(Definition::ticks),
+            Codec.intRange(0,100000).fieldOf("energy").forGetter(Definition::energy)).apply(i,Definition::new));
+    public static final MapCodec<ChemicalRecipe> CODEC=DEFINITION.flatXmap(value->{
+        try {
+            return DataResult.success(new ChemicalRecipe(value.machine,value.items,value.fluids,value.results,value.fluidResults,value.ticks,value.energy));
+        } catch(IllegalArgumentException error) {
+            return DataResult.error(error::getMessage);
+        }
+    },recipe->DataResult.success(new Definition(recipe.machine,recipe.items,recipe.fluids,recipe.results,recipe.fluidResults,recipe.ticks,recipe.energy)));
     @Override public boolean matches(ChemicalInput input,Level level) {
         if(input.fluids().size()<fluids.size())return false;
         for(int i=0;i<fluids.size();i++)if(!fluids.get(i).test(input.fluids().get(i)))return false;

@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:electronics"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 20,
+  "ticks": 60,
+  "repeatable": false,
+  "unlocks": [
+    "factorycraft:assembling_machine_2"
+  ],
+  "x": 2,
+  "y": 3
+}

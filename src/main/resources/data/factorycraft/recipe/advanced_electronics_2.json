@@ -1,0 +1,20 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:chemical_science",
+    "factorycraft:automation_2"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 50,
+  "ticks": 120,
+  "repeatable": false,
+  "unlocks": [
+    "factorycraft:processing_unit"
+  ],
+  "x": 4,
+  "y": 2
+}

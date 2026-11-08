@@ -55,3 +55,8 @@
 * EMI/JEI classes are optional client-only entrypoints; common simulation/registration must not link to their classes. Build profiles recipeViewer=jei/emi/both and ftbModsDir exercise real dependencies without bundling jars. Keep exact dependency versions/hash-checked download URLs in the optional-mod lock file and preserve viewer-free dedicated startup.
 
 * Preserve curated upstream item artwork listed in tools/item_artwork.json. Resource generation must not overwrite those PNGs or silently replace missing curated art with a procedural fallback. Unregistered future-item textures do not count as implemented gameplay.
+
+* Second assembler inherits dry recipes under original IDs/research gates; do not generate duplicate viewer recipe IDs or alter old assembler NBT. Preserve old chemistry JSON/wire field order and canonical signatures. Numeric profile IDs must have bundled geometry.
+* Canister recovery commits a private item copy and exact input remainder before observers. Keep native SimpleFluidContent/components, capacity remainder/overflow, current-menu/range/spectator/assembly guards, and ordinary stale slot protection. Never replace sub-bucket fluid with a lossy bucket or discard it when changing recipes. Preserve the four-chunk chemical-science/canister checkpoint without reseeding.
+
+* Research search owns non-Escape keyboard input while focused; do not let container or viewer shortcuts close the menu when typing technology names. Keep a manual typed-query/pan check when changing this screen.

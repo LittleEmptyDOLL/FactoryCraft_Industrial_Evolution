@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:engine_unit"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:sulfur"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:chemical_science_pack",
+    "count": 2
+  },
+  "ticks": 480,
+  "energy": 24
+}

@@ -45,6 +45,8 @@ public final class MachineFootprintGameTests {
     @GameTest(template="empty",timeoutTicks=100)
     public static void assemblingMachineMatchesPreviewInEveryOrientation(GameTestHelper h) { verify(h,"assembling_machine"); }
     @GameTest(template="empty",timeoutTicks=100)
+    public static void fluidAssemblerMatchesPreviewInEveryOrientation(GameTestHelper h) { verify(h,"assembling_machine_2"); }
+    @GameTest(template="empty",timeoutTicks=100)
     public static void coalGeneratorMatchesPreviewInEveryOrientation(GameTestHelper h) { verify(h,"coal_generator"); }
     @GameTest(template="empty",timeoutTicks=100)
     public static void industrialFurnaceMatchesPreviewInEveryOrientation(GameTestHelper h) { verify(h,"industrial_furnace"); }

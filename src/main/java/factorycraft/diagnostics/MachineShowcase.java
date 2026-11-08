@@ -30,6 +30,11 @@ public final class MachineShowcase {
                 switch(profile) {
                     case FURNACE,INDUSTRIAL -> machine.items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,64));
                     case ASSEMBLER -> machine.items.setStackInSlot(0,new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("factorycraft","iron_plate")),64));
+                    case ADVANCED_ASSEMBLER -> {
+                        machine.items.setStackInSlot(0,new ItemStack(Content.ENGINE_UNIT.get(),8));
+                        machine.items.setStackInSlot(1,new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("factorycraft","electronic_circuit")),16));
+                        machine.petroleum().cells.get(0).restore(new factorycraft.fluids.FluidKey(factorycraft.petroleum.PetroleumFluids.LUBRICANT.stack(1)),120);
+                    }
                     case GENERATOR -> machine.items.setStackInSlot(8,new ItemStack(Items.COAL,8));
                     case DRILL -> level.setBlockAndUpdate(profile.center(pos,Direction.NORTH).below(),Content.IRON_ORE.get().defaultBlockState());
                     case PUMPJACK -> level.setBlockAndUpdate(profile.center(pos,Direction.NORTH).below(),Content.OIL_DEPOSIT.get().defaultBlockState());

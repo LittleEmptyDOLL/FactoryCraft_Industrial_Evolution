@@ -15,6 +15,15 @@ public final class ResearchScreen extends AbstractContainerScreen<ResearchMenu> 
     private EditBox search;private String filter="";private ResourceLocation hovered;private int panX,panY;
     public ResearchScreen(ResearchMenu menu,Inventory inv,Component title){super(menu,inv,title);imageWidth=300;imageHeight=240;inventoryLabelX=132;inventoryLabelY=153;}
     protected void init(){super.init();search=new EditBox(font,leftPos+8,topPos+21,282,16,Component.translatable("gui.factorycraft.research_search"));search.setHint(Component.translatable("gui.factorycraft.research_search"));search.setMaxLength(64);search.setValue(filter);search.setResponder(v->filter=v);addRenderableWidget(search);}
+    @Override public boolean keyPressed(int key,int scan,int modifiers) {
+        // Container inventory/viewer shortcuts must not consume letters typed into search.
+        // charTyped still reaches the focused EditBox through the normal event dispatcher.
+        if(search!=null && search.isFocused() && key!=org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+            search.keyPressed(key,scan,modifiers);
+            return true;
+        }
+        return super.keyPressed(key,scan,modifiers);
+    }
     private Component name(ResourceLocation id){return Component.translatableWithFallback("technology."+id.getNamespace()+"."+id.getPath(),id.getPath());}
     private net.minecraft.nbt.CompoundTag state(){return ResearchNetwork.clientState.menu()==menu.containerId ? ResearchNetwork.clientState.data():new net.minecraft.nbt.CompoundTag();}
     private boolean visible(ResearchCatalog.Entry e){return name(e.id()).getString().toLowerCase(Locale.ROOT).contains(filter.toLowerCase(Locale.ROOT)) || e.id().toString().contains(filter.toLowerCase(Locale.ROOT));}
