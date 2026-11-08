@@ -133,3 +133,8 @@ The second assembler composes PetroleumProduction instead of changing legacy ass
 ## 0.11.0 module transactions and beacon scheduling
 
 MachineModules composes a separate fixed-slot inventory and recipe-keyed fractional/productive work into the controller. Empty state emits no NBT and preserves the old production path. Output reservations include a pending bonus before any FE debit; item/fluid/credit commits precede observers. BeaconIndex buckets loaded controllers/recipients, invalidates local candidates and bills block-ticking beacons at level pre-tick using a paid work lease. Candidate readiness is rechecked for part unload; inactive chunks/frozen ticks cannot spend FE. Normal quality uses 1.5/sqrt(n) transmission. No per-item entities, forced chunks or asynchronous Level access are added.
+
+
+## 0.12.0 metric transport
+
+The existing simultaneous BeltTransport kernel now uses lane-local integer lengths/capacities, including all reservation/headway/ring calculations. BeltRoute owns geometry only; BeltSimulation resolves loaded-only cached topology. Physical lift/incline parts forward guarded ports and store no item copies. Underground inputs own the entire virtual route; outputs have no simulation nodes and dynamically guarded delegation. Default flat NBT is unchanged. See BELTS.md for distance, migration, placement/protection and demolition semantics.

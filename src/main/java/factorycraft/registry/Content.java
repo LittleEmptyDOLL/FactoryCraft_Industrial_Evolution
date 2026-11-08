@@ -53,9 +53,10 @@ public final class Content {
             var block = BLOCKS.register(kind.id, () -> new FactoryBlock(kind, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()
                     .pushReaction(kind.casing() || kind.large() ? net.minecraft.world.level.material.PushReaction.BLOCK:net.minecraft.world.level.material.PushReaction.NORMAL)));
             FACTORY.put(kind, block);
+            if(kind==FactoryKind.TRANSPORT_PART)continue;
             ITEMS.register(kind.id, () -> kind.large()
                     ? new factorycraft.items.MachineItem(block.get(),new Item.Properties())
-                    : new factorycraft.items.FactoryBlockItem(block.get(),new Item.Properties()));
+                    : kind.lift() ? new factorycraft.items.LiftItem(block.get(),new Item.Properties()) : kind.belt() ? new factorycraft.items.BeltItem(block.get(),new Item.Properties()) : new factorycraft.items.FactoryBlockItem(block.get(),new Item.Properties()));
         }
     }
     public static final DeferredBlock<factorycraft.blocks.OilDepositBlock> OIL_DEPOSIT=BLOCKS.register("oil_deposit",()->new factorycraft.blocks.OilDepositBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)));
@@ -75,7 +76,8 @@ public final class Content {
             ITEMS.registerSimpleItem(name, new Item.Properties());
     }
     public static final DeferredItem<factorycraft.items.FactoryWrenchItem> WRENCH=ITEMS.register("wrench",()->new factorycraft.items.FactoryWrenchItem(new Item.Properties()));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeltBlockEntity>> BELT = ENTITIES.register("belt", () -> BlockEntityType.Builder.of(BeltBlockEntity::new, blocks(FactoryKind.BELT, FactoryKind.FAST_BELT, FactoryKind.EXPRESS_BELT, FactoryKind.SPLITTER)).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeltBlockEntity>> BELT = ENTITIES.register("belt", () -> BlockEntityType.Builder.of(BeltBlockEntity::new, blocks(Arrays.stream(FactoryKind.values()).filter(FactoryKind::belt).toArray(FactoryKind[]::new))).build(null));
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<factorycraft.blockentity.TransportPartBlockEntity>> TRANSPORT_PART=ENTITIES.register("transport_part",()->BlockEntityType.Builder.of(factorycraft.blockentity.TransportPartBlockEntity::new,blocks(FactoryKind.TRANSPORT_PART)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InserterBlockEntity>> INSERTER = ENTITIES.register("inserter", () -> BlockEntityType.Builder.of(InserterBlockEntity::new, blocks(FactoryKind.INSERTER)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>> MACHINE = ENTITIES.register("machine", () -> BlockEntityType.Builder.of(MachineBlockEntity::new, blocks(FactoryKind.DRILL, FactoryKind.FURNACE, FactoryKind.ASSEMBLER, FactoryKind.GENERATOR, FactoryKind.INDUSTRIAL_FURNACE,FactoryKind.PUMPJACK,FactoryKind.REFINERY,FactoryKind.CHEMICAL_PLANT,FactoryKind.ADVANCED_ASSEMBLER)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PoleBlockEntity>> POLE = ENTITIES.register("pole", () -> BlockEntityType.Builder.of(PoleBlockEntity::new, blocks(FactoryKind.POLE)).build(null));
@@ -113,7 +115,7 @@ public final class Content {
     static {
         TABS.register("factorycraft", () -> CreativeModeTab.builder().title(Component.translatable("itemGroup.factorycraft"))
                 .icon(() -> new ItemStack(FACTORY.get(FactoryKind.ASSEMBLER).get()))
-                .displayItems((p, out) -> ITEMS.getEntries().stream().filter(i->!java.util.List.of(FactoryKind.CASING.id,FactoryKind.REFINERY_CASING.id).contains(i.getId().getPath())).forEach(i -> out.accept(i.get()))).build());
+                .displayItems((p, out) -> ITEMS.getEntries().stream().filter(i->!java.util.List.of(FactoryKind.CASING.id,FactoryKind.REFINERY_CASING.id,FactoryKind.TRANSPORT_PART.id).contains(i.getId().getPath())).forEach(i -> out.accept(i.get()))).build());
     }
     private static Block[] blocks(FactoryKind... kinds) { return Arrays.stream(kinds).map(k -> FACTORY.get(k).get()).toArray(Block[]::new); }
     public static void register(IEventBus bus) {
@@ -123,6 +125,7 @@ public final class Content {
         bus.addListener(Content::capabilities);
     }
     private static void capabilities(RegisterCapabilitiesEvent e) {
+        e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,TRANSPORT_PART.get(),(be,side)->be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,BEACON.get(),(be,side)->be.inventory());
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,BEACON.get(),(be,side)->be.energy);
         e.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> factorycraft.items.FluidCanisterItem.handler(stack), FLUID_CANISTER.get());

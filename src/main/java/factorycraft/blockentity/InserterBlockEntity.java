@@ -42,10 +42,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity {
             var belt=factorycraft.simulation.BeltSimulation.at(level,sourcePos);
             int track=belt==null ? -1:belt.trackAt(sourcePos);
             for (int s = 0; s < source.getSlots(); s++) {
-                if (belt!=null && track>=0) {
-                    var carriers=belt.lane(track*2+s/4).carriers();
-                    if(s%4>=carriers.size() || carriers.get(s%4).position()<.75)continue;
-                }
+                if(belt!=null && !belt.canSample(sourcePos,s))continue;
                 var candidate = source.extractItem(s, 1, true);
                 if (candidate.isEmpty() || !ItemHandlerHelper.insertItem(target, candidate, true).isEmpty()) continue;
                 var extracted = source.extractItem(s, 1, false);

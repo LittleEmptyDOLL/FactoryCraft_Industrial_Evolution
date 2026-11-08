@@ -26,7 +26,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     public static final BooleanProperty ACTIVE = BlockStateProperties.LIT;
     public final FactoryKind kind;
     public FactoryBlock(FactoryKind kind, Properties properties) {
-        super(properties); this.kind = kind;
+        super(kind.belt() || kind==FactoryKind.TRANSPORT_PART ? properties.dynamicShape():properties); this.kind = kind;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, false));
     }
     @Override protected MapCodec<? extends BaseEntityBlock> codec() { return simpleCodec(p -> new FactoryBlock(kind, p)); }
@@ -37,12 +37,17 @@ public final class FactoryBlock extends BaseEntityBlock {
     @Override protected RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
     @Override protected VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
         if(kind.casing() && s.getValue(PROFILE)==factorycraft.multiblock.MachineProfile.SPLITTER)return box(0,0,0,16,3,16);
-        if (kind.belt()) return box(0, 0, 0, 16, 3, 16);
+        if(kind.belt() || kind==FactoryKind.TRANSPORT_PART){
+            var be=l.getBlockEntity(p);var cell=be instanceof BeltBlockEntity belt ? belt.modelCell(p):be instanceof TransportPartBlockEntity part ? part.cell():null;
+            if(cell!=null)return factorycraft.belts.TransportShapes.shape(cell);
+            return box(0,0,0,16,3,16);
+        }
         if (kind == FactoryKind.INSERTER) return box(5, 0, 5, 11, 8, 11);
         if (kind == FactoryKind.POLE) return box(6, 0, 6, 10, 16, 10);
         return Shapes.block();
     }
     @Override public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+        if(kind==FactoryKind.TRANSPORT_PART)return new TransportPartBlockEntity(p,s);
         if(kind==FactoryKind.BEACON)return new factorycraft.blockentity.BeaconBlockEntity(p,s);
         if(kind==FactoryKind.LAB)return new LabBlockEntity(p,s);
         if (kind.belt()) return new BeltBlockEntity(p, s);
@@ -53,6 +58,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     }
     @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState s, BlockEntityType<T> t) {
         if (l.isClientSide) return null;
+        if(kind==FactoryKind.TRANSPORT_PART)return createTickerHelper(t,Content.TRANSPORT_PART.get(),(a,b,c,d)->d.tick());
         if(kind==FactoryKind.LAB)return createTickerHelper(t,Content.LAB.get(),(a,b,c,d)->d.tick());
         if (kind.belt()) return null;
         if (kind == FactoryKind.INSERTER) return createTickerHelper(t, Content.INSERTER.get(), (a,b,c,d) -> d.tick());
@@ -77,6 +83,8 @@ public final class FactoryBlock extends BaseEntityBlock {
             if(owner!=null)factorycraft.multiblock.AssemblyAccess.open(owner,player);
             else player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);
         }
+        else if(l.getBlockEntity(p) instanceof BeltBlockEntity belt)showTransport(belt,player);
+        else if(l.getBlockEntity(p) instanceof TransportPartBlockEntity part && part.ownerForRemoval()!=null)showTransport(part.ownerForRemoval(),player);
         else player.displayClientMessage(Component.translatable("message.factorycraft.direction", s.getValue(FACING).getName()), true);
         return InteractionResult.CONSUME;
     }
@@ -88,24 +96,40 @@ public final class FactoryBlock extends BaseEntityBlock {
     }
     public InteractionResult useWrench(Level level,BlockPos pos,Player player) {
         if(kind.large() || kind.casing())return factorycraft.multiblock.StructureSupport.wrench(level,pos,player);
+        var target=level.getBlockEntity(pos);if(target instanceof TransportPartBlockEntity part)target=part.ownerForRemoval();
+        if(target instanceof BeltBlockEntity belt){
+            if(level.isClientSide)return InteractionResult.SUCCESS;
+            if(belt.kind().lift()){if(player.isShiftKeyDown())belt.removeTransport(true);else if(belt.rotateExit())showTransport(belt,player);else player.displayClientMessage(Component.translatable("message.factorycraft.transport_blocked"),true);return InteractionResult.CONSUME;}
+            if(player.isShiftKeyDown()){boolean ok=belt.kind().underground() ? belt.toggleUnderground():belt.correctForm();if(ok)showTransport(belt,player);else player.displayClientMessage(Component.translatable("message.factorycraft.transport_blocked"),true);return InteractionResult.CONSUME;}
+            pos=belt.getBlockPos();
+        }
         if(!level.isClientSide)level.setBlock(pos,level.getBlockState(pos).cycle(FACING),3);
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+    private static void showTransport(BeltBlockEntity belt,Player player){
+        String mode=belt.kind().underground() ? belt.undergroundOutput() ? "output":"input":Integer.toString(belt.formMode());
+        player.displayClientMessage(Component.translatable("message.factorycraft.transport_state",Component.translatable("transport.factorycraft.shape."+belt.route().shape.name().toLowerCase(java.util.Locale.ROOT)),Component.translatable("transport.factorycraft.direction."+belt.outputFacing().getName()),Component.translatable("transport.factorycraft.mode."+mode)),true);
     }
     @Override protected void onRemove(BlockState s, Level l, BlockPos p, BlockState next, boolean moving) {
         if (!s.is(next.getBlock()) && !l.restoringBlockSnapshots && l.getBlockEntity(p) instanceof FactoryBlockEntity be) be.dropContents();
         super.onRemove(s, l, p, next, moving);
     }
     @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder params) {
+        if(kind==FactoryKind.TRANSPORT_PART || params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof BeltBlockEntity belt && belt.special())return List.of();
         if(kind.casing() && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CasingBlockEntity part && part.virtualPart())return List.of();
         return factorycraft.multiblock.StructureSupport.preserve(super.getDrops(state,params),params);
     }
     @Override public BlockState playerWillDestroy(Level level,BlockPos pos,BlockState state,Player player) {
+        if(!level.isClientSide && player.isCreative()){
+            var b=level.getBlockEntity(pos);if(b instanceof TransportPartBlockEntity part && part.ownerForRemoval()!=null)part.ownerForRemoval().removeTransport(false);else if(b instanceof BeltBlockEntity belt && belt.special())belt.removeTransport(false);
+        }
         if(!level.isClientSide && player.isCreative() && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart()) {
             var owner=part.genericForRemoval();if(owner!=null)owner.assembly().removeWhole(false);
         }
         return super.playerWillDestroy(level,pos,state,player);
     }
     @Override public ItemStack getCloneItemStack(LevelReader level,BlockPos pos,BlockState state) {
+        if(level.getBlockEntity(pos) instanceof TransportPartBlockEntity part){var owner=part.owner();return owner==null ? ItemStack.EMPTY:new ItemStack(owner.getBlockState().getBlock());}
         if(kind.casing() && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart())
             return part.controllerItem();
         return super.getCloneItemStack(level,pos,state);

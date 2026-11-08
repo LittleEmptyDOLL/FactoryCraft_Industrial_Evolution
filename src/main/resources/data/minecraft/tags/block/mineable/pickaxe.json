@@ -18,6 +18,13 @@
     "factorycraft:coal_deposit",
     "factorycraft:stone_deposit",
     "factorycraft:assembling_machine_2",
-    "factorycraft:beacon"
+    "factorycraft:beacon",
+    "factorycraft:conveyor_lift",
+    "factorycraft:underground_belt",
+    "factorycraft:fast_conveyor_lift",
+    "factorycraft:fast_underground_belt",
+    "factorycraft:express_conveyor_lift",
+    "factorycraft:express_underground_belt",
+    "factorycraft:transport_part"
   ]
 }

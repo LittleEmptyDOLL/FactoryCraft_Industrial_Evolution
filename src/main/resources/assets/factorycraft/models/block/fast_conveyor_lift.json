@@ -1,0 +1,9 @@
+{
+  "loader": "factorycraft:belt",
+  "textures": {
+    "normal": "factorycraft:block/fast_transport_belt",
+    "fast": "factorycraft:block/fast_transport_belt",
+    "express": "factorycraft:block/express_transport_belt",
+    "particle": "factorycraft:block/fast_transport_belt"
+  }
+}

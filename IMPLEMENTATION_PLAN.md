@@ -67,7 +67,7 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Add underground belts with bounded loaded-only pairing, both independent lanes, stored in-flight ownership, blocked/unloaded output conservation and real inserter/port integration; then priority/filter splitter controls. Preserve module/research/chemistry fixtures and legacy checkpoint hashes.
+1. Extend the marked performance harness with a separate mixed curve/slope/lift/underground profile (never reuse or reset the legacy full fixture). Exercise natural player-distance chunk unload and two real clients. Then implement priority/filter splitter controls with server-owned configuration and conservative transactions. Preserve all transport/module/research/chemistry fixtures and legacy checkpoint hashes.
 2. Extend modules/beacons and higher science tiers, then logistics/circuits. Continue UI polish/coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
 
@@ -132,3 +132,10 @@ Implemented steel/engines, second fluid assembler with inherited dry recipes, el
 Implement real speed/efficiency/productivity modules with separate persistent slots, bounded fixed-point work, recipe-specific productivity credit, complete output reservations and server-owned menus. Preserve the exact empty-module legacy path/NBT/checkpoints. Add powered 3×3×3 one-item beacons with local spatial invalidation, no forced chunks, unavailable-part guards and speed/efficiency-only transmission. Verify independent arithmetic, native production/FE/backpressure/recipes/portable/chunk/disk, optional dependencies, graphical menus and benchmark compatibility before publishing main.
 
 Delivered local module arithmetic/GUI, canonical actual-work productivity, powered spatial beacons, progression and finite comparison factory. Follow MODULES.md and the exact validation results/limits. Next session starts with the underground-belt task above; do not reset old checkpoints or the retained unreleased v1 module failure evidence.
+
+## Delivered milestone — 0.12.0 unified 3D transport
+
+User scope: directional automatic curves, physically length-aware up/down slopes, two-stage one-item lifts (up/down, configurable max 16), then Factorio-style virtual underground pairs (4/6/8 hidden cells). Extend BeltLane/BeltTransport with per-lane metric lengths and capacities, retaining ordinary 96-unit lanes/NBT and 15/30/45 item/s. Separate immutable route geometry, loaded-only cached routing, physical auxiliary-part ownership and client meshes. Keep two independent lanes, exact headway/order/backpressure, protected all-cell placement, sole-controller content, safe dismantling and no forced chunk loads. Verify kernels, packed rings/merges/splitters, native item placement/protection, inserter ports, unload and separate-JVM saves, actual graphical paths and full legacy checkpoint before publishing. Preserve upstream artwork.
+
+
+Delivered variable metric lanes in the original simultaneous kernel, directional curves and up/down clearance-backed slopes, all-tier two-stage one-item up/down lifts and virtual underground pairs. All generated parts are identity-only; ordinary default NBT remains exact. Underground endpoints choose roles/pairs automatically and guard cached output capabilities. Wrench controls, original chunk-baked ribbons, interpolation, item recipes, EN/RU and `/factorycraft transportworks` are included. See BELTS.md and VALIDATION.md for geometry, distance, migration, protected placement, exact cross-process checkpoints and graphical evidence. Next session starts with the mixed-world profiling/natural-unload work above, then filter/priority controls; do not reset fixtures.

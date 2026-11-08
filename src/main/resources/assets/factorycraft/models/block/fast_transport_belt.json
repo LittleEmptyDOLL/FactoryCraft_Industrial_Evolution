@@ -1,41 +1,9 @@
 {
-  "parent": "minecraft:block/block",
+  "loader": "factorycraft:belt",
   "textures": {
-    "all": "factorycraft:block/fast_transport_belt",
+    "normal": "factorycraft:block/fast_transport_belt",
+    "fast": "factorycraft:block/fast_transport_belt",
+    "express": "factorycraft:block/express_transport_belt",
     "particle": "factorycraft:block/fast_transport_belt"
-  },
-  "elements": [
-    {
-      "from": [
-        0,
-        0,
-        0
-      ],
-      "to": [
-        16,
-        3,
-        16
-      ],
-      "faces": {
-        "up": {
-          "texture": "#all"
-        },
-        "down": {
-          "texture": "#all"
-        },
-        "north": {
-          "texture": "#all"
-        },
-        "south": {
-          "texture": "#all"
-        },
-        "east": {
-          "texture": "#all"
-        },
-        "west": {
-          "texture": "#all"
-        }
-      }
-    }
-  ]
+  }
 }

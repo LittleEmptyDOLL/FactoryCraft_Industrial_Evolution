@@ -7,9 +7,9 @@
 | Core | Java21/MC1.21.1/NeoForge21.1.252, ModDevGradle, registries, server config, creative tab | implemented; build + dedicated startup |
 | UI languages/assets | EN/RU, unified geometry and 3D items for 16 types, activity-driven components, nozzle markings, articulated inserter and belt items | implemented first-slice visuals; not final art |
 | Persistence/network | inventories, ordinary belt schema-2 positions, splitter schema-3 four lanes (reads schema 1/2), hand, progress/recipe/fuel/energy, shared research SavedData; vanilla BE/menu packets and validated research payloads | implemented; NBT and separate-process disk reload tested |
-| Belts | 2 lanes, 3 speeds, residual travel, cross-block spacing, fair merges, full rings, congestion, sleeping/wakeup | implemented transport kernel; curves, advanced belt types and full-scale world profiling remain |
+| Belts | 2 lanes, 3 speeds, residual travel, cross-block spacing, fair merges, full rings, congestion, sleeping/wakeup | implemented straight/curved/sloped metric transport; see BELTS.md; full mixed-topology world profiling remains |
 | Splitter | 2×1, four physical lanes, two forward outputs, per-lane balancing/fallback, 16 persistent carriers, track-local ports, 30 item/s saturated independent-kernel flow in 24 input phases | implemented basic splitter; priorities/filters absent |
-| Advanced belts | none | planned: underground, filters, priorities |
+| Advanced belts | three-tier up/down one-item lifts, two-click preview, sole-owner parts; three-tier virtual underground pairs, real transit delay, nearest pairing, guarded output ports | implemented first 3D transport slice; filters/priorities/drag-building remain planned |
 | Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure, position sampling on both splitter tracks | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
 | Resources | finite per-tile iron/copper/coal/stone reserves, repeated manual harvesting, BE-aware large surface fields across chunks, radius/spacing/stock-range TOML and per-resource datapack settings | partial; uranium/late resources and world setup GUI absent |
 | Mining | finite electric drill, 3×3 footprint, 5×5×8 search, energy and configurable duration | implemented first drill; finite oil pumpjack implemented; burner/advanced drills planned |

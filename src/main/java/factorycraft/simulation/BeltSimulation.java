@@ -33,15 +33,28 @@ public final class BeltSimulation {
     public static void activate(BeltBlockEntity be) { if(be.simulationLoaded)be.wakeTransport(); }
     public static BeltBlockEntity at(Level level,net.minecraft.core.BlockPos pos) {
         var be=factorycraft.fluids.FluidConnections.at(level,pos);
+        if(be instanceof factorycraft.blockentity.TransportPartBlockEntity part)return part.owner();
         if(be instanceof factorycraft.blockentity.CasingBlockEntity part) { var owner=part.genericForRemoval();return owner instanceof BeltBlockEntity belt ? belt:null; }
         return be instanceof BeltBlockEntity belt ? belt:null;
     }
+    private static final Set<BeltBlockEntity> REFRESHING=Collections.newSetFromMap(new IdentityHashMap<>());
     public static void topologyChanged(BeltBlockEntity be) {
-        var level=be.getLevel();if(level==null || level.isClientSide)return;
-        if(be.simulationLoaded)be.refreshConnections();
-        var profile=factorycraft.multiblock.MachineProfile.of(be.getBlockState());
-        var cells=profile==null ? java.util.List.of(be.getBlockPos()):profile.cells(be.getBlockPos(),profile.facing(be.getBlockState()));
-        for(var cell:cells)for(var d:Direction.Plane.HORIZONTAL) { var neighbor=at(level,cell.relative(d));if(neighbor!=null && neighbor!=be && neighbor.simulationLoaded)neighbor.refreshConnections(); }
+        var level=be.getLevel();if(level==null || level.isClientSide || !REFRESHING.add(be))return;
+        try{
+            var nearby=Collections.newSetFromMap(new IdentityHashMap<BeltBlockEntity,Boolean>());
+            if(be.simulationLoaded)nearby.add(be);
+            var cells=new ArrayList<>(be.physicalCells());cells.add(be.outputPosition());
+            for(var cell:cells)for(var d:Direction.Plane.HORIZONTAL)for(int y=-1;y<=1;y++){
+                var neighbor=at(level,cell.relative(d).above(y));if(neighbor!=null && neighbor.simulationLoaded)nearby.add(neighbor);
+            }
+            // Pair discovery is bounded and happens only at topology events, never in microsteps.
+            if(be.kind().underground())for(var d:Direction.Plane.HORIZONTAL)for(int n=1;n<=9;n++){
+                var neighbor=at(level,be.getBlockPos().relative(d,n));if(neighbor!=null && neighbor.simulationLoaded && neighbor.kind().underground())nearby.add(neighbor);
+            }
+            for(var b:List.copyOf(nearby))if(b.paired()!=null && b.paired().simulationLoaded)nearby.add(b.paired());
+            // Geometry first, then connect sources against the final lane mapping.
+            for(var b:nearby)b.refreshConnections();for(var b:nearby)b.refreshConnections();
+        }finally{REFRESHING.remove(be);}
     }
     public static void changed(BeltBlockEntity be,boolean contents) {
         var state=STATES.get(be.getLevel());
@@ -51,7 +64,7 @@ public final class BeltSimulation {
         if(e.getLevel().isClientSide)return;
         var s=STATES.get(e.getLevel());if(s==null)return;
         long start=System.nanoTime();s.transport.tick();s.nanos+=System.nanoTime()-start;
-        for(var be:s.dirty)if(!be.isRemoved())be.flushSimulationChanges(e.getLevel().getGameTime());
+        for(int i=0;i<s.dirty.size();i++){var be=s.dirty.get(i);if(!be.isRemoved())be.flushSimulationChanges(e.getLevel().getGameTime());}
         s.dirty.clear();
     }
     public static String statistics(Level level) {

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "BBB"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "factorycraft:express_transport_belt"
+    }
+  },
+  "result": {
+    "id": "factorycraft:express_underground_belt",
+    "count": 2
+  }
+}

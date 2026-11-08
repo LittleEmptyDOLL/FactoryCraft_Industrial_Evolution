@@ -500,3 +500,52 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  for name,en,ru in [('modules','Modules','Модули'),('productivity','Productivity','Продуктивность'),('effect_transmission','Effect transmission','Передача эффектов')]:values['technology.factorycraft.'+name]=(en,ru)
  for name in ['speed_module','efficiency_module','productivity_module']:values['recipe.factorycraft.'+name]=values['item.factorycraft.'+name]
  values['recipe.factorycraft.beacon']=values['block.factorycraft.beacon'];data.update({k:v[index] for k,v in values.items()});write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.12 transport surfaces use native cached geometry; all artwork remains original.
+transport_tiers=[('transport_belt','conveyor_lift','underground_belt'),('fast_transport_belt','fast_conveyor_lift','fast_underground_belt'),('express_transport_belt','express_conveyor_lift','express_underground_belt')]
+for tier,names in enumerate(transport_tiers,1):
+ for name in names:
+  write(f'assets/factorycraft/models/block/{name}.json',{'loader':'factorycraft:belt','textures':{'normal':'factorycraft:block/'+names[0],'fast':'factorycraft:block/fast_transport_belt','express':'factorycraft:block/express_transport_belt','particle':'factorycraft:block/'+names[0]}})
+  write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'':{'model':'factorycraft:block/'+name}}})
+  if name!=names[0]:
+   pixels=texture('item/'+name,[(221,168,42),(212,63,48),(53,156,209)][tier-1],'machine')
+   write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
+   write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}],'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
+  if 'lift' in name:craft(name,['BGB','B B'],{'B':'factorycraft:'+names[0],'G':'factorycraft:iron_gear'})
+  elif 'underground' in name:craft(name,['III','BBB'],{'I':'minecraft:iron_ingot','B':'factorycraft:'+names[0]},count=2)
+write('assets/factorycraft/models/block/transport_part.json',{'loader':'factorycraft:belt','textures':{'normal':'factorycraft:block/transport_belt','fast':'factorycraft:block/fast_transport_belt','express':'factorycraft:block/express_transport_belt','particle':'factorycraft:block/transport_belt'}})
+write('assets/factorycraft/blockstates/transport_part.json',{'variants':{'':{'model':'factorycraft:block/transport_part'}}})
+write('data/factorycraft/loot_table/blocks/transport_part.json',{'type':'minecraft:block','pools':[]})
+for locale in ['en_us','ru_ru']:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());ru=locale=='ru_ru'
+ for tier,names in enumerate(transport_tiers):
+  prefix=['','Быстрый ','Экспресс-'][tier] if ru else ['','Fast ','Express '][tier]
+  strings['block.factorycraft.'+names[1]]=prefix+('конвейерный лифт' if ru else 'Conveyor Lift')
+  strings['block.factorycraft.'+names[2]]=prefix+('подземный конвейер' if ru else 'Underground Belt')
+ strings['block.factorycraft.transport_part']='Часть транспортной конструкции' if ru else 'Transport Structure Part'
+ strings['message.factorycraft.lift_select_height']='Основание выбрано. Нажмите на нужной высоте; направление взгляда задаёт выход. Shift+ПКМ — отмена.' if ru else 'Base selected. Click the target height; look toward the exit. Sneak-use cancels.'
+ strings['message.factorycraft.lift_invalid']='Выберите высоту от 1 до %s блоков; переносной лифт сохраняет свою геометрию.' if ru else 'Choose a height from 1 to %s blocks; portable lifts retain their geometry.'
+ strings['tooltip.factorycraft.transport_controls']='Ключ: поворот. Shift+ключ: авто/прямой/подъём/спуск; у подземного — вход/выход.' if ru else 'Wrench: rotate. Sneak-wrench: auto/flat/up/down; underground: input/output.'
+ strings['tooltip.factorycraft.lift_controls']='Два нажатия: основание и высота. Shift+ПКМ — отмена. Ключ — выход; Shift+ключ — демонтаж.' if ru else 'Two clicks: base, then height. Sneak-use cancels. Wrench rotates exit; sneak-wrench packs.'
+ write(f'assets/factorycraft/lang/{locale}.json',strings)
+
+for locale in ['en_us','ru_ru']:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());ru=locale=='ru_ru'
+ shapes={'flat':('Horizontal','Горизонтальный'),'left':('Left curve','Левый поворот'),'right':('Right curve','Правый поворот'),'up':('Incline up','Подъём'),'down':('Incline down','Спуск'),'lift':('Conveyor lift','Конвейерный лифт'),'underground':('Underground','Подземный')}
+ directions={'north':('North','Север'),'south':('South','Юг'),'west':('West','Запад'),'east':('East','Восток')}
+ modes={'0':('Automatic','Авто'),'1':('Forced horizontal','Горизонтальный вручную'),'2':('Forced up','Подъём вручную'),'3':('Forced down','Спуск вручную'),'input':('Input','Вход'),'output':('Output','Выход')}
+ for prefix,values in [('shape',shapes),('direction',directions),('mode',modes)]:
+  for key,value in values.items():strings['transport.factorycraft.'+prefix+'.'+key]=value[1 if ru else 0]
+ strings['message.factorycraft.transport_state']='%s · %s · %s'
+ strings['message.factorycraft.transport_blocked']='Освободите участок от предметов и проверьте свободное место.' if ru else 'Drain the section and check physical clearance.'
+ write(f'assets/factorycraft/lang/{locale}.json',strings)
+
+# Native tool tags include generated physical parts and all new transport tiers.
+tag_path=ROOT/'data/minecraft/tags/block/mineable/pickaxe.json'
+tag=json.loads(tag_path.read_text())
+for names in transport_tiers:
+ for name in names[1:]:
+  key='factorycraft:'+name
+  if key not in tag['values']:tag['values'].append(key)
+if 'factorycraft:transport_part' not in tag['values']:tag['values'].append('factorycraft:transport_part')
+write('data/minecraft/tags/block/mineable/pickaxe.json',tag)

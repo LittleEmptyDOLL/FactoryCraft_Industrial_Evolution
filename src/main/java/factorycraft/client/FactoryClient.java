@@ -14,6 +14,7 @@ public final class FactoryClient {
     @SubscribeEvent public static void geometry(ModelEvent.RegisterGeometryLoaders event) {
         event.register(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"machine"),new factorycraft.client.models.MachineGeometryLoader());
     }
+    @SubscribeEvent public static void beltGeometry(ModelEvent.RegisterGeometryLoaders event){event.register(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"belt"),new factorycraft.client.models.BeltGeometryLoader());}
     @SubscribeEvent public static void movingModels(ModelEvent.RegisterAdditional event) {
         for(var p:factorycraft.multiblock.MachineProfile.values())if(p!=factorycraft.multiblock.MachineProfile.TANK && p!=factorycraft.multiblock.MachineProfile.PUMP && p!=factorycraft.multiblock.MachineProfile.SPLITTER)
             event.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"block/machine/"+p.id+"_moving")));

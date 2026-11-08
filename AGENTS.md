@@ -65,3 +65,6 @@
 * Beacon pre-tick billing must require block-ticking controller chunks and a complete loaded structure; never charge a merely loaded chunk or a frozen tick. Keep recipient invalidation spatial/local and transient paid leases out of saves. Retain the known unreleased v1 diagnostic debit as evidence without refilling it; the strict v2 module checkpoint and inactive billing regression must pass independently.
 
 * A removed beacon can remain in the current immutable billing snapshot. Billing must reject unloaded/noncanonical/removed controllers before any state write, so it cannot recreate a removed block.
+
+* BeltLane lengths are metric, not always 96; use positionUnits/length for persistence and physical sampling. Every kernel headway/reservation/capacity must use its own lane length. Preserve packed mixed-length ring and all-tier throughput tests. Old flat NBT/hash stays exact.
+* Transport parts own no resources; keep identity-only metadata, live guarded capabilities, early unload freezes, protected one-item placement/rollback and sole portable demolition. Underground paths never clear or replace intervening blocks. Mutual-nearest same-tier pairing uses 4/6/8 hidden blocks (separation 5/7/9). Preserve the exact 160-item four-chunk transport checkpoint; do not reseed failures.

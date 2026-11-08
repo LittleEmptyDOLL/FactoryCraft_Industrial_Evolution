@@ -20,12 +20,17 @@
       "factorycraft:craft_boiler",
       "factorycraft:craft_chemical_plant",
       "factorycraft:craft_coal_generator",
+      "factorycraft:craft_conveyor_lift",
       "factorycraft:craft_electric_drill",
       "factorycraft:craft_electric_furnace",
       "factorycraft:craft_electric_pole",
       "factorycraft:craft_electric_pump",
+      "factorycraft:craft_express_conveyor_lift",
       "factorycraft:craft_express_transport_belt",
+      "factorycraft:craft_express_underground_belt",
+      "factorycraft:craft_fast_conveyor_lift",
       "factorycraft:craft_fast_transport_belt",
+      "factorycraft:craft_fast_underground_belt",
       "factorycraft:craft_fluid_canister",
       "factorycraft:craft_fluid_pipe",
       "factorycraft:craft_fluid_tank",
@@ -38,6 +43,7 @@
       "factorycraft:craft_splitter",
       "factorycraft:craft_steam_engine",
       "factorycraft:craft_transport_belt",
+      "factorycraft:craft_underground_belt",
       "factorycraft:craft_wrench"
     ]
   }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BGB",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "factorycraft:transport_belt"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    }
+  },
+  "result": {
+    "id": "factorycraft:conveyor_lift",
+    "count": 1
+  }
+}

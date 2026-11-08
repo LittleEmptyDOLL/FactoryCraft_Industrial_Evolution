@@ -11,6 +11,13 @@ public final class BeltLane<T> {
     public static final int SPACING = 24;
     public static final double GAP = (double) SPACING / LENGTH;
     public static final int CAPACITY = 4;
+    private int length;
+    public BeltLane(){this(LENGTH);}
+    public BeltLane(int length){if(length<1 || length>128*LENGTH)throw new IllegalArgumentException("Invalid lane length");this.length=length;}
+    public int length(){return length;}
+    public int capacity(){return (length+SPACING-1)/SPACING;}
+    public boolean canResize(int next){int delta=next-length;return next>=1 && next<=128*LENGTH && carriers.size()<=(next+SPACING-1)/SPACING && (carriers.isEmpty() || carriers.getLast().units+delta>=0);}
+    public void resize(int next){if(!canResize(next))throw new IllegalStateException("Occupied path cannot shrink");int delta=next-length;for(var carrier:carriers)carrier.units+=delta;length=next;}
     private final ArrayList<Carrier<T>> carriers = new ArrayList<>(CAPACITY);
     private final List<Carrier<T>> view = Collections.unmodifiableList(carriers);
 
@@ -25,7 +32,7 @@ public final class BeltLane<T> {
     public List<Carrier<T>> carriers() { return view; }
     public boolean canInsert() { return canInsertAt(0); }
     boolean canInsertAt(int units) {
-        return carriers.size() < CAPACITY && (carriers.isEmpty() || carriers.getLast().units - units >= SPACING);
+        return carriers.size() < capacity() && (carriers.isEmpty() || carriers.getLast().units - units >= SPACING);
     }
     public boolean insert(T value) {
         if (!canInsert()) return false;
@@ -41,9 +48,9 @@ public final class BeltLane<T> {
     }
     public void clear() { carriers.clear(); }
     public void restore(T value, double position) {
-        if (!Double.isFinite(position) || position < 0 || position > 1 || carriers.size() >= CAPACITY)
+        if (!Double.isFinite(position) || position < 0 || position > 1 || carriers.size() >= capacity())
             throw new IllegalArgumentException("Invalid persisted belt position");
-        int units = (int) Math.round(position * LENGTH);
+        int units = (int) Math.round(position * length);
         if (!carriers.isEmpty() && carriers.getLast().units - units < SPACING)
             throw new IllegalArgumentException("Overlapping persisted belt carriers");
         carriers.add(new Carrier<>(value, units));

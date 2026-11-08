@@ -23,7 +23,7 @@ public final class BeltTransport<T> {
         private final ChangeListener listener;
         private final Consumer<T> sink;
         private final ArrayList<Node<T>> inputs = new ArrayList<>(4);
-        private final int[] projected = new int[CAPACITY];
+        private int[] projected;
         private Node<T> primary, secondary, target, winner;
         private Carrier<T> outgoing;
         private long prepared = -1, reservation = -1;
@@ -31,7 +31,7 @@ public final class BeltTransport<T> {
         private boolean available=true;
         private boolean alternate, scheduled, removed, canExit, queued, dirty, contentDirty;
         private Node(BeltTransport<T> owner, BeltLane<T> lane, int speed, ChangeListener listener, Consumer<T> sink) {
-            this.owner=owner; this.lane=lane; this.speed=speed; this.listener=listener; this.sink=sink;
+            this.owner=owner; this.lane=lane; this.speed=speed; this.listener=listener; this.sink=sink;this.projected=new int[lane.capacity()];
         }
         public BeltLane<T> lane() { return lane; }
         public boolean isActive() { return scheduled && available && !removed; }
@@ -51,6 +51,8 @@ public final class BeltTransport<T> {
     public Node<T> createSink(Consumer<T> consumer) {
         return new Node<>(this,new BeltLane<>(),0,c->{},Objects.requireNonNull(consumer));
     }
+    public boolean canResize(Node<T> n,int length){requireOwned(n);if(!n.lane.canResize(length))return false;if(n.lane.carriers().isEmpty())return true;int tail=n.lane.carriers().getLast().units+length-n.lane.length();for(var input:n.inputs)if(!input.lane.carriers().isEmpty() && input.lane.length()-input.lane.carriers().getFirst().units+tail<SPACING)return false;return true;}
+    public void geometryChanged(Node<T> node){requireOwned(node);if(node.projected.length!=node.lane.capacity())node.projected=new int[node.lane.capacity()];changedExternally(node);}
     public void connect(Node<T> node, Node<T> primary, Node<T> secondary) {
         requireOwned(node); if(primary!=null)requireOwned(primary); if(secondary!=null)requireOwned(secondary);
         if(node.primary==primary && node.secondary==secondary)return;
@@ -95,7 +97,7 @@ public final class BeltTransport<T> {
     public boolean canInsert(Node<T> n) {
         requireOwned(n);
         if(!n.available || !n.lane.canInsert())return false;
-        for(var input:n.inputs)if(!input.lane.carriers().isEmpty() && input.lane.carriers().getFirst().units>LENGTH-SPACING)return false;
+        for(var input:n.inputs)if(!input.lane.carriers().isEmpty() && input.lane.carriers().getFirst().units>input.lane.length()-SPACING)return false;
         return true;
     }
     public boolean insert(Node<T> n,T value) {
@@ -114,7 +116,7 @@ public final class BeltTransport<T> {
         for(var n:active) {
             if(n.removed || !n.available)continue;
             n.prepared=step;n.count=n.lane.carriers().size();n.outgoing=null;n.queued=false;n.canExit=false;
-            int limit=LENGTH+n.speed;
+            int limit=n.lane.length()+n.speed;
             for(int i=0;i<n.count;i++) {
                 n.projected[i]=Math.min(limit,n.lane.carriers().get(i).units+n.speed);
                 limit=n.projected[i]-SPACING;
@@ -124,7 +126,7 @@ public final class BeltTransport<T> {
             if(n.removed || !n.available || n.count==0)continue;
             Node<T> preferred=n.alternate && n.secondary!=null ? n.secondary:n.primary;
             Node<T> fallback=preferred==n.primary ? n.secondary:n.primary;
-            boolean committedApproach=n.lane.carriers().getFirst().units>LENGTH-SPACING &&
+            boolean committedApproach=n.lane.carriers().getFirst().units>n.lane.length()-SPACING &&
                     n.target!=null && !n.target.removed && (n.target==n.primary || n.target==n.secondary);
             Node<T> selected=approachPossible(n,preferred) ? preferred:approachPossible(n,fallback) ? fallback:preferred;
             if(n.secondary!=null && claimedByOther(selected,n)) {
@@ -132,10 +134,10 @@ public final class BeltTransport<T> {
                 if(approachPossible(n,other) && !claimedByOther(other,n))selected=other;
             }
             if(!committedApproach || (n.target!=selected && (!approachPossible(n,n.target) || claimedByOther(n.target,n)) && safeRetarget(n,selected)))n.target=selected;
-            n.canExit=n.target!=null && n.target.available && !n.target.removed && n.projected[0]>=LENGTH;
+            n.canExit=n.target!=null && n.target.available && !n.target.removed && n.projected[0]>=n.lane.length();
             // Reserve before the junction: losers stop a quarter block before the entry,
             // rather than moving backwards when another branch actually enters.
-            if(n.target!=null && n.target.sink==null && n.projected[0]>LENGTH-SPACING)reserve(n.target,n);
+            if(n.target!=null && n.target.sink==null && n.projected[0]>n.lane.length()-SPACING)reserve(n.target,n);
         }
         for(var n:active)enqueue(n);
         while(!queue.isEmpty()) {
@@ -160,7 +162,7 @@ public final class BeltTransport<T> {
         for(var n:active)if(!n.removed && n.available && n.outgoing!=null) {
             var target=n.target;
             if(target.sink!=null)target.sink.accept(n.outgoing.value);
-            else { target.lane.accept(n.outgoing,n.projected[0]-LENGTH);mark(target,true);activate(target); }
+            else { target.lane.accept(n.outgoing,n.projected[0]-n.lane.length());mark(target,true);activate(target); }
             if(n.secondary!=null)n.alternate=target==n.primary;
             int index=target.inputs.indexOf(n);target.cursor=(index+1)%Math.max(1,target.inputs.size());
             // The next carrier owns a new routing decision, even when packed
@@ -186,8 +188,8 @@ public final class BeltTransport<T> {
         if(target.sink!=null)return;
         int remaining=count(target);
         if(target.prepared==step && target.canExit)remaining--;
-        int residual=source.projected[0]-LENGTH;
-        if(remaining>=CAPACITY || residual<0 || residual>source.speed ||
+        int residual=source.projected[0]-source.lane.length();
+        if(remaining>=target.lane.capacity() || residual<0 || residual>source.speed ||
                 (remaining>0 && tail(target)-residual<SPACING))
             throw new IllegalStateException("Invalid belt reservation: remaining="+remaining+", residual="+residual+", sourceSpeed="+source.speed+", targetTail="+tail(target)+", targetExit="+target.canExit+", prepared="+(target.prepared==step));
     }
@@ -204,10 +206,10 @@ public final class BeltTransport<T> {
         if(!approachPossible(source,target))return false;
         if(target.sink!=null)return true;
         int tail=tail(target);
-        if(tail!=Integer.MAX_VALUE && LENGTH+tail-SPACING<source.lane.carriers().getFirst().units)return false;
+        if(tail!=Integer.MAX_VALUE && source.lane.length()+tail-SPACING<source.lane.carriers().getFirst().units)return false;
         for(var other:target.inputs)if(other!=source && other.target==target && count(other)>0) {
             int front=other.prepared==step ? other.projected[0]:other.lane.carriers().getFirst().units;
-            if(front>LENGTH-SPACING)return false;
+            if(front>other.lane.length()-SPACING)return false;
         }
         return true;
     }
@@ -217,8 +219,8 @@ public final class BeltTransport<T> {
         int space=tail(target);
         for(int i=0;i<target.inputs.size();i++) {
             var other=target.inputs.get(i);
-            if(other!=source && other.available && !other.removed && other.target==target && count(other)>0 && other.lane.carriers().getFirst().units>LENGTH-SPACING)
-                space=Math.min(space,(other.prepared==step ? other.projected[0]:other.lane.carriers().getFirst().units)-LENGTH);
+            if(other!=source && other.available && !other.removed && other.target==target && count(other)>0 && other.lane.carriers().getFirst().units>other.lane.length()-SPACING)
+                space=Math.min(space,(other.prepared==step ? other.projected[0]:other.lane.carriers().getFirst().units)-other.lane.length());
         }
         return space;
     }
@@ -228,7 +230,7 @@ public final class BeltTransport<T> {
         int tail=approachSpace(source,target);
         // A route is reserved during the last quarter of the source. Requiring a
         // completely free entry here wastes that approach distance on shifted inputs.
-        return tail==Integer.MAX_VALUE || LENGTH+tail-SPACING>=source.lane.carriers().getFirst().units+source.speed;
+        return tail==Integer.MAX_VALUE || source.lane.length()+tail-SPACING>=source.lane.carriers().getFirst().units+source.speed;
     }
     private void reserve(Node<T> target,Node<T> source) {
         if(target.reservation!=step) { target.reservation=step;target.winner=null; }
@@ -242,22 +244,22 @@ public final class BeltTransport<T> {
         n.queued=true;queue.addLast(n);
     }
     private boolean constrain(Node<T> n) {
-        int limit=LENGTH;
+        int limit=n.lane.length();
         boolean canExit=false;
         if(n.target!=null && n.target.available && !n.target.removed && n.target.sink!=null) {
-            limit=LENGTH+n.speed;canExit=n.canExit;
+            limit=n.lane.length()+n.speed;canExit=n.canExit;
         } else if(n.target!=null && n.target.available && !n.target.removed) {
             var target=n.target;
             int tail=tail(target);
-            limit=tail==Integer.MAX_VALUE ? LENGTH+n.speed:LENGTH+tail-SPACING;
+            limit=tail==Integer.MAX_VALUE ? n.lane.length()+n.speed:n.lane.length()+tail-SPACING;
             var winner=target.reservation==step ? target.winner:null;
             if(winner!=null && winner!=n) {
                 // Reserve the junction's headway even if this contender never crosses this step.
-                limit=Math.min(limit,LENGTH+Math.max(0,winner.projected[0]-LENGTH)-SPACING);
+                limit=Math.min(limit,n.lane.length()+Math.max(0,winner.projected[0]-winner.lane.length())-SPACING);
             }
-            canExit=n.canExit && winner==n && limit>=LENGTH &&
-                    (count(target)<CAPACITY || (target.prepared==step && target.canExit));
-            if(!canExit)limit=Math.min(limit,LENGTH);
+            canExit=n.canExit && winner==n && limit>=n.lane.length() &&
+                    (count(target)<target.lane.capacity() || (target.prepared==step && target.canExit));
+            if(!canExit)limit=Math.min(limit,n.lane.length());
         }
         boolean changed=n.canExit!=canExit;n.canExit=canExit;
         for(int i=0;i<n.count;i++) {
@@ -265,7 +267,7 @@ public final class BeltTransport<T> {
             if(next!=n.projected[i]) { n.projected[i]=next;changed=true; }
             limit=n.projected[i]-SPACING;
         }
-        if(n.canExit && n.projected[0]<LENGTH) { n.canExit=false;changed=true; }
+        if(n.canExit && n.projected[0]<n.lane.length()) { n.canExit=false;changed=true; }
         return changed;
     }
 }
