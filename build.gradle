@@ -28,7 +28,7 @@ sourceSets.main.resources {
 
 repositories {
     mavenCentral()
-    maven { url 'https://maven.blamejared.com'; content { includeGroup 'mezz.jei'; includeGroup 'net.mezzdev.config' } }
+    maven { url 'https://maven.blamejared.com' }
     maven { url 'https://maven.terraformersmc.com/releases'; content { includeGroup 'dev.emi' } }
     // Add here additional repositories if required by some of the dependencies below.
 }
@@ -133,10 +133,10 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-1.21.1-common-api:19.70.0.469"
+    compileOnly "mezz.jei:jei-1.21.1-common-api:19.21.1.248"
     compileOnly("dev.emi:emi-neoforge:1.1.24+1.21.1") { transitive = false }
     if (providers.gradleProperty('recipeViewer').getOrElse(providers.gradleProperty('withViewers').getOrElse('false') == 'true' ? 'both' : 'none') in ['both', 'jei']) {
-        localRuntime "mezz.jei:jei-1.21.1-neoforge:19.70.0.469"
+        localRuntime "mezz.jei:jei-1.21.1-neoforge-api:19.21.1.248"
     }
     if (providers.gradleProperty('recipeViewer').getOrElse(providers.gradleProperty('withViewers').getOrElse('false') == 'true' ? 'both' : 'none') in ['both', 'emi']) {
         localRuntime("dev.emi:emi-neoforge:1.1.24+1.21.1") { transitive = false }
