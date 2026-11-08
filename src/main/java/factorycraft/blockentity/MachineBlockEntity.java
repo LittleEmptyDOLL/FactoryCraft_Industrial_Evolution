@@ -22,7 +22,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.*;
 import java.util.*;
 
-public final class MachineBlockEntity extends FactoryBlockEntity implements MenuProvider {
+public final class MachineBlockEntity extends FactoryBlockEntity implements MenuProvider,factorycraft.energy.GridConsumer {
+    @Override public PowerBuffer gridBuffer() { return power; }
     private boolean loaded;
     public boolean loaded() { return loaded && !isRemoved(); }
     private boolean automationReady() { return loaded() && level!=null && !level.isClientSide; }

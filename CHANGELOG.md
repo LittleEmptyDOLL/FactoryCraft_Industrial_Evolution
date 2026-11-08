@@ -1,3 +1,12 @@
+# 0.3.0 — fluid logistics (8 November 2026)
+
+* Added six-way fluid pipes (1000 mB), tanks (16000 mB) and directional electric pumps (1000 mB, 20 FE/working tick, up to 100 mB/port/tick), native water intake and integration with the existing pole grid.
+* Independent finite-volume storage and budgeted active-edge transport; component-sensitive fluid identity, atomic phased transfers, backpressure, junction degree damping and loaded-only graph caches. No per-fluid Entity or block ticker.
+* Standard guarded NeoForge fluid/FE capabilities, buckets, portable contents/FE on block harvesting, readonly volume/energy menus, EN/RU and original procedural assets/recipes. Added `/factorycraft waterworks` and `/factorycraft fluids`.
+* Fixed an outgoing-chunk serialization race found by the new finite-volume disk fixture: canonical chunk ownership checks, immediate owned-chunk dirty marking and pre-snapshot unload detachment.
+* Added 17 JUnit and 16 dedicated GameTests, including separate-JVM four-chunk fluid conservation, live NBT reload, early unload, capabilities, bucket/filled-block placement and powered water supply. Existing production, belt, multiblock and benchmark saves remain readable.
+* Stage 3 remains partial: steam power, oil, chemistry, underground pipes and automatic discovery of external fluid inventories are future work. Model and limits are specified in FLUIDS.md.
+
 # Changelog
 
 ## 0.2.2 — 2026-11-08

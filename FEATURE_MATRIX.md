@@ -1,6 +1,6 @@
-# Feature matrix — 0.2.2
+# Feature matrix — 0.3.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.2.2 adds an actual dedicated-server load scenario, conservation/restart checks and profiled allocation reductions.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.3.0 adds usable pipes, tanks, powered pumps and finite fluid logistics; stage 3 remains partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -17,7 +17,8 @@
 | Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; advanced chains/science/rocket components absent |
 | Power | coal generator, spatial index, budgeted loaded-node snapshots, immediate split quarantine, merge/split, bounded distribution, FE input | partial; no manual wires/graphs, steam/nuclear/solar/accumulators/heat or external FE output |
 | Multiblocks | one item places the 2x2x2 machine; footprint validation + NeoForge cancellation, shared ports, one machine drop, creative/pick-block, generated orphan cleanup, legacy compatibility, inactive-chunk pause, disk reload | implemented first machine; layout is fixed in code, not a datapack pattern system |
-| Fluids/chemistry | none | planned |
+| Fluids | six-way pipes, tanks, directional electric pumps, native water intake, buckets/portable filled blocks, component-sensitive NeoForge fluid capabilities, cached active-edge graph, GUI and restart conservation | implemented first fluid slice; see FLUIDS.md; underground pipes/external adjacency discovery/temperature remain planned |
+| Chemistry | none | planned: fluid recipes, boiler/steam engine, oil resources/refining/cracking/chemical products |
 | Research/progression | none; first-slice crafting unlocked by acquiring vanilla iron | planned: teams, labs/packs, tree GUI, recipe locks, infinite research |
 | Modules/beacons/quality | none | planned |
 | Railways | none | planned: independent rails, wagons, signals, schedules, routing |
@@ -29,9 +30,9 @@
 | Vehicles | none | planned: car/tank/construction/remote control |
 | Space Age | none | planned as independent module: rockets/platforms/asteroids/quality/four planets |
 | Recipes/config/datapacks | counted ingredients, tag support, reload, JSON ores, server settings | implemented first-slice extension points |
-| GUI/statistics | machine inputs/outputs/recipe preview/progress/energy/assembly status; `/factorycraft profile` and `/factorycraft power` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
+| GUI/statistics | machine inputs/outputs/recipe preview/progress/energy/assembly status; `/factorycraft profile` and `/factorycraft power`, fluid gauges and `/factorycraft fluids` | partial; recipe browser tree, graphs, circuit/coverage panels absent |
 | Multiplayer/server | server authority, validated menus, two viewers cannot duplicate output, dedicated startup | partial; actual two-client network play not exercised |
 | Chunk lifecycle | unload pauses/registers topology; contents survive callbacks; separate-process disk persistence | verified callbacks + disk reload; natural chunk-distance unload scenario still manual |
 | Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; profiled hot-loop/dirty-notification allocations reduced; individual machine/inserter tickers remain |
 | Required 10000/1000/500 load | isolated real dedicated world, all belts move, all producers return results, all inserters deliver; shared grid split/rejoin; item/FE ledger, JSON/JFR and process reload | implemented repeatable server workload; finite prefilled stocks, no connected clients in local result; not a universal TPS/FPS guarantee |
-| Compatibility | standard NeoForge item/FE capabilities and recipe tags | partial; JEI/EMI and other mod interoperability untested |
+| Compatibility | standard NeoForge item/FE/fluid capabilities and recipe tags | partial; JEI/EMI and other mod interoperability untested |

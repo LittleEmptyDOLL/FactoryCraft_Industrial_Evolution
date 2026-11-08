@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "P P"
+  ],
+  "key": {
+    "P": {
+      "item": "factorycraft:iron_plate"
+    }
+  },
+  "result": {
+    "id": "factorycraft:fluid_pipe",
+    "count": 4
+  }
+}

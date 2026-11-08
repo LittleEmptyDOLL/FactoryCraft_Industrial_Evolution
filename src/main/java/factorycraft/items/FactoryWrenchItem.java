@@ -12,6 +12,7 @@ public final class FactoryWrenchItem extends Item {
     @Override public InteractionResult onItemUseFirst(ItemStack stack,UseOnContext context) {
         if(context.getHand()!=InteractionHand.MAIN_HAND || context.getPlayer()==null)return InteractionResult.PASS;
         var state=context.getLevel().getBlockState(context.getClickedPos());
+        if(state.getBlock() instanceof factorycraft.blocks.FluidDeviceBlock fluid)return fluid.useWrench(context.getLevel(),context.getClickedPos());
         return state.getBlock() instanceof FactoryBlock block ? block.useWrench(context.getLevel(),context.getClickedPos(),context.getPlayer()):InteractionResult.PASS;
     }
 }

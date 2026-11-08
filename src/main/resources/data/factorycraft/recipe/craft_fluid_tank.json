@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "G G",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "factorycraft:iron_plate"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "id": "factorycraft:fluid_tank",
+    "count": 1
+  }
+}

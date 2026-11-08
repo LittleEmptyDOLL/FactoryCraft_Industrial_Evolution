@@ -27,11 +27,11 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle *
 
 ## Current work
 
-Develop stages 1–2 as a working vertical slice. Feature completion requires evidence; see FEATURE_MATRIX.md and VALIDATION.md. Later stages are not implied by block registration.
+Maintain the delivered stages 1–2 vertical slice while expanding stage 3 with usable, tested fluid logistics. Feature completion requires evidence; see FEATURE_MATRIX.md and VALIDATION.md. Later stages are not implied by block registration.
 
 ## Next session
 
-Read VALIDATION.md and FEATURE_MATRIX.md first, reproduce `./gradlew build` and `./gradlew runGameTestServer`, then close the remaining first-factory integration/manual checks before adding stage 3. Add underground transport and inserter variants only after conservation and unload tests pass. Do not claim the full Factorio/Space Age implementation is complete.
+Read VALIDATION.md, FEATURE_MATRIX.md and FLUIDS.md first. Reproduce `./gradlew build` and two separate `./gradlew runGameTestServer` processes before extending stage 3. Preserve existing factory, fluid and multiblock fixtures. Do not claim the full Factorio/Space Age implementation is complete.
 
 ## Delivered in 0.1.0
 
@@ -61,8 +61,12 @@ Executed the requested real-world 10000/1000/500 workload on an isolated dedicat
 
 JFR located nested ArrayList iterator allocation in belt stepping and unnecessary comparator-neighbor notifications during internal persistence. Indexed incoming-lane loops and separate state/packet/inventory paths reduce those costs while keeping normal inventory notifications, dirty chunks, full belt behavior and existing NBT formats. See BENCHMARKS.md and VALIDATION.md for measured results and limits; zero connected clients is not network-throughput validation.
 
+## Delivered in 0.3.0
+
+Usable six-way pipes, tanks and directional electric pumps; finite component-sensitive fluid storage, budgeted cached active-edge transport, native source-water intake, existing pole-grid power and standard NeoForge sided fluid/FE ports. Added buckets, portable filled-block contents, readonly volume/energy GUI, original textures, EN/RU, survival recipes and waterworks/diagnostic commands. Separate-process four-chunk finite-volume tests exposed and fixed pre-serialization chunk-unload timing; canonical chunk guards and early detach preserve contents. The documented local-pressure model uses degree damping at junctions. See FLUIDS.md and VALIDATION.md; oil, steam power and chemistry are not yet implemented.
+
 ## Next concrete task (priority order)
 
-1. Begin stage 3 fluids: an independently tested storage/transaction model and NeoForge fluid capability adapters, usable pipes/tanks/pumps, then data-driven oil/chemistry recipes. Document the chosen Factorio 2.0-inspired throughput model before claiming parity.
+1. Continue stage 3 with a real water → steam boiler and steam engine, then counted item/fluid processing recipes and oil/refining/chemistry. Define energy/material balances first; extend recipe codecs and guarded machine ports without breaking old processing JSON. Larger machines use one-item automatic multiblocks. Verify powered water intake → boiler → steam → generator, blocked outputs, no-input/no-fuel cases and separate-process restart.
 2. Exercise two real connected clients and natural-distance chunk unload. Use the new JFR packet capture to measure tracking/synchronization, then implement batching/deltas from measured evidence. BE sync request counts do not measure wire traffic. The dedicated no-client workload does not establish client FPS or multiplayer bandwidth.
 3. Continue underground belts, two-block splitters and inserter variants. Keep future space mechanics independent from basic production. Extend larger machines through one-item controller/part layouts rather than duplicating inventories.

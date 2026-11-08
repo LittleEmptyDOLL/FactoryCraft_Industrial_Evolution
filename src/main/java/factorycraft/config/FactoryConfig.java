@@ -8,6 +8,7 @@ public final class FactoryConfig {
     public static final ModConfigSpec.IntValue POLE_RADIUS;
     public static final ModConfigSpec.IntValue DRILL_TICKS;
     public static final ModConfigSpec.IntValue POWER_GRAPH_WORK;
+    public static final ModConfigSpec.IntValue FLUID_WORK;
     static {
         var b = new ModConfigSpec.Builder();
         GENERATOR_FE = b.comment("FE produced per tick while burning coal; vanilla coal lasts 1600 ticks.")
@@ -18,6 +19,8 @@ public final class FactoryConfig {
                 .defineInRange("drillTicks", 60, 1, 12000);
         POWER_GRAPH_WORK = b.comment("Logical power-graph rebuild work units per level per tick, including empty spatial bucket probes.")
                 .defineInRange("powerGraphWorkPerTick",4096,32,1000000);
+        FLUID_WORK=b.comment("Maximum passive fluid edges and queued pumps processed per level tick; FIFO backlog never drops fluid.")
+                .defineInRange("fluidWorkPerTick",16384,64,1048576);
         SPEC = b.build();
     }
     private FactoryConfig() {}

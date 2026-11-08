@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "factorycraft:block/electric_pump_active",
+    "side": "factorycraft:block/fluid_pipe",
+    "top": "factorycraft:block/electric_pump_top"
+  }
+}

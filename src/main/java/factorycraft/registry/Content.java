@@ -29,6 +29,16 @@ public final class Content {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, FactoryCraft.ID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FactoryCraft.ID);
     public static final Map<FactoryKind, DeferredBlock<FactoryBlock>> FACTORY = new EnumMap<>(FactoryKind.class);
+    public static final Map<factorycraft.fluids.FluidKind,DeferredBlock<Block>> FLUID_BLOCKS=new EnumMap<>(factorycraft.fluids.FluidKind.class);
+    static {
+        for(var kind:factorycraft.fluids.FluidKind.values()) {
+            DeferredBlock<Block> block=BLOCKS.register(kind.id,()->{
+                var properties=BlockBehaviour.Properties.of().strength(2.5f).noOcclusion().pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK);
+                return kind==factorycraft.fluids.FluidKind.PIPE ? new factorycraft.blocks.FluidPipeBlock(properties):new factorycraft.blocks.FluidDeviceBlock(kind,properties);
+            });
+            FLUID_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->new factorycraft.items.FluidBlockItem(block.get(),new Item.Properties()));
+        }
+    }
     static {
         for (var kind : FactoryKind.values()) {
             var block = BLOCKS.register(kind.id, () -> new FactoryBlock(kind, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()
@@ -54,6 +64,8 @@ public final class Content {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PoleBlockEntity>> POLE = ENTITIES.register("pole", () -> BlockEntityType.Builder.of(PoleBlockEntity::new, blocks(FactoryKind.POLE)).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CasingBlockEntity>> CASING = ENTITIES.register("casing", () -> BlockEntityType.Builder.of(CasingBlockEntity::new,blocks(FactoryKind.CASING)).build(null));
     public static final DeferredHolder<MenuType<?>, MenuType<FactoryMenu>> MENU = MENUS.register("machine", () -> IMenuTypeExtension.create(FactoryMenu::new));
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<FluidBlockEntity>> FLUID=ENTITIES.register("fluid",()->BlockEntityType.Builder.of(FluidBlockEntity::new,FLUID_BLOCKS.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<MenuType<?>,MenuType<factorycraft.fluids.FluidMenu>> FLUID_MENU=MENUS.register("fluid",()->IMenuTypeExtension.create(factorycraft.fluids.FluidMenu::new));
     public static final DeferredHolder<RecipeType<?>, RecipeType<FactoryRecipe>> PROCESSING = RECIPE_TYPES.register("processing", () -> new RecipeType<>() { public String toString() { return "factorycraft:processing"; } });
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FactoryRecipe>> PROCESSING_SERIALIZER = SERIALIZERS.register("processing", FactoryRecipe.Serializer::new);
     static {
@@ -74,6 +86,8 @@ public final class Content {
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (be, side) -> be.energyPort);
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,CASING.get(),(be,side)->be.inventory());
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,CASING.get(),(be,side)->be.energy);
+        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,FLUID.get(),(be,side)->side==null || factorycraft.fluids.FluidBlocks.port(be.getBlockState(),side) ? be.port(side):null);
+        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,FLUID.get(),(be,side)->be.kind()==factorycraft.fluids.FluidKind.PUMP ? be.energyPort:null);
     }
     private Content() {}
 }

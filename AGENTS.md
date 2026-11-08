@@ -21,3 +21,7 @@
 
 * Keep the full diagnostic factory in the marked `run-benchmark/` directory only. Chunk pinning is explicitly confined to this opt-in harness; runtime factory simulation must never force chunks. Never reuse ordinary saves or silently reseed an existing benchmark fixture.
 * Preserve neighbor notifications for inventory mutations. Internal position/progress/FE persistence may use `markPersistentState` (with analog-output fallback); do not eliminate dirty marking or conflate BE sync requests with actual packets. Benchmark success means liveness/conservation, not passing a universal hardware timing threshold.
+
+* Fluid storage has one canonical component-sensitive cell. Simulate without mutation; reserve/drain/fill all endpoints before notifying observers. Never mix FluidStacks with different components or truncate restored volume to a smaller capacity.
+* Fluid availability must check canonical loaded chunk ownership without loading it. Freeze/detach at ChunkEvent.Unload before serialization (BE unload is later); mark the owned chunk unsaved immediately. Preserve the separate-process four-chunk finite-volume fixture without reseeding failures.
+* Keep FLUIDS.md synchronized with throughput/energy/capacity changes. The current finite local-pressure solver is an explicit approximation, not exact Factorio 2.0 segment behavior. New large fluid machines must follow the existing one-item multiblock rule.

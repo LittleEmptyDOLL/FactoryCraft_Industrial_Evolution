@@ -48,5 +48,20 @@
   "gui.factorycraft.output": "Выход",
   "gui.factorycraft.auto": "Автовыбор рецепта",
   "gui.factorycraft.burn": "Топливо: %s т",
-  "gui.factorycraft.recipe_info": "%s т / %s FE за такт"
+  "gui.factorycraft.recipe_info": "%s т / %s FE за такт",
+  "block.factorycraft.fluid_pipe": "Жидкостная труба",
+  "block.factorycraft.fluid_tank": "Резервуар",
+  "block.factorycraft.electric_pump": "Электрический насос",
+  "tooltip.factorycraft.fluid_pipe": "1000 mB. До 100 mB/т на соединение; локальное выравнивание.",
+  "tooltip.factorycraft.fluid_tank": "16000 mB. Одна жидкость; содержимое сохраняется при добыче.",
+  "tooltip.factorycraft.electric_pump": "Вода или вход сзади, выход спереди. 100 mB/т, 20 FE за рабочий такт.",
+  "tooltip.factorycraft.fluid_contents": "%s: %s mB",
+  "gui.factorycraft.fluid_empty": "Пусто",
+  "gui.factorycraft.fluid_volume": "%s / %s mB",
+  "gui.factorycraft.pump_rate": "100 mB/т; 20 FE/раб. такт",
+  "gui.factorycraft.bucket_controls": "ПКМ ведром: налить/забрать",
+  "gui.factorycraft.fluid_sides": "Все стороны",
+  "gui.factorycraft.fluid_pump_sides": "Сзади → спереди",
+  "command.factorycraft.fluid_demo": "Линия подачи воды построена: %s.",
+  "command.factorycraft.fluid_space": "Рядом нужна свободная загруженная область 9 x 4 x 5."
 }

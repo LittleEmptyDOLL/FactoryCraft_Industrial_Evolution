@@ -147,3 +147,63 @@ def utf(s):
 def named(t,n,p):return bytes([t])+utf(n)+p
 nbt=b'\x0a\x00\x00'+named(3,'DataVersion',struct.pack('>i',3955))+named(9,'size',b'\x03'+struct.pack('>i',3)+struct.pack('>iii',16,8,16))+named(9,'palette',b'\x0a'+struct.pack('>i',1)+named(8,'Name',utf('minecraft:air'))+b'\x00')+named(9,'blocks',b'\x0a'+struct.pack('>i',0))+named(9,'entities',b'\x0a'+struct.pack('>i',0))+b'\x00'
 p=ROOT/'data/factorycraft/structure/empty.nbt';p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(gzip.compress(nbt,mtime=0))
+
+# Original fluid-logistics assets, recipes and translations.
+texture('block/fluid_pipe',(103,143,157),'machine')
+texture('block/fluid_tank',(62,116,145),'machine')
+pump=texture('block/electric_pump',(62,143,113),'machine')
+top=[row.copy() for row in pump]
+for yy in range(4,12):
+ for xx in range(7,9):top[yy][xx]=(244,191,62,255)
+for yy in range(2,6):
+ for xx in range(7-(yy-2),9+(yy-2)):top[yy][xx]=(244,191,62,255)
+png('block/electric_pump_top',top)
+frames=[]
+for frame in range(2):
+ image=[row.copy() for row in pump]
+ for yy in [5,8,11]:
+  for xx in range(5,11):image[yy][xx]=(62,198+frame*35,226,255)
+ frames.extend(image)
+png('block/electric_pump_active',frames)
+write('assets/factorycraft/textures/block/electric_pump_active.png.mcmeta',{'animation':{'frametime':5,'interpolate':True}})
+def pipe_model(name,lo,hi):
+ write(f'assets/factorycraft/models/block/{name}.json',{'parent':'minecraft:block/block','textures':{'all':'factorycraft:block/fluid_pipe','particle':'factorycraft:block/fluid_pipe'},'elements':[{'from':lo,'to':hi,'faces':{face:{'texture':'#all'} for face in ['up','down','north','south','east','west']}}]})
+pipe_model('fluid_pipe',[5,5,5],[11,11,11]);pipe_model('fluid_pipe_item',[0,5,5],[16,11,11])
+parts=[{'apply':{'model':'factorycraft:block/fluid_pipe'}}]
+for direction,lo,hi in [('down',[5,0,5],[11,5,11]),('up',[5,11,5],[11,16,11]),('north',[5,5,0],[11,11,5]),('south',[5,5,11],[11,11,16]),('west',[0,5,5],[5,11,11]),('east',[11,5,5],[16,11,11])]:
+ pipe_model('fluid_pipe_'+direction,lo,hi);parts.append({'when':{direction:'true'},'apply':{'model':'factorycraft:block/fluid_pipe_'+direction}})
+write('assets/factorycraft/blockstates/fluid_pipe.json',{'multipart':parts})
+write('assets/factorycraft/models/block/fluid_tank.json',{'parent':'minecraft:block/cube_all','textures':{'all':'factorycraft:block/fluid_tank'}})
+for name in ['fluid_tank','electric_pump']:
+ variants={}
+ for facing,angle in [('north',0),('east',90),('south',180),('west',270)]:
+  for lit in ['false','true']:variants[f'facing={facing},lit={lit}']={'model':'factorycraft:block/'+name+('_active' if name=='electric_pump' and lit=='true' else ''),'y':angle}
+ write(f'assets/factorycraft/blockstates/{name}.json',{'variants':variants})
+for suffix in ['','_active']:
+ write(f'assets/factorycraft/models/block/electric_pump{suffix}.json',{'parent':'minecraft:block/orientable','textures':{'front':'factorycraft:block/electric_pump'+suffix,'side':'factorycraft:block/fluid_pipe','top':'factorycraft:block/electric_pump_top'}})
+for name in ['fluid_pipe','fluid_tank','electric_pump']:
+ write(f'assets/factorycraft/models/item/{name}.json',{'parent':'factorycraft:block/'+name+('_item' if name=='fluid_pipe' else '')})
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
+craft('fluid_pipe',['P P'],{'P':'factorycraft:iron_plate'},count=4)
+craft('fluid_tank',['PPP','G G','PPP'],{'P':'factorycraft:iron_plate','G':'minecraft:glass'})
+craft('electric_pump',['IGI','RBR','IPI'],{'I':'minecraft:iron_ingot','G':'factorycraft:iron_gear','R':'minecraft:redstone','B':'minecraft:bucket','P':'factorycraft:electric_pole'})
+fluid_lang={
+ 'block.factorycraft.fluid_pipe':('Fluid Pipe','Жидкостная труба'),
+ 'block.factorycraft.fluid_tank':('Fluid Tank','Резервуар'),
+ 'block.factorycraft.electric_pump':('Electric Pump','Электрический насос'),
+ 'tooltip.factorycraft.fluid_pipe':('1000 mB. Up to 100 mB/t per connection; liquids equalize locally.','1000 mB. До 100 mB/т на соединение; локальное выравнивание.'),
+ 'tooltip.factorycraft.fluid_tank':('16000 mB. Holds one fluid; retains contents when harvested.','16000 mB. Одна жидкость; содержимое сохраняется при добыче.'),
+ 'tooltip.factorycraft.electric_pump':('Water source or fluid input behind; output ahead. 100 mB/t, 20 FE per active tick.','Вода или вход сзади, выход спереди. 100 mB/т, 20 FE за рабочий такт.'),
+ 'tooltip.factorycraft.fluid_contents':('%s: %s mB','%s: %s mB'),
+ 'gui.factorycraft.fluid_empty':('Empty','Пусто'),
+ 'gui.factorycraft.fluid_volume':('%s / %s mB','%s / %s mB'),
+ 'gui.factorycraft.pump_rate':('100 mB/t; 20 FE/active tick','100 mB/т; 20 FE/раб. такт'),
+ 'gui.factorycraft.bucket_controls':('Use a bucket to fill/drain','ПКМ ведром: налить/забрать'),
+ 'gui.factorycraft.fluid_sides':('All sides','Все стороны'),
+ 'gui.factorycraft.fluid_pump_sides':('Input behind; output ahead','Сзади → спереди'),
+ 'command.factorycraft.fluid_demo':('Water-to-tank line built at %s.','Линия подачи воды построена: %s.'),
+ 'command.factorycraft.fluid_space':('Need a loaded empty 9 x 4 x 5 area beside you.','Рядом нужна свободная загруженная область 9 x 4 x 5.')}
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';content=json.loads(path.read_text());content.update({key:value[index] for key,value in fluid_lang.items()});write(str(path.relative_to(ROOT)),content)
+write('data/factorycraft/advancement/recipes/fluid_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_'+name for name in ['fluid_pipe','fluid_tank','electric_pump']]}})
+write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})

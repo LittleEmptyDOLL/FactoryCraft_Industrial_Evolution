@@ -24,9 +24,9 @@ public final class PowerGrid {
         var state=STATES.computeIfAbsent(be.getLevel(),l->new State());
         var p=be.getBlockPos();
         var kind=be instanceof PoleBlockEntity ? PowerTopology.Kind.POLE:
-                ((MachineBlockEntity)be).kind()==FactoryKind.GENERATOR ? PowerTopology.Kind.SOURCE:PowerTopology.Kind.CONSUMER;
+                be instanceof MachineBlockEntity machine && machine.kind()==FactoryKind.GENERATOR ? PowerTopology.Kind.SOURCE:PowerTopology.Kind.CONSUMER;
         state.graph.add(be,new PowerPoint(p.getX(),p.getY(),p.getZ()),kind,
-                kind==PowerTopology.Kind.CONSUMER ? ((MachineBlockEntity)be).power::receiveEnergy:null);
+                kind==PowerTopology.Kind.CONSUMER ? ((GridConsumer)be)::receiveGridEnergy:null);
     }
     public static void remove(FactoryBlockEntity be) { var s=STATES.get(be.getLevel());if(s!=null)s.graph.remove(be); }
     @SubscribeEvent public static void tick(LevelTickEvent.Post e) {

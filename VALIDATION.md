@@ -1,4 +1,41 @@
-# Validation — 0.2.2, 8 November 2026
+# Validation — 0.3.0, 8 November 2026
+
+Continues `main` commit `9f96696` (0.2.2). Target remains Minecraft **1.21.1 / NeoForge 21.1.252 / Java 21**. This release implements the first stage-3 fluid logistics slice, alongside the existing automated factory. It does not implement oil/chemistry or complete Factorio/Space Age.
+
+## Automated checks
+
+* `./gradlew build`: **62 JUnit tests**, zero failures/errors/skips. Seventeen new fluid tests cover simulated fill/drain, atomic ownership, incompatible identities, drainable overflow/int limits, sleeping/wakeup, graph split/reconnect, bounded FIFO work, callback ordering/failure, six-way pressure stability, unavailable endpoint freeze and randomized 10000-cell conservation. Existing belt/power/benchmark/layout tests remain green.
+* `./gradlew runGameTestServer`: **62 required tests pass** after the final capability changes, followed by another separate server process with **62 passed**. Sixteen new fluid scenarios exercise finite pipe flow, powered/unpowered pumps, real generator/pole/source-water supply, component identity and defensive copies, cached sided handlers after rotation, blocked-output energy behavior/wakeup, unload/reconstruction, actual harvested-item placement, bucket interaction, two shared access ports, vertical transport, 32-bit menu quantities, live NBT wakeup, early ChunkEvent.Unload and the separate-process disk fixture. Existing production line and multiblock checks remain green.
+* Separate JVMs seed, then verify a finite **8000 mB** component-bearing fluid fixture across **four chunks**. Verification reads actual region files without replenishing missing fluid. Existing belt/machine/held-item/manual/automatic-multiblock disk fixtures also report `VERIFIED`.
+* `./gradlew runBenchmarkServer -PbenchmarkMode=verify`: **PASS** on the actual saved **0.2.2** full-factory world (10000 belts, 1000 producers, 500 inserters, 250 industrial multiblocks). Exact authoritative state hash matches before resuming, and resumed conservation/identity checks pass. The GridConsumer extension preserves existing production consumers. This compatibility check does not measure a large in-world fluid factory; the existing full benchmark has no fluid load.
+
+* A fresh 0.3.0 full `./gradlew runBenchmarkServer` also reports **PASS**: all 10000 belts, 1000 producers and 500 inserters worked, item/FE ledgers remain exact, and shared-grid split/rejoin succeeds. The raw report is `docs/benchmarks/v030-full-measure.json`; a separate JVM verifies the new saved checkpoint. This local run averaged 34.474 ms with p95 76.391 ms and 103/600 ticks above 50 ms; a concurrent Gradle task listing affected part of the interval. It is a correctness regression check, not a controlled timing comparison or an under-50-ms guarantee. Zero clients; no fluid nodes are included.
+
+## Problems found and resolved
+
+The first four-chunk fluid fixture seeded 8000 mB but reloaded 7958 mB. In-memory round-trips had passed. Target ChunkMap source inspection showed ChunkEvent.Unload occurs before serialization and before later BE unload callbacks; the outgoing chunk can leave the visible cache while still being referenced by the fluid graph. Level.blockEntityChanged can then skip its dirty mark. The fix checks canonical chunk/BE ownership before simulation or capability mutations, marks the cached owning chunk unsaved immediately and freezes/detaches fluid nodes at the early chunk event before the snapshot. A regression test checks this earlier lifecycle boundary and stale handlers.
+
+The failed local fixture was preserved separately for diagnosis; a fresh isolated GameTest world was then seeded and verified in subsequent JVMs, with exact 8000 mB retained. The failed checkpoint was not silently repaired. Degree-damped pressure was also added after a six-way junction test exposed oscillation in unrestricted simultaneous pair equalization. FLUIDS.md records the resulting equation and integer tolerance.
+
+## Client and API checks
+
+`./gradlew runClient -PsmokeWorld=FactoryCraftSmoke` runs the actual client under Xvfb/Mesa and loads the old 0.2.2 QA world. `/factorycraft waterworks` creates a powered source → pump → four pipes → tank chain. The tank filled automatically; its Russian menu showed water and a live 15823/16000 mB gauge. The world was saved with the ordinary Save and Quit menu, then opened with the final compiled capability changes: the same **15823 mB** remained, and the tank GUI opened correctly. A client screenshot is retained under [docs/screenshots](docs/screenshots/fluid-tank-0.3.0.png). Original pipe/device models, direction arrow, active texture and EN/RU resources are included. Audio uses the local null backend; unavailable Mojang service keys do not prevent local play.
+
+NeoForge IFluidHandler/FluidStack/FluidUtil, data components, capability registration/invalidation, bucket interaction and vanilla menu/BlockEntityData/chunk-event APIs were checked against resolved **1.21.1 / 21.1.252** sources and compiled/exercised in the client and dedicated server. Client tint uses IClientFluidTypeExtensions and stays under `factorycraft.client`. No Forge-version substitutes or proprietary assets are used.
+
+## Scope and continuation
+
+The graph uses active edge/pump queues and cached loaded adjacency; no per-fluid entity or individual fluid-block ticker. See FLUIDS.md for capacities, the finite local-pressure approximation, work limits, pump energy and transport order. The natural water source is deliberately unlimited; finite inventory transfers conserve exact volume and components. Existing schemas remain unchanged; new fluid blocks use native FluidStack schema 1 and preserve drainable over-capacity state.
+
+Two actual network clients, natural player-distance chunk unload, external-mod interoperability and fluid-world TPS remain unverified. Current bucket/capability tests use real server APIs; this is not proof of all mod combinations. Steam, oil, chemistry, underground pipes, temperature and fluid machine recipes remain planned. Next concrete task: transactional water-to-steam boiler/steam engine and fluid processing codecs, documented in IMPLEMENTATION_PLAN.md.
+
+## Changed areas
+
+Independent fluid cell/transport core; loaded world adapter and guarded persistent fluid BE; pipe/tank/pump blocks and block items; grid-consumer abstraction; fluid menu/client screen; registrations/configuration/commands/wrench; original textures/models/recipes/book unlocks/EN-RU; JUnit/GameTests; version 0.3.0 and continuation/model/validation documents.
+
+---
+
+# Historical validation — 0.2.2, 8 November 2026
 
 Continues `main` commit `fd58d7f`. Target remains Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. This milestone delivers the requested real-world factory benchmark and profile-guided hot-path optimizations; it does not implement fluids or claim complete Factorio/Space Age support.
 

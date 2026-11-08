@@ -48,5 +48,20 @@
   "gui.factorycraft.output": "Output",
   "gui.factorycraft.auto": "Automatic recipe",
   "gui.factorycraft.burn": "Fuel: %s t",
-  "gui.factorycraft.recipe_info": "%s t / %s FE per tick"
+  "gui.factorycraft.recipe_info": "%s t / %s FE per tick",
+  "block.factorycraft.fluid_pipe": "Fluid Pipe",
+  "block.factorycraft.fluid_tank": "Fluid Tank",
+  "block.factorycraft.electric_pump": "Electric Pump",
+  "tooltip.factorycraft.fluid_pipe": "1000 mB. Up to 100 mB/t per connection; liquids equalize locally.",
+  "tooltip.factorycraft.fluid_tank": "16000 mB. Holds one fluid; retains contents when harvested.",
+  "tooltip.factorycraft.electric_pump": "Water source or fluid input behind; output ahead. 100 mB/t, 20 FE per active tick.",
+  "tooltip.factorycraft.fluid_contents": "%s: %s mB",
+  "gui.factorycraft.fluid_empty": "Empty",
+  "gui.factorycraft.fluid_volume": "%s / %s mB",
+  "gui.factorycraft.pump_rate": "100 mB/t; 20 FE/active tick",
+  "gui.factorycraft.bucket_controls": "Use a bucket to fill/drain",
+  "gui.factorycraft.fluid_sides": "All sides",
+  "gui.factorycraft.fluid_pump_sides": "Input behind; output ahead",
+  "command.factorycraft.fluid_demo": "Water-to-tank line built at %s.",
+  "command.factorycraft.fluid_space": "Need a loaded empty 9 x 4 x 5 area beside you."
 }

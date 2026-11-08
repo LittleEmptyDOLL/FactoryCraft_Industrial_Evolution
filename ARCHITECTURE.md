@@ -1,4 +1,4 @@
-# Architecture decisions — 0.2.2 (belt/assembly/casing schema 2; machine inventory schema 1)
+# Architecture decisions — 0.3.0 (belt/assembly/casing schema 2; machine/fluid schema 1)
 
 ## Authority and persistence
 
@@ -87,3 +87,11 @@ After warmup and JFR settling, ServerTickEvent.Pre/ Post capture 600 work durati
 Profile-guided hot-path changes preserve ownership/speeds: index incoming-node lists in the belt worklist, avoid per-node iterators, mark internal motion/progress/FE dirty without inventory comparator fanout, and avoid marking twice when sending an already-dirty belt update. Real inventory changes still use ordinary setChanged/sync neighbor notifications; states with an analog output fall back to them. Persistence formats and authoritative simulation are unchanged.
 
 The diagnostic checkpoint additionally hashes canonical authoritative NBT before shutdown and verifies it before the next process's first tick. Compound keys are sorted; generated client snapshot/animation timestamps are excluded. After an exact match and resumed audit, verify atomically advances its checkpoint to the legitimately resumed state after flushing the world. It never accepts a mismatched hash by recomputing the expected value. This metadata is confined to the disposable fixture; normal game NBT schemas are unchanged.
+
+## Fluid slice (0.3.0)
+
+`simulation.fluids` is Minecraft-independent: one canonical integer-mB cell, immutable fluid identity, reserved phased transfers and a cached active-edge FIFO graph. The world adapter under `fluids` keeps loaded adjacency and pump queues; no fluid block has a ticker. `FluidKey` owns a copied FluidStack and compares fluid plus data components. `FluidBlockEntity` exposes stable, lifecycle/orientation-checked NeoForge ports and one persisted cell. `GridConsumer` lets existing power snapshots supply either production machines or pumps without duplicating the grid.
+
+Before mutation, the adapter checks the canonical LevelChunk/BE identity through ServerChunkCache.getChunkNow. Dirty changes mark the owned chunk unsaved immediately. ChunkEvent.Unload freezes/removes fluid nodes before ChunkMap serializes outgoing chunks; ordinary BE unload callbacks occur too late for this guarantee. Client reads use the client mirror, while all mutations require the server-owned loaded node.
+
+New fluid NBT schema 1 uses the native FluidStack codec, retaining data components. Restored over-capacity volume remains drainable instead of being discarded. Harvested fluid blocks use vanilla BLOCK_ENTITY_DATA; empty, unpowered blocks stay ordinary stackable items. Existing machine, belt and assembly schemas are unchanged. Menu volume/capacity/registry IDs are split into 16-bit words for vanilla data slots; BE snapshots are staggered to at most once per five ticks for fluid changes. This is full BE synchronization, not a measured delta protocol. FLUIDS.md specifies pressure math, pump order, energy and the distinction from Factorio 2.0.

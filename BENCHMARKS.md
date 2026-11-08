@@ -109,3 +109,9 @@ CI повторяет сценарий на другом оборудовани�
 Локальное измерение выполняется **без подключённых клиентов**. Нулевые сетевые пакеты соответствуют этому условию; пропускная способность для двух игроков и клиентский FPS пока не подтверждены. Запасы конечны, измерение короткое, мир плоский и без мобов/случайных тиков. Длинная работа, добыча/генерация обычного мира, другие моды и сложные развилки конвейеров могут давать другую нагрузку. Загрузки чанков по расстоянию игрока остаются отдельным сценарием.
 
 Профилирование 0.2.2 уменьшило итераторы во вложенных обходах конвейера и уведомления соседей при сохранении внутреннего состояния. Частота отправки состояния конвейеров не изменена. Следующая проверка сети должна использовать реальных клиентов; затем можно обоснованно внедрять пакетные обновления.
+
+## 0.3.0 compatibility/regression run
+
+The old 0.2.2 saved full-factory checkpoint passes exact-state verification on 0.3.0, before the old marked world is preserved separately. A fresh full 0.3.0 workload and a new-process reload also pass. Raw results: [measurement](docs/benchmarks/v030-full-measure.json), [restart](docs/benchmarks/v030-full-verify.json).
+
+The fresh local 600-tick run averaged 34.474 ms (p95 76.391 ms, p99 101.825 ms, max 290.202 ms, 103 ticks above 50 ms). A concurrent Gradle task listing overlapped the measurement; this is not a controlled performance comparison with 0.2.2. All belts moved, all producers returned results and all inserters delivered, with exact material/FE conservation. It contains no fluid nodes or connected clients. The new 10000-cell fluid JUnit exercise proves finite-volume conservation, not in-world fluid throughput/TPS.
