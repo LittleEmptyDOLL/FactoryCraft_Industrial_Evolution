@@ -82,7 +82,7 @@ neoForge {
 
         benchmarkServer {
             server()
-            gameDirectory = project.file('run-benchmark')
+            gameDirectory = project.file(providers.gradleProperty('benchmarkProfile').getOrElse('full') == 'mixed' ? 'run-benchmark/' + providers.gradleProperty('benchmarkFixture').getOrElse('mixed') : 'run-benchmark')
             programArgument '--nogui'
             systemProperty 'factorycraft.benchmark.profile', providers.gradleProperty('benchmarkProfile').getOrElse('full')
             systemProperty 'factorycraft.benchmark.mode', providers.gradleProperty('benchmarkMode').getOrElse('measure')
@@ -224,7 +224,9 @@ test { useJUnitPlatform() }
 
 tasks.named("jar") { from("LICENSE") }
 
-def benchmarkDir = layout.projectDirectory.dir('run-benchmark').asFile
+def mixedFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse('mixed')
+if (!(mixedFixtureName ==~ /mixed(?:-[a-z0-9]+)*/)) throw new GradleException('Mixed fixture must be a simple mixed[-name] child of run-benchmark.')
+def benchmarkDir = layout.projectDirectory.dir(providers.gradleProperty('benchmarkProfile').getOrElse('full') == 'mixed' ? 'run-benchmark/' + mixedFixtureName : 'run-benchmark').asFile
 def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
 def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
 def benchmarkMode = providers.gradleProperty('benchmarkMode').getOrElse('measure')
@@ -258,7 +260,7 @@ max-tick-time=120000
 '''
         def profile = benchmarkProfile
         def mode = benchmarkMode
-        if (!(profile in ['full', 'smoke']) || !(mode in ['measure', 'verify'])) throw new GradleException('Invalid benchmark profile/mode.')
+        if (!(profile in ['full', 'smoke', 'mixed']) || !(mode in ['measure', 'verify', 'resume'])) throw new GradleException('Invalid benchmark profile/mode.')
         def fixture = new File(benchmarkDir, 'factorycraft-fixture.json')
         if (mode == 'measure' && fixture.exists()) throw new GradleException('Saved fixture exists. Use -PbenchmarkMode=verify or resetBenchmarkWorld; previous reports are preserved.')
         if (mode == 'verify' && !fixture.isFile()) throw new GradleException('No saved benchmark fixture to verify.')

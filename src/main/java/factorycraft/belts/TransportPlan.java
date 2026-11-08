@@ -121,20 +121,28 @@ public record TransportPlan(
     var be = factorycraft.simulation.BeltSimulation.at(level, p);
     return be != null
         && be.loaded()
-        && be.outputPosition().equals(p)
+        && (be.outputPosition().equals(p) || be.tracks() == 2 && be.trackAt(p) >= 0)
         && be.outputFacing() == facing;
+  }
+
+  private static boolean accepts(BeltBlockEntity be, BlockPos physical) {
+    if (be == null || be.undergroundOutput()) return false;
+    int track = be.trackAt(physical);
+    return track >= 0 && be.trackPosition(track).equals(physical);
   }
 
   public static BeltRoute automatic(Level level, BlockPos p, Direction facing) {
     var front = factorycraft.simulation.BeltSimulation.at(level, p.relative(facing));
-    if (front != null && !front.trackPosition(0).equals(p.relative(facing))) front = null;
+    if (!accepts(front, p.relative(facing))) front = null;
     if (front == null) {
       var high = factorycraft.simulation.BeltSimulation.at(level, p.relative(facing).above());
-      if (high != null && high.facing() != facing.getOpposite() && free(level, p.above(), p))
-        return new BeltRoute(BeltRoute.Shape.UP, 0, 0);
+      if (accepts(high, p.relative(facing).above())
+          && high.facing() != facing.getOpposite()
+          && free(level, p.above(), p)) return new BeltRoute(BeltRoute.Shape.UP, 0, 0);
       var low = factorycraft.simulation.BeltSimulation.at(level, p.relative(facing).below());
-      if (low != null && low.facing() != facing.getOpposite() && free(level, p.below(), p))
-        return new BeltRoute(BeltRoute.Shape.DOWN, 0, 0);
+      if (accepts(low, p.relative(facing).below())
+          && low.facing() != facing.getOpposite()
+          && free(level, p.below(), p)) return new BeltRoute(BeltRoute.Shape.DOWN, 0, 0);
     }
     boolean rear = source(level, p.relative(facing.getOpposite()), facing),
         left = source(level, p.relative(facing.getCounterClockWise()), facing.getClockWise()),

@@ -260,5 +260,15 @@
   "transport.factorycraft.mode.input": "Вход",
   "transport.factorycraft.mode.output": "Выход",
   "message.factorycraft.transport_state": "%s · %s · %s",
-  "message.factorycraft.transport_blocked": "Освободите участок от предметов и проверьте свободное место."
+  "message.factorycraft.transport_blocked": "Освободите участок от предметов и проверьте свободное место.",
+  "gui.factorycraft.splitter": "Настройка разделителя",
+  "gui.factorycraft.splitter_input": "Вход: %s",
+  "gui.factorycraft.splitter_output": "Выход: %s",
+  "gui.factorycraft.splitter_mode.0": "Поровну",
+  "gui.factorycraft.splitter_mode.1": "Левый",
+  "gui.factorycraft.splitter_mode.2": "Правый",
+  "gui.factorycraft.splitter_filter": "Фильтр",
+  "gui.factorycraft.splitter_clear": "Сброс",
+  "gui.factorycraft.splitter_hint": "Стороны — по ходу ленты. Фильтр строгий.",
+  "gui.factorycraft.splitter_filter_tip": "Нажмите предметом на курсоре для выбора типа; ПКМ — очистить. Предмет не расходуется. Компоненты не учитываются."
 }

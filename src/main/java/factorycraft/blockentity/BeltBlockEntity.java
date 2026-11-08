@@ -25,6 +25,38 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   private boolean queuedForSync, contentsChanged;
   public boolean simulationLoaded;
   private long snapshotTick;
+  private factorycraft.logistics.SplitterSettings splitterSettings =
+      factorycraft.logistics.SplitterSettings.DEFAULT;
+  private final int[] committedOutputs = new int[4];
+
+  public factorycraft.logistics.SplitterSettings splitterSettings() {
+    return splitterSettings;
+  }
+
+  public boolean configureSplitter(factorycraft.logistics.SplitterSettings settings) {
+    if (kind() != FactoryKind.SPLITTER
+        || !loaded()
+        || !structureReady()
+        || !FluidConnections.canonical(this)) return false;
+    splitterSettings = Objects.requireNonNull(settings);
+    applySplitterSettings();
+    sync();
+    return true;
+  }
+
+  private void applySplitterSettings() {
+    if (transport == null || kind() != FactoryKind.SPLITTER) return;
+    var settings = splitterSettings;
+    var policy =
+        settings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)
+            ? null
+            : new SplitterPolicy<ItemStack>(
+                settings.output(), settings.filter() == null ? null : settings::matches);
+    for (int i = 0; i < nodes.size(); i++)
+      transport.configure(
+          node(i), policy, settings.input() != 0 && i / 2 == settings.input() - 1 ? 1 : 0);
+  }
+
   private BeltRoute route = BeltRoute.FLAT, desiredRoute;
   private UUID transportIdentity = UUID.randomUUID();
   private int formMode;
@@ -312,6 +344,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   public boolean structureReady() {
     if (assembly != null) return assembly.ready();
     if (level == null) return false;
+    if (route.heightDelta() == 0) return true;
     for (var p : TransportPlan.cells(worldPosition, route))
       if (!p.equals(worldPosition)
           && (!(FluidConnections.at(level, p) instanceof TransportPartBlockEntity part)
@@ -481,14 +514,17 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     for (int i = 0; i < laneCount(); i++) {
       var n = transport.create(lane(i), tier, c -> BeltSimulation.changed(this, c));
       n.restorePreference(alternate[i]);
+      n.restoreCommittedOutput(committedOutputs[i]);
       nodes.add(n);
     }
+    applySplitterSettings();
   }
 
   public void unbindTransport() {
     if (transport == null) return;
     for (int i = 0; i < nodes.size(); i++) {
       alternate[i] = node(i).prefersSecondary();
+      committedOutputs[i] = node(i).committedOutput();
       transport.remove(node(i));
     }
     nodes.clear();
@@ -504,7 +540,9 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     if (transport == null || level == null || refreshing || removing) return;
     refreshing = true;
     try {
-      if (kind().ordinaryBelt() && (route.heightDelta() == 0 || structureReady())) {
+      if (kind().ordinaryBelt()
+          && BeltSimulation.tickable(this)
+          && (route.heightDelta() == 0 || structureReady())) {
         var next =
             switch (formMode) {
               case 1 -> BeltRoute.FLAT;
@@ -533,8 +571,10 @@ public final class BeltBlockEntity extends FactoryBlockEntity
       }
       boolean ready =
           loaded()
+              && BeltSimulation.tickable(this)
               && structureReady()
-              && (!kind().underground() || paired != null && paired.loaded());
+              && (!kind().underground()
+                  || paired != null && paired.loaded() && BeltSimulation.tickable(paired));
       var output = outputFacing();
       for (int i = 0; i < nodes.size(); i++) {
         var n = node(i);
@@ -580,9 +620,9 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   }
 
   public void flushSimulationChanges(long tick) {
-    if (simulationLoaded
+    if (desiredRoute != null
+        && simulationLoaded
         && structureReady()
-        && desiredRoute != null
         && !sameRoute(route, desiredRoute)
         && changeRoute(desiredRoute)) BeltSimulation.topologyChanged(this);
     factorycraft.diagnostics.FactoryTelemetry.beltChanged(this);
@@ -668,6 +708,15 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     }
     if (special()) tag.putUUID("TransportIdentity", transportIdentity);
     if (undergroundOutput) tag.putBoolean("UndergroundOutput", true);
+    if (kind() == FactoryKind.SPLITTER
+        && !splitterSettings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)) {
+      var settings = splitterSettings.save();
+      int[] outputs = committedOutputs.clone();
+      if (transport != null && !nodes.isEmpty())
+        for (int i = 0; i < nodes.size(); i++) outputs[i] = node(i).committedOutput();
+      settings.putIntArray("CommittedOutputs", outputs);
+      tag.put("Splitter", settings);
+    }
     for (int i = 0; i < laneCount(); i++) {
       tag.putBoolean(
           i == 0 ? "Alternate" : i == 1 ? "AlternateRight" : "Alternate" + i,
@@ -688,6 +737,12 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     super.loadAdditional(tag, r);
     if (assembly != null) assembly.load(tag);
     snapshotTick = tag.getLong("SnapshotTick");
+    if (kind() == FactoryKind.SPLITTER) {
+      splitterSettings = factorycraft.logistics.SplitterSettings.load(tag.getCompound("Splitter"));
+      var outputs = tag.getCompound("Splitter").getIntArray("CommittedOutputs");
+      for (int i = 0; i < committedOutputs.length; i++)
+        committedOutputs[i] = i < outputs.length ? Math.clamp(outputs[i], 0, 2) : 0;
+    }
     var cell = TransportPlan.loadCell(tag.getCompound("Route"));
     route = cell == null ? BeltRoute.FLAT : cell.route();
     formMode = tag.getCompound("Route").getInt("Mode");
@@ -714,7 +769,10 @@ public final class BeltBlockEntity extends FactoryBlockEntity
       }
       if (transport != null && !nodes.isEmpty()) node(i).restorePreference(alternate[i]);
     }
-    if (transport != null) wakeTransport();
+    if (transport != null) {
+      applySplitterSettings();
+      wakeTransport();
+    }
     if (level != null && level.isClientSide) {
       requestModelDataUpdate();
       level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);

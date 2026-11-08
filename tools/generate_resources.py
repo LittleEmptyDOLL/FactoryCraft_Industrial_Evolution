@@ -549,3 +549,19 @@ for names in transport_tiers:
   if key not in tag['values']:tag['values'].append(key)
 if 'factorycraft:transport_part' not in tag['values']:tag['values'].append('factorycraft:transport_part')
 write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
+
+for locale in ['en_us','ru_ru']:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());ru=locale=='ru_ru'
+ labels={
+ 'splitter':('Splitter controls','Настройка разделителя'),
+ 'splitter_input':('Input: %s','Вход: %s'),
+ 'splitter_output':('Output: %s','Выход: %s'),
+ 'splitter_mode.0':('Balanced','Поровну'),
+ 'splitter_mode.1':('Left','Левый'),
+ 'splitter_mode.2':('Right','Правый'),
+ 'splitter_filter':('Filter','Фильтр'),
+ 'splitter_clear':('Clear','Сброс'),
+ 'splitter_hint':('Sides follow travel. Filtered exit is strict.','Стороны — по ходу ленты. Фильтр строгий.'),
+ 'splitter_filter_tip':('Click with a carried item to set its type; right-click to clear. No item is consumed. Components are ignored.','Нажмите предметом на курсоре для выбора типа; ПКМ — очистить. Предмет не расходуется. Компоненты не учитываются.')}
+ for key,value in labels.items():strings['gui.factorycraft.'+key]=value[1 if ru else 0]
+ write(f'assets/factorycraft/lang/{locale}.json',strings)

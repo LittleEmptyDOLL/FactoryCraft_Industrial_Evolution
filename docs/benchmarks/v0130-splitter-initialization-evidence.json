@@ -1,0 +1,19 @@
+{
+  "status": "retained-uninitialized",
+  "controller": [
+    12015,
+    70,
+    12015
+  ],
+  "initializationCompleted": false,
+  "ownedItems": 0,
+  "settings": "default",
+  "reason": "Initial fixture called guarded configuration before onLoad; it failed before seed. Existing empty state is retained read-only.",
+  "refilledOrReset": false,
+  "strictReplacement": [
+    12111,
+    70,
+    12111
+  ],
+  "nativeAssertion": "retainUninitializedV1SplitterProbeWithoutAddingResources"
+}

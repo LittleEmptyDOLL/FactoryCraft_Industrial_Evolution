@@ -260,5 +260,15 @@
   "transport.factorycraft.mode.input": "Input",
   "transport.factorycraft.mode.output": "Output",
   "message.factorycraft.transport_state": "%s · %s · %s",
-  "message.factorycraft.transport_blocked": "Drain the section and check physical clearance."
+  "message.factorycraft.transport_blocked": "Drain the section and check physical clearance.",
+  "gui.factorycraft.splitter": "Splitter controls",
+  "gui.factorycraft.splitter_input": "Input: %s",
+  "gui.factorycraft.splitter_output": "Output: %s",
+  "gui.factorycraft.splitter_mode.0": "Balanced",
+  "gui.factorycraft.splitter_mode.1": "Left",
+  "gui.factorycraft.splitter_mode.2": "Right",
+  "gui.factorycraft.splitter_filter": "Filter",
+  "gui.factorycraft.splitter_clear": "Clear",
+  "gui.factorycraft.splitter_hint": "Sides follow travel. Filtered exit is strict.",
+  "gui.factorycraft.splitter_filter_tip": "Click with a carried item to set its type; right-click to clear. No item is consumed. Components are ignored."
 }

@@ -31,7 +31,7 @@ Maintain the delivered automation/energy/fluid/chemistry slice and the first sta
 
 ## Next session
 
-Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the current priority list below for the next progression/fluid-recovery work. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
+Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the current priority list below for the next transport/inserter work. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
 
 ## Delivered in 0.1.0
 
@@ -67,8 +67,9 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Extend the marked performance harness with a separate mixed curve/slope/lift/underground profile (never reuse or reset the legacy full fixture). Exercise natural player-distance chunk unload and two real clients. Then implement priority/filter splitter controls with server-owned configuration and conservative transactions. Preserve all transport/module/research/chemistry fixtures and legacy checkpoint hashes.
-2. Extend modules/beacons and higher science tiers, then logistics/circuits. Continue UI polish/coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
+1. Add fast/express splitters using the existing four-lane controller, policy/menu and reservation kernel. Match the three belt tiers, add survival recipes/research and original generated models. Verify saturated four-lane throughput and strict sorting/priority at all tiers, mixed-speed backpressure, portable/chunk/process state, actual inserters and unchanged old default NBT. Keep the 0.13.0 mixed benchmark and all diagnostic worlds intact.
+2. Add electric fast/long/filter inserters with persistent held ownership, guarded filters and working animations; then begin a bounded circuit signal graph for transport controls. Preserve finite factory examples and separate old/new fixtures.
+3. Extend modules/beacons and higher science tiers. Continue coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
 
 ## Delivered in 0.4.0 — steam power
@@ -139,3 +140,12 @@ User scope: directional automatic curves, physically length-aware up/down slopes
 
 
 Delivered variable metric lanes in the original simultaneous kernel, directional curves and up/down clearance-backed slopes, all-tier two-stage one-item up/down lifts and virtual underground pairs. All generated parts are identity-only; ordinary default NBT remains exact. Underground endpoints choose roles/pairs automatically and guard cached output capabilities. Wrench controls, original chunk-baked ribbons, interpolation, item recipes, EN/RU and `/factorycraft transportworks` are included. See BELTS.md and VALIDATION.md for geometry, distance, migration, protected placement, exact cross-process checkpoints and graphical evidence. Next session starts with the mixed-world profiling/natural-unload work above, then filter/priority controls; do not reset fixtures.
+
+
+## Delivered milestone — 0.13.0 mixed transport validation and splitter controls
+
+Create an opt-in MIXED full-size benchmark in run-benchmark/mixed with its own marker/checkpoint, real slopes/up-down lifts/virtual terminals and 10000 transport controllers, existing 1000 production machines and 500 inserters. Audit exact material/FE/identities and every moving resource owner, native ticket-release chunk unload/reload, then a separate JVM. Keep legacy full world/hash untouched. Add splitter output/input priorities and an item filter through the existing reservation kernel, persistent settings, guarded server menu and original EN/RU UI. Preserve default NBT/throughput. Verify pure routing/headway/fairness, native configuration/portable/unload/menu and integrated production; real client and optional dependencies; publish tested main. Actual two-network-client coverage is described below.
+
+Delivered the mixed physical workload, native 200-chunk unload/reload and exact separate-process checkpoints. A cached ticket/readiness index now pauses belts outside block-ticking chunks, including both splitter cells and underground ends. Retained the original unload failure and resumed the same world without refilling. JFR-guided single-route optimizations retain exact differential equivalence; measured mean tick work improves from 61.809 to 48.372 ms on this two-processor workload (p95 still 62.721 ms).
+
+Basic splitters now have persistent input/output priority, strict complementary item-ID filters and native shared menus. Existing committed approaches finish safely after settings change. `/factorycraft sortingworks` demonstrates real finite-source sorting. Two actual loopback Minecraft clients exercised simultaneous settings, ghost-item conservation, natural player-distance unload/return and saved-world server restart in RU/EN. See NETWORK_QA.md, SPLITTERS.md, BENCHMARKS.md and VALIDATION.md. Continue with priority 1 above; do not reset retained checkpoints or claim the remaining Factorio systems are complete.

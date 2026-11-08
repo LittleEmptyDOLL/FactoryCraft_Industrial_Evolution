@@ -138,3 +138,13 @@ MachineModules composes a separate fixed-slot inventory and recipe-keyed fractio
 ## 0.12.0 metric transport
 
 The existing simultaneous BeltTransport kernel now uses lane-local integer lengths/capacities, including all reservation/headway/ring calculations. BeltRoute owns geometry only; BeltSimulation resolves loaded-only cached topology. Physical lift/incline parts forward guarded ports and store no item copies. Underground inputs own the entire virtual route; outputs have no simulation nodes and dynamically guarded delegation. Default flat NBT is unchanged. See BELTS.md for distance, migration, placement/protection and demolition semantics.
+
+## Transport policies and block-ticking lifecycle (0.13.0)
+
+The original `BeltTransport` kernel accepts an optional item routing policy. SplitterPolicy maps each head to allowed physical outputs and an optional preferred output; an item filter selects complementary routes, never a second inventory. Input priority participates in approach reservations. Once a head has a committed output, an incompatible live settings change lets that approach finish before the new policy applies to the next head. Four saved commitments survive disconnect/reconstruction. Default settings add no NBT, preserving the old full-factory hash.
+
+SplitterMenu uses native server menu buttons/data slots and a nonextractable item-ID preview. Clicking the ghost never transfers or consumes the carried stack. Every mutation and ordinary inventory click checks the current menu, canonical loaded structure, player distance and spectator state. Each viewer receives the same authoritative state. Item components are intentionally ignored by this first filter.
+
+BeltSimulation indexes physical ownership by chunk, including both splitter cells and both underground endpoints. `ChunkTicketLevelUpdatedEvent` demotes affected owners immediately; promotions wait for native block-ticking readiness through a pending-chunk set. Only pending chunks are checked each tick. Frozen ticks do not advance the transport kernel. Chunk unload detaches owners before serialization; temporarily inactive routes retain resources and approach reservations. Runtime transport never pins chunks.
+
+The common single-output/single-input kernel path skips redundant routing choice and reservation work, using direct lane access. It retains the general algorithm for merges/forks/filters. A differential test compares every carrier ID, integral position, order and output for 12 random seeds × 3000 steps, including tier/length changes, priorities and inactive nodes. World lookups stay outside microsteps.

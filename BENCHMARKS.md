@@ -1,4 +1,4 @@
-# Нагрузочный стенд FactoryCraft 0.6.0
+# Нагрузочный стенд FactoryCraft 0.13.0
 
 Стенд запускает **настоящий выделенный Minecraft 1.21.1 / NeoForge 21.1.252**, размещает обычные блоки мода и использует штатный серверный цикл с целевой частотой 20 TPS. Это отдельная проверка мира, не замена GameTest или независимый тест математического ядра.
 
@@ -14,24 +14,11 @@
 
 Сервер автоматически завершается после измерения или проверки. JSON и JFR находятся в `run-benchmark/reports/`. Gradle завершится с ошибкой при нарушении инварианта, несовпадении сохранения или отсутствии успешного отчёта.
 
-Для нового измерения:
-
-```sh
-./gradlew resetBenchmarkWorld
-./gradlew runBenchmarkServer
-```
+Сохранённые диагностические миры нельзя сбрасывать или заполнять заново. Для нового смешанного измерения используйте отдельное имя, как показано ниже. Задача `resetBenchmarkWorld` предназначена только для явно разрешённого удаления одноразового стенда; при продолжении разработки существующие результаты сохраняются.
 
 `resetBenchmarkWorld` удаляет только специально помеченный каталог `run-benchmark`, включая его отчёты. Скопируйте нужные результаты перед новым замером. Задачи отказываются использовать непустой непомеченный каталог или ссылку на другой каталог; существующий стенд не заполняется ресурсами повторно. Обычные `run/`, `run-gametest/` и пользовательские сохранения не используются. Тестовый сервер слушает только loopback, порт 25575.
 
-Малый профиль содержит все типы оборудования и проверяет соединения быстрее:
-
-```sh
-./gradlew resetBenchmarkWorld
-./gradlew runBenchmarkServer -PbenchmarkProfile=smoke
-./gradlew runBenchmarkServer -PbenchmarkProfile=smoke -PbenchmarkMode=verify
-```
-
-После малого профиля сбросьте его перед полным. В CI полный стенд и его повторный запуск выполняются после обычных тестов; отчёты и JFR входят в артефакт `factorycraft-build`.
+Малый профиль `-PbenchmarkProfile=smoke` предназначен для отдельного свежего checkout с пустым `run-benchmark/`. FULL и SMOKE используют один корневой каталог, поэтому не переключайте их в сохранённом диагностическом мире. Для продолжения разработки оставляйте FULL нетронутым и используйте отдельный именованный MIXED-профиль ниже. В CI оба полных профиля и их повторные запуски выполняются на свежем checkout после обычных тестов; отчёты и JFR входят в артефакт `factorycraft-build`.
 
 ## Что реально работает
 
@@ -143,3 +130,33 @@ In a local two-processor run concurrent with Gradle/GameTests, 600 measured tick
 ## 0.8.0 saved-factory compatibility
 
 The unchanged full 0.7.0 checkpoint passes 0.8.0 verification with exact pre-tick NBT, all 10000 belts/1000 producers/500 inserters, 32500 part identities and FE/material preservation (`docs/benchmarks/v080-compat-verify.json`). No local fresh timing comparison is claimed. Advanced chemistry has separate actual connected-line and five-cell persistence tests; the full standard fixture is not a giant petrochemical workload. CI continues fresh full measurement and independent reload for each published commit.
+
+## 0.13.0 — mixed 3D workload and lifecycle
+
+The legacy FULL checkpoint stays in `run-benchmark/` and is verified unchanged. MIXED uses a separately marked child, default `run-benchmark/mixed`, and never resets or reseeds an existing world:
+
+```sh
+./gradlew runBenchmarkServer -PbenchmarkProfile=mixed
+./gradlew runBenchmarkServer -PbenchmarkProfile=mixed -PbenchmarkMode=verify
+# A new measurement uses a genuinely new name, not an old failed fixture:
+./gradlew runBenchmarkServer -PbenchmarkProfile=mixed -PbenchmarkFixture=mixed-new-run
+./gradlew runBenchmarkServer -PbenchmarkProfile=mixed -PbenchmarkFixture=mixed-new-run -PbenchmarkMode=verify
+```
+
+It contains 10,000 transport controllers: 9200 ordinary segments, 100 ascending/100 descending slopes, 100 up/100 down lifts, 200 underground inputs and 200 nonowning outputs. There are 800 identity-only transport parts and 400 solid blocks inside virtual underground spans, in addition to the original full-size 1000 producers, 500 inserters, 250 generators, 32500 machine parts and 200 chunks. All three speed tiers are used. Exactly 9800 moving owners must work, all producers must produce and all inserters must deliver; the ledger preserves 20000 copper carriers and 128000 iron-equivalent units plus paid/generated FE.
+
+After sampling, the harness releases its own tickets and counts native `ChunkEvent.Unload` callbacks for all 200 chunks, saves, reloads and audits resources and identities. A new JVM verifies the exact pre-tick hash before resuming. Runtime factories never force chunks; only the opt-in harness pins its declared footprint.
+
+The first run retained all resources but timed out unloading 11 of 200 chunks. Its world/report were preserved. The fix caches block-ticking ticket/readiness state and freezes owners outside it. `-PbenchmarkMode=resume` is narrowly allowed for that failed unreleased MIXED unload report, performs no seed/reset and embeds the original measurement. It passed all 200 unloads. A fresh named fixture then repeated the complete measurement/unload/restart successfully. Evidence: `v0130-mixed-unload-before-fix.json`, `v0130-mixed-resume.json`.
+
+JFR identified reservation/approach decisions and wrapped lane-list access as hot paths. The single-route optimization is compared against the general kernel at every step in a deterministic randomized test. Two isolated, otherwise equivalent 600-tick measurements on the same two-processor / 2-GiB server:
+
+| Tick work | Before | After |
+|---|---:|---:|
+| Mean | 61.809 ms | 48.372 ms |
+| p95 | 77.513 ms | 62.721 ms |
+| p99 | 103.525 ms | 77.463 ms |
+| Ticks over 50 ms | 599 / 600 | 162 / 600 |
+| Kernel CPU over window | 28376.732 ms | 20261.826 ms |
+
+Mean tick work fell 21.7%, kernel CPU 28.6%, with identical measured transfer/work/production counts. The observed optimized wall-window rate was 20.65 TPS (target 20; scheduling can catch up); this is not a claim that the server sustains more than 20 simulation ticks per second or that arbitrary machines guarantee 20 TPS. p95 still exceeds 50 ms. There are no benchmark clients or large chemistry networks, so client FPS, packet throughput and those factories are not established by this run. See `v0130-mixed-before-optimization.json`, `v0130-mixed-measure.json`, `v0130-mixed-verify.json`. Separate actual two-client QA is in NETWORK_QA.md.

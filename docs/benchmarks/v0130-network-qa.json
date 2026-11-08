@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "modVersion": "0.13.0",
+  "status": "PASS",
+  "scope": "Actual Minecraft clients on loopback dedicated NeoForge server; manual GUI actions and native commands, not simulated protocol clients.",
+  "minecraft": "1.21.1",
+  "neoForge": "21.1.252",
+  "clients": [
+    {
+      "name": "FactoryOne",
+      "language": "ru_ru",
+      "inventory": {
+        "minecraft:diamond": 3
+      }
+    },
+    {
+      "name": "FactoryTwo",
+      "language": "en_us after restart",
+      "inventory": {
+        "minecraft:emerald": 4
+      }
+    }
+  ],
+  "world": "run-gametest/network-v0130/server/world",
+  "server": "127.0.0.1:25585, offline synthetic users only",
+  "checks": {
+    "sharedNativeMenu": true,
+    "simultaneousGhostFilterEdits": "Server last writer emerald; both clients receive the same one-item ghost, with carried diamond 3 and emerald 4 unchanged.",
+    "settingsAfterRestart": {
+      "input": "left",
+      "output": "right",
+      "filter": "minecraft:emerald"
+    },
+    "finiteSortingOutputs": {
+      "minecraft:raw_iron": 32,
+      "minecraft:raw_copper": 32
+    },
+    "playerDistanceUnload": "Both players moved to safe ground at (1000,-63,1000) / (1003,-63,1000); native execute unless loaded 111 81 108 passed; settings and items unchanged after return.",
+    "separateServerJvmRestart": true,
+    "looseItemEntitiesAfterRestart": 0,
+    "finalShutdown": "save-all flush then stop; all dimensions saved",
+    "tooltip": "New compiled client confirms wrapped ghost hint inside the viewport without overlapping native item tooltip."
+  },
+  "setupIncident": "The first far teleport put survival players above the void-world floor; both fell and dropped their original samples. Exact 3 diamonds and 4 emeralds were recovered by normal pickup, never refilled. The unload check was repeated safely on ground before restart.",
+  "screenshots": [
+    "docs/screenshots/splitter-shared-ru-0.13.0.png",
+    "docs/screenshots/splitter-shared-second-0.13.0.png",
+    "docs/screenshots/splitter-reloaded-ru-0.13.0.png",
+    "docs/screenshots/splitter-reloaded-en-0.13.0.png",
+    "docs/screenshots/splitter-filter-tooltip-0.13.0.png"
+  ],
+  "sourceLogSha256": {
+    "v0130-network-phase1.log": "a4b5841c7b9fe17fb1a23e2d1c6fe215810917af1e6d4b9c6556ef412b8bc52a",
+    "v0130-client-one-reload.log": "0541f0d554d08ee0d2446d5b21389c77fd5845181be72cbbe93312d899276cce",
+    "v0130-client-two-reload.log": "9e913543b7b7962e97458cf7ff5c7d410ce09db1285423d2dce36f91231c9c34"
+  },
+  "limits": [
+    "No WAN/high-latency or online authentication test.",
+    "Two-client line is small; 10000/1000/500 benchmark runs separately with no clients.",
+    "Graphical clients use Xvfb/Mesa software rendering; no large-world FPS claim."
+  ]
+}

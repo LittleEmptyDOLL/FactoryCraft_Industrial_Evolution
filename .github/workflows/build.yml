@@ -38,6 +38,11 @@ jobs:
           ./gradlew runBenchmarkServer
           ./gradlew runBenchmarkServer -PbenchmarkMode=verify
 
+      - name: Mixed 3D factory, natural chunk unload and disk reload
+        run: |
+          ./gradlew runBenchmarkServer -PbenchmarkProfile=mixed
+          ./gradlew runBenchmarkServer -PbenchmarkProfile=mixed -PbenchmarkMode=verify
+
       - name: Upload mod and reports
         uses: actions/upload-artifact@v4
         with:
@@ -46,3 +51,4 @@ jobs:
             build/libs/*.jar
             build/reports/tests/
             run-benchmark/reports/
+            run-benchmark/mixed/reports/
