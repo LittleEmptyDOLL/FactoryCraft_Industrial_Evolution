@@ -1,4 +1,4 @@
-# Architecture decisions — 0.8.0 (assembly/parts schema 3; native resource schema 1)
+# Architecture decisions — 0.9.0 (assembly/parts schema 3; native resource schema 1)
 
 ## Authority and persistence
 
@@ -119,3 +119,9 @@ MachineGeometryLoader bakes CellMesh surface fragments into the native chunk mod
 PetroleumProduction composes five cells only for a refinery; chemical plants/pumpjacks remain four. Existing Fluid0..3 persist at their original indices; refinery Petroleum schema 2 appends Fluid4, empty for legacy saves, and preserves overflow/components. Assembly schema 3 remains unchanged. Fixed old nozzle transforms stay; new output 3 is the controller's front face (front-left of the whole 5×5 machine). Codec/wire arrays support up to three refinery results, while a chemical plant constructor rejects three. Every output participates in pre-work capacity/component reservation and the same multi-cell/slot/progress commit. The fifth tank does not become a copied part owner or passive graph node.
 
 Five-row UI/hover help uses the existing BE sync/menu data; localized recipe labels fall back to output names for datapacks. The example's water/byproduct pipes use separated height levels to prevent fluid mixing. Complete line tests count every owned chemical and plate, not only output arrival. See PETROLEUM.md and VALIDATION.md.
+
+## Team research and optional viewers — 0.9.0
+
+ResearchLedger is independent unit/prerequisite/level logic; ResearchData persists provider-prefixed scopes in overworld SavedData. LabBlockEntity owns packs/FE/canonical work and uses ordinary assembly lifecycle/power. Packs commit only after validation of the team's still-selected unfinished unit, with all item callbacks deferred. Changing teams/providers never implicitly copies units. FTB is linked only behind runtime detection/reflection of its verified public API; unavailable installed API fails closed. Vanilla names and personal UUIDs are explicit fallbacks. New native item-placed machines bind scope after portable NBT; legacy omitted scope stays ungated and serializes no new empty field.
+
+TechnologyRecipe uses native recipe sync with bounded JSON/wire definitions. ResearchCatalog caches sorted definitions/canonical signatures and rejects missing/cyclic prerequisite paths. Menu snapshots are sent only to valid viewers, throttled and change-filtered; C2S IDs are validated against current lab/menu/distance/team/prerequisites. Ordinary slot clicks also validate membership to close a stale-menu race. Server snapshots drive the searchable dependency UI. EMI/JEI share a client-only display projection and never execute recipes; optional classes are absent from common simulation linkage.

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GC"
+  ],
+  "key": {
+    "G": {
+      "item": "factorycraft:iron_gear"
+    },
+    "C": {
+      "item": "factorycraft:copper_plate"
+    }
+  },
+  "result": {
+    "id": "factorycraft:automation_science_pack",
+    "count": 1
+  }
+}

@@ -16,12 +16,13 @@ public final class AssemblyAccess {
     public static boolean ready(FactoryBlockEntity be) { var owner=owner(be);return owner==null || owner.assembly().ready(); }
     public static IItemHandler items(AssemblyOwner owner,Direction side) {
         var be=owner.factoryEntity();
+        if(be instanceof LabBlockEntity lab)return lab.inventory();
         if(be instanceof MachineBlockEntity m)return m.automation(side);
         if(be instanceof ThermalBlockEntity thermal)return thermal.automation();
         if(be instanceof BeltBlockEntity belt)return belt.inventory();return EMPTY;
     }
     public static IEnergyStorage energy(AssemblyOwner owner) {
-        var be=owner.factoryEntity();return be instanceof MachineBlockEntity m ? m.energyPort:be instanceof ThermalBlockEntity t ? t.energyPort:be instanceof FluidBlockEntity f ? f.energyPort:null;
+        var be=owner.factoryEntity();return be instanceof LabBlockEntity lab ? lab.energy:be instanceof MachineBlockEntity m ? m.energyPort:be instanceof ThermalBlockEntity t ? t.energyPort:be instanceof FluidBlockEntity f ? f.energyPort:null;
     }
     public static IFluidHandler fluid(AssemblyOwner owner,BlockPos physical,Direction side) {
         var be=owner.factoryEntity();

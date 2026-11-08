@@ -27,6 +27,9 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
     @Override public int receiveGridEnergy(int n,boolean simulate) { return loaded() && factorycraft.multiblock.AssemblyAccess.ready(this) && factorycraft.fluids.FluidConnections.canonical(this) ? power.receiveEnergy(n,simulate):0; }
     @Override public PowerBuffer gridBuffer() { return power; }
     private boolean loaded;
+    private String researchScope="";
+    public void bindResearch(String scope){researchScope=scope;setChanged();}
+    public boolean recipeAllowed(net.minecraft.resources.ResourceLocation id){return researchScope.isEmpty() || factorycraft.research.ResearchCatalog.get(level).allowed(researchScope,id,level); }
     private boolean petroleumTransaction,petroleumInventoryDirty;
     private net.minecraft.world.level.chunk.LevelChunk petroleumChunk;
     private final factorycraft.petroleum.PetroleumProduction petroleum;
@@ -81,10 +84,10 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
     public final ContainerData data = new ContainerData() {
         public int get(int i) { return switch (i) {
             case 0 -> progress; case 1 -> duration; case 2 -> power.getEnergyStored(); case 3 -> fuelTicks;
-            case 4 -> selectedIndex(); case 5 -> previewIndex(); case 6 -> assembly==null ? IndustrialAssembly.READY:assembly.status(); default -> 0;
+            case 4 -> selectedIndex(); case 5 -> previewIndex(); case 6 -> assembly==null ? IndustrialAssembly.READY:assembly.status();case 7 -> lockedPreview() ? 1:0; default -> 0;
         }; }
         public void set(int i, int v) { switch(i) { case 0 -> progress=v; case 1 -> duration=v; case 2 -> power.restore(v); case 3 -> fuelTicks=v; default -> {} } }
-        public int getCount() { return 7; }
+        public int getCount() { return 8; }
     };
     public MachineBlockEntity(BlockPos p, BlockState s) {
         super(Content.MACHINE.get(),p,s);
@@ -115,6 +118,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
                 (activeRecipe.isEmpty() && rs.get(i).value().matches(new FactoryInput(items),level)))return i+1;
         return 0;
     }
+    private boolean lockedPreview(){int i=selectedIndex();if(i==0)i=previewIndex();return i>0 && !recipeAllowed(recipes().get(i-1).id());}
     public void cycleRecipe() {
         var rs=recipes(); int next=(selectedIndex()+1)%(rs.size()+1);
         selected=next==0 ? "" : rs.get(next-1).id().toString(); progress=0; activeRecipe=""; sync();
@@ -159,7 +163,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
         for(var r:recipes()) {
             if (!selected.isEmpty() && !selected.equals(r.id().toString())) continue;
             if (!activeRecipe.isEmpty() && progress>0 && !activeRecipe.equals(r.id().toString())) continue;
-            if(r.value().matches(input,level)) { chosen=r; break; }
+            if(recipeAllowed(r.id()) && r.value().matches(input,level)) { chosen=r; break; }
         }
         if(chosen==null) return false;
         var recipe=chosen.value();
@@ -233,11 +237,11 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
     @Override public Component getDisplayName() { return Component.translatable("block.factorycraft."+kind().id); }
     @Override public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) { return petroleum==null ? new FactoryMenu(id,inv,this,data):new factorycraft.petroleum.PetroleumMenu(id,inv,this,petroleum.data); }
     @Override protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
-        super.saveAdditional(t,r); t.putInt("Schema",1); t.put("Items",items.serializeNBT(r)); t.putInt("Energy",power.getEnergyStored());
+        super.saveAdditional(t,r);if(!researchScope.isEmpty())t.putString("ResearchScope",researchScope); t.putInt("Schema",1); t.put("Items",items.serializeNBT(r)); t.putInt("Energy",power.getEnergyStored());
         t.putInt("Progress",progress); t.putInt("Duration",duration); t.putInt("Fuel",fuelTicks); t.putString("Selected",selected); t.putString("ActiveRecipe",activeRecipe);if(assembly!=null)assembly.save(t);if(petroleum!=null)petroleum.save(t,r);
     }
     @Override protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
-        super.loadAdditional(t,r); items.deserializeNBT(r,t.getCompound("Items")); power.restore(t.getInt("Energy"));
+        super.loadAdditional(t,r);researchScope=t.getString("ResearchScope"); items.deserializeNBT(r,t.getCompound("Items")); power.restore(t.getInt("Energy"));
         progress=Math.max(0,t.getInt("Progress")); duration=Math.max(1,t.getInt("Duration")); fuelTicks=Math.max(0,t.getInt("Fuel"));
         selected=t.getString("Selected"); activeRecipe=t.getString("ActiveRecipe"); recipeCacheTick=Long.MIN_VALUE;if(assembly!=null)assembly.load(t);if(petroleum!=null)petroleum.load(t,r);
     }

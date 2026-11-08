@@ -27,11 +27,11 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle *
 
 ## Current work
 
-Maintain the delivered automation/energy/fluid/chemistry slice while starting stage 4 labs, team science and research. Stage 3 still lacks later power/heat equipment. Feature completion requires evidence; see FEATURE_MATRIX.md and VALIDATION.md. Later stages are not implied by block registration.
+Maintain the delivered automation/energy/fluid/chemistry slice and the first stage-4 labs, team science, research gates and optional recipe viewers. Stage 3 still lacks later power/heat equipment. Feature completion requires evidence; see FEATURE_MATRIX.md and VALIDATION.md. Later stages are not implied by block registration.
 
 ## Next session
 
-Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the current priority list below: team labs/science/research. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
+Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the current priority list below for the next progression/fluid-recovery work. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
 
 ## Delivered in 0.1.0
 
@@ -67,8 +67,8 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Start stage 4: team-owned research SavedData, configurable technology/prerequisite/cost definitions, 3×3 full-size one-item labs, automation/logistic science packs and actual timed consumption. Team progress must persist and be server-authoritative; freeze labs across part unload and prevent two labs/players spending the same pack/result. Keep current survival bootstrap accessible and introduce explicit recipe gating with migration rules for existing factories.
-2. Add a usable EN/RU research interface with prerequisite nodes, selection, progress/costs and search; verify dedicated/client startup, team isolation/shared progress, recipe unlocks, portable labs, datapack reload and separate-process saves. Then modules/beacons and the remaining logistics/hostile/space roadmap. Underground/priority/filter belts, curved full-flow paths and later oil consumers remain visibly incomplete.
+1. Expand progression beyond red/green: chemical science and appropriate processor/engine production, explicit technology costs/effects and recipe availability. Add a server-controlled recovery interface for small leftover machine input fluids without discarding contents. Keep existing team/project ownership and world migration rules.
+2. Extend modules/beacons and higher science tiers, then logistics/circuits. Continue UI polish/coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
 
 ## Delivered in 0.4.0 — steam power
@@ -111,4 +111,12 @@ Delivered advanced oil, both cracking steps, lubricant, sulfuric acid and batter
 
 Added localized named recipes/port help, five-row menus, a third marked nozzle, native buckets/original assets and an actual finite oil/water/raw-plate → sulfur → acid → battery example. Independent five-owner tests and native blocked/mismatched/underpowered/nozzle/bucket/codec/portable/live/disk scenarios plus a full multi-product/plate material ledger pass. The preserved 0.7.0 full factory also verifies on 0.8.0. See PETROLEUM.md and VALIDATION.md for exact checks, client evidence and limits.
 
-Next session: implement priority 1 above (team labs/science/research), then the research UI/gating. Do not reset checkpoints or silently alter bootstrap/old recipe availability. Lubricant consumers, accumulator/engine recipes, steam heat/temperature, huge petrochemical profiling, actual two-network-client play and the remaining initial scope are still incomplete.
+The team labs/science/research continuation is delivered in 0.9.0 below. Do not reset checkpoints or silently alter bootstrap/old recipe availability. Lubricant consumers, accumulator/engine recipes, steam heat/temperature, huge petrochemical profiling, actual two-network-client play and the remaining initial scope are still incomplete.
+
+## Delivered milestone — 0.9.0 team research and optional recipe viewers
+
+Implement real 3×3 one-item labs, automation/logistic science packs, bounded datapack technologies, persistent shared team units/prerequisites/unlocks and a searchable dependency UI. Resolve FTB Teams via its verified 1.21.1 public API when installed, otherwise vanilla scoreboard teams, otherwise player UUID. Keep provider namespaces and never silently merge/copy progress on membership changes; unavailable installed providers fail closed. Labs retain fixed team binding/sole pack/FE/work ownership through portable placement/unload. Complete units atomically against shared state before callbacks. Existing 0.6.0–0.8.0 machines/admin fixtures remain legacy-ungated; new player-owned machines enforce explicit technology recipe locks. Optional EMI and JEI integrations expose item/fluid/thermal/research recipes without client-class loading on dedicated servers. Verify native transactions, team isolation/change, gating/migration, codecs, separate-process saves, viewer-absent/present startup and actual graphical UI. Publish tested work to main with expected-head lease; next tasks stay documented.
+
+Delivered 14th full-size profile (lab), red/green science, six bounded native-synced technologies, independent research ledger, overworld SavedData, fixed team lab binding, guarded transactions and production recipe unlocks. FTB Teams' verified 1.21.1 public API is isolated behind optional reflective linkage; absent FTB uses vanilla teams/personal UUIDs. Joining/leaving/providers do not copy progress. Existing machines without ResearchScope stay legacy-ungated, preserving benchmark hashes and 0.6.0+ factories. New player machines bind at native post-NBT placement; portable binding persists.
+
+Added authoritative menu payloads and team/distance/prerequisite validation, dependency/search/pan UI, full-size lab visuals/animation, optional native EMI/JEI categories and a real automated science example. Tests cover shared last units, science/FE, unload/portable/disk, team changes, stale menu extraction, gating and actual automation. Both absent and installed optional-mod dedicated profiles pass. See VALIDATION.md and the new research/viewer guides for exact evidence/limitations. Next tasks are the current priorities above; do not reset diagnostic checkpoints or silently merge team research.

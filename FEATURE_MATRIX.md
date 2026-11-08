@@ -1,6 +1,6 @@
-# Feature matrix — 0.8.0
+# Feature matrix — 0.9.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.8.0 adds usable advanced refining, cracking, lubricant, acid and batteries with a third refinery outlet. Stage 3 remains partial; research is next.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.9.0 starts stage 4 with usable team labs/research and optional EMI/JEI. Stage 3 and later systems remain partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -16,11 +16,11 @@
 | Production | electric furnace + assembler + 3×3×3 industrial furnace, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; fixed-port mixed fluid/item machines added; modules and other advanced buildings remain planned |
 | Components | iron/copper plates, gears, wire, circuits; survival crafting bootstrap | partial; plastic, sulfur, advanced circuits and batteries added; processors/engines/science/rocket components remain planned |
 | Power | coal generator, spatial index, budgeted loaded-node snapshots, immediate split quarantine, merge/split, bounded distribution, FE input | partial; steam engine (up to 120 FE/t) and guarded FE output implemented; manual wires/graphs, nuclear/solar/accumulators/heat remain planned |
-| Multiblocks | one item places every full-sized machine; centered green/red client preview; footprint validation + NeoForge cancellation, shared ports, one machine drop, creative/pick-block, generated orphan cleanup, new assembly schema 3, inactive-chunk pause, disk reload | all 13 existing large types implemented; geometry/height table in MACHINE_DIMENSIONS.md; layout is fixed in code, not a datapack pattern system |
+| Multiblocks | one item places every full-sized machine; centered green/red client preview; footprint validation + NeoForge cancellation, shared ports, one machine drop, creative/pick-block, generated orphan cleanup, new assembly schema 3, inactive-chunk pause, disk reload | all 14 existing large types implemented; geometry/height table in MACHINE_DIMENSIONS.md; layout is fixed in code, not a datapack pattern system |
 | Fluids | six-way pipes, tanks, directional electric pumps, native water intake, buckets/portable filled blocks, component-sensitive NeoForge fluid capabilities, cached active-edge graph, GUI and restart conservation | implemented first fluid slice; see FLUIDS.md; underground pipes/external adjacency discovery/temperature remain planned |
 | Thermal/fluid recipes | 3×2 fueled boiler, container-only steam, steam engine, backpressure, fuel remainders, portable full state, menus, sized fluid ingredients/tags and JSON boiling recipes | implemented water → steam → pole-powered factory; full thermal multiblocks and counted mixed item/fluid chemistry implemented; advanced refining/cracking implemented; heat remains planned |
 | Petroleum | finite deposits/pumpjack, basic + three-output advanced oil, heavy/light cracking, lubricant, plastic/sulfur/acid/batteries, physical guarded nozzles, five-cell menu/portable state and finite-source automated examples | implemented petroleum slice; later oil consumers, research gates, sampled distribution and large petrochemical performance remain planned |
-| Research/progression | none; first-slice crafting unlocked by acquiring vanilla iron | planned: teams, labs/packs, tree GUI, recipe locks, infinite research |
+| Research/progression | 3×3×3 labs, red/green packs, shared units/prerequisites, search/dependency UI, production unlocks, repeatable efficiency, SavedData and portable labs | implemented first research slice; six technologies, later science tiers and full progression remain planned |
 | Modules/beacons/quality | none | planned |
 | Railways | none | planned: independent rails, wagons, signals, schedules, routing |
 | Robots | none | planned: logistics/construction/charging/task allocation |
@@ -36,4 +36,4 @@
 | Chunk lifecycle | unload pauses/registers topology; contents survive callbacks; separate-process disk persistence | verified callbacks + disk reload; natural chunk-distance unload scenario still manual |
 | Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; profiled hot-loop/dirty-notification allocations reduced; individual machine/inserter tickers remain |
 | Required 10000/1000/500 load | isolated real dedicated world, all belts move, all producers return results, all inserters deliver; shared grid split/rejoin; item/FE ledger, JSON/JFR and process reload | implemented repeatable server workload; finite prefilled stocks, no connected clients in local result; not a universal TPS/FPS guarantee |
-| Compatibility | standard NeoForge item/FE/fluid capabilities, steam/petroleum buckets, engine FE extraction and recipe tags | partial; JEI/EMI and other mod interoperability untested |
+| Compatibility | standard NeoForge item/FE/fluid capabilities, steam/petroleum buckets, engine FE extraction and recipe tags | partial; optional JEI 19.70.0.469 / EMI 1.1.24 and FTB Teams 2101.1.12 supported; broad mod interoperability remains unverified |

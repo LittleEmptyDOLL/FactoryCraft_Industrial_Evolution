@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:logistics"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 20,
+  "ticks": 80,
+  "repeatable": false,
+  "unlocks": [
+    "factorycraft:advanced_oil_processing",
+    "factorycraft:heavy_oil_cracking",
+    "factorycraft:light_oil_cracking",
+    "factorycraft:lubricant"
+  ],
+  "x": 2,
+  "y": 0
+}

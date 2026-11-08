@@ -1,0 +1,17 @@
+[
+  {
+    "name": "ftb-teams-neoforge-2101.1.12.jar",
+    "url": "https://edge.forgecdn.net/files/9434/081/ftb-teams-neoforge-2101.1.12.jar",
+    "sha256": "b3f33436070b7ae4a706280561f1d2f1d1eb1a089cb13ec9851e99646165aed2"
+  },
+  {
+    "name": "ftb-library-neoforge-2101.1.37.jar",
+    "url": "https://edge.forgecdn.net/files/9008/089/ftb-library-neoforge-2101.1.37.jar",
+    "sha256": "624c2d2d1cbadb946d967e17757bd5b2d129d4d3ed71f2da0c70607d04476ac2"
+  },
+  {
+    "name": "architectury-neoforge-13.0.8.jar",
+    "url": "https://maven.architectury.dev/dev/architectury/architectury-neoforge/13.0.8/architectury-neoforge-13.0.8.jar",
+    "sha256": "2eb06668281be9c57ed6ba8b2ca39b155567063c3096aa94a1c2140694f787df"
+  }
+]

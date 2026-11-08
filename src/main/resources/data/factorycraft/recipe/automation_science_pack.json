@@ -1,0 +1,24 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:automation_science_pack",
+    "count": 1
+  },
+  "ticks": 100,
+  "energy": 16
+}

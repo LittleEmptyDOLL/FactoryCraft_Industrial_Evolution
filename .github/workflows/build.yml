@@ -28,6 +28,11 @@ jobs:
           ./gradlew runGameTestServer
           ./gradlew runGameTestServer
 
+      - name: Optional FTB Teams and recipe-viewer server compatibility
+        run: |
+          python tools/download_optional_mods.py build/optional-runtime
+          ./gradlew runGameTestServer -PwithViewers=true -PftbModsDir=build/optional-runtime
+
       - name: Full factory benchmark and disk reload
         run: |
           ./gradlew runBenchmarkServer

@@ -12,7 +12,7 @@ public final class FactoryMenu extends AbstractContainerMenu {
     public final MachineBlockEntity machine;
     public final ContainerData data;
     public FactoryMenu(int id, Inventory inv, RegistryFriendlyByteBuf buf) {
-        this(id,inv,(MachineBlockEntity)inv.player.level().getBlockEntity(buf.readBlockPos()),new SimpleContainerData(7));
+        this(id,inv,(MachineBlockEntity)inv.player.level().getBlockEntity(buf.readBlockPos()),new SimpleContainerData(8));
     }
     public FactoryMenu(int id, Inventory inv, MachineBlockEntity machine, ContainerData data) {
         super(Content.MENU.get(),id); this.machine=machine;this.data=data;

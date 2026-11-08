@@ -89,6 +89,12 @@ public final class Content {
     public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<factorycraft.recipes.BoilingRecipe>> BOILING_SERIALIZER=SERIALIZERS.register("boiling",factorycraft.recipes.BoilingRecipe.Serializer::new);
     public static final DeferredHolder<RecipeType<?>, RecipeType<FactoryRecipe>> PROCESSING = RECIPE_TYPES.register("processing", () -> new RecipeType<>() { public String toString() { return "factorycraft:processing"; } });
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<FactoryRecipe>> PROCESSING_SERIALIZER = SERIALIZERS.register("processing", FactoryRecipe.Serializer::new);
+    public static final DeferredItem<Item> SCIENCE_RED=ITEMS.registerSimpleItem("automation_science_pack");
+    public static final DeferredItem<Item> SCIENCE_GREEN=ITEMS.registerSimpleItem("logistic_science_pack");
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<LabBlockEntity>> LAB=ENTITIES.register("lab",()->BlockEntityType.Builder.of(LabBlockEntity::new,blocks(FactoryKind.LAB)).build(null));
+    public static final DeferredHolder<MenuType<?>,MenuType<factorycraft.research.ResearchMenu>> RESEARCH_MENU=MENUS.register("research",()->IMenuTypeExtension.create(factorycraft.research.ResearchMenu::new));
+    public static final DeferredHolder<RecipeType<?>,RecipeType<factorycraft.research.TechnologyRecipe>> RESEARCH=RECIPE_TYPES.register("research",()->new RecipeType<>(){});
+    public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<factorycraft.research.TechnologyRecipe>> RESEARCH_SERIALIZER=SERIALIZERS.register("research",factorycraft.research.TechnologyRecipe.Serializer::new);
     static {
         TABS.register("factorycraft", () -> CreativeModeTab.builder().title(Component.translatable("itemGroup.factorycraft"))
                 .icon(() -> new ItemStack(FACTORY.get(FactoryKind.ASSEMBLER).get()))
@@ -102,6 +108,8 @@ public final class Content {
         bus.addListener(Content::capabilities);
     }
     private static void capabilities(RegisterCapabilitiesEvent e) {
+        e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,LAB.get(),(be,side)->be.inventory());
+        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,LAB.get(),(be,side)->be.energy);
         e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,MACHINE.get(),(be,side)->factorycraft.multiblock.AssemblyAccess.fluid(be,be.getBlockPos(),side));
         e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,CASING.get(),(be,side)->be.fluid(side));
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,THERMAL.get(),(be,side)->be.automation());

@@ -16,6 +16,7 @@
   "rewards": {
     "recipes": [
       "factorycraft:craft_assembling_machine",
+      "factorycraft:craft_automation_science_pack",
       "factorycraft:craft_boiler",
       "factorycraft:craft_chemical_plant",
       "factorycraft:craft_coal_generator",
@@ -30,6 +31,7 @@
       "factorycraft:craft_industrial_furnace",
       "factorycraft:craft_inserter",
       "factorycraft:craft_iron_gear",
+      "factorycraft:craft_lab",
       "factorycraft:craft_oil_refinery",
       "factorycraft:craft_pumpjack",
       "factorycraft:craft_splitter",

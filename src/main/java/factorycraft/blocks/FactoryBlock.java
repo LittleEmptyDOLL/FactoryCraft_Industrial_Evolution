@@ -43,6 +43,7 @@ public final class FactoryBlock extends BaseEntityBlock {
         return Shapes.block();
     }
     @Override public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+        if(kind==FactoryKind.LAB)return new LabBlockEntity(p,s);
         if (kind.belt()) return new BeltBlockEntity(p, s);
         if (kind == FactoryKind.INSERTER) return new InserterBlockEntity(p, s);
         if (kind == FactoryKind.POLE) return new PoleBlockEntity(p, s);
@@ -51,6 +52,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     }
     @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState s, BlockEntityType<T> t) {
         if (l.isClientSide) return null;
+        if(kind==FactoryKind.LAB)return createTickerHelper(t,Content.LAB.get(),(a,b,c,d)->d.tick());
         if (kind.belt()) return null;
         if (kind == FactoryKind.INSERTER) return createTickerHelper(t, Content.INSERTER.get(), (a,b,c,d) -> d.tick());
         if (kind.machine()) return createTickerHelper(t, Content.MACHINE.get(), (a,b,c,d) -> d.tick());
@@ -63,7 +65,8 @@ public final class FactoryBlock extends BaseEntityBlock {
     @Override protected InteractionResult useWithoutItem(BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
         if (l.isClientSide) return InteractionResult.SUCCESS;
         if(player.getMainHandItem().is(Content.WRENCH.get()))return useWrench(l,p,player);
-        if (l.getBlockEntity(p) instanceof MachineBlockEntity machine) {
+        if(l.getBlockEntity(p) instanceof LabBlockEntity lab){if(factorycraft.research.ResearchTeams.member(player,lab.scope()))player.openMenu(lab,p);else player.displayClientMessage(Component.translatable("message.factorycraft.research_team_required"),true);}
+        else if (l.getBlockEntity(p) instanceof MachineBlockEntity machine) {
             if(machine.assembly()!=null && !machine.assembly().formed() && !machine.assembly().form())
                 player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);
             player.openMenu(machine,p);
@@ -74,6 +77,12 @@ public final class FactoryBlock extends BaseEntityBlock {
         }
         else player.displayClientMessage(Component.translatable("message.factorycraft.direction", s.getValue(FACING).getName()), true);
         return InteractionResult.CONSUME;
+    }
+    @Override public void setPlacedBy(Level level,BlockPos pos,BlockState state,net.minecraft.world.entity.LivingEntity placer,ItemStack stack) {
+        super.setPlacedBy(level,pos,state,placer,stack);if(level.isClientSide || !(placer instanceof Player player))return;
+        var scope=factorycraft.research.ResearchTeams.resolve(player).orElse("unavailable");var be=level.getBlockEntity(pos);
+        if(be instanceof LabBlockEntity lab && lab.scope().isEmpty())lab.bind(scope);
+        if(be instanceof MachineBlockEntity machine && !stack.has(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA))machine.bindResearch(scope);
     }
     public InteractionResult useWrench(Level level,BlockPos pos,Player player) {
         if(kind.large() || kind.casing())return factorycraft.multiblock.StructureSupport.wrench(level,pos,player);

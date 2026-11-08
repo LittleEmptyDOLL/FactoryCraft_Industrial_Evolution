@@ -3,10 +3,15 @@
 from pathlib import Path
 import json, random, zlib, struct, gzip
 ROOT=Path(__file__).resolve().parents[1]/'src/main/resources'
+# Curated upstream artwork is source material, never a procedural output.
+ARTWORK=set(json.loads(Path(__file__).with_name('item_artwork.json').read_text()))
 def write(name,obj):
  p=ROOT/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
 def png(name,pixels):
  p=ROOT/f'assets/factorycraft/textures/{name}.png';p.parent.mkdir(parents=True,exist_ok=True)
+ if name in ARTWORK:
+  if not p.is_file():raise FileNotFoundError(f'Missing curated artwork: {p}')
+  return
  def chunk(t,d):return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
  raw=b''.join(b'\x00'+bytes(sum(row,())) for row in pixels)
  p.write_bytes(b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',len(pixels[0]),len(pixels),8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b''))
@@ -412,3 +417,39 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  data['command.factorycraft.petrochemistry_space']=('Need a loaded empty 30 × 8 × 16 area beside you.','Рядом нужна загруженная свободная область 30 × 8 × 16.')[index]
  for name,en,ru in [('basic_oil_processing','Basic oil processing','Базовая переработка нефти'),('advanced_oil_processing','Advanced oil processing','Продвинутая переработка нефти'),('heavy_oil_cracking','Heavy oil cracking','Крекинг тяжёлой нефти'),('light_oil_cracking','Light oil cracking','Крекинг лёгкой нефти'),('lubricant','Lubricant','Смазка'),('sulfuric_acid','Sulfuric acid','Серная кислота'),('battery','Battery','Аккумулятор'),('plastic','Plastic','Пластик'),('sulfur','Sulfur','Сера')]:data['recipe.factorycraft.'+name]=(en,ru)[index]
  write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.9 research bootstrap: red packs are hand-craftable; green packs require automation research.
+for name,color in [('automation_science_pack',(194,65,62)),('logistic_science_pack',(71,180,112))]:
+ texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
+craft('automation_science_pack',['GC'],{'G':'factorycraft:iron_gear','C':'factorycraft:copper_plate'})
+craft('lab',['CCC','GAG','PPP'],{'C':'factorycraft:electronic_circuit','G':'factorycraft:iron_gear','A':'factorycraft:assembling_machine','P':'factorycraft:iron_plate'})
+process('automation_science_pack','assembling_machine',[('factorycraft:iron_gear',1),('factorycraft:copper_plate',1)],'automation_science_pack',1,100,16)
+process('logistic_science_pack','assembling_machine',[('factorycraft:transport_belt',1),('factorycraft:inserter',1)],'logistic_science_pack',1,120,20)
+techs=[('automation',[],10,40,False,['logistic_science_pack'],0,0),('logistics',['automation'],15,60,False,[],1,0),('electronics',['automation'],15,60,False,['advanced_circuit'],1,1),('oil_processing',['logistics'],20,80,False,['advanced_oil_processing','heavy_oil_cracking','light_oil_cracking','lubricant'],2,0),('batteries',['oil_processing','electronics'],20,80,False,['sulfuric_acid','battery'],2,1),('lab_efficiency',['batteries'],30,60,True,[],3,1)]
+for name,parents,units,ticks,repeat,unlocks,x,y in techs:
+ packs={'factorycraft:automation_science_pack':1}
+ if parents:packs['factorycraft:logistic_science_pack']=1
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:research','prerequisites':['factorycraft:'+p for p in parents],'packs':packs,'units':units,'ticks':ticks,'repeatable':repeat,'unlocks':['factorycraft:'+p for p in unlocks],'x':x,'y':y})
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text())
+ values={'block.factorycraft.lab':('Laboratory','Лаборатория'),'item.factorycraft.automation_science_pack':('Automation Science Pack','Автоматизационный научный пакет'),'item.factorycraft.logistic_science_pack':('Logistic Science Pack','Логистический научный пакет'),'gui.factorycraft.research_search':('Search technologies','Поиск технологий'),'gui.factorycraft.science':('Science packs','Научные пакеты'),'gui.factorycraft.lab_work':('Unit work: %s t','Работа единицы: %s т'),'gui.factorycraft.requires':('Requires: %s','Требуется: %s'),'tooltip.factorycraft.lab':('Powered team research. One item forms 3×3×3; insert science packs and select a technology.','Исследования команды. Один предмет создаёт 3×3×3; подайте научные пакеты и выберите технологию.')}
+ for name,en,ru in [('automation','Automation','Автоматизация'),('logistics','Logistics','Логистика'),('electronics','Electronics','Электроника'),('oil_processing','Advanced oil processing','Переработка нефти'),('batteries','Batteries','Аккумуляторы'),('lab_efficiency','Lab efficiency (repeatable)','Эффективность лабораторий')]:values['technology.factorycraft.'+name]=(en,ru)
+ data.update({k:v[index] for k,v in values.items()});write(f'assets/factorycraft/lang/{lang}.json',data)
+
+write('data/factorycraft/loot_table/blocks/lab.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:lab'}]}]})
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text());data['gui.factorycraft.research_drag']=('Right-drag to pan','ПКМ: двигать дерево')[index]
+ for name in ['electric_furnace','assembling_machine','oil_refinery','chemical_plant','boiler','lab']:data['category.factorycraft.'+name]=data['block.factorycraft.'+name]
+ write(f'assets/factorycraft/lang/{lang}.json',data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text());data['command.factorycraft.research_team_unavailable']=('Research team is unavailable.','Команда исследований недоступна.')[index];data['message.factorycraft.research_team_required']=('This laboratory belongs to another team.','Лаборатория принадлежит другой команде.')[index];write(f'assets/factorycraft/lang/{lang}.json',data)
+
+for lang in ['en_us','ru_ru']:
+ p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text())
+ for name in ['electric_furnace','assembling_machine','oil_refinery','chemical_plant','boiler','lab']:data['emi.category.factorycraft.'+name]=data['block.factorycraft.'+name]
+ write(f'assets/factorycraft/lang/{lang}.json',data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(p.read_text());data['gui.factorycraft.needs_research']=('Research needed','Исследование')[index];data['gui.factorycraft.petroleum_status_5']=('Research needed','Нужно исследование')[index];write(f'assets/factorycraft/lang/{lang}.json',data)

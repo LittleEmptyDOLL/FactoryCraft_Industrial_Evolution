@@ -1,3 +1,11 @@
+# 0.9.0 — shared research and recipe viewers (8 November 2026)
+
+* Added a centered one-item 3×3×3 laboratory with original geometry, animated vessels, FE/science inventories and a searchable dependency graph. Six datapack technologies, red/green science production and repeatable lab efficiency form the first research progression.
+* Research is shared through optional FTB Teams; without it vanilla scoreboard teams or individual players own progress. Fixed provider-prefixed bindings persist in overworld SavedData and portable labs; party changes never copy progress. Server checks protect packets and ordinary inventory clicks. Concurrent labs commit each shared unit before spending its packs.
+* New player-placed machines respect technology unlocks for green science, advanced circuits, advanced oil/cracking/lubricant and acid/batteries. Existing/admin machines retain their legacy operation and exact saved benchmark hash. `/factorycraft researchworks` builds actual automatic red-science production from finite gears/plates.
+* Added optional isolated EMI/JEI plugins for native processing, chemistry, boiling and research recipes, with alternatives, counts, component-sensitive fluids, catalysts, energy/time and research requirements. Added independent runtime profiles and hash-checked optional FTB test dependencies; jars are not bundled.
+* Validation: 101 JUnit / 147 required GameTests, separate-process research persistence, actual FTB/viewer dedicated profile, preserved full-factory checkpoint and real graphical clients. See VALIDATION.md for evidence and limits; full research/modules/beacons and automatic viewer recipe transfer remain future work.
+
 # 0.8.0 — advanced refining and usable chemistry (8 November 2026)
 
 * Added heavy/light oil, lubricant and sulfuric acid with native buckets/original assets, plus batteries. Six new JSON recipes extend basic oil/plastic/sulfur: advanced refining, both cracking steps, lubricant, acid and batteries.

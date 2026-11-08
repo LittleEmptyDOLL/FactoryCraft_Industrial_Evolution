@@ -1,8 +1,12 @@
-# FactoryCraft: Industrial Evolution — 0.8.0
+# FactoryCraft: Industrial Evolution — 0.9.0
 
 Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original procedural industrial textures. English and Russian UI.
 
 Это играбельное ядро этапов 1–2 и начало энергетики и жидкостной логистики этапа 3, а не законченная Factorio/Space Age. Мод добывает конечную руду, питает машины через столбы и автоматически производит пластины, шестерни, провода и схемы. Двухполосные конвейеры отображают предметы без создания Entity, останавливаются при заторах и продолжают движение после освобождения выхода. Содержимое и прогресс сохраняются.
+
+В 0.9.0 работают **лаборатории 3×3×3, два научных пакета и командные исследования**. При установленном FTB Teams используется его команда, иначе ванильная `/team`, иначе личный прогресс. Дерево имеет зависимости, поиск, выбор проекта и повторяемое улучшение энергозатрат лабораторий. `/factorycraft researchworks` строит автоматическую линию науки. Новые машины игрока учитывают открытие продвинутых рецептов; прежние сохранённые фабрики продолжают работать.
+
+Добавлены необязательные **EMI и JEI**: предметные, химические, паровые рецепты и исследования, количества, жидкости с компонентами, машины-катализаторы и затраты. Просмотрщики не требуются для работы мода. См. [RESEARCH.md](RESEARCH.md) и [RECIPE_VIEWERS.md](RECIPE_VIEWERS.md).
 
 В 0.8.0 доступны **продвинутая переработка нефти**, тяжёлая/лёгкая нефть, оба шага крекинга, смазка, серная кислота и аккумуляторы. НПЗ получил третий настоящий выход спереди слева, отмеченный **3**, без переноса прежних портов и жидкостей. Пять ёмкостей и именованные рецепты видны в меню. `/factorycraft petrochemistry` строит рабочую линию **конечная нефть + вода + пластины → сера → кислота → аккумуляторы**, с отводом побочных продуктов; нужна свободная загруженная область **30×8×16**. См. [PETROLEUM.md](PETROLEUM.md).
 
@@ -16,7 +20,7 @@ Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original proc
 
 ## Установка
 
-Установите Minecraft 1.21.1 и NeoForge 21.1.252, положите `factorycraft-0.8.0.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
+Установите Minecraft 1.21.1 и NeoForge 21.1.252, положите `factorycraft-0.9.0.jar` в `mods/` клиента и сервера. Новые руды генерируются в новых чанках обычного мира. Для сборки нужен полный JDK 21, одного JRE недостаточно.
 
 ```sh
 ./gradlew build
@@ -46,10 +50,13 @@ Minecraft **1.21.1**, NeoForge **21.1.252**, **Java JDK 21**. MIT; original proc
 
 ## English
 
+0.9.0 adds full-size labs, automation/logistic science, shared team research, prerequisite/search UI, persistent units and repeatable lab-efficiency research. Optional FTB Teams has priority; vanilla scoreboard teams and personal UUIDs are the fallback when absent. Team/provider changes never silently copy progress. New player-owned machines enforce technology production locks; legacy factories/admin fixtures stay compatible. Optional EMI/JEI expose all native processing, chemistry, boiling and research definitions without requiring either viewer. See RESEARCH.md and RECIPE_VIEWERS.md.
+
+
 0.8.0 adds advanced oil processing (crude + water → gas/light/heavy), both cracking recipes, lubricant, sulfuric acid and batteries. The full-size refinery gains a fifth persistent cell and a real front-left third output, retaining all old ports/contents. Five-cell menus show localized recipe names and port tooltips. `/factorycraft petrochemistry` builds a finite powered oil-to-battery line with native water intake, inserter-fed plates/sulfur and isolated byproduct storage; no intermediate chemicals are injected. Old basic processing and 0.6.0+ data remain supported. See PETROLEUM.md.
 
 0.7.0 adds original unified chunk-baked geometry for all 13 large machine types, 3D item models, marked fluid nozzles and activity-driven moving components. Shapes use the existing MachineProfile dimensions; collision still reserves the complete volume, including visible gaps. Mesh fragments render with their own chunks; controller-only animated components do not own simulation. See MACHINE_VISUALS.md.
 
 The 2×1 splitter owns two independent physical tracks/four lanes (16 carriers), two forward outputs, balancing, blocked-output fallback and track-local inserter ports. The independent kernel sustains 30 items/s in 24 shifted saturated basic-belt scenarios; native inventory/inserter cadence can limit a real line. Splitter schema 3 reads old two-lane data without inventing new carriers; ordinary belts remain schema 2. See SPLITTERS.md.
 
-Large configurable surface veins, centered item placement, protected one-item multiblocks and portable inventories/fluids/FE/progress remain. Existing 0.6.0/0.6.1 structures and finite stocks are preserved; worlds older than 0.6.0 require a fresh start. Automatic iron/components, water/steam/power and oil/plastic chains remain playable with EN/RU menus. Research, railways, robots, combat and space are still planned. Build and launch with JDK21 using the commands above.
+Large configurable surface veins, centered item placement, protected one-item multiblocks and portable inventories/fluids/FE/progress remain. Existing 0.6.0/0.6.1 structures and finite stocks are preserved; worlds older than 0.6.0 require a fresh start. Automatic iron/components, water/steam/power and oil/plastic chains remain playable with EN/RU menus. Team research/labs and optional EMI/JEI are implemented in 0.9.0; railways, robots, combat and space remain planned. Build and launch with JDK21 using the commands above.

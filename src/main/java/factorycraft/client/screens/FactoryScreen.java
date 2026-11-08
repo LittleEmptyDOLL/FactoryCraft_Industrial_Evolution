@@ -30,6 +30,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
         g.drawString(font,menu.data.get(2)+" FE",18,22,0xff56d7d9,false);
         if(menu.machine.kind()==FactoryKind.INDUSTRIAL_FURNACE)
             g.drawString(font,font.plainSubstrByWidth(Component.translatable("gui.factorycraft.assembly."+menu.data.get(6)).getString(),90),100,22,menu.data.get(6)==2 ? 0xff71df9a:0xffffba55,false);
+        if(menu.data.get(7)!=0)g.drawString(font,Component.translatable("gui.factorycraft.needs_research"),100,22,0xffffba55,false);
         var rs=menu.machine.recipes();int index=menu.data.get(4);
         Component label=index>0 && index<=rs.size() ? rs.get(index-1).value().result().getHoverName() : Component.translatable("gui.factorycraft.auto");
         g.drawString(font,font.plainSubstrByWidth(label.getString(),115),58,103,0xffeeeeee,false);

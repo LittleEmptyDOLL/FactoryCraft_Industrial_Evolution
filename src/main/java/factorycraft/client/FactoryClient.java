@@ -18,7 +18,7 @@ public final class FactoryClient {
         for(var p:factorycraft.multiblock.MachineProfile.values())if(p!=factorycraft.multiblock.MachineProfile.TANK && p!=factorycraft.multiblock.MachineProfile.PUMP && p!=factorycraft.multiblock.MachineProfile.SPLITTER)
             event.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"block/machine/"+p.id+"_moving")));
     }
-    @SubscribeEvent public static void menus(RegisterMenuScreensEvent e) { e.register(Content.PETROLEUM_MENU.get(),factorycraft.client.screens.PetroleumScreen::new);e.register(Content.THERMAL_MENU.get(),factorycraft.client.screens.ThermalScreen::new);e.register(Content.MENU.get(),FactoryScreen::new);e.register(Content.FLUID_MENU.get(),factorycraft.client.screens.FluidScreen::new); }
+    @SubscribeEvent public static void menus(RegisterMenuScreensEvent e) { e.register(Content.RESEARCH_MENU.get(),factorycraft.client.screens.ResearchScreen::new);e.register(Content.PETROLEUM_MENU.get(),factorycraft.client.screens.PetroleumScreen::new);e.register(Content.THERMAL_MENU.get(),factorycraft.client.screens.ThermalScreen::new);e.register(Content.MENU.get(),FactoryScreen::new);e.register(Content.FLUID_MENU.get(),factorycraft.client.screens.FluidScreen::new); }
     @SubscribeEvent public static void fluidExtensions(net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
         event.registerFluidType(new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
             public net.minecraft.resources.ResourceLocation getStillTexture() { return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"block/steam"); }
@@ -34,6 +34,7 @@ public final class FactoryClient {
         },kind.type.get());
     }
     @SubscribeEvent public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
+        e.registerBlockEntityRenderer(Content.LAB.get(),MachineAnimationRenderer::new);
         e.registerBlockEntityRenderer(Content.MACHINE.get(),MachineAnimationRenderer::new);
         e.registerBlockEntityRenderer(Content.THERMAL.get(),MachineAnimationRenderer::new);
         e.registerBlockEntityRenderer(Content.BELT.get(),BeltRenderer::new);

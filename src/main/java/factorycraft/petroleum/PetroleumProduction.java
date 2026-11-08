@@ -142,13 +142,13 @@ public final class PetroleumProduction {
         for(int i=0;i<8;i++) { var s=machine.items.getStackInSlot(i);result.add(new BatchInventory.Stack<>(s.isEmpty() ? null:new ItemKey(s),s.getCount(),s.isEmpty() ? 64:s.getMaxStackSize())); }return result;
     }
     private boolean produce() {
-        refreshRecipes();List<BatchInventory.Stack<ItemKey>> before=null;Cached chosen=null;List<BatchInventory.Stack<ItemKey>> itemPlan=null;boolean blocked=false;
+        refreshRecipes();List<BatchInventory.Stack<ItemKey>> before=null;Cached chosen=null;List<BatchInventory.Stack<ItemKey>> itemPlan=null;boolean blocked=false,locked=false;
         for(int i=0;i<recipes.size();i++) {
             var cached=recipes.get(i);if(!selectedId.isEmpty() && !selectedId.equals(cached.holder.id().toString()))continue;var recipe=cached.holder.value();boolean matches=true;
             for(int f=0;f<recipe.fluids().size();f++)if(!recipe.fluids().get(f).test(stored(f))) { matches=false;break; }
-            if(!matches)continue;if(before==null)before=inventory();var plan=BatchInventory.plan(before,cached.items,cached.outputs);if(plan!=null) { chosen=cached;itemPlan=plan;break; }else if(BatchInventory.plan(before,cached.items,List.of())!=null)blocked=true;
+            if(!matches)continue;if(!machine.recipeAllowed(cached.holder.id())){locked=true;continue;}if(before==null)before=inventory();var plan=BatchInventory.plan(before,cached.items,cached.outputs);if(plan!=null) { chosen=cached;itemPlan=plan;break; }else if(BatchInventory.plan(before,cached.items,List.of())!=null)blocked=true;
         }
-        if(chosen==null) { status=blocked ? 2:1;return false; }
+        if(chosen==null) { status=locked ? 5:blocked ? 2:1;return false; }
         preview=recipes.indexOf(chosen)+1;var recipe=chosen.holder.value();duration=recipe.ticks();
         for(int i=0;i<chosen.fluids.size();i++)if(cells.get(i+2).space()<chosen.volumes.get(i) || !cells.get(i+2).accepts(chosen.fluids.get(i))) { status=2;return false; }
         if(!machine.power.spend(recipe.energy())) { status=3;return false; }
