@@ -133,3 +133,9 @@ The new-world fixture expands every producer and generator to its real 3×3×3 v
 ## 0.6.1 compatibility run
 
 The unchanged 0.6.0 full checkpoint passes exact pre-tick hash verification and resumed resource/identity audits on 0.6.1: 10000 belts, 1000 producers, 500 inserters and 32500 parts. Centered item targeting leaves existing controller/part positions untouched. See [reload evidence](docs/benchmarks/v061-full-verify.json). This is a compatibility check, not a new timing comparison; CI additionally runs a fresh full factory and reload.
+
+## 0.7.0 compatibility and full rerun
+
+The preserved 0.6.0/0.6.1 full checkpoint passes exact pre-tick state verification on 0.7.0 (`docs/benchmarks/v070-compat-verify.json`). It was moved intact to a separate workspace backup before preparing a fresh marked benchmark world. Full measurement and independent reload pass (`v070-full-measure.json`, `v070-full-verify.json`): all 10000 belts, 1000 producers and 500 inserters work, with 32500 parts and exact material/FE/identity preservation. No ordinary world was touched or compact fixture substituted.
+
+In a local two-processor run concurrent with Gradle/GameTests, 600 measured ticks averaged 66.874 ms, p95 167.252 ms, with 14.80 observed TPS and zero clients. This misses sustained 20 TPS and is not comparable to an isolated previous run. Four-lane throughput is separately proven by the kernel tests; the full fixture contains ordinary belts, not a huge splitter grid. These reports establish workload liveness/conservation/reload, not graphical performance, network bandwidth or a universal timing target.

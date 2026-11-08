@@ -27,6 +27,11 @@ public final class MachineFootprintGameTests {
             h.assertTrue(player.getMainHandItem().useOn(context).consumesAction() && player.getMainHandItem().getCount()==1,"one-item formation failed: "+id+" "+direction);
             var controller=preview.anchor();h.assertTrue(preview.center().equals(anchor),"preview is not centered on selected base cell");var owner=AssemblyAccess.owner(h.getLevel().getBlockEntity(controller));h.assertTrue(owner!=null && owner.assembly().formed(),"controller failed to form");
             for(var cell:preview.cells())h.assertTrue(cell.equals(controller) || h.getLevel().getBlockEntity(cell) instanceof CasingBlockEntity part && part.boundTo(controller,owner.assembly().identity()),"preview does not match actual parts");
+            for(var cell:preview.cells())if(!cell.equals(controller)) {
+                var data=h.getLevel().getBlockEntity(cell).getModelData().get(MachineModelData.CELL);var delta=cell.subtract(controller);var right=direction.getClockWise();
+                int r=delta.getX()*right.getStepX()+delta.getZ()*right.getStepZ(),back=-delta.getX()*direction.getStepX()-delta.getZ()*direction.getStepZ();
+                h.assertTrue(data!=null && data.profile()==profile && data.right()==r && data.up()==delta.getY() && data.back()==back,"part mesh coordinates disagree with rotated placement");
+            }
             for(var cell:preview.cells())h.getLevel().getBlockEntity(cell).onLoad();h.assertTrue(owner.assembly().ready(),"full structure failed availability check");
             var part=(CasingBlockEntity)h.getLevel().getBlockEntity(owner.assembly().positions().getLast());part.onChunkUnloaded();h.assertTrue(!owner.assembly().ready(),"unloaded cell did not suspend machine");part.onLoad();h.assertTrue(owner.assembly().ready(),"reloaded cell did not resume machine");
             owner.assembly().removeWhole(false);for(var cell:preview.cells())h.assertTrue(h.getLevel().getBlockState(cell).isAir(),"demolition left a generated block");

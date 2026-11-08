@@ -38,10 +38,12 @@ public final class InserterBlockEntity extends FactoryBlockEntity {
             if (phase > 0) { phase--; markPersistentState(); if (phase == 0) sync(); return; }
             var source = level.getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, facing);
             if (source == null || target == null) return;
-            // Belts are sampled at the front-most available carrier in either lane.
+            // Sample only the physical source track, including a splitter part.
+            var belt=factorycraft.simulation.BeltSimulation.at(level,sourcePos);
+            int track=belt==null ? -1:belt.trackAt(sourcePos);
             for (int s = 0; s < source.getSlots(); s++) {
-                if (level.getBlockEntity(sourcePos) instanceof BeltBlockEntity belt) {
-                    var carriers=belt.lane(s/4).carriers();
+                if (belt!=null && track>=0) {
+                    var carriers=belt.lane(track*2+s/4).carriers();
                     if(s%4>=carriers.size() || carriers.get(s%4).position()<.75)continue;
                 }
                 var candidate = source.extractItem(s, 1, true);

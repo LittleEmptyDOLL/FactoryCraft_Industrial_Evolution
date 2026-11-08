@@ -11,6 +11,13 @@ import net.neoforged.neoforge.client.event.*;
 
 @EventBusSubscriber(modid=FactoryCraft.ID,value=Dist.CLIENT)
 public final class FactoryClient {
+    @SubscribeEvent public static void geometry(ModelEvent.RegisterGeometryLoaders event) {
+        event.register(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"machine"),new factorycraft.client.models.MachineGeometryLoader());
+    }
+    @SubscribeEvent public static void movingModels(ModelEvent.RegisterAdditional event) {
+        for(var p:factorycraft.multiblock.MachineProfile.values())if(p!=factorycraft.multiblock.MachineProfile.TANK && p!=factorycraft.multiblock.MachineProfile.PUMP && p!=factorycraft.multiblock.MachineProfile.SPLITTER)
+            event.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"block/machine/"+p.id+"_moving")));
+    }
     @SubscribeEvent public static void menus(RegisterMenuScreensEvent e) { e.register(Content.PETROLEUM_MENU.get(),factorycraft.client.screens.PetroleumScreen::new);e.register(Content.THERMAL_MENU.get(),factorycraft.client.screens.ThermalScreen::new);e.register(Content.MENU.get(),FactoryScreen::new);e.register(Content.FLUID_MENU.get(),factorycraft.client.screens.FluidScreen::new); }
     @SubscribeEvent public static void fluidExtensions(net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
         event.registerFluidType(new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
@@ -27,6 +34,8 @@ public final class FactoryClient {
         },kind.type.get());
     }
     @SubscribeEvent public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
+        e.registerBlockEntityRenderer(Content.MACHINE.get(),MachineAnimationRenderer::new);
+        e.registerBlockEntityRenderer(Content.THERMAL.get(),MachineAnimationRenderer::new);
         e.registerBlockEntityRenderer(Content.BELT.get(),BeltRenderer::new);
         e.registerBlockEntityRenderer(Content.INSERTER.get(),InserterRenderer::new);
     }

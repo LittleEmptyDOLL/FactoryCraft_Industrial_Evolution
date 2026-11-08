@@ -67,8 +67,8 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Replace temporary tiled machine shells with original unified models and explicit nozzle markings while retaining exact MachineProfile collision/placement volumes and one-item ownership. Complete four physical splitter lanes/full two-belt throughput (currently two shared lanes); keep two forward exits and add blocked/loaded/serialized conservation tests. These are polish/completion of the user's current dimensions request, not reasons to shrink footprints.
-2. Continue stage 3 advanced refining: water + crude → heavy/light oil + gas, then cracking, lubricant, acid/batteries. Reserve every output; add a third physical outlet on the 5×5 refinery. After this, team research/labs and recipe gating.
+1. Continue stage 3 advanced refining: water + crude → heavy/light oil + gas, then cracking, lubricant, acid/batteries. Reserve every output; add a third physical outlet on the 5×5 refinery. Keep basic refining readable and usable, extend native codecs/menus/ports without losing stored fluids. Add blocked third-output, full material ledger, portable and separate-process tests.
+2. After chemistry, implement team research/labs/science packs and recipe gating with a usable bilingual research interface. Keep underground/priority/filter belts and curved-path polish visible as incomplete work in FEATURE_MATRIX.md.
 
 
 ## Delivered in 0.4.0 — steam power
@@ -95,4 +95,12 @@ User priority: generate large surface resource fields with configurable size/spa
 
 Completed deterministic organic surface veins with COMMON radius/stock/spacing configuration, per-resource datapack overrides, chunk-local generation writes and callback-free initial stock. Added centered base targeting/preview while preserving schema-3 controller positions and portable NBT. 87 JUnit and 115 GameTests cover shapes, stock ranges, connected fields/seams, native generation, codecs, existing factories, all 13 profiles/facings, obstructed/unloaded corners, protection, portable state and separate-process reserve persistence. Existing full benchmark checkpoint remains valid. See VALIDATION.md for client/natural-world checks.
 
-Next concrete task: retain these geometry and geology rules while replacing temporary tiled machine shells with original unified models/nozzle markings; complete splitter four-lane throughput and regression tests, then continue the advanced-refining/research roadmap above. Do not revert to corner-based player targeting or small one-drop ore blobs.
+0.6.1 continuation is delivered in 0.7.0 below. Retain centered targeting, large finite fields and one-item full structures in subsequent milestones.
+
+## Delivered milestone — 0.7.0 unified machines and full splitter tracks
+
+Original geometry now covers all 13 profiles through native per-cell chunk meshes, with activity-driven moving components, matching 3D items and physically placed nozzle markings. Surface splitting preserves UVs and emits no artificial internal caps. Static bodies render independently of the controller chunk. Full collision volumes, centered placement and schema-3 assembly identities remain.
+
+The splitter now owns two physical tracks/four lanes, each independently persistent; both native inputs and forward outputs work, with balancing/backpressure and local inserter pickup. Reservation-aware approach routing sustains two full basic belts across 24 input phases without discarding or overlapping carriers. Legacy two-lane saves and full portable state remain readable; cached unloaded ports and part-track pickup were fixed. Added a finite-input admin showroom. See VALIDATION.md, MACHINE_VISUALS.md and SPLITTERS.md for checks and limitations.
+
+Next session: implement priority 1 above (advanced refining with a third real outlet), then research. Do not reset existing diagnostic checkpoints, reduce footprints or replace finite resources with one-drop ores. Filters/priority/underground belts, exact curved full-flow paths, final art, actual two-network-client tests and the later roadmap remain incomplete.

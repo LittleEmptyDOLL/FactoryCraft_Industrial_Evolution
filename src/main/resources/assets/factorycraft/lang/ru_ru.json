@@ -31,7 +31,7 @@
   "tooltip.factorycraft.industrial_furnace": "Один предмет создаёт печь 3×3×3. Скорость ×2; тот же расход FE на результат.",
   "tooltip.factorycraft.machine_casing": "Часть мультиблока. Общий с контроллером инвентарь и энергия; своих предметов нет.",
   "tooltip.factorycraft.belt": "Две полосы. Движение по стрелке; закрытый выход создаёт затор.",
-  "tooltip.factorycraft.splitter": "Два передних выхода, чередование предметов. Ширина 2 блока.",
+  "tooltip.factorycraft.splitter": "Два входа и выхода, четыре полосы. Каждая половина имеет свой предметный порт.",
   "tooltip.factorycraft.inserter": "Забирает сзади, кладёт спереди. Механический; один предмет за цикл.",
   "tooltip.factorycraft.electric_drill": "Бур 3×3. Добывает запас залежей в области 5×5 на глубину до 8 блоков.",
   "tooltip.factorycraft.electric_furnace": "Переплавляет необработанное железо и медь в пластины. Нужна энергия.",
@@ -125,5 +125,8 @@
   "command.factorycraft.full_size_space": "Нужна загруженная свободная область 30 × 8 × 13 рядом с вами.",
   "command.factorycraft.full_size_built": "Построено: %s, координаты %s",
   "preview.factorycraft.valid": "%s × %s × %s — можно установить",
-  "preview.factorycraft.blocked": "%s × %s × %s — занятых ячеек: %s"
+  "preview.factorycraft.blocked": "%s × %s × %s — занятых ячеек: %s",
+  "command.factorycraft.showroom_space": "Нужна загруженная свободная область 32 × 6 × 32.",
+  "command.factorycraft.showroom_built": "Выставка машин с конечными запасами построена: %s",
+  "tooltip.factorycraft.fluid_nozzles": "Синие патрубки — вход, оранжевые — выход, бирюзовые — двусторонние."
 }

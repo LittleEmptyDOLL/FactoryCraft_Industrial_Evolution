@@ -31,7 +31,7 @@
   "tooltip.factorycraft.industrial_furnace": "One item builds a 3×3×3 furnace. Twice the speed; same FE per result.",
   "tooltip.factorycraft.machine_casing": "Part of a multiblock. Shares the controller inventory and power; stores no items.",
   "tooltip.factorycraft.belt": "Two lanes. Items follow the arrow; stopped output causes a jam.",
-  "tooltip.factorycraft.splitter": "Alternates between two forward outputs. Two blocks wide.",
+  "tooltip.factorycraft.splitter": "Two inputs/outputs and four lanes. Each physical track has its own item port.",
   "tooltip.factorycraft.inserter": "Picks up behind, delivers ahead. Mechanical; one item per cycle.",
   "tooltip.factorycraft.electric_drill": "3×3 drill. Extracts finite deposits in a 5×5 mining area, up to 8 blocks below.",
   "tooltip.factorycraft.electric_furnace": "Smelts raw iron/copper into plates. Requires power.",
@@ -125,5 +125,8 @@
   "command.factorycraft.full_size_space": "Need a loaded, empty 30 × 8 × 13 area beside you.",
   "command.factorycraft.full_size_built": "Built %s at %s",
   "preview.factorycraft.valid": "%s × %s × %s — ready to place",
-  "preview.factorycraft.blocked": "%s × %s × %s — blocked cells: %s"
+  "preview.factorycraft.blocked": "%s × %s × %s — blocked cells: %s",
+  "command.factorycraft.showroom_space": "Need a loaded, clear 32 × 6 × 32 area.",
+  "command.factorycraft.showroom_built": "Machine showroom with finite supplies built at %s",
+  "tooltip.factorycraft.fluid_nozzles": "Blue nozzles: input; orange: output; teal: bidirectional."
 }

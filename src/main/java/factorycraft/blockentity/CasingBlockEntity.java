@@ -18,6 +18,12 @@ import java.util.UUID;
 public final class CasingBlockEntity extends FactoryBlockEntity {
     private BlockPos anchor;private UUID identity;private boolean loaded;
     public CasingBlockEntity(BlockPos pos,BlockState state) { super(Content.CASING.get(),pos,state); }
+    @Override public net.neoforged.neoforge.client.model.data.ModelData getModelData() {
+        if(anchor==null)return net.neoforged.neoforge.client.model.data.ModelData.EMPTY;
+        var profile=getBlockState().getValue(FactoryBlock.PROFILE);var facing=getBlockState().getValue(FactoryBlock.FACING);var delta=worldPosition.subtract(anchor);var right=facing.getClockWise();
+        int r=delta.getX()*right.getStepX()+delta.getZ()*right.getStepZ(),back=-delta.getX()*facing.getStepX()-delta.getZ()*facing.getStepZ();
+        return net.neoforged.neoforge.client.model.data.ModelData.builder().with(MachineModelData.CELL,new MachineModelData.Cell(profile,r,delta.getY(),back)).build();
+    }
     public boolean loaded() { return loaded && !isRemoved(); }
     public boolean virtualPart() { return true; }
     public boolean boundTo(BlockPos pos,UUID id) { return anchor!=null && anchor.equals(pos) && identity!=null && identity.equals(id); }
@@ -32,7 +38,11 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
     public ItemStack controllerItem() { var owner=genericForRemoval();return owner==null ? ItemStack.EMPTY:new ItemStack(owner.factoryEntity().getBlockState().getBlock().asItem()); }
     public boolean availableFor(BlockPos pos,UUID oldId) { if(anchor==null || boundTo(pos,oldId))return true;repairOrphan();return anchor==null; }
     public void bind(BlockPos pos,UUID id,boolean generated) { anchor=pos.immutable();identity=id; }
-    public void refreshAppearance() { if(level!=null && !level.isClientSide) { level.invalidateCapabilities(worldPosition);level.setBlock(worldPosition,getBlockState().setValue(FactoryBlock.ACTIVE,true),3);sync(); } }
+    public void refreshAppearance() { if(level!=null && !level.isClientSide) {
+        var owner=genericForRemoval();var state=getBlockState().setValue(FactoryBlock.ACTIVE,true);
+        if(owner!=null)state=state.setValue(FactoryBlock.PROFILE,owner.assembly().profile()).setValue(FactoryBlock.FACING,owner.factoryEntity().getBlockState().getValue(FactoryBlock.FACING));
+        level.invalidateCapabilities(worldPosition);level.setBlock(worldPosition,state,3);sync();
+    } }
     public void unbind() { anchor=null;identity=null; }
     private void repairOrphan() {
         if(anchor==null || level==null || level.isClientSide || !level.hasChunkAt(anchor))return;
@@ -43,7 +53,7 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
     public void onChunkUnloaded() { loaded=false;suspendOwner();super.onChunkUnloaded(); }
     public void setRemoved() { loaded=false;suspendOwner();super.setRemoved(); }
     public void dropContents() { var owner=genericForRemoval();if(owner!=null)owner.assembly().removeWhole(true); }
-    private IItemHandler items(Direction side) { var owner=genericOwner();return owner==null ? null:AssemblyAccess.items(owner,side); }
+    private IItemHandler items(Direction side) { var owner=genericOwner();return owner==null ? null:owner instanceof BeltBlockEntity belt ? belt.inventoryAt(worldPosition):AssemblyAccess.items(owner,side); }
     private final IItemHandler itemPort=new IItemHandler() {
         public int getSlots() { var h=items(null);return h==null ? 0:h.getSlots(); }
         public ItemStack getStackInSlot(int i) { var h=items(null);return h==null ? ItemStack.EMPTY:h.getStackInSlot(i).copy(); }
@@ -73,5 +83,5 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
         public FluidStack drain(int n,FluidAction a) { var p=port();return p==null ? FluidStack.EMPTY:p.drain(n,a); }
     }; }
     protected void saveAdditional(CompoundTag tag,HolderLookup.Provider r) { super.saveAdditional(tag,r);tag.putInt("Schema",3);if(anchor!=null)tag.putLong("Controller",anchor.asLong());if(identity!=null)tag.putUUID("AssemblyIdentity",identity); }
-    protected void loadAdditional(CompoundTag tag,HolderLookup.Provider r) { super.loadAdditional(tag,r);anchor=tag.contains("Controller") ? BlockPos.of(tag.getLong("Controller")):null;identity=tag.hasUUID("AssemblyIdentity") ? tag.getUUID("AssemblyIdentity"):null; }
+    protected void loadAdditional(CompoundTag tag,HolderLookup.Provider r) { super.loadAdditional(tag,r);anchor=tag.contains("Controller") ? BlockPos.of(tag.getLong("Controller")):null;identity=tag.hasUUID("AssemblyIdentity") ? tag.getUUID("AssemblyIdentity"):null;if(level!=null && level.isClientSide) { requestModelDataUpdate();level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3); } }
 }

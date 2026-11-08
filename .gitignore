@@ -42,3 +42,6 @@ repo/
 # Persistent integration fixtures are separate from the ordinary dev world.
 run-gametest/
 run-benchmark/
+
+# Python resource generator caches
+__pycache__/

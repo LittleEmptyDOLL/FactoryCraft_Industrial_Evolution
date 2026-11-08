@@ -46,7 +46,7 @@ public final class FactoryGameTests {
         BeltBlockEntity right=place(h,FactoryKind.BELT,p(4,4),Direction.EAST);
         seed(a,8);
         h.runAfterDelay(100,()->{
-            h.assertTrue(count(a)==0 && count(forward)==4 && count(right)==4,"splitter must deliver 4 items to each output");h.succeed();
+            h.assertTrue(count(a)==0 && count(forward)==4 && count(right)==4,"splitter must deliver 4 items to each output: splitter="+count(a)+", first="+count(forward)+", second="+count(right));h.succeed();
         });
     }
     @GameTest(template="empty",timeoutTicks=400)
@@ -223,7 +223,7 @@ public final class FactoryGameTests {
         var restored=(BeltBlockEntity)BlockEntity.loadStatic(original.getBlockPos(),original.getBlockState(),legacy,r);
         var modern=restored.saveWithFullMetadata(r);
         h.assertTrue(count(restored)==8 && restored.lane(1).carriers().getLast().positionUnits()==24,"legacy lane migration changed contents");
-        h.assertTrue(modern.getInt("Schema")==2 && modern.getBoolean("Alternate") && modern.getBoolean("AlternateRight"),"legacy splitter preference not migrated");
+        h.assertTrue(modern.getInt("Schema")==3 && modern.getBoolean("Alternate") && modern.getBoolean("AlternateRight"),"legacy splitter preference not migrated");
         h.succeed();
     }
 

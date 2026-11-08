@@ -23,6 +23,7 @@ public final class FactoryCommands {
     @SubscribeEvent public static void register(RegisterCommandsEvent event) {
         var root=Commands.literal("factorycraft").requires(s->s.hasPermission(2));
         for(String name:new String[]{"demo","smelter","waterworks","steamworks","oilworks"})root.then(Commands.literal(name).executes(c->build(c.getSource(),name)));
+        root.then(Commands.literal("showroom").executes(c->factorycraft.diagnostics.MachineShowcase.build(c.getSource())));
         root.then(Commands.literal("power").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.energy.PowerGrid.statistics(c.getSource().getLevel())),false);return 1;}));
         root.then(Commands.literal("fluids").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.fluids.FluidSimulation.statistics(c.getSource().getLevel())),false);return 1;}));
         root.then(Commands.literal("profile").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.simulation.BeltSimulation.statistics(c.getSource().getLevel())),false);return 1;}));

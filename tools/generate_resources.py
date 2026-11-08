@@ -9,7 +9,7 @@ def png(name,pixels):
  p=ROOT/f'assets/factorycraft/textures/{name}.png';p.parent.mkdir(parents=True,exist_ok=True)
  def chunk(t,d):return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
  raw=b''.join(b'\x00'+bytes(sum(row,())) for row in pixels)
- p.write_bytes(b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',16,len(pixels),8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b''))
+ p.write_bytes(b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',len(pixels[0]),len(pixels),8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b''))
 def texture(name,color,style):
  rng=random.Random(name);a=[]
  for y in range(16):
@@ -377,4 +377,16 @@ for index,name in enumerate(['iron_ore','copper_ore','coal_deposit','stone_depos
 for lang in ['en_us','ru_ru']:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
  data['tooltip.factorycraft.machine_preview']='Установка от центра основания. Синяя ячейка — выбранный центр; красное — препятствие.' if ru else 'Places around the base center. Blue cell = selected center; red = obstruction.'
+ write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.7 original unified mesh specifications, item models and fixed nozzle markers.
+from machine_geometry import generate as generate_machine_geometry
+generate_machine_geometry(ROOT,write,png)
+for lang in ['en_us','ru_ru']:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
+ data.update({
+ 'tooltip.factorycraft.splitter':'Два входа и выхода, четыре полосы. Каждая половина имеет свой предметный порт.' if ru else 'Two inputs/outputs and four lanes. Each physical track has its own item port.',
+ 'command.factorycraft.showroom_space':'Нужна загруженная свободная область 32 × 6 × 32.' if ru else 'Need a loaded, clear 32 × 6 × 32 area.',
+ 'command.factorycraft.showroom_built':'Выставка машин с конечными запасами построена: %s' if ru else 'Machine showroom with finite supplies built at %s',
+ 'tooltip.factorycraft.fluid_nozzles':'Синие патрубки — вход, оранжевые — выход, бирюзовые — двусторонние.' if ru else 'Blue nozzles: input; orange: output; teal: bidirectional.'})
  write(f'assets/factorycraft/lang/{lang}.json',data)

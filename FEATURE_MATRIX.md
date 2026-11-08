@@ -1,16 +1,16 @@
-# Feature matrix — 0.6.1
+# Feature matrix — 0.7.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.6.1 adds large configurable surface fields and centered machine item placement while preserving 0.6.0 structures and finite stock. Stage 3 remains partial.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.7.0 completes unified machine geometry and four physical splitter lanes; large finite fields, centered placement and 0.6.0+ data remain. Stage 3 remains partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
 | Core | Java21/MC1.21.1/NeoForge21.1.252, ModDevGradle, registries, server config, creative tab | implemented; build + dedicated startup |
-| UI languages/assets | EN/RU, original generated textures, active-machine texture animation, articulated inserter, item rendering | implemented first-slice visuals; not final art |
-| Persistence/network | inventories, schema-2 lane positions (reads schema 1), hand, progress/recipe/fuel/energy; vanilla BE/menu packets | implemented; NBT and separate-process disk reload tested |
+| UI languages/assets | EN/RU, original unified geometry and 3D items for 13 types, activity-driven components, nozzle markings, articulated inserter and belt items | implemented first-slice visuals; not final art |
+| Persistence/network | inventories, ordinary belt schema-2 positions, splitter schema-3 four lanes (reads schema 1/2), hand, progress/recipe/fuel/energy; vanilla BE/menu packets | implemented; NBT and separate-process disk reload tested |
 | Belts | 2 lanes, 3 speeds, residual travel, cross-block spacing, fair merges, full rings, congestion, sleeping/wakeup | implemented transport kernel; curves, advanced belt types and full-scale world profiling remain |
-| Splitter | two-block 2×1 geometry, two forward exits, per-lane balancing and safe blocked-output fallback | partial; two shared internal lanes, full dual-belt throughput and priorities/filters absent |
+| Splitter | 2×1, four physical lanes, two forward outputs, per-lane balancing/fallback, 16 persistent carriers, track-local ports, 30 item/s saturated independent-kernel flow in 24 input phases | implemented basic splitter; priorities/filters absent |
 | Advanced belts | none | planned: underground, filters, priorities |
-| Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
+| Inserters | mechanical, animated, source/destination capabilities, persistent hand, backpressure, position sampling on both splitter tracks | partial; fast/long/bulk/stack/filter/energy/circuit models absent |
 | Resources | finite per-tile iron/copper/coal/stone reserves, repeated manual harvesting, BE-aware large surface fields across chunks, radius/spacing/stock-range TOML and per-resource datapack settings | partial; uranium/late resources and world setup GUI absent |
 | Mining | finite electric drill, 3×3 footprint, 5×5×8 search, energy and configurable duration | implemented first drill; finite oil pumpjack implemented; burner/advanced drills planned |
 | Production | electric furnace + assembler + 3×3×3 industrial furnace, 4 input/4 output slots, selection, JSON recipes, FE/progress/GUI | partial; fixed-port mixed fluid/item machines added; modules and other advanced buildings remain planned |

@@ -1,3 +1,11 @@
+# 0.7.0 — unified machines and four-lane splitters (8 November 2026)
+
+* Added original unified geometry and normalized 3D item models for all 13 large machine types. Static surfaces are split into native chunk meshes, preserving silhouettes/UVs across parts and chunk borders. Existing footprints, complete collision volumes, centered previews and single-controller ownership remain.
+* Added activity-driven drill/press/fan/rocker/agitator/flywheel details and furnace/boiler heat, colored arrow-marked physical fluid nozzles and bilingual tooltips. `/factorycraft showroom` builds all types with finite supplies and actual recipes.
+* Completed both physical splitter tracks/four lanes, two incoming belts/two forward outputs, local capabilities, 16 persistent carriers and schema-1/2 migration. Approach reservations now sustain 30 item/s basic aggregate independent-kernel throughput across 24 shifted input phases while conserving every carrier. Blocked exits retain contents and resume.
+* Fixed cached extraction after ordinary-belt unload and inserter pickup-position checks at a splitter part. Added geometry, four-lane flow, blocked/unloaded, portable, native part metadata and actual separate-process persistence regressions. Existing factories and 0.6.0+ data remain supported.
+* Priorities, filters, underground belts, final art, advanced refining/research and later systems remain planned. See VALIDATION.md for exact checks and limits.
+
 # 0.6.1 — large resource veins and centered placement (8 November 2026)
 
 * Replaced tiny underground solid-resource blobs with large organic surface fields spanning chunks. Configurable nominal radius 8–20, tile stock 500–5000 and spacing six chunks by default; centers are richer than edges. Added COMMON `factorycraft-worldgen.toml`, per-resource datapack overrides and strict codec bounds.
