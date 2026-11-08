@@ -33,6 +33,22 @@ class BatchTransactionTest {
         assertTrue(FluidCell.commitBatch(changes,()->{items[0]=0;items[1]=2;progress[0]=0;},true));assertEquals(0,events[0]);assertEquals(100,cells[0].amount());
         assertTrue(FluidCell.commitBatch(changes,()->{items[0]=0;items[1]=2;progress[0]=0;},false));assertEquals(3,events[0]);
     }
+    @Test void thirdRefineryOutputRejectsTheWholeFiveCellBatchBeforeAnyOwnerChanges() {
+        var cells=new ArrayList<FluidCell<String>>();int[] notifications={0},items={1};
+        for(int i=0;i<5;i++)cells.add(new FluidCell<>(4000,()->notifications[0]++));
+        cells.get(0).restore("crude",100);cells.get(1).restore("water",50);cells.get(4).restore("heavy",3990);
+        var plan=List.of(new FluidCell.Mutation<>(cells.get(0),"crude",0),new FluidCell.Mutation<>(cells.get(1),"water",0),new FluidCell.Mutation<>(cells.get(2),"gas",55),new FluidCell.Mutation<>(cells.get(3),"light",45),new FluidCell.Mutation<>(cells.get(4),"heavy",4015));
+        assertFalse(FluidCell.commitBatch(plan,()->items[0]=0,false));
+        assertEquals(100,cells.get(0).amount());assertEquals(50,cells.get(1).amount());assertEquals(0,cells.get(2).amount());assertEquals(0,cells.get(3).amount());assertEquals(3990,cells.get(4).amount());assertEquals(1,items[0]);assertEquals(0,notifications[0]);
+    }
+    @Test void everyRefineryOutputAndProgressCommitBeforeAnyOfFiveObservers() {
+        var cells=new ArrayList<FluidCell<String>>();int[] progress={99},notifications={0};
+        Runnable changed=()->{assertEquals(List.of(0,0,55,45,25),cells.stream().map(FluidCell::amount).toList());assertEquals(0,progress[0]);notifications[0]++;};
+        for(int i=0;i<5;i++)cells.add(new FluidCell<>(4000,changed));cells.get(0).restore("crude",100);cells.get(1).restore("water",50);
+        var plan=List.of(new FluidCell.Mutation<>(cells.get(0),"crude",0),new FluidCell.Mutation<>(cells.get(1),"water",0),new FluidCell.Mutation<>(cells.get(2),"gas",55),new FluidCell.Mutation<>(cells.get(3),"light",45),new FluidCell.Mutation<>(cells.get(4),"heavy",25));
+        assertTrue(FluidCell.commitBatch(plan,()->progress[0]=0,true));assertEquals(99,progress[0]);assertEquals(0,notifications[0]);
+        assertTrue(FluidCell.commitBatch(plan,()->progress[0]=0,false));assertEquals(5,notifications[0]);
+    }
     @Test void duplicateOrOversizedReservationsCannotPartiallyApply() {
         var c=new FluidCell<String>(100,()->{});c.restore("oil",80);int[] calls={0};
         assertFalse(FluidCell.commitBatch(List.of(new FluidCell.Mutation<>(c,"oil",40),new FluidCell.Mutation<>(c,"gas",20)),()->calls[0]++,false));

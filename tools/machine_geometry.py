@@ -7,7 +7,7 @@ import json,math,random,re
 def generate(root,write,png):
  source=(root.parents[2]/'src/main/java/factorycraft/multiblock/MachineProfile.java').read_text()
  dimensions={name:(int(w),int(h),int(d)) for name,w,h,d in re.findall(r'\("([a-z_]+)",\s*(\d+),\s*(\d+),\s*(\d+)\)',source)}
- palette={'shell':(72,87,101),'steel':(145,160,167),'dark':(23,32,41),'teal':(46,136,146),'orange':(196,107,47),'red':(161,62,51),'yellow':(218,174,51),'glass':(35,72,85),'hazard':(219,174,46),'inlet':(44,132,215),'outlet':(226,135,52),'bidi':(55,176,157),'indicator_off':(36,60,63),'indicator_on':(72,230,163),'flame':(249,125,36),'belt':(156,120,43),'piston':(121,144,153)}
+ palette={'shell':(72,87,101),'steel':(145,160,167),'dark':(23,32,41),'teal':(46,136,146),'orange':(196,107,47),'red':(161,62,51),'yellow':(218,174,51),'glass':(35,72,85),'hazard':(219,174,46),'inlet':(44,132,215),'outlet':(226,135,52),'outlet3':(226,135,52),'bidi':(55,176,157),'indicator_off':(36,60,63),'indicator_on':(72,230,163),'flame':(249,125,36),'belt':(156,120,43),'piston':(121,144,153)}
  for name,color in palette.items():
   frames=4 if name in ['flame','belt','piston'] else 2 if name=='indicator_on' else 1
   rng=random.Random('unified-'+name);canvas=[]
@@ -22,10 +22,12 @@ def generate(root,write,png):
      if name=='dark' and y%9<3:c=(11,18,24)
      if name=='glass':c=(31+x//5,68+x//7,79+x//6)
      if name=='hazard':c=(219,174,46) if (x+y)//10%2==0 else (25,32,38)
-     if name in ['inlet','outlet','bidi']:
-      yy=63-y if name=='outlet' else y
+     if name in ['inlet','outlet','outlet3','bidi']:
+      yy=63-y if name in ['outlet','outlet3'] else y
       if 27<=x<=36 and 10<=yy<=48 or 35<=yy<=48 and abs(x-31.5)<=yy-31:c=(221,236,235)
       if name=='bidi' and 15<=y<=28 and abs(x-31.5)<=31-y:c=(221,236,235)
+     if name=='outlet3' and 5<=x<14 and 5<=y<20:
+      if ['111','001','111','001','111'][(y-5)//3][(x-5)//3]=='1':c=(240,247,244)
      if name=='indicator_on':c=(50,200+frame*40,136+frame*16)
      if name=='flame':c=(255,min(255,80+(x*11+y*7+frame*38)%153),28+(y+frame*11)%40)
      if name=='belt':
@@ -47,8 +49,8 @@ def generate(root,write,png):
    box((cx-r*.65,y0,cz-r),(cx+r*.65,y1,cz+r),mat)
    box((cx-r,y0,cz-r*.65),(cx-r*.65,y1,cz+r*.65),mat)
    box((cx+r*.65,y0,cz-r*.65),(cx+r,y1,cz+r*.65),mat)
-  def port(side,mat):
-   x=w//2+.5;z=d//2+.5
+  def port(side,mat,front_center=None):
+   x=w//2+.5 if front_center is None else front_center;z=d//2+.5
    if side in ['front','rear']:
     zz=(0,.16) if side=='front' else (d-.16,d)
     for a,b in [((x-.29,.2,zz[0]),(x-.2,.8,zz[1])),((x+.2,.2,zz[0]),(x+.29,.8,zz[1])),((x-.2,.2,zz[0]),(x+.2,.29,zz[1])),((x-.2,.71,zz[0]),(x+.2,.8,zz[1]))]:box(a,b,'steel')
@@ -132,6 +134,7 @@ def generate(root,write,png):
     if name!='pumpjack':port('rear','inlet')
     if name!='steam_engine':port('front','outlet')
     if name in ['oil_refinery','chemical_plant']:port('left','inlet');port('right','outlet')
+   if name=='oil_refinery':port('front','outlet3',.5)
    if name=='fluid_tank':
     for side in ['front','rear','left','right']:port(side,'bidi')
   specs.append({'profile':name,'boxes':boxes})

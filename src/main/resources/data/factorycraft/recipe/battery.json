@@ -1,0 +1,32 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "chemical_plant",
+  "items": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 1
+    }
+  ],
+  "fluids": [
+    {
+      "fluid": "factorycraft:sulfuric_acid",
+      "amount": 20
+    }
+  ],
+  "results": [
+    {
+      "id": "factorycraft:battery",
+      "count": 1
+    }
+  ],
+  "ticks": 80,
+  "energy": 20
+}

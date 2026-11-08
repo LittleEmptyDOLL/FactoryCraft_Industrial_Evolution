@@ -12,6 +12,7 @@
     "hazard": "factorycraft:block/machine/hazard",
     "inlet": "factorycraft:block/machine/inlet",
     "outlet": "factorycraft:block/machine/outlet",
+    "outlet3": "factorycraft:block/machine/outlet3",
     "bidi": "factorycraft:block/machine/bidi",
     "indicator_off": "factorycraft:block/machine/indicator_off",
     "indicator_on": "factorycraft:block/machine/indicator_on",

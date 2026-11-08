@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "profile": "FULL",
+  "mode": "verify",
+  "startedUtc": "2026-11-08T13:38:39.629267729Z",
+  "minecraft": "1.21.1",
+  "modVersion": "0.8.0",
+  "neoForge": "21.1.252",
+  "java": "21.0.13",
+  "os": "Linux",
+  "arch": "amd64",
+  "availableProcessors": 2,
+  "maxHeapBytes": 2147483648,
+  "measurementScope": "Dedicated server tick work with forced ticking chunks; harness census, report writing, startup and save are outside samples. JFR bytes are encoded packet bytes, not TCP bytes. No client FPS claim.",
+  "forcedTickingChunks": 200,
+  "initialReloadedStateHash": "824e326dd41765acf6b3b31e20a80630376c3fa75193af1fe20bad81ae3ce8bc",
+  "saved": {
+    "beltItems": 20000,
+    "ironUnits": 128000,
+    "storedFE": 7932186,
+    "producers": 1000,
+    "inserters": 500,
+    "casings": 32500,
+    "activeBelts": 10000,
+    "identityHash": "61355d51b29ad20dba5e8b60e5a19f596ebdd866bd5bcb5860da95e5638c821b"
+  },
+  "reloaded": {
+    "beltItems": 20000,
+    "ironUnits": 128000,
+    "storedFE": 7874662,
+    "producers": 1000,
+    "inserters": 500,
+    "casings": 32500,
+    "activeBelts": 10000,
+    "identityHash": "61355d51b29ad20dba5e8b60e5a19f596ebdd866bd5bcb5860da95e5638c821b"
+  },
+  "savedStateHash": "b71343236ebfa8ead75e92d824d0fcae8b87e695680a306832f8ff4b597a76d4",
+  "status": "PASS"
+}

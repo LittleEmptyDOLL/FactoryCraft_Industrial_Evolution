@@ -11,7 +11,7 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle *
 * `multiblock`: controller-owned resources and progress; casing parts have only an identity and stable guarded forwarding ports. Larger machine footprints may use this design, per the user’s instruction.
 * `inserters`: a persistent held stack owns extracted items until the destination accepts them; breaking drops held items.
 * `client`: renderers interpolate server snapshots; menus send only vanilla menu button requests, validated server-side.
-* Belt NBT schema 2 reads schema 1; machine inventory stays schema 1; assembly/casing metadata schema 2 reads schema 1. Unloading pauses simulation; it never converts inventory to transient entities. Breaking blocks drops their contents once.
+* Ordinary belt NBT schema 2 reads schema 1; splitters use schema 3/four lanes and read old two-lane data. Machine inventory stays schema 1, assembly/casing schema 3; refinery Petroleum schema 2 appends Fluid4 while other petroleum machines stay schema 1. Unloading pauses simulation. Whole-machine demolition retains resources in one portable owner.
 * No off-thread world access. 20 Minecraft ticks = one simulation second. Belt basic/fast/express rates target 15/30/45 individual items per second across two lanes.
 
 ## Stages
@@ -27,11 +27,11 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle *
 
 ## Current work
 
-Maintain the delivered stages 1–2 vertical slice while expanding stage 3 with usable, tested fluid logistics. Feature completion requires evidence; see FEATURE_MATRIX.md and VALIDATION.md. Later stages are not implied by block registration.
+Maintain the delivered automation/energy/fluid/chemistry slice while starting stage 4 labs, team science and research. Stage 3 still lacks later power/heat equipment. Feature completion requires evidence; see FEATURE_MATRIX.md and VALIDATION.md. Later stages are not implied by block registration.
 
 ## Next session
 
-Read MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Start a **new** 0.6.0 world. Reproduce build, two GameTest processes and benchmark/reload. Current geometry and stock work supersedes compact fixtures; no old-save migration is required by the user.
+Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the current priority list below: team labs/science/research. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
 
 ## Delivered in 0.1.0
 
@@ -67,8 +67,8 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Continue stage 3 advanced refining: water + crude → heavy/light oil + gas, then cracking, lubricant, acid/batteries. Reserve every output; add a third physical outlet on the 5×5 refinery. Keep basic refining readable and usable, extend native codecs/menus/ports without losing stored fluids. Add blocked third-output, full material ledger, portable and separate-process tests.
-2. After chemistry, implement team research/labs/science packs and recipe gating with a usable bilingual research interface. Keep underground/priority/filter belts and curved-path polish visible as incomplete work in FEATURE_MATRIX.md.
+1. Start stage 4: team-owned research SavedData, configurable technology/prerequisite/cost definitions, 3×3 full-size one-item labs, automation/logistic science packs and actual timed consumption. Team progress must persist and be server-authoritative; freeze labs across part unload and prevent two labs/players spending the same pack/result. Keep current survival bootstrap accessible and introduce explicit recipe gating with migration rules for existing factories.
+2. Add a usable EN/RU research interface with prerequisite nodes, selection, progress/costs and search; verify dedicated/client startup, team isolation/shared progress, recipe unlocks, portable labs, datapack reload and separate-process saves. Then modules/beacons and the remaining logistics/hostile/space roadmap. Underground/priority/filter belts, curved full-flow paths and later oil consumers remain visibly incomplete.
 
 
 ## Delivered in 0.4.0 — steam power
@@ -103,4 +103,12 @@ Original geometry now covers all 13 profiles through native per-cell chunk meshe
 
 The splitter now owns two physical tracks/four lanes, each independently persistent; both native inputs and forward outputs work, with balancing/backpressure and local inserter pickup. Reservation-aware approach routing sustains two full basic belts across 24 input phases without discarding or overlapping carriers. Legacy two-lane saves and full portable state remain readable; cached unloaded ports and part-track pickup were fixed. Added a finite-input admin showroom. See VALIDATION.md, MACHINE_VISUALS.md and SPLITTERS.md for checks and limitations.
 
-Next session: implement priority 1 above (advanced refining with a third real outlet), then research. Do not reset existing diagnostic checkpoints, reduce footprints or replace finite resources with one-drop ores. Filters/priority/underground belts, exact curved full-flow paths, final art, actual two-network-client tests and the later roadmap remain incomplete.
+The advanced-refining continuation is delivered in 0.8.0 below; retain the 0.7.0 geometry/transport guarantees in subsequent work.
+
+## Delivered milestone — 0.8.0 advanced refining and chemistry
+
+Delivered advanced oil, both cracking steps, lubricant, sulfuric acid and batteries through native JSON chemistry recipes. The full-size refinery owns five cells/three real outlets; old Fluid0..3 and ports remain, refinery Petroleum schema 2 appends an empty Fluid4 for old worlds. Other machines retain schema 1; assembly/part schema 3, centered placement and 0.7.0 meshes/transport remain. All results reserve before FE, and all owners commit before observers.
+
+Added localized named recipes/port help, five-row menus, a third marked nozzle, native buckets/original assets and an actual finite oil/water/raw-plate → sulfur → acid → battery example. Independent five-owner tests and native blocked/mismatched/underpowered/nozzle/bucket/codec/portable/live/disk scenarios plus a full multi-product/plate material ledger pass. The preserved 0.7.0 full factory also verifies on 0.8.0. See PETROLEUM.md and VALIDATION.md for exact checks, client evidence and limits.
+
+Next session: implement priority 1 above (team labs/science/research), then the research UI/gating. Do not reset checkpoints or silently alter bootstrap/old recipe availability. Lubricant consumers, accumulator/engine recipes, steam heat/temperature, huge petrochemical profiling, actual two-network-client play and the remaining initial scope are still incomplete.

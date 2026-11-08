@@ -1,3 +1,11 @@
+# 0.8.0 — advanced refining and usable chemistry (8 November 2026)
+
+* Added heavy/light oil, lubricant and sulfuric acid with native buckets/original assets, plus batteries. Six new JSON recipes extend basic oil/plastic/sulfur: advanced refining, both cracking steps, lubricant, acid and batteries.
+* The existing 5×5 refinery now has two inputs/three outputs and a real front-left third nozzle marked 3. All outputs reserve before FE/work; blocked or component-mismatched products pause without consuming inputs. Old port order/Fluid0..3 remain; missing Fluid4 loads empty, portable state keeps all five cells/components/overflow.
+* Added five-row menus, localized recipe names with datapack fallback, physical-port hover help and third-nozzle geometry. Centered one-item placement, footprints and sole controller ownership remain.
+* `/factorycraft petrochemistry` builds a powered finite oil → sulfur → acid → battery line with actual source water, raw plates, inserters and separate byproduct tanks. Added complete material ledgers, five-cell disk/portable/live reconstruction, blocked/underpowered/nozzle/codec/bucket regressions and independent five-owner atomicity tests.
+* Basic oil, previous factories/saves and full benchmark checkpoints remain supported. Team research/labs/science are next; heat, later lubricant/battery consumers and large petrochemical TPS claims remain incomplete.
+
 # 0.7.0 — unified machines and four-lane splitters (8 November 2026)
 
 * Added original unified geometry and normalized 3D item models for all 13 large machine types. Static surfaces are split into native chunk meshes, preserving silhouettes/UVs across parts and chunk borders. Existing footprints, complete collision volumes, centered previews and single-controller ownership remain.

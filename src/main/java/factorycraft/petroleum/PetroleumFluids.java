@@ -16,7 +16,11 @@ public final class PetroleumFluids {
     private static final DeferredRegister<Fluid> FLUIDS=DeferredRegister.create(Registries.FLUID,FactoryCraft.ID);
     public static final Kind CRUDE=new Kind("crude_oil",0xff403627,900);
     public static final Kind GAS=new Kind("petroleum_gas",0xffd6b97b,-10);
-    public static final List<Kind> ALL=List.of(CRUDE,GAS);
+    public static final Kind HEAVY=new Kind("heavy_oil",0xff854a30,950);
+    public static final Kind LIGHT=new Kind("light_oil",0xffd6a23c,800);
+    public static final Kind LUBRICANT=new Kind("lubricant",0xff539854,900);
+    public static final Kind ACID=new Kind("sulfuric_acid",0xffc7ce42,1200);
+    public static final List<Kind> ALL=List.of(CRUDE,GAS,HEAVY,LIGHT,LUBRICANT,ACID);
     public static final class Kind {
         public final String id;public final int tint;
         public final DeferredHolder<FluidType,FluidType> type;

@@ -1,4 +1,4 @@
-# Architecture decisions — 0.7.0 (assembly/parts schema 3; native resource schema 1)
+# Architecture decisions — 0.8.0 (assembly/parts schema 3; native resource schema 1)
 
 ## Authority and persistence
 
@@ -6,7 +6,7 @@ All authoritative world access is on the server thread. Client renderers only ex
 
 An unloaded chunk pauses its machines. The power cache unregisters unloaded nodes. Belt scheduling discards unloaded references and reactivates loaded carriers. Neighbor lookups use `hasChunkAt`; production never force-loads a neighbor. The deliberate fixed-position persistence GameTest loads its fixture chunk, outside runtime simulation code.
 
-Saving uses vanilla chunk persistence. Extraction into an inserter moves ownership from the source to the serialized hand. If a target disappears or fills, the hand keeps the item. Breaking a belt iterates until every carrier has been removed, avoiding index-shift loss. Breaking an inserter drops the held stack. Breaking a machine drops its inventory.
+Saving uses vanilla chunk persistence. Extraction into an inserter moves ownership from the source to the serialized hand. If a target disappears or fills, the hand keeps the item. Breaking a belt iterates until every carrier has been removed, avoiding index-shift loss. Breaking an inserter drops the held stack. Whole-machine demolition preserves resources in one portable controller item; parts never hold inventory copies.
 
 ## Transactions
 
@@ -113,3 +113,9 @@ Player targeting is the horizontal base center. MachineProfile.anchorAtCenter co
 ## Unified visual geometry (0.7.0)
 
 MachineGeometryLoader bakes CellMesh surface fragments into the native chunk model. ModelData carries immutable local profile/right/up/back coordinates for a part; the model performs no world access during getQuads. Geometry and original textures are reproducibly generated from MachineProfile dimensions by tools/machine_geometry.py. Rotation and active indicator variants are baked once. Static surfaces render in their own chunks even if the controller is unloaded. Only moving details use MachineAnimationRenderer; phases are client-only, freeze when idle and have no production authority. Complete collision/placement volumes stay unchanged. See MACHINE_VISUALS.md.
+
+## Advanced refining and third output (0.8.0)
+
+PetroleumProduction composes five cells only for a refinery; chemical plants/pumpjacks remain four. Existing Fluid0..3 persist at their original indices; refinery Petroleum schema 2 appends Fluid4, empty for legacy saves, and preserves overflow/components. Assembly schema 3 remains unchanged. Fixed old nozzle transforms stay; new output 3 is the controller's front face (front-left of the whole 5×5 machine). Codec/wire arrays support up to three refinery results, while a chemical plant constructor rejects three. Every output participates in pre-work capacity/component reservation and the same multi-cell/slot/progress commit. The fifth tank does not become a copied part owner or passive graph node.
+
+Five-row UI/hover help uses the existing BE sync/menu data; localized recipe labels fall back to output names for datapacks. The example's water/byproduct pipes use separated height levels to prevent fluid mixing. Complete line tests count every owned chemical and plate, not only output arrival. See PETROLEUM.md and VALIDATION.md.

@@ -22,7 +22,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 public final class FactoryCommands {
     @SubscribeEvent public static void register(RegisterCommandsEvent event) {
         var root=Commands.literal("factorycraft").requires(s->s.hasPermission(2));
-        for(String name:new String[]{"demo","smelter","waterworks","steamworks","oilworks"})root.then(Commands.literal(name).executes(c->build(c.getSource(),name)));
+        for(String name:new String[]{"demo","smelter","waterworks","steamworks","oilworks","petrochemistry"})root.then(Commands.literal(name).executes(c->build(c.getSource(),name)));
         root.then(Commands.literal("showroom").executes(c->factorycraft.diagnostics.MachineShowcase.build(c.getSource())));
         root.then(Commands.literal("power").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.energy.PowerGrid.statistics(c.getSource().getLevel())),false);return 1;}));
         root.then(Commands.literal("fluids").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.fluids.FluidSimulation.statistics(c.getSource().getLevel())),false);return 1;}));
@@ -30,16 +30,20 @@ public final class FactoryCommands {
         event.getDispatcher().register(root);
     }
     private static int build(CommandSourceStack source,String name) {
-        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(3,0,3);
-        for(var pos:BlockPos.betweenClosed(origin,origin.offset(29,7,12)))if(!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) {
-            source.sendFailure(Component.translatable("command.factorycraft.full_size_space"));return 0;
+        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(3,0,3);int depth=name.equals("petrochemistry") ? 16:13;
+        if(name.equals("petrochemistry") && !factorycraft.diagnostics.AdvancedOilFactory.available(level)) {
+            source.sendFailure(Component.translatable("command.factorycraft.petrochemistry_recipe"));return 0;
         }
-        for(int x=0;x<30;x++)for(int z=0;z<13;z++)level.setBlockAndUpdate(origin.offset(x,0,z),Blocks.STONE_BRICKS.defaultBlockState());
+        for(var pos:BlockPos.betweenClosed(origin,origin.offset(29,7,depth-1)))if(!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) {
+            source.sendFailure(Component.translatable(name.equals("petrochemistry") ? "command.factorycraft.petrochemistry_space":"command.factorycraft.full_size_space"));return 0;
+        }
+        for(int x=0;x<30;x++)for(int z=0;z<depth;z++)level.setBlockAndUpdate(origin.offset(x,0,z),Blocks.STONE_BRICKS.defaultBlockState());
         switch(name) {
             case "demo","smelter" -> ironLine(level,origin.above(),name.equals("smelter"));
             case "waterworks" -> waterLine(level,origin.above(),false);
             case "steamworks" -> waterLine(level,origin.above(),true);
             case "oilworks" -> oilLine(level,origin.above());
+            case "petrochemistry" -> factorycraft.diagnostics.AdvancedOilFactory.build(level,origin.above());
             default -> throw new IllegalArgumentException(name);
         }
         source.sendSuccess(()->Component.translatable("command.factorycraft.full_size_built",name,origin.toShortString()),true);return 1;

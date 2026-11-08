@@ -32,7 +32,10 @@ public final class PetroleumProduction {
     private record Cached(RecipeHolder<ChemicalRecipe> holder,String signature,List<BatchInventory.Ingredient<ItemKey>> items,List<BatchInventory.Stack<ItemKey>> outputs,List<FluidKey> fluids,List<Integer> volumes) {}
     private List<Cached> recipes=List.of();
     public PetroleumProduction(MachineBlockEntity machine) {
-        this.machine=machine;cells=List.of(new FluidCell<>(CAPACITY,this::changed),new FluidCell<>(CAPACITY,this::changed),new FluidCell<>(CAPACITY,this::changed),new FluidCell<>(CAPACITY,this::changed));
+        this.machine=machine;
+        var storage=new ArrayList<FluidCell<FluidKey>>(5);
+        for(int i=0;i<(machine.kind()==FactoryKind.REFINERY ? 5:4);i++)storage.add(new FluidCell<>(CAPACITY,this::changed));
+        cells=List.copyOf(storage);
         for(int i=0;i<7;i++)handlers[i]=new Port(i==6 ? null:Direction.from3DDataValue(i));
     }
     public boolean ready() { return machine.petroleumAvailable() && (machine.assembly()==null || machine.assembly().ready()); }
@@ -44,15 +47,15 @@ public final class PetroleumProduction {
     public FluidStack stored(int i) { var c=cells.get(i);return c.amount()==0 ? FluidStack.EMPTY:c.key().stack(c.amount()); }
     private void positions() {
         var forward=machine.getBlockState().getValue(FactoryBlock.FACING);var right=forward.getClockWise();var anchor=machine.getBlockPos();var profile=factorycraft.multiblock.MachineProfile.of(machine.getBlockState());
-        directions=new Direction[]{forward.getOpposite(),right.getOpposite(),forward,right};
-        nozzles=new BlockPos[]{profile.offset(anchor,forward,profile.layout.width()/2,0,profile.layout.depth()-1),profile.offset(anchor,forward,0,0,profile.layout.depth()/2),profile.offset(anchor,forward,profile.layout.width()/2,0,0),profile.offset(anchor,forward,profile.layout.width()-1,0,profile.layout.depth()/2)};
+        directions=new Direction[]{forward.getOpposite(),right.getOpposite(),forward,right,forward};
+        nozzles=new BlockPos[]{profile.offset(anchor,forward,profile.layout.width()/2,0,profile.layout.depth()-1),profile.offset(anchor,forward,0,0,profile.layout.depth()/2),profile.offset(anchor,forward,profile.layout.width()/2,0,0),profile.offset(anchor,forward,profile.layout.width()-1,0,profile.layout.depth()/2),anchor};
     }
     public void rotated() { nozzles=null;directions=null;deposit=null; }
-    public BlockPos nozzle(int index) { if(nozzles==null)positions();return nozzles[index]; }
-    public Direction direction(int index) { if(directions==null)positions();return directions[index]; }
+    public BlockPos nozzle(int index) { Objects.checkIndex(index,cells.size());if(nozzles==null)positions();return nozzles[index]; }
+    public Direction direction(int index) { Objects.checkIndex(index,cells.size());if(directions==null)positions();return directions[index]; }
     private int index(BlockPos physical,Direction side) {
         if(side==null)return -1;
-        for(int i=pump() ? 2:0;i<(pump() ? 3:4);i++)if(side==direction(i) && physical.equals(nozzle(i)))return i;return -2;
+        for(int i=pump() ? 2:0;i<(pump() ? 3:cells.size());i++)if(side==direction(i) && physical.equals(nozzle(i)))return i;return -2;
     }
     public boolean hasPort(BlockPos pos,Direction side) { return side==null || index(pos,side)>=0; }
     public FluidCell<FluidKey> input(BlockPos pos,Direction side) { int i=index(pos,side);return ready() && i>=0 && i<2 ? cells.get(i):null; }
@@ -62,7 +65,7 @@ public final class PetroleumProduction {
         final BlockPos pos;final Direction side;
         PortAt(BlockPos pos,Direction side) { this.pos=pos.immutable();this.side=side; }
         private boolean accessible() { return ready() && FluidConnections.at(machine.getLevel(),pos) instanceof FactoryBlockEntity && (pos.equals(machine.getBlockPos()) || FluidConnections.at(machine.getLevel(),pos) instanceof CasingBlockEntity part && part.loaded() && part.owner()==machine); }
-        public int getTanks() { return side==null ? 4:1; }
+        public int getTanks() { return side==null ? cells.size():1; }
         private int tank(int i) { Objects.checkIndex(i,getTanks());return side==null ? i:Math.max(0,index(pos,side)); }
         public FluidStack getFluidInTank(int i) { int index=tank(i);return machine.getLevel()!=null && machine.getLevel().isClientSide || accessible() ? stored(index):FluidStack.EMPTY; }
         public int getTankCapacity(int i) { var c=cells.get(tank(i));return Math.max(c.capacity(),c.amount()); }
@@ -81,7 +84,7 @@ public final class PetroleumProduction {
         private FluidStack drainMatching(int amount,FluidKey key,FluidAction action) {
             if(!accessible() || amount<=0)return FluidStack.EMPTY;
             int first=side==null ? 0:index(pos,side);if(first<0 || side!=null && first<2)return FluidStack.EMPTY;
-            for(int i=first;i<(side==null ? 4:first+1);i++) { var c=cells.get(i);if(c.amount()>0 && (key==null || key.equals(c.key()))) { var fluid=c.key();return fluid.stack(c.drain(amount,action.simulate())); } }
+            for(int i=first;i<(side==null ? cells.size():first+1);i++) { var c=cells.get(i);if(c.amount()>0 && (key==null || key.equals(c.key()))) { var fluid=c.key();return fluid.stack(c.drain(amount,action.simulate())); } }
             return FluidStack.EMPTY;
         }
     }
@@ -95,7 +98,7 @@ public final class PetroleumProduction {
         }
         if(!ready())return false;
         boolean worked=pump() ? extract():produce();
-        if(ready())for(int i=2;i<(pump() ? 3:4);i++)if(cells.get(i).amount()>0) {
+        if(ready())for(int i=2;i<(pump() ? 3:cells.size());i++)if(cells.get(i).amount()>0) {
             var to=FluidConnections.input(machine.getLevel(),nozzle(i).relative(direction(i)),direction(i).getOpposite(),cells.get(i).key());
             if(to!=null)cells.get(i).transferTo(to,TRANSFER,false);
         }
@@ -124,7 +127,15 @@ public final class PetroleumProduction {
             return new Cached(h,h.id()+"|"+ChemicalRecipe.CODEC.codec().encodeStart(ops,r).getOrThrow(),r.items().stream().map(i->new BatchInventory.Ingredient<ItemKey>(k->i.ingredient().test(k.stack(1)),i.count())).toList(),result,output.stream().map(FluidKey::new).toList(),output.stream().map(FluidStack::getAmount).toList());
         }).toList();recipesAt=now;selected=selectedId.isEmpty() ? 0:-1;for(int i=0;i<recipes.size();i++)if(recipes.get(i).holder.id().toString().equals(selectedId))selected=i+1;
     }
-    public void cycleRecipe() { refreshRecipes();selected=(selected+1)%(recipes.size()+1);selectedId=selected==0 ? "":recipes.get(selected-1).holder.id().toString();progress=0;active="";changed(); }
+    private void chooseRecipe(int index) {
+        selected=index;selectedId=index==0 ? "":recipes.get(index-1).holder.id().toString();progress=0;active="";changed();
+    }
+    public void cycleRecipe() { refreshRecipes();chooseRecipe((selected+1)%(recipes.size()+1)); }
+    /** Validated ID selection for factory setup; never silently substitutes a sorted recipe. */
+    public boolean selectRecipe(net.minecraft.resources.ResourceLocation id) {
+        if(machine.getLevel()==null || machine.getLevel().isClientSide)return false;
+        refreshRecipes();for(int i=0;i<recipes.size();i++)if(recipes.get(i).holder.id().equals(id)){chooseRecipe(i+1);return true;}return false;
+    }
     public List<RecipeHolder<ChemicalRecipe>> recipes() { refreshRecipes();return recipes.stream().map(Cached::holder).toList(); }
     private List<BatchInventory.Stack<ItemKey>> inventory() {
         var result=new ArrayList<BatchInventory.Stack<ItemKey>>(8);
@@ -144,7 +155,7 @@ public final class PetroleumProduction {
         if(!active.equals(chosen.signature)) { progress=0;active=chosen.signature; }
         progress=Math.min(progress,duration-1)+1;changed();status=4;
         if(progress>=duration) {
-            var mutations=new ArrayList<FluidCell.Mutation<FluidKey>>(4);
+            var mutations=new ArrayList<FluidCell.Mutation<FluidKey>>(cells.size());
             for(int i=0;i<recipe.fluids().size();i++) { var c=cells.get(i);mutations.add(new FluidCell.Mutation<>(c,c.key(),c.amount()-recipe.fluids().get(i).amount())); }
             for(int i=0;i<chosen.fluids.size();i++) { var c=cells.get(i+2);mutations.add(new FluidCell.Mutation<>(c,chosen.fluids.get(i),c.amount()+chosen.volumes.get(i))); }
             var committed=itemPlan;
@@ -165,10 +176,10 @@ public final class PetroleumProduction {
         public int getCount() { return 9; }
     };
     public void save(CompoundTag parent,HolderLookup.Provider r) {
-        var tag=new CompoundTag();tag.putInt("Schema",1);for(int i=0;i<4;i++)tag.put("Fluid"+i,stored(i).saveOptional(r));tag.putInt("Progress",progress);tag.putInt("Duration",duration);tag.putString("SelectedRecipe",selectedId);tag.putString("Active",active);parent.put("Petroleum",tag);
+        var tag=new CompoundTag();tag.putInt("Schema",cells.size()==5 ? 2:1);for(int i=0;i<cells.size();i++)tag.put("Fluid"+i,stored(i).saveOptional(r));tag.putInt("Progress",progress);tag.putInt("Duration",duration);tag.putString("SelectedRecipe",selectedId);tag.putString("Active",active);parent.put("Petroleum",tag);
     }
     public void load(CompoundTag parent,HolderLookup.Provider r) {
-        var tag=parent.getCompound("Petroleum");for(int i=0;i<4;i++) { var f=FluidStack.parseOptional(r,tag.getCompound("Fluid"+i));cells.get(i).restore(f.isEmpty() ? null:new FluidKey(f),f.getAmount()); }
+        var tag=parent.getCompound("Petroleum");for(int i=0;i<cells.size();i++) { var f=FluidStack.parseOptional(r,tag.getCompound("Fluid"+i));cells.get(i).restore(f.isEmpty() ? null:new FluidKey(f),f.getAmount()); }
         progress=Math.max(0,tag.getInt("Progress"));duration=Math.max(1,tag.getInt("Duration"));selectedId=tag.getString("SelectedRecipe");selected=0;active=tag.getString("Active");recipesAt=Long.MIN_VALUE;deposit=null;changed();
     }
 }

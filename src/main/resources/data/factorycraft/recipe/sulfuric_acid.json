@@ -1,0 +1,32 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "chemical_plant",
+  "items": [
+    {
+      "ingredient": {
+        "item": "factorycraft:sulfur"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 1
+    }
+  ],
+  "fluids": [
+    {
+      "fluid": "minecraft:water",
+      "amount": 100
+    }
+  ],
+  "fluid_results": [
+    {
+      "id": "factorycraft:sulfuric_acid",
+      "amount": 50
+    }
+  ],
+  "ticks": 20,
+  "energy": 20
+}

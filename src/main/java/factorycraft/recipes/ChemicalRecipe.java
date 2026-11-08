@@ -17,9 +17,9 @@ import java.util.*;
 public record ChemicalRecipe(String machine,List<FactoryRecipe.CountedIngredient> items,List<SizedFluidIngredient> fluids,
                              List<ItemStack> results,List<FluidStack> fluidResults,int ticks,int energy) implements Recipe<ChemicalInput> {
     public ChemicalRecipe {
-        if(!List.of("oil_refinery","chemical_plant").contains(machine) || items.size()>4 || fluids.size()>2 || results.size()>4 || fluidResults.size()>2 ||
+        if(!List.of("oil_refinery","chemical_plant").contains(machine) || items.size()>4 || fluids.size()>2 || results.size()>4 || fluidResults.size()>(machine.equals("oil_refinery") ? 3:2) ||
                 items.isEmpty() && fluids.isEmpty() || results.isEmpty() && fluidResults.isEmpty() || ticks<1 || ticks>72000 || energy<1 || energy>16000 ||
-                items.stream().anyMatch(i->i.count()<1 || i.count()>64) || fluids.stream().anyMatch(f->f.amount()>4000) ||
+                items.stream().anyMatch(i->i.count()<1 || i.count()>64) || fluids.stream().anyMatch(f->f.amount()<1 || f.amount()>4000) ||
                 results.stream().anyMatch(s->s.isEmpty() || s.getCount()>s.getMaxStackSize()) || fluidResults.stream().anyMatch(f->f.isEmpty() || f.getAmount()>4000))throw new IllegalArgumentException("Invalid chemical recipe bounds");
         items=List.copyOf(items);fluids=List.copyOf(fluids);results=results.stream().map(ItemStack::copy).toList();fluidResults=fluidResults.stream().map(FluidStack::copy).toList();
     }
@@ -32,7 +32,7 @@ public record ChemicalRecipe(String machine,List<FactoryRecipe.CountedIngredient
             FactoryRecipe.CountedIngredient.CODEC.listOf(0,4).optionalFieldOf("items",List.of()).forGetter(ChemicalRecipe::items),
             FLUID.listOf(0,2).optionalFieldOf("fluids",List.of()).forGetter(ChemicalRecipe::fluids),
             ItemStack.CODEC.listOf(0,4).optionalFieldOf("results",List.of()).forGetter(ChemicalRecipe::results),
-            OUTPUT.listOf(0,2).optionalFieldOf("fluid_results",List.of()).forGetter(ChemicalRecipe::fluidResults),
+            OUTPUT.listOf(0,3).optionalFieldOf("fluid_results",List.of()).forGetter(ChemicalRecipe::fluidResults),
             Codec.intRange(1,72000).fieldOf("ticks").forGetter(ChemicalRecipe::ticks),
             Codec.intRange(1,16000).fieldOf("energy").forGetter(ChemicalRecipe::energy)).apply(i,ChemicalRecipe::new));
     @Override public boolean matches(ChemicalInput input,Level level) {
@@ -61,7 +61,7 @@ public record ChemicalRecipe(String machine,List<FactoryRecipe.CountedIngredient
                 for(int n=size(b,4);n>0;n--)items.add(new FactoryRecipe.CountedIngredient(Ingredient.CONTENTS_STREAM_CODEC.decode(b),b.readVarInt()));
                 for(int n=size(b,2);n>0;n--)fluids.add(SizedFluidIngredient.STREAM_CODEC.decode(b));
                 for(int n=size(b,4);n>0;n--)results.add(ItemStack.STREAM_CODEC.decode(b));
-                for(int n=size(b,2);n>0;n--)outputs.add(FluidStack.STREAM_CODEC.decode(b));
+                for(int n=size(b,3);n>0;n--)outputs.add(FluidStack.STREAM_CODEC.decode(b));
                 return new ChemicalRecipe(machine,items,fluids,results,outputs,b.readVarInt(),b.readVarInt());
             }
             public void encode(RegistryFriendlyByteBuf b,ChemicalRecipe r) {

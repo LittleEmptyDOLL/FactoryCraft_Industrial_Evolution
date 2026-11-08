@@ -289,10 +289,10 @@ for name,color in [('pumpjack',(99,135,99)),('oil_refinery',(128,124,83)),('chem
  write(f'assets/factorycraft/blockstates/{name}.json',{'variants':variants})
  write(f'assets/factorycraft/models/item/{name}.json',{'parent':'factorycraft:block/'+name})
  write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
-for name,color in [('crude_oil',(64,54,39)),('petroleum_gas',(208,177,113))]:
+for name,color in [('crude_oil',(64,54,39)),('petroleum_gas',(208,177,113)),('heavy_oil',(133,74,48)),('light_oil',(214,162,60)),('lubricant',(83,152,84)),('sulfuric_acid',(199,206,66))]:
  texture('block/'+name,color,'ore');texture('item/'+name+'_bucket',color,'item')
  write(f'assets/factorycraft/models/item/{name}_bucket.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name+'_bucket'}})
-for name,color in [('plastic_bar',(222,223,213)),('sulfur',(221,209,51)),('advanced_circuit',(185,63,62))]:
+for name,color in [('plastic_bar',(222,223,213)),('sulfur',(221,209,51)),('advanced_circuit',(185,63,62)),('battery',(74,167,185))]:
  texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
 texture('block/oil_deposit',(53,55,47),'ore');texture('block/oil_deposit_depleted',(112,116,110),'ore')
 for suffix in ['','_depleted']:write(f'assets/factorycraft/models/block/oil_deposit{suffix}.json',{'parent':'minecraft:block/cube_all','textures':{'all':'factorycraft:block/oil_deposit'+suffix}})
@@ -307,6 +307,14 @@ craft('chemical_plant',['PBP','CAC','PBP'],{'P':'factorycraft:iron_plate','B':'f
 write('data/factorycraft/recipe/basic_oil_processing.json',{'type':'factorycraft:chemistry','machine':'oil_refinery','fluids':[{'fluid':'factorycraft:crude_oil','amount':100}],'fluid_results':[{'id':'factorycraft:petroleum_gas','amount':45}],'ticks':100,'energy':30})
 write('data/factorycraft/recipe/plastic.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','items':[{'ingredient':{'item':'minecraft:coal'},'count':1}],'fluids':[{'fluid':'factorycraft:petroleum_gas','amount':20}],'results':[{'id':'factorycraft:plastic_bar','count':2}],'ticks':20,'energy':20})
 write('data/factorycraft/recipe/sulfur.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','fluids':[{'fluid':'factorycraft:petroleum_gas','amount':30},{'fluid':'minecraft:water','amount':30}],'results':[{'id':'factorycraft:sulfur','count':2}],'ticks':20,'energy':20})
+# Fixed port order: crude/water inputs; existing gas/front and light/right outputs,
+# with heavy oil on the new third/front-left outlet.
+write('data/factorycraft/recipe/advanced_oil_processing.json',{'type':'factorycraft:chemistry','machine':'oil_refinery','fluids':[{'fluid':'factorycraft:crude_oil','amount':100},{'fluid':'minecraft:water','amount':50}],'fluid_results':[{'id':'factorycraft:petroleum_gas','amount':55},{'id':'factorycraft:light_oil','amount':45},{'id':'factorycraft:heavy_oil','amount':25}],'ticks':100,'energy':30})
+for recipe,source,n,result,m in [('heavy_oil_cracking','heavy_oil',40,'light_oil',30),('light_oil_cracking','light_oil',30,'petroleum_gas',20)]:
+ write(f'data/factorycraft/recipe/{recipe}.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','fluids':[{'fluid':'factorycraft:'+source,'amount':n},{'fluid':'minecraft:water','amount':30}],'fluid_results':[{'id':'factorycraft:'+result,'amount':m}],'ticks':40,'energy':20})
+write('data/factorycraft/recipe/lubricant.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','fluids':[{'fluid':'factorycraft:heavy_oil','amount':10}],'fluid_results':[{'id':'factorycraft:lubricant','amount':10}],'ticks':20,'energy':20})
+write('data/factorycraft/recipe/sulfuric_acid.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','items':[{'ingredient':{'item':'factorycraft:sulfur'},'count':5},{'ingredient':{'item':'factorycraft:iron_plate'},'count':1}],'fluids':[{'fluid':'minecraft:water','amount':100}],'fluid_results':[{'id':'factorycraft:sulfuric_acid','amount':50}],'ticks':20,'energy':20})
+write('data/factorycraft/recipe/battery.json',{'type':'factorycraft:chemistry','machine':'chemical_plant','items':[{'ingredient':{'item':'factorycraft:iron_plate'},'count':1},{'ingredient':{'item':'factorycraft:copper_plate'},'count':1}],'fluids':[{'fluid':'factorycraft:sulfuric_acid','amount':20}],'results':[{'id':'factorycraft:battery','count':1}],'ticks':80,'energy':20})
 process('advanced_circuit','assembling_machine',[('factorycraft:electronic_circuit',2),('factorycraft:copper_wire',4),('factorycraft:plastic_bar',2)],'advanced_circuit',1,120,24)
 oil_lang={
  'gui.factorycraft.chemical_recipe_info':('%s — %s t / %s FE/t','%s — %s т / %s FE/т'),
@@ -389,4 +397,18 @@ for lang in ['en_us','ru_ru']:
  'command.factorycraft.showroom_space':'Нужна загруженная свободная область 32 × 6 × 32.' if ru else 'Need a loaded, clear 32 × 6 × 32 area.',
  'command.factorycraft.showroom_built':'Выставка машин с конечными запасами построена: %s' if ru else 'Machine showroom with finite supplies built at %s',
  'tooltip.factorycraft.fluid_nozzles':'Синие патрубки — вход, оранжевые — выход, бирюзовые — двусторонние.' if ru else 'Blue nozzles: input; orange: output; teal: bidirectional.'})
+ write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.8 advanced petroleum resources and physical-port help.
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
+ for name,en,ru in [('heavy_oil','Heavy Oil','Тяжёлая нефть'),('light_oil','Light Oil','Лёгкая нефть'),('lubricant','Lubricant','Смазка'),('sulfuric_acid','Sulfuric Acid','Серная кислота')]:
+  data['fluid.factorycraft.'+name]=(en,ru)[index];data['item.factorycraft.'+name+'_bucket']=(en+' Bucket','Ведро: '+ru.lower())[index]
+ data['item.factorycraft.battery']=('Battery','Аккумулятор')[index]
+ data['tooltip.factorycraft.oil_refinery']=('5×5 refinery. Crude rear, water left. Gas front-center, light oil right, heavy oil front-left (3).','НПЗ 5×5. Нефть сзади, вода слева. Газ спереди по центру, лёгкая нефть справа, тяжёлая спереди слева (3).')[index]
+ data['gui.factorycraft.chemical_fluid_4']=('Out 3: %s — %s mB','Выход 3: %s — %s мБ')[index]
+ for i,(en,ru) in enumerate([('Rear input','Вход сзади'),('Left input','Вход слева'),('Front-center output','Выход спереди по центру'),('Right output','Выход справа'),('Front-left output (3)','Выход спереди слева (3)')]):data['gui.factorycraft.chemical_port_'+str(i)]=(en,ru)[index]
+ data['command.factorycraft.petrochemistry_recipe']=('Advanced oil processing is missing; restore its datapack recipe before building the example.','Рецепт продвинутой переработки отсутствует. Восстановите его в датапаке для постройки примера.')[index]
+ data['command.factorycraft.petrochemistry_space']=('Need a loaded empty 30 × 8 × 16 area beside you.','Рядом нужна загруженная свободная область 30 × 8 × 16.')[index]
+ for name,en,ru in [('basic_oil_processing','Basic oil processing','Базовая переработка нефти'),('advanced_oil_processing','Advanced oil processing','Продвинутая переработка нефти'),('heavy_oil_cracking','Heavy oil cracking','Крекинг тяжёлой нефти'),('light_oil_cracking','Light oil cracking','Крекинг лёгкой нефти'),('lubricant','Lubricant','Смазка'),('sulfuric_acid','Sulfuric acid','Серная кислота'),('battery','Battery','Аккумулятор'),('plastic','Plastic','Пластик'),('sulfur','Sulfur','Сера')]:data['recipe.factorycraft.'+name]=(en,ru)[index]
  write(f'assets/factorycraft/lang/{lang}.json',data)

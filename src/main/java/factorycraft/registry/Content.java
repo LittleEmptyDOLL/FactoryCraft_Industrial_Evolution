@@ -71,7 +71,7 @@ public final class Content {
     public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ResourceDepositBlockEntity>> RESOURCE_DEPOSIT_ENTITY=ENTITIES.register("resource_deposit",()->BlockEntityType.Builder.of(ResourceDepositBlockEntity::new,RESOURCES.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
     public static final DeferredHolder<net.minecraft.world.level.levelgen.feature.Feature<?>,factorycraft.worldgen.ResourceVeinFeature> RESOURCE_PATCH_FEATURE=FEATURES.register("resource_patch",factorycraft.worldgen.ResourceVeinFeature::new);
     static {
-        for (String name : List.of("iron_plate", "copper_plate", "iron_gear", "copper_wire", "electronic_circuit","plastic_bar","sulfur","advanced_circuit"))
+        for (String name : List.of("iron_plate", "copper_plate", "iron_gear", "copper_wire", "electronic_circuit","plastic_bar","sulfur","advanced_circuit","battery"))
             ITEMS.registerSimpleItem(name, new Item.Properties());
     }
     public static final DeferredItem<factorycraft.items.FactoryWrenchItem> WRENCH=ITEMS.register("wrench",()->new factorycraft.items.FactoryWrenchItem(new Item.Properties()));

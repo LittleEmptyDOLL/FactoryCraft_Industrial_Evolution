@@ -1,0 +1,22 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "chemical_plant",
+  "fluids": [
+    {
+      "fluid": "factorycraft:light_oil",
+      "amount": 30
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 30
+    }
+  ],
+  "fluid_results": [
+    {
+      "id": "factorycraft:petroleum_gas",
+      "amount": 20
+    }
+  ],
+  "ticks": 40,
+  "energy": 20
+}
