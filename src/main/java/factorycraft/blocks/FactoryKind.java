@@ -9,7 +9,7 @@ public enum FactoryKind {
     public final int beltTier;
     FactoryKind(String id, int beltTier) { this.id = id; this.beltTier = beltTier; }
     public boolean petroleum() { return this==PUMPJACK || this==REFINERY || this==CHEMICAL_PLANT; }
-    public boolean large() { return this==INDUSTRIAL_FURNACE || this==REFINERY; }
+    public boolean large() { return factorycraft.multiblock.MachineProfile.byId(id)!=null; }
     public boolean casing() { return this==CASING || this==REFINERY_CASING; }
     public boolean belt() { return beltTier > 0; }
     public boolean processing() { return this==FURNACE || this==ASSEMBLER || this==INDUSTRIAL_FURNACE || this==REFINERY || this==CHEMICAL_PLANT; }

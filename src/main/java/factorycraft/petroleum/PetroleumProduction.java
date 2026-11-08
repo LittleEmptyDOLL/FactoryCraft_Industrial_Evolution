@@ -43,9 +43,9 @@ public final class PetroleumProduction {
     public void changed() { syncPending=true;machine.markPetroleumState(); }
     public FluidStack stored(int i) { var c=cells.get(i);return c.amount()==0 ? FluidStack.EMPTY:c.key().stack(c.amount()); }
     private void positions() {
-        var forward=machine.getBlockState().getValue(FactoryBlock.FACING);var right=forward.getClockWise();var anchor=machine.getBlockPos();boolean large=machine.kind().large();
+        var forward=machine.getBlockState().getValue(FactoryBlock.FACING);var right=forward.getClockWise();var anchor=machine.getBlockPos();var profile=factorycraft.multiblock.MachineProfile.of(machine.getBlockState());
         directions=new Direction[]{forward.getOpposite(),right.getOpposite(),forward,right};
-        nozzles=new BlockPos[]{large ? anchor.relative(forward.getOpposite()):anchor,anchor,anchor,large ? anchor.relative(right):anchor};
+        nozzles=new BlockPos[]{profile.offset(anchor,forward,profile.layout.width()/2,0,profile.layout.depth()-1),profile.offset(anchor,forward,0,0,profile.layout.depth()/2),profile.offset(anchor,forward,profile.layout.width()/2,0,0),profile.offset(anchor,forward,profile.layout.width()-1,0,profile.layout.depth()/2)};
     }
     public void rotated() { nozzles=null;directions=null;deposit=null; }
     public BlockPos nozzle(int index) { if(nozzles==null)positions();return nozzles[index]; }
@@ -106,7 +106,7 @@ public final class PetroleumProduction {
         if(!(target instanceof OilDepositBlockEntity oil) || !oil.available() || oil.remaining()==0) {
             deposit=null;if(machine.getLevel().getGameTime()%20!=0) { status=1;return false; }
             search:for(int y=1;y<=8;y++)for(int x=-1;x<=1;x++)for(int z=-1;z<=1;z++) {
-                var pos=machine.getBlockPos().offset(x,-y,z);var be=FluidConnections.at(machine.getLevel(),pos);
+                var profile=factorycraft.multiblock.MachineProfile.PUMPJACK;var pos=profile.center(machine.getBlockPos(),machine.getBlockState().getValue(FactoryBlock.FACING)).offset(x,-y,z);var be=FluidConnections.at(machine.getLevel(),pos);
                 if(be instanceof OilDepositBlockEntity oil && oil.available() && oil.remaining()>0) { deposit=pos.immutable();break search; }
             }
             target=deposit==null ? null:FluidConnections.at(machine.getLevel(),deposit);

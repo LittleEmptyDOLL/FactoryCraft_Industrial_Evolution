@@ -1,3 +1,11 @@
+# 0.6.0 — finite resource tiles and full machine footprints (8 November 2026)
+
+* Iron/copper/coal/stone tiles hold finite initialized quantities (default 1000). Manual mining and powered drills extract one unit at a time; exhausted tiles disappear. Full destinations and unavailable chunks never consume stock. Added BE-aware datapack generation, stock interaction and richness configuration.
+* Every existing large machine now occupies its documented Factorio horizontal footprint: drill/furnace/assembler 3×3, refinery 5×5, boiler 3×2, engine 3×5, tank 3×3, pump 1×2, splitter 2×1. Heights are original Minecraft choices; custom generator/industrial furnace are explicitly named adaptations.
+* One-item automatic formation now shares validation, ownership, physical fluid ports and chunk lifecycle across production, thermal, fluid and splitter controllers. Green/red placement preview displays the occupied volume, individual obstructions, dimensions and controller anchor. Dismantling keeps all resources in one portable machine item.
+* Rebuilt all example lines, physical integration fixtures and the full 10000/1000/500 benchmark for actual geometry. Removed obsolete industrial-only placement/fluid wrappers. Added finite-stock and all-profile rotation/preview tests; retained existing recipe, transport and chemistry coverage.
+* **New world required.** Old compact saves are intentionally unsupported under the user's explicit request. Visual shells remain temporary original tiled models; full four-lane splitter throughput, priorities/filters and later progression remain unfinished.
+
 # 0.5.0 — finite petroleum and mixed chemistry (8 November 2026)
 
 * Added persistent finite oil deposits, bounded BE-aware Overworld generation, configurable initial richness and a 10 mB/t / 15 FE/t electric pumpjack. Exhausted reserves do not refill.

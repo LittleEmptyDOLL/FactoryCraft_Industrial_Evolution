@@ -26,7 +26,7 @@ public final class ThermalBlock extends BaseEntityBlock {
     public ThermalBlock(ThermalKind kind,Properties properties) { super(properties);this.kind=kind;registerDefaultState(stateDefinition.any().setValue(FACING,Direction.NORTH).setValue(ACTIVE,false)); }
     protected MapCodec<? extends BaseEntityBlock> codec() { return simpleCodec(p->new ThermalBlock(kind,p)); }
     protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) { builder.add(FACING,ACTIVE); }
-    public BlockState getStateForPlacement(BlockPlaceContext context) { return defaultBlockState().setValue(FACING,context.getHorizontalDirection()); }
+    public BlockState getStateForPlacement(BlockPlaceContext context) { return defaultBlockState().setValue(FACING,factorycraft.multiblock.MachineProfile.of(defaultBlockState()).placementFacing(context.getHorizontalDirection())); }
     public boolean port(BlockState state,Direction side) { var facing=state.getValue(FACING);return side==facing.getOpposite() || kind==ThermalKind.BOILER && side==facing; }
     public BlockEntity newBlockEntity(BlockPos pos,BlockState state) { return new ThermalBlockEntity(pos,state); }
     protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
@@ -40,14 +40,12 @@ public final class ThermalBlock extends BaseEntityBlock {
         if(!level.isClientSide && level.getBlockEntity(pos) instanceof ThermalBlockEntity be)player.openMenu(be,pos);
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
-    public InteractionResult useWrench(Level level,BlockPos pos) {
-        if(!level.isClientSide)level.setBlock(pos,level.getBlockState(pos).cycle(FACING),3);
-        return InteractionResult.sidedSuccess(level.isClientSide);
+    public InteractionResult useWrench(Level level,BlockPos pos,Player player) { return factorycraft.multiblock.StructureSupport.wrench(level,pos,player); }
+    @Override protected void onRemove(BlockState state,Level level,BlockPos pos,BlockState next,boolean moving) {
+        if(!state.is(next.getBlock()) && !level.restoringBlockSnapshots && level.getBlockEntity(pos) instanceof ThermalBlockEntity be)be.dropContents();
+        super.onRemove(state,level,pos,next,moving);
     }
     protected List<ItemStack> getDrops(BlockState state,LootParams.Builder context) {
-        var drops=super.getDrops(state,context);
-        if(context.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof ThermalBlockEntity be && be.hasContents())
-            for(var item:drops)if(item.is(asItem()))be.saveToItem(item,context.getLevel().registryAccess());
-        return drops;
+        return factorycraft.multiblock.StructureSupport.preserve(super.getDrops(state,context),context);
     }
 }

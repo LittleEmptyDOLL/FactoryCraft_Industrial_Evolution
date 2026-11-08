@@ -1,6 +1,6 @@
-# Steam power — 0.4.0
+# Steam power — 0.6.0
 
-Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. This is a usable compact thermal chain integrated with the existing fluid logistics and pole grid. Both machines currently occupy one block; future larger footprints retain the one-item automatic-multiblock rule.
+Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. The thermal chain uses an automatic 3×2 boiler and 3×5 engine (both height 2). One item forms each entire structure. Input/output are centered on the rear/front physical boundary, not the corner controller; see MACHINE_DIMENSIONS.md.
 
 ## Balance
 
@@ -27,7 +27,7 @@ The engine accounts in complete 12-FE quanta. With an empty buffer and no extrac
 
 Survival recipes are unlocked by acquiring iron, including for existing saves. Boiler: 5 iron plates, 2 pipes, vanilla furnace, gear. Engine: 4 iron plates, 2 gears, 2 pipes, copper plate. See `craft_boiler.json` and `craft_steam_engine.json` for exact crafting grids.
 
-`/factorycraft steamworks` requires a loaded empty 13×4×7 area beside the player. It builds enclosed water, electric pump, pipes, boiler with four coal, engine, poles, a bootstrap generator with one coal and a furnace with eight raw iron. It does not directly fill steam/output plates. `/factorycraft power` reports the shared grid. The generator may be removed after the engine starts; `/factorycraft waterworks` and old factory examples remain available.
+`/factorycraft steamworks` requires a loaded empty 30×8×13 area beside the player. It builds enclosed water, electric pump, pipes, boiler with eight coal, engine, poles, a bootstrap generator with eight coal and a furnace with eight raw iron. It does not directly fill steam/output plates. `/factorycraft power` reports the shared grid. The generator may be removed after the engine starts; `/factorycraft waterworks` and old factory examples remain available.
 
 ## Datapack boiling recipes
 

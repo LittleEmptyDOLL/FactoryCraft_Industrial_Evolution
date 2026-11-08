@@ -26,17 +26,18 @@ public final class FluidDeviceBlock extends BaseEntityBlock {
     }
     @Override protected MapCodec<? extends BaseEntityBlock> codec() { return simpleCodec(p->new FluidDeviceBlock(kind,p)); }
     @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder) { builder.add(FACING,ACTIVE); }
-    @Override public BlockState getStateForPlacement(BlockPlaceContext context) { return defaultBlockState().setValue(FACING,context.getHorizontalDirection()); }
+    @Override public BlockState getStateForPlacement(BlockPlaceContext context) { return defaultBlockState().setValue(FACING,factorycraft.multiblock.MachineProfile.of(defaultBlockState()).placementFacing(context.getHorizontalDirection())); }
     @Override public BlockEntity newBlockEntity(BlockPos pos,BlockState state) { return new FluidBlockEntity(pos,state); }
     @Override protected RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
     @Override protected ItemInteractionResult useItemOn(ItemStack stack,BlockState state,Level level,BlockPos pos,Player player,InteractionHand hand,BlockHitResult hit) { return FluidBlocks.useItem(stack,level,pos,player,hand,hit.getDirection()); }
     @Override protected InteractionResult useWithoutItem(BlockState state,Level level,BlockPos pos,Player player,BlockHitResult hit) { return FluidBlocks.open(level,pos,player); }
-    public InteractionResult useWrench(Level level,BlockPos pos) {
-        if(!level.isClientSide && kind==FluidKind.PUMP)level.setBlock(pos,level.getBlockState(pos).cycle(FACING),3);
-        return InteractionResult.sidedSuccess(level.isClientSide);
+    public InteractionResult useWrench(Level level,BlockPos pos,Player player) { return factorycraft.multiblock.StructureSupport.wrench(level,pos,player); }
+    @Override protected void onRemove(BlockState state,Level level,BlockPos pos,BlockState next,boolean moving) {
+        if(!state.is(next.getBlock()) && !level.restoringBlockSnapshots && level.getBlockEntity(pos) instanceof FluidBlockEntity be)be.dropContents();
+        super.onRemove(state,level,pos,next,moving);
     }
     @Override protected void neighborChanged(BlockState state,Level level,BlockPos pos,Block neighbor,BlockPos neighborPos,boolean moving) {
         if(!level.isClientSide && level.getBlockEntity(pos) instanceof FluidBlockEntity be)FluidSimulation.activatePump(be);
     }
-    @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder params) { return FluidBlocks.preserve(super.getDrops(state,params),params); }
+    @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder params) { return factorycraft.multiblock.StructureSupport.preserve(super.getDrops(state,params),params); }
 }

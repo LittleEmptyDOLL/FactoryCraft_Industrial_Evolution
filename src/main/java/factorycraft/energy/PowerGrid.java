@@ -22,7 +22,7 @@ public final class PowerGrid {
     }
     public static void add(FactoryBlockEntity be) {
         var state=STATES.computeIfAbsent(be.getLevel(),l->new State());
-        var p=be.getBlockPos();
+        var p=be.getBlockPos();var profile=factorycraft.multiblock.MachineProfile.of(be.getBlockState());if(profile!=null)p=profile.center(p,profile.facing(be.getBlockState()));
         var kind=be instanceof PoleBlockEntity ? PowerTopology.Kind.POLE:
                 be instanceof GridGenerator generator && generator.generatesElectricity() ? PowerTopology.Kind.SOURCE:PowerTopology.Kind.CONSUMER;
         state.graph.add(be,new PowerPoint(p.getX(),p.getY(),p.getZ()),kind,

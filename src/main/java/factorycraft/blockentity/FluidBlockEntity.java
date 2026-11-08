@@ -20,8 +20,10 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.*;
 
 /** One canonical, persisted fluid cell. Cached capability objects recheck lifecycle and orientation. */
-public final class FluidBlockEntity extends FactoryBlockEntity implements MenuProvider,GridConsumer {
+public final class FluidBlockEntity extends FactoryBlockEntity implements factorycraft.multiblock.AssemblyOwner,MenuProvider,GridConsumer {
     private static final IItemHandler EMPTY=new ItemStackHandler(0);
+    private final factorycraft.multiblock.IndustrialAssembly assembly;
+    public factorycraft.multiblock.IndustrialAssembly assembly() { return assembly; }
     private boolean loaded;
     private final FluidKind kind;
     private final FluidCell<FluidKey> cell;
@@ -38,6 +40,7 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements MenuPr
     };
     public FluidBlockEntity(BlockPos pos,BlockState state) {
         super(Content.FLUID.get(),pos,state);kind=FluidBlocks.kind(state);cell=new FluidCell<>(kind.capacity,this::fluidChanged);
+        assembly=kind==FluidKind.PIPE ? null:new factorycraft.multiblock.IndustrialAssembly(this);
         for(int i=0;i<ports.length;i++)ports[i]=new Port(i==6 ? null:Direction.from3DDataValue(i));
     }
     public FluidKind kind() { return kind; }
@@ -48,14 +51,33 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements MenuPr
         var chunk=server.getChunkSource().getChunkNow(worldPosition.getX()>>4,worldPosition.getZ()>>4);
         if(chunk==null || chunk.getBlockEntities().get(worldPosition)!=this)return false;
         if(ownedChunk==null)ownedChunk=chunk;
-        return ownedChunk==chunk;
+        return ownedChunk==chunk && (assembly==null || assembly.ready());
     }
     private boolean accessible() { return simulationAvailable(); }
     private boolean readable() {
         if(level==null || isRemoved())return false;
         return level.isClientSide ? level.hasChunkAt(worldPosition) && level.getBlockEntity(worldPosition)==this:simulationAvailable();
     }
-    public Direction facing() { return kind==FluidKind.PUMP ? getBlockState().getValue(FluidDeviceBlock.FACING):Direction.NORTH; }
+    public Direction facing() { return kind==FluidKind.PIPE ? Direction.NORTH:getBlockState().getValue(FluidDeviceBlock.FACING); }
+    public BlockPos inputNozzle() { return kind==FluidKind.PUMP ? worldPosition.relative(facing().getOpposite()):worldPosition; }
+    public BlockPos outputNozzle() { return worldPosition; }
+    public record Connection(BlockPos pos,Direction side) {}
+    public java.util.List<Connection> connections() {
+        if(kind==FluidKind.PUMP)return java.util.List.of(new Connection(inputNozzle(),facing().getOpposite()),new Connection(outputNozzle(),facing()));
+        if(kind==FluidKind.PIPE)return java.util.Arrays.stream(Direction.values()).map(d->new Connection(worldPosition,d)).toList();
+        var profile=factorycraft.multiblock.MachineProfile.TANK;var all=new java.util.HashSet<>(profile.cells(worldPosition,facing()));var list=new java.util.ArrayList<Connection>();
+        for(var pos:all)for(var side:Direction.values())if(!all.contains(pos.relative(side)))list.add(new Connection(pos,side));return list;
+    }
+    public IFluidHandler structurePort(BlockPos pos,Direction side) {
+        if(side==null)return port(null);
+        if(kind==FluidKind.PIPE)return pos.equals(worldPosition) ? port(side):null;
+        if(kind==FluidKind.PUMP)return pos.equals(inputNozzle()) && side==facing().getOpposite() || pos.equals(outputNozzle()) && side==facing() ? port(side):null;
+        var profile=factorycraft.multiblock.MachineProfile.TANK;var delta=pos.subtract(worldPosition);var right=facing().getClockWise();
+        int r=delta.getX()*right.getStepX()+delta.getZ()*right.getStepZ(),b=-delta.getX()*facing().getStepX()-delta.getZ()*facing().getStepZ(),y=delta.getY();
+        if(r<0 || r>=profile.layout.width() || b<0 || b>=profile.layout.depth() || y<0 || y>=profile.layout.height())return null;
+        boolean edge=side==Direction.UP ? y==profile.layout.height()-1:side==Direction.DOWN ? y==0:side==facing() ? b==0:side==facing().getOpposite() ? b==profile.layout.depth()-1:side==right ? r==profile.layout.width()-1:r==0;
+        return edge ? port(side):null;
+    }
     public IFluidHandler port(Direction side) { return ports[side==null ? 6:side.get3DDataValue()]; }
     public FluidStack stored() { return cell.amount()==0 ? FluidStack.EMPTY:cell.key().stack(cell.amount()); }
     @Override public IItemHandler inventory() { return EMPTY; }
@@ -94,12 +116,12 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements MenuPr
         }
     }
     @Override public void onLoad() {
-        super.onLoad();if(level.isClientSide || loaded)return;loaded=true;simulationAvailable();
+        super.onLoad();if(level.isClientSide || loaded)return;loaded=true;if(assembly!=null)assembly.invalidate();simulationAvailable();
         FluidSimulation.register(this);if(kind==FluidKind.PUMP)PowerGrid.add(this);
     }
     private void detach() {
         if(!loaded || level==null || level.isClientSide)return;
-        loaded=false;ownedChunk=null;FluidSimulation.unregister(this);if(kind==FluidKind.PUMP)PowerGrid.remove(this);
+        loaded=false;ownedChunk=null;if(assembly!=null)assembly.invalidate();FluidSimulation.unregister(this);if(kind==FluidKind.PUMP)PowerGrid.remove(this);
     }
     @Override public void onChunkUnloaded() { detach();super.onChunkUnloaded(); }
     @Override public void setRemoved() { detach();super.setRemoved(); }
@@ -116,13 +138,14 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements MenuPr
         public void set(int index,int value) {}
         public int getCount() { return 7; }
     };
+    @Override public void dropContents() { if(assembly!=null)assembly.removeWhole(true); }
     @Override public Component getDisplayName() { return Component.translatable("block.factorycraft."+kind.id); }
     @Override public AbstractContainerMenu createMenu(int id,Inventory inventory,Player player) { return new FluidMenu(id,inventory,FluidBlockEntity.this,data); }
     @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider registries) {
-        super.saveAdditional(tag,registries);tag.putInt("Schema",1);tag.put("StoredFluid",stored().saveOptional(registries));tag.putInt("Energy",power.getEnergyStored());
+        super.saveAdditional(tag,registries);if(assembly!=null)assembly.save(tag);tag.putInt("Schema",1);tag.put("StoredFluid",stored().saveOptional(registries));tag.putInt("Energy",power.getEnergyStored());
     }
     @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries) {
-        super.loadAdditional(tag,registries);var fluid=FluidStack.parseOptional(registries,tag.getCompound("StoredFluid"));
+        super.loadAdditional(tag,registries);if(assembly!=null)assembly.load(tag);var fluid=FluidStack.parseOptional(registries,tag.getCompound("StoredFluid"));
         cell.restore(fluid.isEmpty() ? null:new FluidKey(fluid),fluid.getAmount());power.restore(tag.getInt("Energy"));
         if(loaded())FluidSimulation.changed(this);
     }

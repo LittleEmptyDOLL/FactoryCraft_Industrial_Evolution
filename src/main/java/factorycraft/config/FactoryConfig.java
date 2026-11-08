@@ -10,6 +10,7 @@ public final class FactoryConfig {
     public static final ModConfigSpec.IntValue POWER_GRAPH_WORK;
     public static final ModConfigSpec.IntValue FLUID_WORK;
     public static final ModConfigSpec.IntValue OIL_RICHNESS;
+    public static final ModConfigSpec.IntValue ORE_RICHNESS;
     static {
         var b = new ModConfigSpec.Builder();
         GENERATOR_FE = b.comment("FE produced per tick while burning coal; vanilla coal lasts 1600 ticks.")
@@ -23,6 +24,7 @@ public final class FactoryConfig {
         FLUID_WORK=b.comment("Maximum passive fluid edges and queued pumps processed per level tick; FIFO backlog never drops fluid.")
                 .defineInRange("fluidWorkPerTick",16384,64,1048576);
         OIL_RICHNESS=b.comment("Initial mB in each newly initialized finite oil deposit. Existing reserves never reset.").defineInRange("oilDepositRichness",64000,1000,10000000);
+        ORE_RICHNESS=b.comment("Units in each newly initialized solid resource tile; surviving tiles never refill.").defineInRange("oreTileRichness",1000,1,10000000);
         SPEC = b.build();
     }
     private FactoryConfig() {}

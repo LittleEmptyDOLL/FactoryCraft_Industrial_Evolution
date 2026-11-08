@@ -1,140 +1,91 @@
 package factorycraft.core;
 
 import factorycraft.FactoryCraft;
-import factorycraft.blockentity.MachineBlockEntity;
+import factorycraft.blockentity.*;
 import factorycraft.blocks.*;
+import factorycraft.fluids.FluidKind;
+import factorycraft.multiblock.StructurePlacement;
 import factorycraft.registry.Content;
-import factorycraft.simulation.BeltSimulation;
-import net.minecraft.commands.Commands;
+import factorycraft.thermal.ThermalKind;
+import net.minecraft.commands.*;
 import net.minecraft.core.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 @EventBusSubscriber(modid=FactoryCraft.ID)
 public final class FactoryCommands {
-    @SubscribeEvent public static void register(RegisterCommandsEvent e) {
-        e.getDispatcher().register(Commands.literal("factorycraft").requires(s->s.hasPermission(2))
-                .then(Commands.literal("smelter").executes(c->smelter(c.getSource())))
-                .then(Commands.literal("fluids").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.fluids.FluidSimulation.statistics(c.getSource().getLevel())),false);return 1;}))
-                .then(Commands.literal("oilworks").executes(c->oilworks(c.getSource())))
-                .then(Commands.literal("steamworks").executes(c->steamworks(c.getSource())))
-                .then(Commands.literal("waterworks").executes(c->waterworks(c.getSource())))
-                .then(Commands.literal("power").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.energy.PowerGrid.statistics(c.getSource().getLevel())),false);return 1;}))
-                .then(Commands.literal("profile").executes(c->{c.getSource().sendSuccess(()->Component.literal(BeltSimulation.statistics(c.getSource().getLevel())),false);return 1;}))
-                .then(Commands.literal("demo").executes(c->{
-                    var source=c.getSource();var level=source.getLevel();
-                    BlockPos origin=BlockPos.containing(source.getPosition()).offset(2,0,2);
-                    for(var p:BlockPos.betweenClosed(origin,origin.offset(15,4,7))) {
-                        if(!level.hasChunkAt(p) || !level.getBlockState(p).isAir()) {
-                            source.sendFailure(Component.translatable("command.factorycraft.space"));return 0;
-                        }
-                    }
-                    for(int x=0;x<16;x++)for(int z=0;z<8;z++)level.setBlockAndUpdate(origin.offset(x,1,z),Blocks.STONE_BRICKS.defaultBlockState());
-                    for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)level.setBlockAndUpdate(origin.offset(x,1,z),Content.IRON_ORE.get().defaultBlockState());
-                    put(level,origin,2,2,FactoryKind.DRILL);put(level,origin,3,2,FactoryKind.INSERTER);
-                    put(level,origin,4,2,FactoryKind.BELT);put(level,origin,5,2,FactoryKind.BELT);
-                    put(level,origin,6,2,FactoryKind.INSERTER);put(level,origin,7,2,FactoryKind.FURNACE);
-                    put(level,origin,8,2,FactoryKind.INSERTER);put(level,origin,9,2,FactoryKind.ASSEMBLER);put(level,origin,10,2,FactoryKind.INSERTER);
-                    level.setBlockAndUpdate(origin.offset(11,2,2),Blocks.CHEST.defaultBlockState());
-                    put(level,origin,5,5,FactoryKind.GENERATOR);put(level,origin,4,4,FactoryKind.POLE);put(level,origin,9,4,FactoryKind.POLE);
-                    ((MachineBlockEntity)level.getBlockEntity(origin.offset(5,2,5))).items.setStackInSlot(8,new ItemStack(Items.COAL,4));
-                    source.sendSuccess(()->Component.translatable("command.factorycraft.demo",origin.toShortString()),true);return 1;
-                })));
+    @SubscribeEvent public static void register(RegisterCommandsEvent event) {
+        var root=Commands.literal("factorycraft").requires(s->s.hasPermission(2));
+        for(String name:new String[]{"demo","smelter","waterworks","steamworks","oilworks"})root.then(Commands.literal(name).executes(c->build(c.getSource(),name)));
+        root.then(Commands.literal("power").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.energy.PowerGrid.statistics(c.getSource().getLevel())),false);return 1;}));
+        root.then(Commands.literal("fluids").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.fluids.FluidSimulation.statistics(c.getSource().getLevel())),false);return 1;}));
+        root.then(Commands.literal("profile").executes(c->{c.getSource().sendSuccess(()->Component.literal(factorycraft.simulation.BeltSimulation.statistics(c.getSource().getLevel())),false);return 1;}));
+        event.getDispatcher().register(root);
     }
-    private static int smelter(net.minecraft.commands.CommandSourceStack source) {
-        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(2,0,2);
-        for(var p:BlockPos.betweenClosed(origin.offset(-1,0,-3),origin.offset(4,4,3)))
-            if(!level.hasChunkAt(p) || !level.getBlockState(p).isAir()) { source.sendFailure(Component.translatable("command.factorycraft.smelter_space"));return 0; }
-        for(int x=-1;x<=4;x++)for(int z=-3;z<=3;z++)level.setBlockAndUpdate(origin.offset(x,1,z),Blocks.STONE_BRICKS.defaultBlockState());
-        var anchor=origin.offset(0,2,0);
-        level.setBlockAndUpdate(anchor,Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().defaultBlockState());
-        for(var p:factorycraft.multiblock.IndustrialAssembly.positions(anchor,Direction.NORTH))
-            level.setBlockAndUpdate(p,Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());
-        var machine=(MachineBlockEntity)level.getBlockEntity(anchor);machine.assembly().formAutomatic();
-        put(level,origin,3,-1,FactoryKind.GENERATOR);put(level,origin,2,0,FactoryKind.POLE);
-        ((MachineBlockEntity)level.getBlockEntity(origin.offset(3,2,-1))).items.setStackInSlot(8,new ItemStack(Items.COAL,4));
-        level.setBlockAndUpdate(origin.offset(3,2,1),Blocks.CHEST.defaultBlockState());
-        ((net.minecraft.world.level.block.entity.ChestBlockEntity)level.getBlockEntity(origin.offset(3,2,1))).setItem(0,new ItemStack(Items.RAW_IRON,12));
-        level.setBlockAndUpdate(origin.offset(2,2,1),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.WEST));
-        level.setBlockAndUpdate(origin.offset(0,2,-1),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.NORTH));
-        level.setBlockAndUpdate(origin.offset(0,2,-2),Blocks.CHEST.defaultBlockState());
-        source.sendSuccess(()->Component.translatable("command.factorycraft.smelter",anchor.toShortString()),true);return 1;
-    }
-    private static int waterworks(net.minecraft.commands.CommandSourceStack source) {
-        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(2,0,2);
-        for(var p:BlockPos.betweenClosed(origin,origin.offset(8,3,4)))
-            if(!level.hasChunkAt(p) || !level.getBlockState(p).isAir()) { source.sendFailure(Component.translatable("command.factorycraft.fluid_space"));return 0; }
-        for(int x=0;x<9;x++)for(int z=0;z<5;z++)level.setBlockAndUpdate(origin.offset(x,0,z),Blocks.STONE_BRICKS.defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(1,1,2),Blocks.WATER.defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(0,1,2),Blocks.STONE_BRICKS.defaultBlockState());
-        for(int z=1;z<=3;z++)if(z!=2)level.setBlockAndUpdate(origin.offset(1,1,z),Blocks.STONE_BRICKS.defaultBlockState());
-        for(int x=2;x<=7;x++) {
-            var kind=x==2 ? factorycraft.fluids.FluidKind.PUMP:x==7 ? factorycraft.fluids.FluidKind.TANK:factorycraft.fluids.FluidKind.PIPE;
-            var state=Content.FLUID_BLOCKS.get(kind).get().defaultBlockState();
-            if(kind==factorycraft.fluids.FluidKind.PUMP)state=state.setValue(factorycraft.blocks.FluidDeviceBlock.FACING,Direction.EAST);
-            level.setBlockAndUpdate(origin.offset(x,1,2),state);
+    private static int build(CommandSourceStack source,String name) {
+        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(3,0,3);
+        for(var pos:BlockPos.betweenClosed(origin,origin.offset(29,7,12)))if(!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) {
+            source.sendFailure(Component.translatable("command.factorycraft.full_size_space"));return 0;
         }
-        level.setBlockAndUpdate(origin.offset(0,1,0),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-        ((MachineBlockEntity)level.getBlockEntity(origin.offset(0,1,0))).items.setStackInSlot(8,new ItemStack(Items.COAL,4));
-        level.setBlockAndUpdate(origin.offset(2,1,0),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        source.sendSuccess(()->Component.translatable("command.factorycraft.fluid_demo",origin.toShortString()),true);return 1;
-    }
-    private static int steamworks(net.minecraft.commands.CommandSourceStack source) {
-        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(2,0,2);
-        for(var p:BlockPos.betweenClosed(origin,origin.offset(12,3,6)))
-            if(!level.hasChunkAt(p) || !level.getBlockState(p).isAir()) { source.sendFailure(Component.translatable("command.factorycraft.steam_space"));return 0; }
-        for(int x=0;x<13;x++)for(int z=0;z<7;z++)level.setBlockAndUpdate(origin.offset(x,0,z),Blocks.STONE_BRICKS.defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(1,1,4),Blocks.WATER.defaultBlockState());
-        for(var p:java.util.List.of(origin.offset(0,1,4),origin.offset(1,1,3),origin.offset(1,1,5)))level.setBlockAndUpdate(p,Blocks.STONE_BRICKS.defaultBlockState());
-        for(int x=2;x<=8;x++) {
-            var pos=origin.offset(x,1,4);
-            if(x==5 || x==8) {
-                var kind=x==5 ? factorycraft.thermal.ThermalKind.BOILER:factorycraft.thermal.ThermalKind.ENGINE;
-                level.setBlockAndUpdate(pos,Content.THERMAL_BLOCKS.get(kind).get().defaultBlockState().setValue(factorycraft.blocks.ThermalBlock.FACING,Direction.EAST));
-                if(x==5)((factorycraft.blockentity.ThermalBlockEntity)level.getBlockEntity(pos)).items.setStackInSlot(0,new ItemStack(Items.COAL,4));
-            } else {
-                var kind=x==2 ? factorycraft.fluids.FluidKind.PUMP:factorycraft.fluids.FluidKind.PIPE;
-                var state=Content.FLUID_BLOCKS.get(kind).get().defaultBlockState();
-                if(x==2)state=state.setValue(factorycraft.blocks.FluidDeviceBlock.FACING,Direction.EAST);
-                level.setBlockAndUpdate(pos,state);
-            }
+        for(int x=0;x<30;x++)for(int z=0;z<13;z++)level.setBlockAndUpdate(origin.offset(x,0,z),Blocks.STONE_BRICKS.defaultBlockState());
+        switch(name) {
+            case "demo","smelter" -> ironLine(level,origin.above(),name.equals("smelter"));
+            case "waterworks" -> waterLine(level,origin.above(),false);
+            case "steamworks" -> waterLine(level,origin.above(),true);
+            case "oilworks" -> oilLine(level,origin.above());
+            default -> throw new IllegalArgumentException(name);
         }
-        for(int x:new int[]{3,7})level.setBlockAndUpdate(origin.offset(x,1,2),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(1,1,1),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-        ((MachineBlockEntity)level.getBlockEntity(origin.offset(1,1,1))).items.setStackInSlot(8,new ItemStack(Items.COAL));
-        level.setBlockAndUpdate(origin.offset(10,1,2),Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
-        ((MachineBlockEntity)level.getBlockEntity(origin.offset(10,1,2))).items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,8));
-        source.sendSuccess(()->Component.translatable("command.factorycraft.steam_demo",origin.toShortString()),true);return 1;
+        source.sendSuccess(()->Component.translatable("command.factorycraft.full_size_built",name,origin.toShortString()),true);return 1;
     }
-    private static int oilworks(net.minecraft.commands.CommandSourceStack source) {
-        var level=source.getLevel();var origin=BlockPos.containing(source.getPosition()).offset(2,0,2);
-        for(var pos:BlockPos.betweenClosed(origin,origin.offset(21,5,8)))if(!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) { source.sendFailure(Component.translatable("command.factorycraft.oil_space"));return 0; }
-        for(int x=0;x<22;x++)for(int z=0;z<9;z++)for(int y=0;y<2;y++)level.setBlockAndUpdate(origin.offset(x,y,z),Blocks.STONE_BRICKS.defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(3,1,4),Content.OIL_DEPOSIT.get().defaultBlockState());
-        for(var entry:java.util.Map.of(3,FactoryKind.PUMPJACK,9,FactoryKind.REFINERY,13,FactoryKind.CHEMICAL_PLANT).entrySet()) {
-            var pos=origin.offset(entry.getKey(),2,4);level.setBlockAndUpdate(pos,Content.FACTORY.get(entry.getValue()).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
-            if(entry.getValue().large()) {
-                for(var part:factorycraft.multiblock.IndustrialAssembly.positions(pos,Direction.EAST))level.setBlockAndUpdate(part,Content.FACTORY.get(FactoryKind.REFINERY_CASING).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
-                ((MachineBlockEntity)level.getBlockEntity(pos)).assembly().formAutomatic();
-            }
-        }
-        for(int x:new int[]{4,5,6,7,10,11,12})level.setBlockAndUpdate(origin.offset(x,2,4),Content.FLUID_BLOCKS.get(factorycraft.fluids.FluidKind.PIPE).get().defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(13,2,2),Blocks.CHEST.defaultBlockState());
-        ((net.minecraft.world.level.block.entity.ChestBlockEntity)level.getBlockEntity(origin.offset(13,2,2))).setItem(0,new ItemStack(Items.COAL,32));
-        level.setBlockAndUpdate(origin.offset(13,2,3),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.SOUTH));
-        level.setBlockAndUpdate(origin.offset(14,2,4),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
-        level.setBlockAndUpdate(origin.offset(15,2,4),Blocks.CHEST.defaultBlockState());
-        level.setBlockAndUpdate(origin.offset(6,2,1),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-        ((MachineBlockEntity)level.getBlockEntity(origin.offset(6,2,1))).items.setStackInSlot(8,new ItemStack(Items.COAL,8));
-        for(var p:java.util.List.of(origin.offset(5,2,2),origin.offset(10,2,1),origin.offset(14,2,2)))level.setBlockAndUpdate(p,Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        source.sendSuccess(()->Component.translatable("command.factorycraft.oil_demo",origin.toShortString()),true);return 1;
+    public static MachineBlockEntity machine(ServerLevel level,BlockPos pos,FactoryKind kind,Direction facing) {
+        StructurePlacement.place(level,pos,Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,facing));
+        return level.getBlockEntity(pos) instanceof MachineBlockEntity m ? m:null;
     }
-    private static void put(net.minecraft.server.level.ServerLevel level,BlockPos origin,int x,int z,FactoryKind kind) {
-        level.setBlockAndUpdate(origin.offset(x,2,z),Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
+    private static void pole(ServerLevel level,BlockPos origin,int x,int z) { machine(level,origin.offset(x,0,z),FactoryKind.POLE,Direction.NORTH); }
+    private static void arm(ServerLevel level,BlockPos origin,int x,int z,Direction direction) { machine(level,origin.offset(x,0,z),FactoryKind.INSERTER,direction); }
+    private static void generator(ServerLevel level,BlockPos origin,int x,int z) { machine(level,origin.offset(x,0,z),FactoryKind.GENERATOR,Direction.NORTH).items.setStackInSlot(8,new ItemStack(Items.COAL,8)); }
+    /** Complete finite-resource line; shared with the physical integration test. */
+    public static ChestBlockEntity ironLine(ServerLevel level,BlockPos origin,boolean industrial) {
+        var ore=origin.offset(1,-1,3);level.setBlockAndUpdate(ore,Content.IRON_ORE.get().defaultBlockState());
+        machine(level,origin.offset(0,0,2),FactoryKind.DRILL,Direction.NORTH);arm(level,origin,3,3,Direction.EAST);
+        machine(level,origin.offset(4,0,3),FactoryKind.BELT,Direction.EAST);machine(level,origin.offset(5,0,3),FactoryKind.BELT,Direction.EAST);arm(level,origin,6,3,Direction.EAST);
+        machine(level,origin.offset(7,0,2),industrial ? FactoryKind.INDUSTRIAL_FURNACE:FactoryKind.FURNACE,Direction.NORTH);arm(level,origin,10,3,Direction.EAST);
+        machine(level,origin.offset(11,0,2),FactoryKind.ASSEMBLER,Direction.NORTH);arm(level,origin,14,3,Direction.EAST);
+        level.setBlockAndUpdate(origin.offset(15,0,3),Blocks.CHEST.defaultBlockState());generator(level,origin,5,7);
+        for(int x:new int[]{4,9,13})pole(level,origin,x,5);
+        return (ChestBlockEntity)level.getBlockEntity(origin.offset(15,0,3));
     }
-    private FactoryCommands(){}
+    private static void fluid(ServerLevel level,BlockPos origin,int x,int z,FluidKind kind) { var state=Content.FLUID_BLOCKS.get(kind).get().defaultBlockState();if(kind!=FluidKind.PIPE)state=state.setValue(FluidDeviceBlock.FACING,kind==FluidKind.TANK ? Direction.NORTH:Direction.EAST);StructurePlacement.place(level,origin.offset(x,0,z),state); }
+    private static void waterLine(ServerLevel level,BlockPos o,boolean thermal) {
+        var water=o.offset(1,0,2);for(var d:Direction.Plane.HORIZONTAL)if(d!=Direction.EAST)level.setBlockAndUpdate(water.relative(d),Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(water,Blocks.WATER.defaultBlockState());fluid(level,o,3,2,FluidKind.PUMP);
+        for(int x=4;x<=(thermal ? 5:7);x++)fluid(level,o,x,2,FluidKind.PIPE);
+        if(thermal) {
+            StructurePlacement.place(level,o.offset(7,0,1),Content.THERMAL_BLOCKS.get(ThermalKind.BOILER).get().defaultBlockState().setValue(ThermalBlock.FACING,Direction.EAST));
+            ((ThermalBlockEntity)level.getBlockEntity(o.offset(7,0,1))).items.setStackInSlot(0,new ItemStack(Items.COAL,8));
+            fluid(level,o,8,2,FluidKind.PIPE);fluid(level,o,9,2,FluidKind.PIPE);
+            StructurePlacement.place(level,o.offset(14,0,1),Content.THERMAL_BLOCKS.get(ThermalKind.ENGINE).get().defaultBlockState().setValue(ThermalBlock.FACING,Direction.EAST));
+            machine(level,o.offset(17,0,1),FactoryKind.FURNACE,Direction.NORTH).items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,8));
+            for(int x:new int[]{4,9,14,18})pole(level,o,x,5);
+        } else { fluid(level,o,8,1,FluidKind.TANK);for(int x:new int[]{4,9})pole(level,o,x,5); }
+        generator(level,o,0,7);
+    }
+    public static void oilLine(ServerLevel level,BlockPos o) {
+        level.setBlockAndUpdate(o.offset(2,-1,3),Content.OIL_DEPOSIT.get().defaultBlockState());
+        machine(level,o.offset(3,0,2),FactoryKind.PUMPJACK,Direction.EAST);
+        for(int x=4;x<=6;x++)fluid(level,o,x,3,FluidKind.PIPE);
+        machine(level,o.offset(11,0,1),FactoryKind.REFINERY,Direction.EAST);
+        for(int x=12;x<=14;x++)fluid(level,o,x,3,FluidKind.PIPE);
+        machine(level,o.offset(17,0,2),FactoryKind.CHEMICAL_PLANT,Direction.EAST);
+        level.setBlockAndUpdate(o.offset(16,0,0),Blocks.CHEST.defaultBlockState());((ChestBlockEntity)level.getBlockEntity(o.offset(16,0,0))).setItem(0,new ItemStack(Items.COAL,32));
+        arm(level,o,16,1,Direction.SOUTH);arm(level,o,18,3,Direction.EAST);level.setBlockAndUpdate(o.offset(19,0,3),Blocks.CHEST.defaultBlockState());
+        generator(level,o,4,8);for(int x:new int[]{3,8,13,17})pole(level,o,x,6);
+    }
+    private FactoryCommands() {}
 }

@@ -1,4 +1,4 @@
-# Petroleum and mixed processing — 0.5.0
+# Petroleum and mixed processing — 0.6.0
 
 Target: Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. This is the first usable petroleum chain, integrated with existing poles, fluid pipes, inserters and the assembler. Advanced refining is not complete.
 
@@ -28,18 +28,18 @@ Worldgen is configurable through `worldgen/configured_feature/oil_deposit.json`,
 
 ## One-item refinery and fluid ports
 
-Place **one oil refinery item** with a free loaded 2×2×2 footprint. It forms the entire structure automatically through the same protected snapshot placement as the industrial furnace. It extends right, upward and backward from the controller. Generated refinery parts are hidden internal blocks, not ingredients; only the controller owns inventory, FE, progress and fluids. Normal protection cancellation rolls back every generated cell and refunds the item. Breaking any part returns one portable refinery item, with the sole resource state inside; no duplicate loose inventory drops occur. Placement removes the old assembly identity from the imported data and binds all new parts to a fresh identity. The old industrial furnace/manual saves retain their old behavior.
+Place **one oil refinery item** with a free loaded 5×4×5 volume (width × height × depth). It forms the entire structure automatically through the same protected snapshot placement as the industrial furnace. It extends right, upward and backward from the controller. Generated refinery parts are hidden internal blocks, not ingredients; only the controller owns inventory, FE, progress and fluids. Normal protection cancellation rolls back every generated cell and refunds the item. Breaking any part returns one portable refinery item, with the sole resource state inside; no duplicate loose inventory drops occur. Placement removes the old assembly identity from the imported data and binds all new parts to a fresh identity. 0.6.0 requires a new world; old compact saves are not migrated.
 
-For the refinery, use these marked lower-layer positions relative to the controller (F = forward/top-arrow direction; R = right):
+For the refinery, use these lower-layer boundary positions relative to the controller (F = forward/top-arrow direction; R = right):
 
 | Tank | Face | Physical block | Neighbor connection |
 |---|---|---|---|
-| Input 1 | back (−F) | rear part at controller − F | controller − 2F |
-| Input 2 | left (−R) | controller | controller − R |
-| Output 1 | front (+F) | controller | controller + F |
-| Output 2 | right (+R) | right part at controller + R | controller + 2R |
+| Input 1 | back (−F) | controller + 2R − 4F | controller + 2R − 5F |
+| Input 2 | left (−R) | controller − 2F | controller − R − 2F |
+| Output 1 | front (+F) | controller + 2R | controller + 2R + F |
+| Output 2 | right (+R) | controller + 4R − 2F | controller + 5R − 2F |
 
-The compact chemical plant uses the controller block itself for all four horizontal ports: rear input 1, left input 2, front output 1, right output 2. Basic oil uses only input 1/output 1. Plastic uses gas in input 1 and coal in item inputs; sulfur uses gas in input 1/water in input 2. Items move through inserters/hoppers and standard NeoForge item capabilities. Empty unused fluid tanks are not automatically merged or repurposed.
+The 3×3 chemical plant uses centered rear/front boundary cells for input 1/output 1, and centered left/right cells for input 2/output 2; the 5×5 refinery uses the same relative rule. See MACHINE_DIMENSIONS.md for physical placement. Basic oil uses only input 1/output 1. Plastic uses gas in input 1 and coal in item inputs; sulfur uses gas in input 1/water in input 2. Items move through inserters/hoppers and standard NeoForge item capabilities. Empty unused fluid tanks are not automatically merged or repurposed.
 
 Processors pull/push up to 100 mB per nozzle/tick into adjacent canonical FactoryCraft fluid endpoints, rather than participating as passive pressure nodes. Pipes use FLUIDS.md's finite local-pressure model. Generated-part capabilities recheck loaded part, canonical controller, identity and assembly readiness on every access. When a required part unloads, production and forwarded automation pause; no world access forces another chunk to load. Individual processors retain ordinary BE tickers; no large thermal/chemical TPS claim is made.
 
@@ -49,7 +49,7 @@ Sided fluid capabilities fill inputs and drain outputs. Unsided capability acces
 
 Right-click a processor (or any refinery part) for the same controller menu: live tanks, item slots, FE, progress, assembly status and recipe choice. Hover the recipe line / `?` for all counted item/fluid requirements and results, duration and FE per tick. This works without JEI. Selection is saved by recipe ID, and partial progress also records a canonical serialized definition; adding/editing recipes does not reuse another definition's progress. The menu fits the minimum 240-unit GUI height. Full-block synchronization is limited to changed-state updates on a five-tick cadence; this is not a measured multiplayer delta protocol.
 
-`/factorycraft oilworks` needs a loaded empty **22×6×9** area beside the player. It builds a finite reservoir under a pumpjack, pipes, a correctly formed refinery, a chemical plant, poles, generator with eight coal, a separate 32-coal supply chest/inserter, and an output inserter/chest. It never fills crude/gas tanks or supplies plastic directly. The finite coal feed supports 64 plastic bars; refill the feed to continue while oil remains. A normal survival factory obtains deposits by exploration and crafts the three machines from the recipe book.
+`/factorycraft oilworks` needs a loaded empty **30×8×13** area beside the player. It builds a finite reservoir under a pumpjack, pipes, a correctly formed refinery, a chemical plant, poles, generator with eight coal, a separate 32-coal supply chest/inserter, and an output inserter/chest. It never fills crude/gas tanks or supplies plastic directly. The finite coal feed supports 64 plastic bars; refill the feed to continue while oil remains. A normal survival factory obtains deposits by exploration and crafts the three machines from the recipe book.
 
 ![Refinery menu](docs/screenshots/refinery-0.5.0.png)
 

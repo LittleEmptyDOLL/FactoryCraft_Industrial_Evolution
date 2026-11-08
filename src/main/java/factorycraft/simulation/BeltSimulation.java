@@ -31,14 +31,17 @@ public final class BeltSimulation {
         be.simulationLoaded=false;be.unbindTransport();topologyChanged(be);
     }
     public static void activate(BeltBlockEntity be) { if(be.simulationLoaded)be.wakeTransport(); }
+    public static BeltBlockEntity at(Level level,net.minecraft.core.BlockPos pos) {
+        var be=factorycraft.fluids.FluidConnections.at(level,pos);
+        if(be instanceof factorycraft.blockentity.CasingBlockEntity part) { var owner=part.genericForRemoval();return owner instanceof BeltBlockEntity belt ? belt:null; }
+        return be instanceof BeltBlockEntity belt ? belt:null;
+    }
     public static void topologyChanged(BeltBlockEntity be) {
         var level=be.getLevel();if(level==null || level.isClientSide)return;
         if(be.simulationLoaded)be.refreshConnections();
-        for(var d:Direction.Plane.HORIZONTAL) {
-            var p=be.getBlockPos().relative(d);
-            if(level.hasChunkAt(p) && level.getBlockEntity(p) instanceof BeltBlockEntity neighbor && neighbor.simulationLoaded)
-                neighbor.refreshConnections();
-        }
+        var profile=factorycraft.multiblock.MachineProfile.of(be.getBlockState());
+        var cells=profile==null ? java.util.List.of(be.getBlockPos()):profile.cells(be.getBlockPos(),profile.facing(be.getBlockState()));
+        for(var cell:cells)for(var d:Direction.Plane.HORIZONTAL) { var neighbor=at(level,cell.relative(d));if(neighbor!=null && neighbor!=be && neighbor.simulationLoaded)neighbor.refreshConnections(); }
     }
     public static void changed(BeltBlockEntity be,boolean contents) {
         var state=STATES.get(be.getLevel());

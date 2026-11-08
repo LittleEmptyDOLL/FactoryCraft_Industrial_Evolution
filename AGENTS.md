@@ -4,7 +4,7 @@
 * Inspect existing behavior before edits. Keep a buildable playable slice; no empty registered feature placeholders.
 * Server owns inventories, recipes, mining and energy. Client code belongs under `factorycraft.client` and must never load on a dedicated server.
 * Preserve item/energy conservation. Transfer simulation must not mutate source state; extracted inserter contents must have a persistent owner. Never force-load neighbor chunks.
-* Persist all authoritative changes. Keep schema versions compatible; document migrations before changing them.
+* Persist all authoritative changes. 0.6.0 intentionally requires new worlds under the user override below. Preserve 0.6.0 data in future changes unless explicitly authorized otherwise.
 * Graph topology caches invalidate on load/unload/place/break only. No global whole-world scan per tick or async access to Level.
 * Add meaningful JUnit or GameTests for changes affecting inventories, movement, recipes and persistence. Run `./gradlew build` and integration tests; record exact results and unresolved limits in VALIDATION.md.
 * Update FEATURE_MATRIX.md honestly: implemented / partial / planned; registration alone never counts as implemented.
@@ -16,7 +16,7 @@
 * Keep GameTest fixtures in `run-gametest/`; do not reuse the ordinary client/server development world for destructive integration fixtures.
 
 * All newly item-placed large machines must form the complete structure from exactly one machine item, per the user's 2026-11-08 instruction. Generated parts are internal, not additional ingredients or independently dropped resources. Validate the complete loaded footprint before any writes; retain normal NeoForge multi-place cancellation/rollback.
-* Keep legacy schema-1 manual structures readable. Schema-2 assembly `Automatic` and casing `VirtualPart` distinguish one-item structures; never reinterpret old casings as generated resources. Generated-part destruction removes the whole machine, returns at most one machine item, and drops the sole controller inventory once.
+* Assembly/part schema 3 identifies current profiles. Any generated-part destruction removes the whole machine and returns at most one portable controller item holding the sole inventory/fluids/FE/progress; never also drop loose copies.
 * The user explicitly authorizes publishing tested changes directly to `main` in this session. Preserve remote updates and use a fast-forward with an expected-head lease; never force-push over unrelated work.
 
 * Keep the full diagnostic factory in the marked `run-benchmark/` directory only. Chunk pinning is explicitly confined to this opt-in harness; runtime factory simulation must never force chunks. Never reuse ordinary saves or silently reseed an existing benchmark fixture.
@@ -31,6 +31,10 @@
 * Preserve thermal schema-1 native FluidStacks, fuel inventory/remainders, progress, unspent burn ticks and generated FE, including portable block state. Thermal fixtures are isolated and intentionally detached to test exact disk values; keep live reconstruction and powered-line tests alongside them.
 
 * New mixed chemistry must reserve all item/fluid outputs and counted inputs before work, then commit with deferred inventory callbacks. Keep old processing/boiling codecs readable and selected recipes keyed by ID; changing a definition must not reuse another definition's partial progress.
-* Refinery parts contain no resource copies. Portable controller NBT must omit Assembly before one-item placement; importing an old UUID after new parts bind creates orphans. Preserve cancellation, legacy manual-furnace behavior and cached-port guards.
+* Refinery parts contain no resource copies. Portable controller NBT must omit Assembly before one-item placement; importing an old UUID after new parts bind creates orphans. Preserve cancellation, current one-item portable semantics and cached-port guards.
 * BE-bearing deposits must use OilDepositFeature/worldgen-region writes, not vanilla OreFeature direct section writes. Persist Initialized separately from Remaining; initialized zero is exhausted. No deposit block item/craft may regenerate oil. Update PETROLEUM.md for extraction, recipe/port or generation changes.
 * Only facing changes invalidate petroleum nozzle/target caches. Lit/active-state updates must not reset mining targets or throttle extraction. Canonical unload guards and immediate owning-chunk dirty marks are mandatory for all new fluid owners.
+
+* User scope override for 0.6.0: old-save compatibility is explicitly not required. Replace compact machine footprints and one-block/one-ore deposits. All current machines must use the Factorio footprint table; keep one-item automatic formation and server-authoritative preview validation. Do not retain compact test fixtures or a compact benchmark to bypass real dimensions. Preserve old worlds only as diagnostic files, never silently migrate/reseed them.
+
+* MachineProfile is the single source for dimensions; PlacementPlan is shared by client preview and server item validation. New physical fixtures must use complete footprints. Resource tiles own finite initialized stock, have no regenerating block item and use BE-aware worldgen; never silently refill zero reserves.

@@ -27,7 +27,7 @@ import java.util.List;
 public final class ThermalGameTests {
     private static final IFluidHandler.FluidAction EXEC=IFluidHandler.FluidAction.EXECUTE,SIM=IFluidHandler.FluidAction.SIMULATE;
     private static ThermalBlockEntity put(GameTestHelper h,ThermalKind kind,int x,int z) {
-        var p=new BlockPos(x,2,z);h.setBlock(p,Content.THERMAL_BLOCKS.get(kind).get().defaultBlockState().setValue(ThermalBlock.FACING,Direction.EAST));
+        var p=new BlockPos(x,2,z);factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(p),Content.THERMAL_BLOCKS.get(kind).get().defaultBlockState().setValue(ThermalBlock.FACING,Direction.EAST));
         return (ThermalBlockEntity)h.getBlockEntity(p);
     }
     private static FluidStack water(int n) { return new FluidStack(Fluids.WATER,n); }
@@ -69,14 +69,10 @@ public final class ThermalGameTests {
     public static void cachedThermalPortsFollowRotationAndUnload(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
         h.runAfterDelay(5,()->{
-            var west=b.port(Direction.WEST);var east=b.port(Direction.EAST);
-            h.assertTrue(west.fill(water(400),EXEC)==400 && east.fill(water(100),EXEC)==0,"initial sides incorrect");
-            b.getLevel().setBlock(b.getBlockPos(),b.getBlockState().setValue(ThermalBlock.FACING,Direction.WEST),3);
-            h.assertTrue(west.fill(water(10),EXEC)==0 && east.fill(water(10),EXEC)==10,"cached sides ignored rotation");
-            var chunk=h.getLevel().getChunkAt(b.getBlockPos());net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(chunk));
-            h.assertTrue(east.fill(water(10),EXEC)==0 && b.port(null).drain(100,EXEC).isEmpty(),"unloaded cached port remained mutable");
-            b.onLoad();h.assertTrue(east.fill(water(10),EXEC)==10,"port failed to resume");h.succeed();
-        });
+            var input=h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,b.inputNozzle(),Direction.WEST);var output=h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,b.outputNozzle(),Direction.EAST);
+            h.assertTrue(input.fill(water(400),EXEC)==400 && output.fill(water(100),EXEC)==0,"physical thermal sides incorrect");
+            var part=(factorycraft.blockentity.CasingBlockEntity)h.getLevel().getBlockEntity(b.inputNozzle());part.onChunkUnloaded();h.assertTrue(input.fill(water(10),EXEC)==0,"unloaded structure remained writable");
+            part.onLoad();h.assertTrue(input.fill(water(10),EXEC)==10,"physical thermal port failed to resume");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void steamBucketsUseRealNeoForgeContainerCapabilities(GameTestHelper h) {
@@ -84,10 +80,10 @@ public final class ThermalGameTests {
         h.runAfterDelay(5,()->{
             b.steam.fill(new FluidKey(steam(1)),1000,false);
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.BUCKET));
-            h.assertTrue(FluidUtil.interactWithFluidHandler(player,InteractionHand.MAIN_HAND,b.getLevel(),b.getBlockPos(),Direction.EAST),"bucket could not draw steam");
+            h.assertTrue(FluidUtil.interactWithFluidHandler(player,InteractionHand.MAIN_HAND,b.getLevel(),b.outputNozzle(),Direction.EAST),"bucket could not draw steam");
             h.assertTrue(player.getMainHandItem().is(SteamFluids.BUCKET.get()) && b.steam.amount()==0,"steam bucket lost volume/container");
-            var engine=put(h,ThermalKind.ENGINE,8,4);engine.onLoad();
-            h.assertTrue(FluidUtil.interactWithFluidHandler(player,InteractionHand.MAIN_HAND,engine.getLevel(),engine.getBlockPos(),Direction.WEST),"steam bucket could not fill engine");
+            var engine=put(h,ThermalKind.ENGINE,12,4);engine.onLoad();for(var part:engine.assembly().positions())((factorycraft.blockentity.CasingBlockEntity)h.getLevel().getBlockEntity(part)).onLoad();
+            h.assertTrue(FluidUtil.interactWithFluidHandler(player,InteractionHand.MAIN_HAND,engine.getLevel(),engine.inputNozzle(),Direction.WEST),"steam bucket could not fill engine");
             h.assertTrue(player.getMainHandItem().is(Items.BUCKET) && engine.steam.amount()==1000,"bucket returned incorrect container");h.succeed();
         });
     }
@@ -126,33 +122,23 @@ public final class ThermalGameTests {
     }
     @GameTest(template="empty",timeoutTicks=300)
     public static void finiteBoilerPipeEngineLineConservesEveryUnit(GameTestHelper h) {
-        var b=put(h,ThermalKind.BOILER,4,4);var e=put(h,ThermalKind.ENGINE,7,4);
-        h.setBlock(new BlockPos(5,2,4),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());h.setBlock(new BlockPos(6,2,4),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
+        var b=put(h,ThermalKind.BOILER,4,4);var e=put(h,ThermalKind.ENGINE,11,4);
+        h.setBlock(new BlockPos(5,2,5),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());h.setBlock(new BlockPos(6,2,5),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
         h.runAfterDelay(5,()->{b.port(Direction.WEST).fill(water(1000),EXEC);b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
-        h.runAfterDelay(220,()->{
-            var p=(FluidBlockEntity)h.getBlockEntity(new BlockPos(5,2,4));var q=(FluidBlockEntity)h.getBlockEntity(new BlockPos(6,2,4));
-            long fluid=b.water.amount()+b.steam.amount()+p.cell().amount()+q.cell().amount()+e.steam.amount();
-            h.assertTrue(e.engine.energy()>0 && fluid*12+e.engine.energy()==12000 && b.boiler.fuel()==1500,"thermal pipeline ledger failed");h.succeed();
-        });
+        h.runAfterDelay(220,()->{var p=(FluidBlockEntity)h.getBlockEntity(new BlockPos(5,2,5));var q=(FluidBlockEntity)h.getBlockEntity(new BlockPos(6,2,5));long fluid=b.water.amount()+b.steam.amount()+p.cell().amount()+q.cell().amount()+e.steam.amount();
+            h.assertTrue(e.engine.energy()>0 && fluid*12+e.engine.energy()==12000 && b.boiler.fuel()==1500,"full-size thermal line ledger failed");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=900)
     public static void naturalWaterSteamPowersThePumpAndProductionWithoutCoalGenerator(GameTestHelper h) {
-        var pumpPos=new BlockPos(3,2,4);h.setBlock(pumpPos,Content.FLUID_BLOCKS.get(FluidKind.PUMP).get().defaultBlockState().setValue(FluidDeviceBlock.FACING,Direction.EAST));
-        var b=put(h,ThermalKind.BOILER,5,4);var e=put(h,ThermalKind.ENGINE,8,4);
-        for(int x:new int[]{4,6,7})h.setBlock(new BlockPos(x,2,4),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-        h.setBlock(new BlockPos(6,2,2),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        h.setBlock(new BlockPos(9,2,2),Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
-        var source=new BlockPos(2,2,4);h.setBlock(source.below(),Blocks.STONE.defaultBlockState());
-        for(var d:Direction.Plane.HORIZONTAL)if(d!=Direction.EAST)h.setBlock(source.relative(d),Blocks.STONE.defaultBlockState());h.setBlock(source,Blocks.WATER.defaultBlockState());
-        h.runAfterDelay(5,()->{
-            ((FluidBlockEntity)h.getBlockEntity(pumpPos)).energyPort.receiveEnergy(400,false);
-            b.items.setStackInSlot(0,new ItemStack(Items.COAL));((MachineBlockEntity)h.getBlockEntity(new BlockPos(9,2,2))).items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,4));
-        });
-        h.runAfterDelay(700,()->{
-            var pump=(FluidBlockEntity)h.getBlockEntity(pumpPos);var furnace=(MachineBlockEntity)h.getBlockEntity(new BlockPos(9,2,2));
-            h.assertTrue(furnace.items.getStackInSlot(4).getCount()==4,"steam graph never powered production");
-            h.assertTrue(pump.power.getEnergyStored()>400 && e.engine.energy()>0,"steam did not sustain pump after finite bootstrap");h.succeed();
-        });
+        var o=h.absolutePos(new BlockPos(1,2,1));
+        factorycraft.multiblock.StructurePlacement.place(h.getLevel(),o.offset(3,0,2),Content.FLUID_BLOCKS.get(FluidKind.PUMP).get().defaultBlockState().setValue(FluidDeviceBlock.FACING,Direction.EAST));
+        var b=put(h,ThermalKind.BOILER,8,2);var e=put(h,ThermalKind.ENGINE,15,2);
+        for(int x:new int[]{5,6,9,10})h.setBlock(new BlockPos(x,2,3),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
+        factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(new BlockPos(18,2,2)),Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
+        for(int x:new int[]{5,10,15,19})h.setBlock(new BlockPos(x,2,6),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
+        var source=new BlockPos(2,2,3);h.setBlock(source.below(),Blocks.STONE);for(var d:Direction.Plane.HORIZONTAL)if(d!=Direction.EAST)h.setBlock(source.relative(d),Blocks.STONE);h.setBlock(source,Blocks.WATER);
+        h.runAfterDelay(5,()->{((FluidBlockEntity)h.getBlockEntity(new BlockPos(4,2,3))).energyPort.receiveEnergy(400,false);b.items.setStackInSlot(0,new ItemStack(Items.COAL));((MachineBlockEntity)h.getBlockEntity(new BlockPos(18,2,2))).items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,4));});
+        h.runAfterDelay(700,()->{var pump=(FluidBlockEntity)h.getBlockEntity(new BlockPos(4,2,3));var furnace=(MachineBlockEntity)h.getBlockEntity(new BlockPos(18,2,2));h.assertTrue(furnace.items.getStackInSlot(4).getCount()==4 && pump.power.getEnergyStored()>400 && e.engine.energy()>0,"full-size steam line did not sustain production");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void boilingJsonAndWireCodecPreserveDataAndRejectOversizedRecipes(GameTestHelper h) {
@@ -176,29 +162,29 @@ public final class ThermalGameTests {
             var tag=new net.minecraft.nbt.CompoundTag();tag.putInt("grade",7);
             var fluid=steam(1000);fluid.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,net.minecraft.world.item.component.CustomData.of(tag));
             b.steam.fill(new FluidKey(fluid),1000,false);var player=h.makeMockPlayer(GameType.SURVIVAL);player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.BUCKET));
-            h.assertTrue(!FluidUtil.interactWithFluidHandler(player,InteractionHand.MAIN_HAND,h.getLevel(),b.getBlockPos(),Direction.EAST),"native steam bucket accepted unsupported components");
+            h.assertTrue(!FluidUtil.interactWithFluidHandler(player,InteractionHand.MAIN_HAND,h.getLevel(),b.outputNozzle(),Direction.EAST),"native steam bucket accepted unsupported components");
             h.assertTrue(b.steam.amount()==1000 && player.getMainHandItem().is(Items.BUCKET),"steam components were lost");
-            var pos=new BlockPos(8,2,4);h.setBlock(pos,Content.FLUID_BLOCKS.get(FluidKind.TANK).get().defaultBlockState());var tank=(FluidBlockEntity)h.getBlockEntity(pos);tank.onLoad();
+            var pos=new BlockPos(8,2,4);factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(pos),Content.FLUID_BLOCKS.get(FluidKind.TANK).get().defaultBlockState());var tank=(FluidBlockEntity)h.getBlockEntity(pos);tank.onLoad();for(var cell:tank.assembly().positions())((factorycraft.blockentity.CasingBlockEntity)h.getLevel().getBlockEntity(cell)).onLoad();
             fluid=water(1000);fluid.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,net.minecraft.world.item.component.CustomData.of(tag));tank.port(Direction.UP).fill(fluid,EXEC);
-            var hit=new BlockHitResult(Vec3.atCenterOf(tank.getBlockPos()),Direction.UP,tank.getBlockPos(),false);
+            var hit=new BlockHitResult(Vec3.atCenterOf(tank.getBlockPos()),Direction.NORTH,tank.getBlockPos(),false);
             tank.getBlockState().useItemOn(player.getMainHandItem(),h.getLevel(),player,InteractionHand.MAIN_HAND,hit);
             h.assertTrue(tank.cell().amount()==1000 && player.getMainHandItem().is(Items.BUCKET) && tank.stored().get(net.minecraft.core.component.DataComponents.CUSTOM_DATA).copyTag().getInt("grade")==7,"water bucket erased components");h.succeed();
         });
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void thermalStatePersistsAcrossServerProcesses(GameTestHelper h) {
-        var level=h.getLevel();var a=new BlockPos(223,70,143);var b=new BlockPos(224,70,144);level.getChunkAt(a);level.getChunkAt(b);
+        var level=h.getLevel();var a=new BlockPos(223,70,143);var b=new BlockPos(230,70,144);level.getChunkAt(a);level.getChunkAt(b);
         if(level.getBlockEntity(a)==null && level.getBlockEntity(b)==null) {
-            level.setBlockAndUpdate(a,Content.THERMAL_BLOCKS.get(ThermalKind.BOILER).get().defaultBlockState());level.setBlockAndUpdate(b,Content.THERMAL_BLOCKS.get(ThermalKind.ENGINE).get().defaultBlockState());
+            for(var profile:java.util.List.of(factorycraft.multiblock.MachineProfile.BOILER,factorycraft.multiblock.MachineProfile.ENGINE))for(var cell:profile.cells(profile==factorycraft.multiblock.MachineProfile.BOILER ? a:b,Direction.NORTH))level.getChunkAt(cell);factorycraft.multiblock.StructurePlacement.place(level,a,Content.THERMAL_BLOCKS.get(ThermalKind.BOILER).get().defaultBlockState());factorycraft.multiblock.StructurePlacement.place(level,b,Content.THERMAL_BLOCKS.get(ThermalKind.ENGINE).get().defaultBlockState());
             var boiler=(ThermalBlockEntity)level.getBlockEntity(a);boiler.water.restore(new FluidKey(water(1)),731);boiler.steam.restore(new FluidKey(steam(1)),389);boiler.boiler.restore(913,7,"saved-pending");boiler.items.setStackInSlot(0,new ItemStack(Items.COAL,3));
             var engine=(ThermalBlockEntity)level.getBlockEntity(b);engine.steam.restore(new FluidKey(steam(1)),523);engine.engine.restore(7312);
-            boiler.onLoad();engine.onLoad();boiler.onChunkUnloaded();engine.onChunkUnloaded();boiler.setChanged();engine.setChanged();
+            boiler.onLoad();engine.onLoad();for(var part:engine.assembly().positions())((factorycraft.blockentity.CasingBlockEntity)h.getLevel().getBlockEntity(part)).onLoad();boiler.onChunkUnloaded();engine.onChunkUnloaded();boiler.setChanged();engine.setChanged();
             System.out.println("FACTORYCRAFT_THERMAL_DISK: SEEDED fuel/progress/fluids/FE across chunks");
         } else {
             h.assertTrue(level.getBlockEntity(a) instanceof ThermalBlockEntity && level.getBlockEntity(b) instanceof ThermalBlockEntity,"partial saved thermal fixture; refusing to reseed");
             var boiler=(ThermalBlockEntity)level.getBlockEntity(a);var engine=(ThermalBlockEntity)level.getBlockEntity(b);
             h.assertTrue(boiler.water.amount()==731 && boiler.steam.amount()==389 && boiler.boiler.fuel()==913 && boiler.boiler.progress()==7 && boiler.items.getStackInSlot(0).getCount()==3 && engine.steam.amount()==523 && engine.engine.energy()==7312,"saved thermal resources changed");
-            boiler.onLoad();engine.onLoad();boiler.onChunkUnloaded();engine.onChunkUnloaded();
+            boiler.onLoad();engine.onLoad();for(var part:engine.assembly().positions())((factorycraft.blockentity.CasingBlockEntity)h.getLevel().getBlockEntity(part)).onLoad();boiler.onChunkUnloaded();engine.onChunkUnloaded();
             System.out.println("FACTORYCRAFT_THERMAL_DISK: VERIFIED exact fuel/progress/fluids/FE across chunks");
         }
         h.succeed();

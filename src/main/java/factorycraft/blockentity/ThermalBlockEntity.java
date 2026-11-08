@@ -25,8 +25,11 @@ import net.neoforged.neoforge.items.*;
 import java.util.*;
 
 /** Canonical fuel, progress, water, steam and FE. All ports recheck loaded chunk ownership. */
-public final class ThermalBlockEntity extends FactoryBlockEntity implements MenuProvider,GridGenerator {
+public final class ThermalBlockEntity extends FactoryBlockEntity implements factorycraft.multiblock.AssemblyOwner,MenuProvider,GridGenerator {
     public static final int FLUID_CAPACITY=4000,PORT_RATE=100;
+    private final factorycraft.multiblock.IndustrialAssembly assembly;
+    public factorycraft.multiblock.IndustrialAssembly assembly() { return assembly; }
+    public boolean loaded() { return loaded && !isRemoved(); }
     private boolean loaded,transaction,inventoryDirty,syncPending;
     private net.minecraft.world.level.chunk.LevelChunk ownedChunk;
     private BlockPos intake,outlet;
@@ -64,18 +67,23 @@ public final class ThermalBlockEntity extends FactoryBlockEntity implements Menu
     };
     private final IFluidHandler[] ports=new IFluidHandler[7];
     public ThermalBlockEntity(BlockPos pos,BlockState state) {
-        super(Content.THERMAL.get(),pos,state);positions();
+        super(Content.THERMAL.get(),pos,state);assembly=new factorycraft.multiblock.IndustrialAssembly(this);positions();
         for(int i=0;i<7;i++)ports[i]=new Port(i==6 ? null:Direction.from3DDataValue(i));
     }
     public ThermalKind kind() { return ((ThermalBlock)getBlockState().getBlock()).kind; }
     public Direction facing() { return getBlockState().getValue(ThermalBlock.FACING); }
-    private void positions() { intake=worldPosition.relative(facing().getOpposite());outlet=worldPosition.relative(facing()); }
+    public BlockPos inputNozzle() { var p=factorycraft.multiblock.MachineProfile.of(getBlockState());return p.offset(worldPosition,facing(),p.layout.width()/2,0,p.layout.depth()-1); }
+    public BlockPos outputNozzle() { var p=factorycraft.multiblock.MachineProfile.of(getBlockState());return p.offset(worldPosition,facing(),p.layout.width()/2,0,0); }
+    private void positions() { intake=inputNozzle().relative(facing().getOpposite());outlet=outputNozzle().relative(facing()); }
+    public IFluidHandler structurePort(BlockPos pos,Direction side) {
+        return side==null ? port(null):pos.equals(inputNozzle()) && side==facing().getOpposite() || kind()==ThermalKind.BOILER && pos.equals(outputNozzle()) && side==facing() ? port(side):null;
+    }
     public boolean generatesElectricity() { return kind()==ThermalKind.ENGINE; }
     public boolean available() {
         if(!loaded || isRemoved() || !(level instanceof net.minecraft.server.level.ServerLevel server))return false;
         var chunk=server.getChunkSource().getChunkNow(worldPosition.getX()>>4,worldPosition.getZ()>>4);
         if(chunk==null || chunk.getBlockEntities().get(worldPosition)!=this)return false;
-        if(ownedChunk==null)ownedChunk=chunk;return ownedChunk==chunk;
+        if(ownedChunk==null)ownedChunk=chunk;return ownedChunk==chunk && assembly.ready();
     }
     private boolean readable() { return level!=null && !isRemoved() && (level.isClientSide ? level.hasChunkAt(worldPosition) && level.getBlockEntity(worldPosition)==this:available()); }
     private void changed() {
@@ -129,36 +137,18 @@ public final class ThermalBlockEntity extends FactoryBlockEntity implements Menu
     }
     public FluidCell<FluidKey> externalInput(Direction side,FluidKey key) { return available() && (kind()==ThermalKind.BOILER || acceptsSteam(key)) ? input(side):null; }
     public FluidCell<FluidKey> externalOutput(Direction side) { return available() ? output(side):null; }
-    private BlockEntity neighbor(BlockPos pos) {
-        var server=(net.minecraft.server.level.ServerLevel)level;
-        var chunk=server.getChunkSource().getChunkNow(pos.getX()>>4,pos.getZ()>>4);
-        return chunk==null ? null:chunk.getBlockEntities().get(pos);
-    }
-    private FluidCell<FluidKey> neighborOutput(BlockPos pos,Direction side) {
-        var be=neighbor(pos);
-        if(be instanceof FluidBlockEntity fluid && fluid.simulationAvailable() && (fluid.kind()!=FluidKind.PUMP || side==fluid.facing()))return fluid.cell();
-        return be instanceof ThermalBlockEntity thermal && thermal.available() ? thermal.output(side):null;
-    }
-    private FluidCell<FluidKey> neighborInput(BlockPos pos,Direction side) {
-        var be=neighbor(pos);
-        if(be instanceof FluidBlockEntity fluid && fluid.simulationAvailable() && (fluid.kind()!=FluidKind.PUMP || side==fluid.facing().getOpposite()))return fluid.cell();
-        if(be instanceof ThermalBlockEntity thermal && thermal.available()) {
-            var cell=thermal.input(side);return cell!=null && (thermal.kind()==ThermalKind.BOILER || acceptsSteam(steam.key())) ? cell:null;
-        }
-        return null;
-    }
     public void tick() {
         if(!available())return;
         var incoming=kind()==ThermalKind.BOILER ? water:steam;
         if(incoming.space()>0) {
-            var from=neighborOutput(intake,facing());
+            var from=FluidConnections.output(level,intake,facing());
             if(from!=null && (kind()==ThermalKind.BOILER || acceptsSteam(from.key())))from.transferTo(incoming,PORT_RATE,false);
         }
         if(!available())return;
         boolean worked;
         if(kind()==ThermalKind.BOILER) {
             worked=boil();
-            if(available() && steam.amount()>0) { var to=neighborInput(outlet,facing().getOpposite());if(to!=null)steam.transferTo(to,PORT_RATE,false); }
+            if(available() && steam.amount()>0) { var to=FluidConnections.input(level,outlet,facing().getOpposite(),steam.key());if(to!=null)steam.transferTo(to,PORT_RATE,false); }
         } else {
             int made=engine.generate(acceptsSteam(steam.key()));
             int delivered=engine.energy()>0 && PowerGrid.hasDemand(this) ? PowerGrid.distribute(this,Math.min(120,engine.energy())):0;
@@ -208,22 +198,23 @@ public final class ThermalBlockEntity extends FactoryBlockEntity implements Menu
         public void set(int index,int value) {}
         public int getCount() { return 13; }
     };
-    @Override public void onLoad() { super.onLoad();if(level.isClientSide || loaded)return;loaded=true;available();if(generatesElectricity())PowerGrid.add(this); }
-    private void detach() { if(!loaded || level==null || level.isClientSide)return;loaded=false;ownedChunk=null;if(generatesElectricity())PowerGrid.remove(this); }
+    @Override public void onLoad() { super.onLoad();if(level.isClientSide || loaded)return;loaded=true;assembly.invalidate();available();if(generatesElectricity())PowerGrid.add(this); }
+    private void detach() { if(!loaded || level==null || level.isClientSide)return;loaded=false;ownedChunk=null;assembly.invalidate();if(generatesElectricity())PowerGrid.remove(this); }
     @Override public void onChunkUnloaded() { detach();super.onChunkUnloaded(); }
     @Override public void setRemoved() { detach();super.setRemoved(); }
     @Override public void setBlockState(BlockState state) {
         boolean rotated=facing()!=state.getValue(ThermalBlock.FACING);super.setBlockState(state);positions();
         if(rotated && loaded)level.invalidateCapabilities(worldPosition);
     }
+    @Override public void dropContents() { assembly.removeWhole(true); }
     @Override public Component getDisplayName() { return Component.translatable("block.factorycraft."+kind().id); }
     @Override public AbstractContainerMenu createMenu(int id,Inventory inventory,Player player) { return new ThermalMenu(id,inventory,this,data); }
     @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider r) {
-        super.saveAdditional(tag,r);tag.putInt("Schema",1);tag.put("Water",contents(water).saveOptional(r));tag.put("Steam",contents(steam).saveOptional(r));
+        super.saveAdditional(tag,r);assembly.save(tag);tag.putInt("Schema",1);tag.put("Water",contents(water).saveOptional(r));tag.put("Steam",contents(steam).saveOptional(r));
         tag.put("Items",items.serializeNBT(r));tag.putInt("Energy",engine.energy());tag.putInt("Fuel",boiler.fuel());tag.putInt("Progress",boiler.progress());tag.putString("BoilingRecipe",boiler.recipe());tag.putInt("Duration",duration);
     }
     @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider r) {
-        super.loadAdditional(tag,r);
+        super.loadAdditional(tag,r);assembly.load(tag);
         var input=FluidStack.parseOptional(r,tag.getCompound("Water"));var output=FluidStack.parseOptional(r,tag.getCompound("Steam"));
         water.restore(input.isEmpty() ? null:new FluidKey(input),input.getAmount());steam.restore(output.isEmpty() ? null:new FluidKey(output),output.getAmount());
         items.deserializeNBT(r,tag.getCompound("Items"));engine.restore(Math.max(0,tag.getInt("Energy")));boiler.restore(Math.max(0,tag.getInt("Fuel")),Math.max(0,tag.getInt("Progress")),tag.getString("BoilingRecipe"));

@@ -22,9 +22,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.*;
 import java.util.*;
 
-public final class MachineBlockEntity extends FactoryBlockEntity implements MenuProvider,factorycraft.energy.GridConsumer,factorycraft.energy.GridGenerator {
+public final class MachineBlockEntity extends FactoryBlockEntity implements factorycraft.multiblock.AssemblyOwner,MenuProvider,factorycraft.energy.GridConsumer,factorycraft.energy.GridGenerator {
     @Override public boolean generatesElectricity() { return kind()==FactoryKind.GENERATOR; }
-    @Override public int receiveGridEnergy(int n,boolean simulate) { return petroleum==null || petroleumAvailable() ? power.receiveEnergy(n,simulate):0; }
+    @Override public int receiveGridEnergy(int n,boolean simulate) { return loaded() && factorycraft.multiblock.AssemblyAccess.ready(this) && factorycraft.fluids.FluidConnections.canonical(this) ? power.receiveEnergy(n,simulate):0; }
     @Override public PowerBuffer gridBuffer() { return power; }
     private boolean loaded;
     private boolean petroleumTransaction,petroleumInventoryDirty;
@@ -45,7 +45,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
     public void endPetroleumInventoryTransaction() { petroleumTransaction=false;if(petroleumInventoryDirty) { petroleumInventoryDirty=false;setChanged(); } }
 
     public boolean loaded() { return loaded && !isRemoved(); }
-    private boolean automationReady() { return loaded() && level!=null && !level.isClientSide && (petroleum==null || petroleum.ready()); }
+    private boolean automationReady() { return loaded() && level!=null && !level.isClientSide && factorycraft.multiblock.AssemblyAccess.ready(this) && (petroleum==null || petroleum.ready()); }
     public final ItemStackHandler items = new ItemStackHandler(9) {
         @Override protected void onContentsChanged(int s) { if(petroleumTransaction)petroleumInventoryDirty=true;else setChanged();if(petroleum!=null)petroleum.changed(); }
         @Override public boolean isItemValid(int s, ItemStack stack) {
@@ -164,7 +164,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         if(chosen==null) return false;
         var recipe=chosen.value();
         if(!output(recipe.result(),true).isEmpty()) return false;
-        int step=assembly==null ? 1:2;
+        int step=kind()==FactoryKind.INDUSTRIAL_FURNACE ? 2:1;
         int advancing=Math.min(step,recipe.ticks()-Math.min(progress,recipe.ticks()-1));
         if(!power.spend(recipe.energy()*advancing)) return false;
         activeRecipe=chosen.id().toString(); duration=recipe.ticks(); progress+=advancing; markPersistentState();
@@ -197,29 +197,26 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         return remainder;
     }
     private ItemStack oreResult(BlockPos pos) {
-        var block=level.getBlockState(pos);
-        if(block.is(Content.IRON_ORE.get()) || block.is(BlockTags.IRON_ORES)) return new ItemStack(Items.RAW_IRON);
-        if(block.is(Content.COPPER_ORE.get()) || block.is(BlockTags.COPPER_ORES)) return new ItemStack(Items.RAW_COPPER);
-        if(block.is(BlockTags.COAL_ORES)) return new ItemStack(Items.COAL);
-        return ItemStack.EMPTY;
+        var be=factorycraft.fluids.FluidConnections.at(level,pos);
+        return be instanceof ResourceDepositBlockEntity deposit && deposit.available() && deposit.remaining()>0 ? deposit.resourceBlock().kind.result():ItemStack.EMPTY;
     }
     private boolean mine() {
         duration=FactoryConfig.DRILL_TICKS.get();
-        if(oreTarget==null || !level.hasChunkAt(oreTarget) || oreResult(oreTarget).isEmpty()) {
-            oreTarget=null;
-            if(level.getGameTime()%20!=0) return false;
-            search: for(int y=1;y<=8;y++) for(int x=-1;x<=1;x++) for(int z=-1;z<=1;z++) {
-                var p=worldPosition.offset(x,-y,z);
-                if(level.hasChunkAt(p) && !oreResult(p).isEmpty()) { oreTarget=p; break search; }
+        if(oreTarget==null || oreResult(oreTarget).isEmpty()) {
+            oreTarget=null;if(level.getGameTime()%20!=0)return false;
+            var profile=factorycraft.multiblock.MachineProfile.DRILL;var center=profile.center(worldPosition,getBlockState().getValue(FactoryBlock.FACING));
+            search:for(int y=1;y<=8;y++)for(int x=-2;x<=2;x++)for(int z=-2;z<=2;z++) {
+                var p=center.offset(x,-y,z);if(!oreResult(p).isEmpty()) { oreTarget=p.immutable();break search; }
             }
         }
-        if(oreTarget==null) return false;
-        ItemStack result=oreResult(oreTarget);
-        if(!output(result,true).isEmpty() || !power.spend(10)) return false;
-        progress++; markPersistentState();
+        if(oreTarget==null)return false;var result=oreResult(oreTarget);if(result.isEmpty() || !output(result,true).isEmpty() || !power.spend(10))return false;
+        progress++;markPersistentState();
         if(progress>=duration) {
-            if (level.setBlock(oreTarget,Blocks.AIR.defaultBlockState(),3)) {
-                output(result,false); progress=0; oreTarget=null; sync();
+            var be=factorycraft.fluids.FluidConnections.at(level,oreTarget);
+            if(be instanceof ResourceDepositBlockEntity deposit && deposit.available() && deposit.remaining()>0 && output(result,true).isEmpty()) {
+                beginPetroleumInventoryTransaction();
+                try { output(result,false);deposit.extractAccepted();progress=0; }finally { endPetroleumInventoryTransaction(); }
+                sync();
             }
         }
         return true;
@@ -229,7 +226,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements Menu
         if(assembly!=null && assembly.formed() && getBlockState().getValue(FactoryBlock.FACING)!=state.getValue(FactoryBlock.FACING))assembly.dismantle();
         super.setBlockState(state);if(petroleum!=null && rotated) { petroleum.rotated();if(level!=null && !level.isClientSide)level.invalidateCapabilities(worldPosition); }
     }
-    @Override public void dropContents() { if(assembly!=null)assembly.dismantle();if(petroleum==null)super.dropContents(); }
+    @Override public void dropContents() { if(assembly!=null)assembly.dismantle();if(assembly==null)super.dropContents(); }
     @Override public void onLoad() { super.onLoad();loaded=true; if(assembly!=null)assembly.invalidate();if(!level.isClientSide) { if(petroleum!=null)petroleumAvailable();PowerGrid.add(this); } }
     @Override public void setRemoved() { loaded=false;petroleumChunk=null;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.setRemoved(); }
     @Override public void onChunkUnloaded() { loaded=false;petroleumChunk=null;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.onChunkUnloaded(); }

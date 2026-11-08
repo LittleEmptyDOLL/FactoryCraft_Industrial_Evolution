@@ -1,4 +1,4 @@
-# Нагрузочный стенд FactoryCraft 0.2.2
+# Нагрузочный стенд FactoryCraft 0.6.0
 
 Стенд запускает **настоящий выделенный Minecraft 1.21.1 / NeoForge 21.1.252**, размещает обычные блоки мода и использует штатный серверный цикл с целевой частотой 20 TPS. Это отдельная проверка мира, не замена GameTest или независимый тест математического ядра.
 
@@ -35,19 +35,19 @@
 
 ## Что реально работает
 
-Полный профиль размещает 14 249 блоков в 65 принудительно тикающих чанках отдельного плоского мира:
+Полный профиль размещает 45 249 блоков в 200 принудительно тикающих чанках отдельного плоского мира:
 
 | Оборудование | Количество |
 |---|---:|
 | Обычные двухполосные конвейеры | 10 000 |
 | Обычные электрические печи | 500 |
 | Сборочные автоматы | 250 |
-| Промышленные печи 2×2×2 | 250 |
+| Промышленные печи 3×3×3 | 250 |
 | Механические манипуляторы | 500 |
 | Дополнительные угольные генераторы | 250 |
-| Электрические столбы, включая соединительные | 499 |
+| Электрические столбы, включая соединительные | 749 |
 | Входные сундуки | 250 |
-| Нетикающие части промышленных печей | 1 750 |
+| Нетикающие части всех 1250 машин | 32 500 |
 
 Конвейеры образуют 100 замкнутых колец по 100 сегментов на десяти высотах. Изначально на каждой полосе каждого сегмента находится один медный слиток: всего 20 000 внутренних носителей, без ItemEntity. Проверяется движение **каждого** сегмента за окно замера и реальные передачи между сегментами.
 
@@ -123,3 +123,9 @@ The fresh local 600-tick run averaged 34.474 ms (p95 76.391 ms, p99 101.825 ms, 
 ## 0.5.0 compatibility check
 
 The saved 0.3.0/0.4.0 full-factory checkpoint passes `runBenchmarkServer -PbenchmarkMode=verify` on 0.5.0: exact authoritative hash, material/FE and multiblock identity checks remain valid. The full benchmark still contains no petroleum machines or oil deposits; this is old-factory compatibility, not measured petroleum TPS. CI retains the fresh full measurement/reload scenario.
+
+## 0.6.0 full-footprint run
+
+The new-world fixture expands every producer and generator to its real 3×3×3 volume: 45249 cells, 32500 non-ticking parts, 200 pinned chunks, 1999 electrical nodes. Two physical side ports connect the inserters; there is no compact test bypass. 10000 belts, all 1000 producers and all 500 inserters worked; 24069 recipes completed in the sampled window. Both measurement and a new-process exact-state reload pass. Material remains 20000 carriers and 128000 iron-equivalent units. Raw evidence: [measurement](docs/benchmarks/v060-full-measure.json), [restart](docs/benchmarks/v060-full-verify.json).
+
+600 sampled ticks: mean 47.553 ms, p95 85.619 ms, p99 142.174 ms, maximum 172.466 ms; 265 ticks exceeded 50 ms. A software-rendered client and Gradle work ran concurrently. This is a correctness/liveness regression run, not a controlled speed comparison or guaranteed 20 TPS on arbitrary hardware. There were zero connected benchmark players; multiplayer packet throughput remains unmeasured. The larger thermal/oil/fluid network is covered by physical GameTests, not this item-only workload.

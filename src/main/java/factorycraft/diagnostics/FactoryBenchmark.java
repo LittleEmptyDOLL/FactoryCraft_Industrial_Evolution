@@ -176,7 +176,7 @@ public final class FactoryBenchmark {
             require(working==profile.cells*4 && producing==profile.cells*4 && arms==profile.cells*2,"Not all producers/inserters performed real work");
             require(changedBelts==profile.loops*100,"Not all belt segments moved items");
             require(after.activeBelts()>=profile.loops*50 && belts.transfers()>beltsBefore.transfers(),"Belt workload stopped moving");
-            require(!power.pending() && power.nodes()==profile.cells*7-1 && power.networks()==1 && power.rebuilds()-powerBefore.rebuilds()>=2,"Power split/rejoin did not complete");
+            require(!power.pending() && power.nodes()==profile.cells*5+BenchmarkPlan.poleCount(profile) && power.networks()==1 && power.rebuilds()-powerBefore.rebuilds()>=2,"Power split/rejoin did not complete");
             result.addProperty("savedStateHash",checkpoint(after));
             pass();
         }

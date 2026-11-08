@@ -33,7 +33,7 @@ public final class PetroleumGameTests {
     private static MachineBlockEntity machine(GameTestHelper h,FactoryKind kind,int x,int z) {
         var pos=h.absolutePos(new BlockPos(x,2,z));
         if(kind.large()) {
-            var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.EAST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(kind).get()));
+            var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.WEST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(kind).get()));
             var hit=new BlockHitResult(Vec3.atCenterOf(pos),Direction.UP,pos,false);
             h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,hit)).consumesAction(),"one-item refinery placement failed");
         } else h.getLevel().setBlockAndUpdate(pos,Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
@@ -54,7 +54,7 @@ public final class PetroleumGameTests {
     public static void aFullPumpjackOutputConsumesNeitherOilNorEnergy(GameTestHelper h) {
         var oil=deposit(h,4,4);var pump=machine(h,FactoryKind.PUMPJACK,4,4);
         h.runAfterDelay(5,()->{pump.petroleum().cells.get(2).fill(new FluidKey(PetroleumFluids.CRUDE.stack(1)),4000,false);pump.power.receiveEnergy(1000,false);});
-        h.runAfterDelay(70,()->{h.assertTrue(oil.remaining()==factorycraft.config.FactoryConfig.OIL_RICHNESS.get() && pump.power.getEnergyStored()==1000,"blocked pump spent resources");pump.petroleum().port(pump.getBlockPos(),Direction.EAST).drain(100,EXEC);});
+        h.runAfterDelay(70,()->{h.assertTrue(oil.remaining()==factorycraft.config.FactoryConfig.OIL_RICHNESS.get() && pump.power.getEnergyStored()==1000,"blocked pump spent resources");pump.petroleum().port(pump.petroleum().nozzle(2),Direction.EAST).drain(100,EXEC);});
         h.runAfterDelay(100,()->{h.assertTrue(pump.petroleum().cells.get(2).amount()==4000 && pump.power.getEnergyStored()==850,"pump failed to resume");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=200)
@@ -123,7 +123,7 @@ public final class PetroleumGameTests {
             var entities=h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(r.getBlockPos()).inflate(4));
             var items=entities.stream().filter(e->e.getItem().is(Content.FACTORY.get(FactoryKind.REFINERY).get().asItem())).toList();
             h.assertTrue(items.size()==1 && items.getFirst().getItem().getCount()==1 && entities.stream().noneMatch(e->e.getItem().is(Items.DIAMOND)),"refinery destruction duplicated or lost owner");
-            var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.EAST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,items.getFirst().getItem().copy());items.getFirst().discard();
+            var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.WEST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,items.getFirst().getItem().copy());items.getFirst().discard();
             var at=h.absolutePos(new BlockPos(11,2,5));h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(at),Direction.UP,at,false))).consumesAction(),"portable refinery would not place");
             var restored=(MachineBlockEntity)h.getLevel().getBlockEntity(at);
             h.assertTrue(restored.petroleum().cells.get(0).amount()==250 && count(restored,Items.DIAMOND)==3 && restored.assembly().formed(),"portable refinery lost state or overwrote fresh identity");
@@ -159,7 +159,7 @@ public final class PetroleumGameTests {
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void refineryPlacementProtectionRollsBackEveryGeneratedPart(GameTestHelper h) {
-        var pos=h.absolutePos(new BlockPos(6,2,5));var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.EAST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(FactoryKind.REFINERY).get()));
+        var pos=h.absolutePos(new BlockPos(6,2,5));var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.WEST.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(FactoryKind.REFINERY).get()));
         java.util.function.Consumer<net.neoforged.neoforge.event.level.BlockEvent.EntityMultiPlaceEvent> listener=e->e.setCanceled(true);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(listener);
         try {
@@ -172,12 +172,12 @@ public final class PetroleumGameTests {
     @GameTest(template="empty",timeoutTicks=100)
     public static void petroleumStateAndFourChunkIdentityPersistAcrossServerProcesses(GameTestHelper h) {
         var level=h.getLevel();var anchor=new BlockPos(271,70,271);var plantPos=new BlockPos(281,70,271);var resource=new BlockPos(280,69,271);var exhausted=new BlockPos(281,69,271);
-        var all=new ArrayList<>(IndustrialAssembly.positions(anchor,Direction.NORTH));all.addAll(List.of(anchor,plantPos,resource,exhausted));for(var p:all)level.getChunkAt(p);
+        var all=new ArrayList<>(factorycraft.multiblock.MachineProfile.REFINERY.parts(anchor,Direction.NORTH));all.addAll(List.of(anchor,plantPos,resource,exhausted));all.addAll(factorycraft.multiblock.MachineProfile.CHEMICAL.parts(plantPos,Direction.NORTH));for(var p:all)level.getChunkAt(p);
         if(level.getBlockEntity(anchor)==null && level.getBlockEntity(plantPos)==null && level.getBlockEntity(resource)==null && level.getBlockEntity(exhausted)==null) {
-            var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.NORTH.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(FactoryKind.REFINERY).get()));
+            var player=h.makeMockPlayer(GameType.SURVIVAL);player.setYRot(Direction.SOUTH.toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.FACTORY.get(FactoryKind.REFINERY).get()));
             h.assertTrue(player.getMainHandItem().useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,new BlockHitResult(Vec3.atCenterOf(anchor),Direction.UP,anchor,false))).consumesAction(),"disk refinery placement failed");
             var refinery=(MachineBlockEntity)level.getBlockEntity(anchor);refinery.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.CRUDE.stack(1)),731);refinery.petroleum().cells.get(2).restore(new FluidKey(PetroleumFluids.GAS.stack(1)),389);refinery.items.setStackInSlot(0,new ItemStack(Items.DIAMOND,3));refinery.power.restore(7312);
-            level.setBlockAndUpdate(plantPos,Content.FACTORY.get(FactoryKind.CHEMICAL_PLANT).get().defaultBlockState());var plant=(MachineBlockEntity)level.getBlockEntity(plantPos);plant.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.GAS.stack(1)),11);plant.items.setStackInSlot(0,new ItemStack(Items.COAL,2));
+            factorycraft.multiblock.StructurePlacement.place(level,plantPos,Content.FACTORY.get(FactoryKind.CHEMICAL_PLANT).get().defaultBlockState());var plant=(MachineBlockEntity)level.getBlockEntity(plantPos);plant.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.GAS.stack(1)),11);plant.items.setStackInSlot(0,new ItemStack(Items.COAL,2));
             var tag=plant.saveWithFullMetadata(level.registryAccess());tag.getCompound("Petroleum").putInt("Progress",7);tag.getCompound("Petroleum").putInt("Duration",20);plant.loadWithComponents(tag,level.registryAccess());
             level.setBlockAndUpdate(resource,Content.OIL_DEPOSIT.get().defaultBlockState());level.setBlockAndUpdate(exhausted,Content.OIL_DEPOSIT.get().defaultBlockState());
             ((OilDepositBlockEntity)level.getBlockEntity(resource)).initializeReserve(7117);((OilDepositBlockEntity)level.getBlockEntity(exhausted)).initializeReserve(0);
@@ -187,7 +187,7 @@ public final class PetroleumGameTests {
             h.assertTrue(level.getBlockEntity(anchor) instanceof MachineBlockEntity && level.getBlockEntity(plantPos) instanceof MachineBlockEntity && level.getBlockEntity(resource) instanceof OilDepositBlockEntity && level.getBlockEntity(exhausted) instanceof OilDepositBlockEntity,"partial petroleum fixture; refusing to reseed");
             var r=(MachineBlockEntity)level.getBlockEntity(anchor);var plant=(MachineBlockEntity)level.getBlockEntity(plantPos);
             h.assertTrue(r.petroleum().cells.get(0).amount()==731 && r.petroleum().cells.get(2).amount()==389 && count(r,Items.DIAMOND)==3 && r.power.getEnergyStored()==7312 && r.assembly().automatic(),"disk refinery lost authoritative state");
-            for(var p:IndustrialAssembly.positions(anchor,Direction.NORTH))h.assertTrue(level.getBlockEntity(p) instanceof CasingBlockEntity part && part.boundTo(anchor,r.assembly().identity()),"four-chunk refinery identity changed");
+            for(var p:factorycraft.multiblock.MachineProfile.REFINERY.parts(anchor,Direction.NORTH))h.assertTrue(level.getBlockEntity(p) instanceof CasingBlockEntity part && part.boundTo(anchor,r.assembly().identity()),"four-chunk refinery identity changed");
             h.assertTrue(plant.petroleum().cells.get(0).amount()==11 && count(plant,Items.COAL)==2 && plant.petroleum().data.get(0)==7,"mixed recipe state changed on disk");
             h.assertTrue(((OilDepositBlockEntity)level.getBlockEntity(resource)).remaining()==7117 && ((OilDepositBlockEntity)level.getBlockEntity(exhausted)).remaining()==0,"oil reserve refilled/lost on disk");
             System.out.println("FACTORYCRAFT_PETROLEUM_DISK: VERIFIED exact resources, depleted reserve and four-chunk identity");
@@ -198,19 +198,12 @@ public final class PetroleumGameTests {
     }
     @GameTest(template="empty",timeoutTicks=2000)
     public static void finiteDepositBecomesPlasticThroughPoweredPipesAndInserters(GameTestHelper h) {
-        var oil=deposit(h,3,4);var pump=machine(h,FactoryKind.PUMPJACK,3,4);var r=machine(h,FactoryKind.REFINERY,7,4);var c=machine(h,FactoryKind.CHEMICAL_PLANT,10,4);
-        for(int x:new int[]{4,5,8,9})h.setBlock(new BlockPos(x,2,4),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-        h.setBlock(new BlockPos(10,2,2),Blocks.CHEST.defaultBlockState());h.setBlock(new BlockPos(12,2,4),Blocks.CHEST.defaultBlockState());
-        h.setBlock(new BlockPos(10,2,3),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.SOUTH));
-        h.setBlock(new BlockPos(11,2,4),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.EAST));
-        var generator=machine(h,FactoryKind.GENERATOR,6,1);for(int x:new int[]{4,9})h.setBlock(new BlockPos(x,2,1),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        h.runAfterDelay(5,()->{generator.items.setStackInSlot(8,new ItemStack(Items.COAL,4));((ChestBlockEntity)h.getBlockEntity(new BlockPos(10,2,2))).setItem(0,new ItemStack(Items.COAL,32));});
+        var o=h.absolutePos(new BlockPos(1,2,1));factorycraft.core.FactoryCommands.oilLine(h.getLevel(),o);
         h.runAfterDelay(1700,()->{
-            var chest=(ChestBlockEntity)h.getBlockEntity(new BlockPos(12,2,4));long plastic=0;for(int i=0;i<chest.getContainerSize();i++)if(chest.getItem(i).is(plastic()))plastic+=chest.getItem(i).getCount();h.assertTrue(plastic>=20,"oil-to-plastic line failed to deliver");
-            plastic+=count(c,plastic());var held=((InserterBlockEntity)h.getBlockEntity(new BlockPos(11,2,4))).held();if(held.is(plastic()))plastic+=held.getCount();
+            var oil=(OilDepositBlockEntity)h.getLevel().getBlockEntity(o.offset(2,-1,3));var pump=(MachineBlockEntity)h.getLevel().getBlockEntity(o.offset(3,0,2));var r=(MachineBlockEntity)h.getLevel().getBlockEntity(o.offset(11,0,1));var c=(MachineBlockEntity)h.getLevel().getBlockEntity(o.offset(17,0,2));
+            var chest=(ChestBlockEntity)h.getLevel().getBlockEntity(o.offset(19,0,3));long plastic=0;for(int i=0;i<chest.getContainerSize();i++)if(chest.getItem(i).is(plastic()))plastic+=chest.getItem(i).getCount();h.assertTrue(plastic>=20,"full-size oil line has not delivered plastic");plastic+=count(c,plastic());var held=((InserterBlockEntity)h.getLevel().getBlockEntity(o.offset(18,0,3))).held();if(held.is(plastic()))plastic+=held.getCount();
             long crude=oil.remaining()+pump.petroleum().cells.get(2).amount()+r.petroleum().cells.get(0).amount(),gas=r.petroleum().cells.get(2).amount()+c.petroleum().cells.get(0).amount();
-            for(int x:new int[]{4,5})crude+=((FluidBlockEntity)h.getBlockEntity(new BlockPos(x,2,4))).cell().amount();for(int x:new int[]{8,9})gas+=((FluidBlockEntity)h.getBlockEntity(new BlockPos(x,2,4))).cell().amount();
-            h.assertTrue(crude*9+gas*20+plastic*200==9L*factorycraft.config.FactoryConfig.OIL_RICHNESS.get(),"complete oil/gas/plastic ledger lost or duplicated material");h.succeed();
-        });
+            for(int x:new int[]{4,5,6})crude+=((FluidBlockEntity)h.getLevel().getBlockEntity(o.offset(x,0,3))).cell().amount();for(int x:new int[]{12,13,14})gas+=((FluidBlockEntity)h.getLevel().getBlockEntity(o.offset(x,0,3))).cell().amount();
+            h.assertTrue(crude*9+gas*20+plastic*200==9L*factorycraft.config.FactoryConfig.OIL_RICHNESS.get(),"oil/gas/plastic ledger lost resources");h.succeed();});
     }
 }

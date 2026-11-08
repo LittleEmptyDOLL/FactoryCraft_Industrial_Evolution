@@ -29,24 +29,27 @@ public final class BenchmarkPlan {
             for(int i=24;i>=1;i--)cells.add(new Cell(x,y,z+i,Role.BELT,Heading.NORTH));
         }
         for(int i=0;i<profile.cells;i++) {
-            int x=(i%25)*8,z=(i/25)*8;
-            add(cells,x,0,z,Role.SOURCE,Heading.NORTH);
-            add(cells,x+1,0,z,Role.INSERTER,Heading.EAST);
-            add(cells,x+2,0,z,Role.FURNACE,Heading.NORTH);
-            add(cells,x+3,0,z,Role.INSERTER,Heading.EAST);
-            add(cells,x+4,0,z,Role.ASSEMBLER,Heading.NORTH);
-            add(cells,x+2,0,z+5,Role.FURNACE,Heading.NORTH);
-            add(cells,x+5,0,z+5,Role.INDUSTRIAL_FURNACE,Heading.NORTH);
-            for(var part:new CuboidLayout(2,2,2).parts(0,-1))
-                add(cells,x+5+part.x(),part.y(),z+5+part.z(),Role.CASING,Heading.NORTH);
-            add(cells,x+3,0,z+3,Role.GENERATOR,Heading.NORTH);
-            add(cells,x+4,0,z+3,Role.POLE,Heading.NORTH);
-            // Bridges make a single shared grid, exercising large recipient lists and global split quarantine.
-            if(i+1<profile.cells && i%25<24)add(cells,x+8,0,z+3,Role.POLE,Heading.NORTH);
-            if(i%25==0 && i+25<profile.cells)add(cells,x+4,0,z+7,Role.POLE,Heading.NORTH);
+            int x=(i%25)*16,z=(i/25)*12;
+            add(cells,x,0,z+1,Role.SOURCE,Heading.NORTH);
+            add(cells,x+1,0,z+1,Role.INSERTER,Heading.EAST);
+            machine(cells,x+2,z,Role.FURNACE);
+            add(cells,x+5,0,z+1,Role.INSERTER,Heading.EAST);
+            machine(cells,x+6,z,Role.ASSEMBLER);
+            machine(cells,x+2,z+6,Role.FURNACE);
+            machine(cells,x+6,z+6,Role.INDUSTRIAL_FURNACE);
+            machine(cells,x+10,z,Role.GENERATOR);
+            add(cells,x+5,0,z+4,Role.POLE,Heading.NORTH);
+            add(cells,x+11,0,z+4,Role.POLE,Heading.NORTH);
+            if(i+1<profile.cells && i%25<24)add(cells,x+17,0,z+4,Role.POLE,Heading.NORTH);
+            if(i%25==0 && i+25<profile.cells)add(cells,x+5,0,z+10,Role.POLE,Heading.NORTH);
         }
         blocks=List.copyOf(cells);
     }
+    private static void machine(List<Cell> cells,int x,int z,Role role) {
+        add(cells,x,0,z,role,Heading.NORTH);
+        for(var part:new CuboidLayout(3,3,3).parts(0,-1))add(cells,x+part.x(),part.y(),z+part.z(),Role.CASING,Heading.NORTH);
+    }
+    public static int poleCount(Profile p) { return p.cells*2+(p.cells-1); }
     private static void add(List<Cell> cells,int x,int y,int z,Role role,Heading heading) { cells.add(new Cell(x,y,z,role,heading)); }
     public List<Cell> blocks() { return blocks; }
 }

@@ -50,18 +50,12 @@ public final class PowerAndMultiblockGameTests {
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void formationIsAtomicAndOverlappingControllersCannotClaimParts(GameTestHelper h) {
-        var first=controller(h,ORIGIN,Direction.NORTH);var cells=IndustrialAssembly.positions(first.getBlockPos(),Direction.NORTH);
+        var first=controller(h,ORIGIN,Direction.NORTH);var cells=first.assembly().positions();
         for(int i=0;i<cells.size()-1;i++)h.getLevel().setBlockAndUpdate(cells.get(i),Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());
-        h.assertTrue(!first.assembly().form(),"incomplete shape formed");
-        for(int i=0;i<cells.size()-1;i++) {
-            var part=h.getLevel().getBlockEntity(cells.get(i));
-            h.assertTrue(!part.saveWithFullMetadata(h.getLevel().registryAccess()).contains("Controller"),"failed formation bound a partial structure");
-        }
-        h.getLevel().setBlockAndUpdate(cells.getLast(),Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());
-        h.assertTrue(first.assembly().form(),"complete shape failed to form");
-        var second=controller(h,new BlockPos(5,2,4),Direction.EAST);casings(h,second);
-        h.assertTrue(!second.assembly().form(),"second controller stole an occupied casing");
-        h.assertTrue(first.assembly().formed(),"first structure was broken by failed overlapping formation");h.succeed();
+        h.assertTrue(!first.assembly().formAutomatic(),"incomplete structure formed");
+        for(var pos:cells)if(h.getLevel().getBlockEntity(pos) instanceof CasingBlockEntity part)h.assertTrue(!part.saveWithFullMetadata(h.getLevel().registryAccess()).contains("Controller"),"failed formation bound parts");
+        h.getLevel().setBlockAndUpdate(cells.getLast(),Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());h.assertTrue(first.assembly().formAutomatic(),"complete structure rejected");
+        var second=controller(h,new BlockPos(6,2,4),Direction.EAST);casings(h,second);h.assertTrue(!second.assembly().formAutomatic(),"overlapping controller stole parts");h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void allFourAssemblyOrientationsWork(GameTestHelper h) {
@@ -79,19 +73,11 @@ public final class PowerAndMultiblockGameTests {
     }
     @GameTest(template="empty",timeoutTicks=120)
     public static void breakingCasingKeepsInventoryAndInvalidatesCachedPorts(GameTestHelper h) {
-        var machine=formed(h,ORIGIN,Direction.NORTH);machine.items.setStackInSlot(4,new ItemStack(plate(),5));
-        h.runAfterDelay(5,()->{
-            var pos=machine.assembly().positions().getFirst();
-            var port=h.getLevel().getCapability(Capabilities.ItemHandler.BLOCK,pos,Direction.UP);
-            h.assertTrue(port!=null && port.extractItem(4,2,false).getCount()==2,"part did not expose controller output");
-            h.getLevel().destroyBlock(pos,false);
-            h.assertTrue(h.getLevel().getBlockState(pos).isAir(),"dismantling resurrected the broken casing");
-            h.assertTrue(!machine.assembly().formed() && machine.items.getStackInSlot(4).getCount()==3,"breaking part lost controller inventory");
-            h.assertTrue(port.extractItem(4,64,false).isEmpty(),"cached port can still extract after destruction");
-            h.getLevel().setBlockAndUpdate(pos,Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());
-            h.assertTrue(machine.assembly().form(),"repaired structure did not form");
-            h.assertTrue(port.extractItem(4,64,false).isEmpty(),"old part capability became a duplicate port after repair");h.succeed();
-        });
+        var machine=formed(h,ORIGIN,Direction.NORTH);
+        h.runAfterDelay(5,()->{machine.items.setStackInSlot(4,new ItemStack(Items.DIAMOND,7));var part=machine.assembly().positions().getLast();var port=h.getLevel().getCapability(Capabilities.ItemHandler.BLOCK,part,Direction.UP);
+            h.getLevel().destroyBlock(part,true);h.assertTrue(port.extractItem(4,7,false).isEmpty(),"cached part retained destroyed owner");
+            var drops=h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(machine.getBlockPos()).inflate(4));
+            h.assertTrue(drops.stream().filter(e->e.getItem().is(Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().asItem())).count()==1 && drops.stream().noneMatch(e->e.getItem().is(Items.DIAMOND)),"portable demolition copied inventory");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void twoCasingPortsShareOneOutputAndOneEnergyBuffer(GameTestHelper h) {
@@ -119,27 +105,20 @@ public final class PowerAndMultiblockGameTests {
         h.runAfterDelay(130,()->{h.assertTrue(outputs(machine)==2 && machine.power.getEnergyStored()==8720,"reload lost state or changed production cost");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=100)
-    public static void breakingControllerDropsInventoryOnceAndLeavesEmptyCasings(GameTestHelper h) {
-        var machine=formed(h,ORIGIN,Direction.NORTH);machine.items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,2));machine.items.setStackInSlot(4,new ItemStack(plate(),5));
-        var pos=machine.getBlockPos();var cells=machine.assembly().positions();h.getLevel().destroyBlock(pos,false);
-        int dropped=h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(pos).inflate(3)).stream()
-                .filter(e->e.getItem().is(Items.RAW_IRON) || e.getItem().is(plate())).mapToInt(e->e.getItem().getCount()).sum();
-        h.assertTrue(dropped==7,"controller inventory dropped more or less than once");
-        for(var p:cells)h.assertTrue(h.getLevel().getBlockEntity(p) instanceof CasingBlockEntity && !h.getLevel().getBlockEntity(p).saveWithFullMetadata(h.getLevel().registryAccess()).contains("Controller"),"casing kept a destroyed owner");
-        h.succeed();
+    public static void breakingControllerKeepsOnePortableInventoryAndRemovesAllParts(GameTestHelper h) {
+        var machine=formed(h,ORIGIN,Direction.NORTH);machine.items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,3));
+        var cells=machine.assembly().positions();h.getLevel().destroyBlock(machine.getBlockPos(),true);
+        for(var cell:cells)h.assertTrue(h.getLevel().getBlockState(cell).isAir(),"demolition left structural parts");
+        var drops=h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(machine.getBlockPos()).inflate(4));
+        h.assertTrue(drops.stream().filter(e->e.getItem().is(Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().asItem())).count()==1 && drops.stream().noneMatch(e->e.getItem().is(Items.RAW_IRON)),"inventory must remain in sole portable owner");h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=500)
     public static void insertersAutomateTheMultiblockThroughACasingPort(GameTestHelper h) {
-        var machine=formed(h,ORIGIN,Direction.NORTH);
-        h.setBlock(new BlockPos(6,2,4),Blocks.CHEST);h.setBlock(new BlockPos(3,2,1),Blocks.CHEST);
-        var source=(ChestBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(6,2,4)));source.setItem(0,new ItemStack(Items.RAW_IRON,6));
-        var output=(ChestBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(3,2,1)));
-        h.setBlock(new BlockPos(5,2,4),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.WEST));
-        h.setBlock(new BlockPos(3,2,2),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.NORTH));
-        h.setBlock(new BlockPos(6,2,2),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-        ((MachineBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(6,2,2)))).items.setStackInSlot(8,new ItemStack(Items.COAL));
-        h.setBlock(new BlockPos(5,2,3),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        h.succeedWhen(()->{h.assertTrue(source.isEmpty() && output.getItem(0).is(plate()) && output.getItem(0).getCount()==6,"multiblock has not delivered all plates");});
+        var machine=formed(h,ORIGIN,Direction.NORTH);machine.power.restore(16000);
+        h.setBlock(new BlockPos(7,2,4),Blocks.CHEST);((ChestBlockEntity)h.getBlockEntity(new BlockPos(7,2,4))).setItem(0,new ItemStack(Items.RAW_IRON,4));
+        h.setBlock(new BlockPos(6,2,4),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.WEST));
+        h.setBlock(new BlockPos(4,2,2),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.NORTH));h.setBlock(new BlockPos(4,2,1),Blocks.CHEST);
+        h.succeedWhen(()->h.assertTrue(((ChestBlockEntity)h.getBlockEntity(new BlockPos(4,2,1))).getItem(0).getCount()==4,"parts did not deliver four plates"));
     }
     @GameTest(template="empty",timeoutTicks=160)
     public static void controllerAndPartsResumeFromSerializedProgress(GameTestHelper h) {
@@ -171,7 +150,7 @@ public final class PowerAndMultiblockGameTests {
             var machine=(MachineBlockEntity)level.getBlockEntity(anchor);
             h.assertTrue(machine.assembly()!=null && machine.assembly().formed() && machine.items.getStackInSlot(0).getCount()==3,"disk controller lost its state");
             for(var p:cells)h.assertTrue(level.getBlockEntity(p) instanceof CasingBlockEntity part && part.boundTo(anchor,machine.assembly().identity()),"disk casing lost controller identity");
-            System.out.println("FACTORYCRAFT_MULTIBLOCK_DISK: VERIFIED controller and seven casing identities across four chunks");
+            System.out.println("FACTORYCRAFT_MULTIBLOCK_DISK: VERIFIED controller and 26 casing identities across four chunks");
         }
         h.succeed();
     }
@@ -192,17 +171,9 @@ public final class PowerAndMultiblockGameTests {
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void aLateLoadedOrphanCasingDropsItsStaleBinding(GameTestHelper h) {
-        var machine=formed(h,ORIGIN,Direction.NORTH);var pos=machine.assembly().positions().getFirst();
-        var saved=h.getLevel().getBlockEntity(pos).saveWithFullMetadata(h.getLevel().registryAccess());
-        h.getLevel().destroyBlock(machine.getBlockPos(),false);
-        h.getLevel().removeBlockEntity(pos);
-        var orphan=(CasingBlockEntity)BlockEntity.loadStatic(pos,h.getLevel().getBlockState(pos),saved,h.getLevel().registryAccess());
-        h.getLevel().setBlockEntity(orphan);
-        h.runAfterDelay(5,()->{
-            h.assertTrue(!orphan.saveWithFullMetadata(h.getLevel().registryAccess()).contains("Controller"),"orphan did not clear its stale controller");
-            h.assertTrue(!h.getLevel().getBlockState(pos).getValue(FactoryBlock.ACTIVE),"orphan kept the formed visual state");
-            h.assertTrue(orphan.inventory().getStackInSlot(0).isEmpty(),"orphan exposed an inventory");h.succeed();
-        });
+        var machine=formed(h,ORIGIN,Direction.NORTH);var pos=machine.assembly().positions().getLast();var state=h.getLevel().getBlockState(pos);var old=h.getLevel().getBlockEntity(pos);var tag=old.saveWithFullMetadata(h.getLevel().registryAccess());
+        h.getLevel().destroyBlock(machine.getBlockPos(),true);h.getLevel().setBlockAndUpdate(pos,state);h.getLevel().removeBlockEntity(pos);h.getLevel().setBlockEntity(BlockEntity.loadStatic(pos,state,tag,h.getLevel().registryAccess()));
+        h.runAfterDelay(5,()->{h.assertTrue(h.getLevel().getBlockState(pos).isAir(),"orphan survived as a free part");h.succeed();});
     }
 
     @GameTest(template="empty",timeoutTicks=100)

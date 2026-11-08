@@ -145,7 +145,7 @@ write('data/factorycraft/advancement/recipes/multiblock_basics.json',{'criteria'
 def utf(s):
  b=s.encode();return struct.pack('>H',len(b))+b
 def named(t,n,p):return bytes([t])+utf(n)+p
-nbt=b'\x0a\x00\x00'+named(3,'DataVersion',struct.pack('>i',3955))+named(9,'size',b'\x03'+struct.pack('>i',3)+struct.pack('>iii',16,8,16))+named(9,'palette',b'\x0a'+struct.pack('>i',1)+named(8,'Name',utf('minecraft:air'))+b'\x00')+named(9,'blocks',b'\x0a'+struct.pack('>i',0))+named(9,'entities',b'\x0a'+struct.pack('>i',0))+b'\x00'
+nbt=b'\x0a\x00\x00'+named(3,'DataVersion',struct.pack('>i',3955))+named(9,'size',b'\x03'+struct.pack('>i',3)+struct.pack('>iii',32,12,24))+named(9,'palette',b'\x0a'+struct.pack('>i',1)+named(8,'Name',utf('minecraft:air'))+b'\x00')+named(9,'blocks',b'\x0a'+struct.pack('>i',0))+named(9,'entities',b'\x0a'+struct.pack('>i',0))+b'\x00'
 p=ROOT/'data/factorycraft/structure/empty.nbt';p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(gzip.compress(nbt,mtime=0))
 
 # Original fluid-logistics assets, recipes and translations.
@@ -325,3 +325,47 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';content=json.loads(path.read_text());content.update({k:v[index] for k,v in oil_lang.items()});write(str(path.relative_to(ROOT)),content)
 write('data/factorycraft/advancement/recipes/petroleum_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_'+name for name in ['pumpjack','oil_refinery','chemical_plant']]}})
 write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})
+
+# 0.6 resource tiles and automatic machine footprints. These overrides replace one-drop ores.
+profiles={'electric_drill':(3,2,3),'electric_furnace':(3,3,3),'assembling_machine':(3,3,3),'coal_generator':(3,3,3),'industrial_furnace':(3,3,3),'pumpjack':(3,4,3),'oil_refinery':(5,4,5),'chemical_plant':(3,3,3),'boiler':(3,2,2),'steam_engine':(3,2,5),'fluid_tank':(3,3,3),'electric_pump':(1,1,2),'splitter':(2,1,1)}
+for casing in ['machine_casing','refinery_casing']:
+ variants={}
+ for profile in profiles:
+  for direction,rot in [('north',0),('east',90),('south',180),('west',270)]:
+   for lit in ['false','true']:
+    # Skin follows its owner; splitter parts also retain the low belt silhouette.
+    variants[f'profile={profile},facing={direction},lit={lit}']={'model':'factorycraft:block/'+profile,'y':rot}
+ write(f'assets/factorycraft/blockstates/{casing}.json',{'variants':variants})
+for name,color in [('coal_deposit',(57,61,66)),('stone_deposit',(131,127,119))]:
+ texture('block/'+name,color,'ore')
+ write(f'assets/factorycraft/models/block/{name}.json',{'parent':'minecraft:block/cube_all','textures':{'all':'factorycraft:block/'+name}})
+ write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'':{'model':'factorycraft:block/'+name}}})
+for name in ['iron_ore','copper_ore','coal_deposit','stone_deposit']:
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[]})
+ configured={'type':'factorycraft:resource_patch','config':{'size':32,'discard_chance_on_air_exposure':0.0,'targets':[{'target':{'predicate_type':'minecraft:tag_match','tag':'minecraft:stone_ore_replaceables'},'state':{'Name':'factorycraft:'+name}}]}}
+ write(f'data/factorycraft/worldgen/configured_feature/{name}.json',configured)
+ if name in ['coal_deposit','stone_deposit']:
+  placed=json.loads((ROOT/'data/factorycraft/worldgen/placed_feature/iron_ore.json').read_text());placed['feature']='factorycraft:'+name
+  write(f'data/factorycraft/worldgen/placed_feature/{name}.json',placed)
+  write(f'data/factorycraft/neoforge/biome_modifier/{name}.json',{'type':'neoforge:add_features','biomes':'#minecraft:is_overworld','features':['factorycraft:'+name],'step':'underground_ores'})
+tag=json.loads((ROOT/'data/minecraft/tags/block/mineable/pickaxe.json').read_text());tag['values']+=['factorycraft:coal_deposit','factorycraft:stone_deposit'];write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
+for lang in ['en_us','ru_ru']:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
+ data.update({
+ 'block.factorycraft.coal_deposit':'Залежь угля' if ru else 'Coal deposit',
+ 'block.factorycraft.stone_deposit':'Залежь камня' if ru else 'Stone deposit',
+ 'message.factorycraft.resource_remaining':'%s — запас: %s' if ru else '%s — remaining: %s',
+ 'message.factorycraft.resource_inventory_full':'Нет места для добытого ресурса' if ru else 'No room for mined resource',
+ 'message.factorycraft.placement_space':'Весь объём машины должен быть свободен и загружен' if ru else 'The complete machine volume must be clear and loaded',
+ 'tooltip.factorycraft.machine_dimensions':'Габариты: %s × %s блоков; высота %s' if ru else 'Footprint: %s × %s blocks; height %s',
+ 'tooltip.factorycraft.machine_preview':'Один предмет создаёт всю машину. Превью: зелёное — свободно, красное — препятствие.' if ru else 'One item builds the complete machine. Preview: green = clear, red = obstructed.',
+ 'command.factorycraft.full_size_space':'Нужна загруженная свободная область 30 × 8 × 13 рядом с вами.' if ru else 'Need a loaded, empty 30 × 8 × 13 area beside you.',
+ 'command.factorycraft.full_size_built':'Построено: %s, координаты %s' if ru else 'Built %s at %s',
+ 'tooltip.factorycraft.industrial_furnace':'Один предмет создаёт печь 3×3×3. Скорость ×2; тот же расход FE на результат.' if ru else 'One item builds a 3×3×3 furnace. Twice the speed; same FE per result.',
+ 'tooltip.factorycraft.oil_refinery':'НПЗ 5×5. Нефть — в центр задней грани, газ — из центра передней.' if ru else '5×5 refinery. Crude enters rear center; gas leaves front center.',
+ 'tooltip.factorycraft.electric_drill':'Бур 3×3. Добывает запас залежей в области 5×5 на глубину до 8 блоков.' if ru else '3×3 drill. Extracts finite deposits in a 5×5 mining area, up to 8 blocks below.',
+ 'tooltip.factorycraft.splitter':'Два передних выхода, чередование предметов. Ширина 2 блока.' if ru else 'Alternates between two forward outputs. Two blocks wide.',
+ 'preview.factorycraft.valid':'%s × %s × %s — можно установить' if ru else '%s × %s × %s — ready to place',
+ 'preview.factorycraft.blocked':'%s × %s × %s — занятых ячеек: %s' if ru else '%s × %s × %s — blocked cells: %s',
+ })
+ write(f'assets/factorycraft/lang/{lang}.json',data)

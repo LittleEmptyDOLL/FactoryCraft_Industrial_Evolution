@@ -25,7 +25,7 @@ public final class FluidSimulation {
     private static final class Link {
         final FluidBlockEntity be;
         final FluidTransport.Node<FluidKey> node;
-        final Link[] neighbors=new Link[6];
+        final Set<Link> neighbors=new HashSet<>();
         boolean queued,dirty,removed;
         FluidKey water;
         Link(FluidBlockEntity be,FluidTransport.Node<FluidKey> node) { this.be=be;this.node=node; }
@@ -46,7 +46,7 @@ public final class FluidSimulation {
         var s=STATES.get(be.getLevel());if(s==null)return;
         var link=s.nodes.remove(be.getBlockPos());if(link==null)return;
         link.removed=true;s.transport.remove(link.node);
-        for(var neighbor:link.neighbors)if(neighbor!=null)refresh(s,neighbor);
+        for(var neighbor:List.copyOf(link.neighbors))refresh(s,neighbor);
         if(s.nodes.isEmpty())STATES.remove(be.getLevel());
     }
     public static void topologyChanged(FluidBlockEntity be) {
@@ -55,18 +55,26 @@ public final class FluidSimulation {
         for(var direction:Direction.values()) { var other=s.nodes.get(be.getBlockPos().relative(direction));if(other!=null)refresh(s,other); }
     }
     private static void refresh(State s,Link link) {
-        if(link.removed)return;
-        for(var direction:Direction.values()) {
-            int index=direction.get3DDataValue();var previous=link.neighbors[index];
-            var next=s.nodes.get(link.be.getBlockPos().relative(direction));
-            if(next!=null && (!FluidBlocks.port(link.be.getBlockState(),direction) || !FluidBlocks.port(next.be.getBlockState(),direction.getOpposite())))next=null;
-            if(previous==next)continue;
-            if(previous!=null && !previous.removed && link.be.kind()!=FluidKind.PUMP && previous.be.kind()!=FluidKind.PUMP)s.transport.disconnect(link.node,previous.node);
-            link.neighbors[index]=next;
-            if(next!=null && link.be.kind()!=FluidKind.PUMP && next.be.kind()!=FluidKind.PUMP)s.transport.connect(link.node,next.node);
-            if(previous!=null)wake(s,previous);if(next!=null)wake(s,next);
+        if(link.removed)return;var expected=new HashSet<Link>();
+        for(var connection:link.be.connections()) {
+            var physical=connection.pos().relative(connection.side());var other=FluidConnections.fluidDevice(link.be.getLevel(),physical);
+            if(other==null || other==link.be || other.structurePort(physical,connection.side().getOpposite())==null)continue;
+            var next=s.nodes.get(other.getBlockPos());if(next!=null && !next.removed)expected.add(next);
         }
-        wake(s,link);
+        for(var previous:List.copyOf(link.neighbors))if(!expected.contains(previous)) {
+            if(!previous.removed && link.be.kind()!=FluidKind.PUMP && previous.be.kind()!=FluidKind.PUMP)s.transport.disconnect(link.node,previous.node);
+            link.neighbors.remove(previous);previous.neighbors.remove(link);wake(s,previous);
+        }
+        for(var next:expected)if(link.neighbors.add(next)) {
+            next.neighbors.add(link);
+            if(link.be.kind()!=FluidKind.PUMP && next.be.kind()!=FluidKind.PUMP)s.transport.connect(link.node,next.node);wake(s,next);
+        }
+        s.transport.wake(link.node);wake(s,link);
+    }
+    private static Link neighbor(State s,FluidBlockEntity be,boolean input) {
+        var physical=(input ? be.inputNozzle():be.outputNozzle()).relative(input ? be.facing().getOpposite():be.facing());
+        var other=FluidConnections.fluidDevice(be.getLevel(),physical);
+        return other==null || other.structurePort(physical,input ? be.facing():be.facing().getOpposite())==null ? null:s.nodes.get(other.getBlockPos());
     }
     private static void wake(State s,Link link) {
         if(!link.removed && link.be.kind()==FluidKind.PUMP && !link.queued) { link.queued=true;s.pumps.addLast(link); }
@@ -102,7 +110,7 @@ public final class FluidSimulation {
     }
     private static boolean pump(State s,Link link) {
         var be=link.be;var cell=be.cell();if(be.power.getEnergyStored()<PUMP_FE)return false;
-        var facing=be.facing();var input=link.neighbors[facing.getOpposite().get3DDataValue()];var output=link.neighbors[facing.get3DDataValue()];
+        var facing=be.facing();var input=neighbor(s,be,true);var output=neighbor(s,be,false);
         if(input!=null && !input.be.simulationAvailable())input=null;
         if(output!=null && !output.be.simulationAvailable())output=null;
         if(input!=null && input.be.kind()==FluidKind.PUMP && input.be.facing()!=facing)input=null;
@@ -111,7 +119,7 @@ public final class FluidSimulation {
         int in=input==null ? 0:input.be.cell().transferTo(cell,PUMP_RATE,true);
         boolean source=false;
         if(input==null && cell.space()>0) {
-            var pos=be.getBlockPos().relative(facing.getOpposite());var level=be.getLevel();
+            var pos=be.inputNozzle().relative(facing.getOpposite());var level=be.getLevel();
             source=level.hasChunkAt(pos) && level.getBlockState(pos).is(Blocks.WATER) && level.getFluidState(pos).isSource();
             if(source) {
                 if(link.water==null)link.water=new FluidKey(new FluidStack(Fluids.WATER,1));

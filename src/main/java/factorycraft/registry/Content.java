@@ -38,14 +38,14 @@ public final class Content {
                 var properties=BlockBehaviour.Properties.of().strength(2.5f).noOcclusion().pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK);
                 return kind==factorycraft.fluids.FluidKind.PIPE ? new factorycraft.blocks.FluidPipeBlock(properties):new factorycraft.blocks.FluidDeviceBlock(kind,properties);
             });
-            FLUID_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->new factorycraft.items.FluidBlockItem(block.get(),new Item.Properties()));
+            FLUID_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->kind==factorycraft.fluids.FluidKind.PIPE ? new factorycraft.items.FluidBlockItem(block.get(),new Item.Properties()):new factorycraft.items.MachineItem(block.get(),new Item.Properties()));
         }
     }
     public static final Map<factorycraft.thermal.ThermalKind,DeferredBlock<Block>> THERMAL_BLOCKS=new EnumMap<>(factorycraft.thermal.ThermalKind.class);
     static {
         for(var kind:factorycraft.thermal.ThermalKind.values()) {
             var block=BLOCKS.<Block>register(kind.id,()->new factorycraft.blocks.ThermalBlock(kind,BlockBehaviour.Properties.of().strength(3).noOcclusion().pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)));
-            THERMAL_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->new factorycraft.items.ThermalBlockItem(block.get(),new Item.Properties()));
+            THERMAL_BLOCKS.put(kind,block);ITEMS.register(kind.id,()->new factorycraft.items.MachineItem(block.get(),new Item.Properties()));
         }
     }
     static {
@@ -54,7 +54,7 @@ public final class Content {
                     .pushReaction(kind.casing() || kind.large() ? net.minecraft.world.level.material.PushReaction.BLOCK:net.minecraft.world.level.material.PushReaction.NORMAL)));
             FACTORY.put(kind, block);
             ITEMS.register(kind.id, () -> kind.large()
-                    ? new factorycraft.items.IndustrialFurnaceItem(block.get(),new Item.Properties())
+                    ? new factorycraft.items.MachineItem(block.get(),new Item.Properties())
                     : new factorycraft.items.FactoryBlockItem(block.get(),new Item.Properties()));
         }
     }
@@ -63,11 +63,14 @@ public final class Content {
     public static final DeferredHolder<MenuType<?>,MenuType<factorycraft.petroleum.PetroleumMenu>> PETROLEUM_MENU=MENUS.register("petroleum",()->IMenuTypeExtension.create(factorycraft.petroleum.PetroleumMenu::new));
     public static final DeferredHolder<RecipeType<?>,RecipeType<factorycraft.recipes.ChemicalRecipe>> CHEMISTRY=RECIPE_TYPES.register("chemistry",()->new RecipeType<>() { public String toString() { return "factorycraft:chemistry"; } });
     public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<factorycraft.recipes.ChemicalRecipe>> CHEMISTRY_SERIALIZER=SERIALIZERS.register("chemistry",factorycraft.recipes.ChemicalRecipe.Serializer::new);
-    public static final DeferredBlock<Block> IRON_ORE = BLOCKS.registerSimpleBlock("iron_ore", BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE));
-    public static final DeferredBlock<Block> COPPER_ORE = BLOCKS.registerSimpleBlock("copper_ore", BlockBehaviour.Properties.ofFullCopy(Blocks.COPPER_ORE));
+    public static final Map<factorycraft.resources.ResourceKind,DeferredBlock<factorycraft.blocks.ResourceDepositBlock>> RESOURCES=new EnumMap<>(factorycraft.resources.ResourceKind.class);
     static {
-        ITEMS.registerSimpleBlockItem(IRON_ORE);
-        ITEMS.registerSimpleBlockItem(COPPER_ORE);
+        for(var kind:factorycraft.resources.ResourceKind.values())RESOURCES.put(kind,BLOCKS.register(kind.id,()->new factorycraft.blocks.ResourceDepositBlock(kind,BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK))));
+    }
+    public static final DeferredBlock<factorycraft.blocks.ResourceDepositBlock> IRON_ORE=RESOURCES.get(factorycraft.resources.ResourceKind.IRON),COPPER_ORE=RESOURCES.get(factorycraft.resources.ResourceKind.COPPER);
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<ResourceDepositBlockEntity>> RESOURCE_DEPOSIT_ENTITY=ENTITIES.register("resource_deposit",()->BlockEntityType.Builder.of(ResourceDepositBlockEntity::new,RESOURCES.values().stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
+    public static final DeferredHolder<net.minecraft.world.level.levelgen.feature.Feature<?>,factorycraft.worldgen.OilDepositFeature> RESOURCE_PATCH_FEATURE=FEATURES.register("resource_patch",factorycraft.worldgen.OilDepositFeature::new);
+    static {
         for (String name : List.of("iron_plate", "copper_plate", "iron_gear", "copper_wire", "electronic_circuit","plastic_bar","sulfur","advanced_circuit"))
             ITEMS.registerSimpleItem(name, new Item.Properties());
     }
@@ -99,18 +102,18 @@ public final class Content {
         bus.addListener(Content::capabilities);
     }
     private static void capabilities(RegisterCapabilitiesEvent e) {
-        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,MACHINE.get(),(be,side)->be.petroleum()!=null && be.petroleum().hasPort(be.getBlockPos(),side) ? be.petroleum().port(be.getBlockPos(),side):null);
-        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,CASING.get(),(be,side)->new factorycraft.petroleum.CasingFluidPort(be,side));
+        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,MACHINE.get(),(be,side)->factorycraft.multiblock.AssemblyAccess.fluid(be,be.getBlockPos(),side));
+        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,CASING.get(),(be,side)->be.fluid(side));
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,THERMAL.get(),(be,side)->be.automation());
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,THERMAL.get(),(be,side)->be.generatesElectricity() ? be.energyPort:null);
-        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,THERMAL.get(),(be,side)->side==null || ((factorycraft.blocks.ThermalBlock)be.getBlockState().getBlock()).port(be.getBlockState(),side) ? be.port(side):null);
+        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,THERMAL.get(),(be,side)->be.structurePort(be.getBlockPos(),side));
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BELT.get(), (be, side) -> be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, INSERTER.get(), (be, side) -> be.inventory());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), MachineBlockEntity::automation);
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (be, side) -> be.energyPort);
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,CASING.get(),(be,side)->be.inventory());
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,CASING.get(),(be,side)->be.energy);
-        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,FLUID.get(),(be,side)->side==null || factorycraft.fluids.FluidBlocks.port(be.getBlockState(),side) ? be.port(side):null);
+        e.registerBlockEntity(Capabilities.FluidHandler.BLOCK,FLUID.get(),(be,side)->be.structurePort(be.getBlockPos(),side));
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,FLUID.get(),(be,side)->be.kind()==factorycraft.fluids.FluidKind.PUMP ? be.energyPort:null);
     }
     private Content() {}

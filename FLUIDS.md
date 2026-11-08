@@ -1,4 +1,4 @@
-# Fluid logistics — 0.3.0
+# Fluid logistics — 0.6.0
 
 Target: Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. All quantities use integer millibuckets (mB); one vanilla bucket is 1000 mB. Simulation runs on the server at 20 ticks/second.
 
@@ -16,7 +16,7 @@ The pump accepts a genuine vanilla source-water block immediately behind it as u
 
 Right-click with a bucket for standard NeoForge container interaction; right-click otherwise for a readonly gauge (and pump FE). Standard sided fluid capabilities allow other mods to push/pull; pipe/pump automatic neighbor discovery currently connects only FactoryCraft fluid nodes. Unsided pump access exposes maintenance fill/drain; sided access enforces back/front roles even on a previously cached handler after rotation.
 
-Breaking a filled block returns one block item retaining the canonical native FluidStack (including components) and stored FE. Empty/unpowered block items stack normally. Place the returned item to restore contents. Standard creative breaking produces no block item. This slice uses single-block devices; future large fluid machines follow the one-item automatic-multiblock rule.
+Breaking a filled block returns one block item retaining the canonical native FluidStack (including components) and stored FE. Freshly crafted items stack normally; harvested structures retain controller NBT. Place the returned item to restore contents. Standard creative breaking produces no block item. Tanks are now 3×3×3 and pumps occupy 1×2, automatically formed from one item. Pipes remain one block. External tank faces and fixed pump nozzles forward to one controller; see MACHINE_DIMENSIONS.md.
 
 ## Chosen transport model and Factorio 2.0 comparison
 
@@ -38,11 +38,11 @@ Graph nodes/edges update on actual topology changes. Empty, balanced and incompa
 
 Runtime never force-loads neighbors. Canonical loaded chunk/BE ownership is checked before access. An unavailable endpoint freezes transfers; early ChunkEvent.Unload detaches before chunk serialization, and every authoritative change marks its owned chunk unsaved immediately. This specifically covers the save-order race found by a four-chunk disk fixture. Unloaded fluid nodes do not advance offline.
 
-New block entities use fluid schema 1 and the native FluidStack codec. Existing production/multiblock/belt schemas are unchanged. Fluid snapshot changes are staggered per position to at most one BE packet per five ticks; opened menus use vanilla data slots and split 32-bit quantities safely. No measured multiplayer delta compression is claimed.
+New block entities use fluid schema 1 and the native FluidStack codec. Production/fluid/belt payloads stay native; assembly/part metadata is schema 3 in 0.6.0. Fluid snapshot changes are staggered per position to at most one BE packet per five ticks; opened menus use vanilla data slots and split 32-bit quantities safely. No measured multiplayer delta compression is claimed.
 
 `/factorycraft fluids` reports loaded nodes, passive components/edges, pending edges, queued pumps, cumulative edge visits/transferred mB, pump chamber transfers and CPU time. Pump chamber transfers count both input and output movement, not unique water creation or end-to-end throughput.
 
-`/factorycraft waterworks` requires an empty loaded 9×4×5 area beside the player and builds a real fueled generator → pole → pump → four pipes → tank chain with an enclosed source-water block. It does not fill the destination tank directly.
+`/factorycraft waterworks` requires an empty loaded 30×8×13 area beside the player and builds a real fueled generator → pole → pump → four pipes → tank chain with an enclosed source-water block. It does not fill the destination tank directly.
 
 ![Tank gauge in the actual Russian client](docs/screenshots/fluid-tank-0.3.0.png)
 

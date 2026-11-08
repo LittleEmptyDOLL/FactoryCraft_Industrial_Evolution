@@ -67,6 +67,8 @@ final class FactoryBenchmarkWorld {
     private Item plate() { return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("factorycraft","iron_plate")); }
     private Item gear() { return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("factorycraft","iron_gear")); }
     void seed() {
+        for(var cell:plan.blocks())if(level.getBlockEntity(position(cell)) instanceof MachineBlockEntity machine && machine.assembly()!=null)
+            require(machine.assembly().formAutomatic(),"Full-size benchmark structure failed to form");
         for(var cell:plan.blocks()) {
             var be=level.getBlockEntity(position(cell));
             switch(cell.role()) {
@@ -122,10 +124,10 @@ final class FactoryBenchmarkWorld {
                 default -> {}
             }
         }
-        require(level.getEntitiesOfClass(ItemEntity.class,new AABB(ORIGIN).expandTowards(200,50,80).inflate(3)).isEmpty(),"Fixture produced unexpected item entities");
+        require(level.getEntitiesOfClass(ItemEntity.class,new AABB(ORIGIN).expandTowards(402,50,122).inflate(3)).isEmpty(),"Fixture produced unexpected item entities");
         require(copper==profile.loops*200L,"Belt resource conservation failed: "+copper);
         require(iron==profile.cells*512L,"Production resource conservation failed: "+iron);
-        require(producers==profile.cells*4 && inserters==profile.cells*2 && casings==profile.cells*7,"Workload counts changed");
+        require(producers==profile.cells*4 && inserters==profile.cells*2 && casings==profile.cells*130,"Workload counts changed");
         require(BeltSimulation.snapshot(level).loaded()==profile.loops*100,"Not every belt registered");
         return new Audit(copper,iron,energy,producers,inserters,casings,active,HexFormat.of().formatHex(digest.digest()));
     }
@@ -158,7 +160,7 @@ final class FactoryBenchmarkWorld {
             for(var element:list)hashTag(digest,element);digest.update((byte)0);
         } else digest.update(tag.toString().getBytes(StandardCharsets.UTF_8));
     }
-    BlockPos probePole() { return ORIGIN.offset(4,0,3); }
+    BlockPos probePole() { return ORIGIN.offset(5,0,4); }
     void removeProbe() { level.removeBlock(probePole(),false); }
     void restoreProbe() { level.setBlockAndUpdate(probePole(),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState()); }
     static void require(boolean valid,String message) { if(!valid)throw new IllegalStateException(message); }

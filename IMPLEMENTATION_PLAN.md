@@ -31,7 +31,7 @@ Maintain the delivered stages 1–2 vertical slice while expanding stage 3 with 
 
 ## Next session
 
-Read VALIDATION.md, FEATURE_MATRIX.md, FLUIDS.md and STEAM_POWER.md first. Reproduce `./gradlew build` and two separate `./gradlew runGameTestServer` processes before extending stage 3. Preserve existing factory, fluid and multiblock fixtures. Do not claim the full Factorio/Space Age implementation is complete.
+Read MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Start a **new** 0.6.0 world. Reproduce build, two GameTest processes and benchmark/reload. Current geometry and stock work supersedes compact fixtures; no old-save migration is required by the user.
 
 ## Delivered in 0.1.0
 
@@ -67,9 +67,9 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Extend petroleum to advanced refining: water + crude → heavy oil + light oil + gas, then cracking/lubricant/acid/batteries. Add a third output tank/nozzle (e.g. an upper assembly port) without reinterpreting schema-1 Fluid0..Fluid3; retain old processing/boiling/chemistry JSON. Reserve every result before work, test blocked individual outlets, item/fluid components and process restart. After these chains, begin team research/labs and recipe gating.
-2. Exercise two real connected clients and natural-distance chunk unload. Use the new JFR packet capture to measure tracking/synchronization, then implement batching/deltas from measured evidence. BE sync request counts do not measure wire traffic. The dedicated no-client workload does not establish client FPS or multiplayer bandwidth.
-3. Continue underground belts, two-block splitters and inserter variants. Keep future space mechanics independent from basic production. Extend larger machines through one-item controller/part layouts rather than duplicating inventories.
+1. Replace temporary tiled machine shells with original unified models and explicit nozzle markings while retaining exact MachineProfile collision/placement volumes and one-item ownership. Complete four physical splitter lanes/full two-belt throughput (currently two shared lanes); keep two forward exits and add blocked/loaded/serialized conservation tests. These are polish/completion of the user's current dimensions request, not reasons to shrink footprints.
+2. Continue stage 3 advanced refining: water + crude → heavy/light oil + gas, then cracking, lubricant, acid/batteries. Reserve every output; add a third physical outlet on the 5×5 refinery. After this, team research/labs and recipe gating.
+
 
 ## Delivered in 0.4.0 — steam power
 
@@ -78,3 +78,13 @@ Implemented compact single-block boiler and steam engine, container-only steam/b
 ## Delivered in 0.5.0 — petroleum
 
 Implemented finite deposit → electric pumpjack → pipes → one-item 2×2×2 refinery → petroleum gas → coal-fed chemical plant → plastic, plus sulfur and assembler-made advanced circuits. Mixed recipes reserve all item/fluid outputs and consume counted inputs only on completion; per-tick FE and canonical recipe identity persist. New refinery parts forward to one controller; portable item NBT excludes the old assembly identity so placement binds fresh parts correctly. A BE-aware custom worldgen feature creates finite reservoirs; the native ore feature is unsuitable for direct BE placement. Tests cover complete material ledgers, blocked/underpowered operation, native codecs, cancellation, portable placement, worldgen and exact separate-JVM state across four chunks. See PETROLEUM.md and VALIDATION.md. Next work is advanced refining with a third output and extended chemistry as prioritized above.
+
+## Completed milestone — 0.6.0 resource fields and real dimensions
+
+User overrides petroleum expansion: replace each custom iron/copper/coal/stone tile with a persistent finite reserve, including transactional manual harvesting and drill extraction without removing a nonempty tile. Generalize automatic controller/part assemblies to all current machines (factory, thermal, tank/pump, splitter); use Factorio tile footprints with one tile = one Minecraft X/Z block. Share rotated footprints, complete loaded/collision/permission validation, item placement and a colored client volume preview. Heights are explicit Minecraft design choices because Factorio is 2D. Old saves may break by user instruction; update physical GameTests, example factories and full benchmark instead of retaining compact geometry. Verify actual large-machine automation, exact reserves, placement cancellation, full-state portable removal, chunk lifecycle and client preview.
+
+## Delivered in 0.6.0 — finite resource tiles and actual footprints
+
+Replaced one-drop industrial ores with persistent finite iron/copper/coal/stone tile stocks, repeated survival harvesting, 5×5×8 drill access and BE-aware generation. All 13 current larger machine types now use MachineProfile footprint/height definitions and a common one-item protected placement transaction. PlacementPreview shows the same validated volume, blocked cells and controller anchor. Every part forwards to one canonical owner; physical fluid nozzles and power coverage use the real structure. Cross-chunk availability stops the whole machine before serialization.
+
+Adapted the iron, industrial, water, steam and petroleum examples/integration fixtures, including portable inventories/fluids and full-size production. The opt-in benchmark now builds 45249 cells (32500 structural parts), retaining 10000 belts/1000 producers/500 inserters and one shared grid. Old worlds are intentionally unsupported under the user's explicit scope. Remaining visual shells and splitter throughput limits are documented; see VALIDATION.md for evidence.

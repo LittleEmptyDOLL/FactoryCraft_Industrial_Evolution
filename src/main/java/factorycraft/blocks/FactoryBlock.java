@@ -22,6 +22,7 @@ import java.util.List;
 
 public final class FactoryBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<factorycraft.multiblock.MachineProfile> PROFILE=EnumProperty.create("profile",factorycraft.multiblock.MachineProfile.class);
     public static final BooleanProperty ACTIVE = BlockStateProperties.LIT;
     public final FactoryKind kind;
     public FactoryBlock(FactoryKind kind, Properties properties) {
@@ -29,12 +30,13 @@ public final class FactoryBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, false));
     }
     @Override protected MapCodec<? extends BaseEntityBlock> codec() { return simpleCodec(p -> new FactoryBlock(kind, p)); }
-    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) { b.add(FACING, ACTIVE); }
-    @Override public BlockState getStateForPlacement(BlockPlaceContext c) { return defaultBlockState().setValue(FACING, c.getHorizontalDirection()); }
+    @Override protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) { b.add(FACING, ACTIVE,PROFILE); }
+    @Override public BlockState getStateForPlacement(BlockPlaceContext c) { var profile=factorycraft.multiblock.MachineProfile.byId(kind.id);return defaultBlockState().setValue(FACING,profile==null ? c.getHorizontalDirection():profile.placementFacing(c.getHorizontalDirection())); }
     @Override protected BlockState rotate(BlockState s, Rotation r) { return s.setValue(FACING, r.rotate(s.getValue(FACING))); }
     @Override protected BlockState mirror(BlockState s, Mirror m) { return rotate(s, m.getRotation(s.getValue(FACING))); }
     @Override protected RenderShape getRenderShape(BlockState s) { return RenderShape.MODEL; }
     @Override protected VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+        if(kind.casing() && s.getValue(PROFILE)==factorycraft.multiblock.MachineProfile.SPLITTER)return box(0,0,0,16,3,16);
         if (kind.belt()) return box(0, 0, 0, 16, 3, 16);
         if (kind == FactoryKind.INSERTER) return box(5, 0, 5, 11, 8, 11);
         if (kind == FactoryKind.POLE) return box(6, 0, 6, 10, 16, 10);
@@ -55,7 +57,7 @@ public final class FactoryBlock extends BaseEntityBlock {
         return null;
     }
     @Override protected ItemInteractionResult useItemOn(ItemStack stack,BlockState state,Level level,BlockPos pos,Player player,InteractionHand hand,BlockHitResult hit) {
-        if(kind.petroleum() || kind==FactoryKind.REFINERY_CASING)return factorycraft.fluids.FluidBlocks.useItem(stack,level,pos,player,hand,hit.getDirection());
+        if(kind.large() || kind.casing())return factorycraft.fluids.FluidBlocks.useItem(stack,level,pos,player,hand,hit.getDirection());
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
     @Override protected InteractionResult useWithoutItem(BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
@@ -66,25 +68,17 @@ public final class FactoryBlock extends BaseEntityBlock {
                 player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);
             player.openMenu(machine,p);
         } else if(l.getBlockEntity(p) instanceof CasingBlockEntity part) {
-            var owner=part.controllerForInteraction();
-            if(owner!=null)player.openMenu(owner,owner.getBlockPos());
+            var owner=part.genericForRemoval();
+            if(owner!=null)factorycraft.multiblock.AssemblyAccess.open(owner,player);
             else player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);
         }
         else player.displayClientMessage(Component.translatable("message.factorycraft.direction", s.getValue(FACING).getName()), true);
         return InteractionResult.CONSUME;
     }
     public InteractionResult useWrench(Level level,BlockPos pos,Player player) {
-        if(level.isClientSide)return InteractionResult.SUCCESS;
-        var state=level.getBlockState(pos);if(!state.is(this))return InteractionResult.PASS;
-        if(level.getBlockEntity(pos) instanceof MachineBlockEntity machine && machine.assembly()!=null && machine.assembly().formed()) {
-            if(player.isShiftKeyDown())machine.assembly().dismantle();
-            else player.displayClientMessage(Component.translatable("message.factorycraft.dismantle"),true);
-        } else if(level.getBlockEntity(pos) instanceof CasingBlockEntity part) {
-            var owner=part.controllerForInteraction();
-            if(owner!=null && player.isShiftKeyDown())owner.assembly().dismantle();
-            else player.displayClientMessage(Component.translatable("message.factorycraft.dismantle"),true);
-        } else level.setBlock(pos,state.cycle(FACING),3);
-        return InteractionResult.CONSUME;
+        if(kind.large() || kind.casing())return factorycraft.multiblock.StructureSupport.wrench(level,pos,player);
+        if(!level.isClientSide)level.setBlock(pos,level.getBlockState(pos).cycle(FACING),3);
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
     @Override protected void onRemove(BlockState s, Level l, BlockPos p, BlockState next, boolean moving) {
         if (!s.is(next.getBlock()) && !l.restoringBlockSnapshots && l.getBlockEntity(p) instanceof FactoryBlockEntity be) be.dropContents();
@@ -92,18 +86,11 @@ public final class FactoryBlock extends BaseEntityBlock {
     }
     @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder params) {
         if(kind.casing() && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CasingBlockEntity part && part.virtualPart())return List.of();
-        var drops=super.getDrops(state,params);
-        if(kind.petroleum() && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof MachineBlockEntity machine && machine.petroleum()!=null && machine.petroleum().hasPortableState())
-            for(var item:drops)if(item.is(asItem())) {
-                machine.saveToItem(item,params.getLevel().registryAccess());
-                var tag=item.get(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA).copyTag();tag.remove("Assembly");
-                item.set(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA,net.minecraft.world.item.component.CustomData.of(tag));
-            }
-        return drops;
+        return factorycraft.multiblock.StructureSupport.preserve(super.getDrops(state,params),params);
     }
     @Override public BlockState playerWillDestroy(Level level,BlockPos pos,BlockState state,Player player) {
         if(!level.isClientSide && player.isCreative() && level.getBlockEntity(pos) instanceof CasingBlockEntity part && part.virtualPart()) {
-            var owner=part.controllerForRemoval();if(owner!=null)owner.assembly().removeWhole(false);
+            var owner=part.genericForRemoval();if(owner!=null)owner.assembly().removeWhole(false);
         }
         return super.playerWillDestroy(level,pos,state,player);
     }

@@ -31,7 +31,7 @@ public final class AutomaticMultiblockGameTests {
     private static Item machineItem() { return Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().asItem(); }
     private static Player player(GameTestHelper h,boolean creative,Direction direction) {
         var player=h.makeMockPlayer(creative ? GameType.CREATIVE:GameType.SURVIVAL);
-        player.getAbilities().instabuild=creative;player.setYRot(direction.toYRot());
+        player.getAbilities().instabuild=creative;player.setYRot(direction.getOpposite().toYRot());
         player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(machineItem(),3));return player;
     }
     private static UseOnContext context(Player player,BlockPos pos) {
@@ -47,7 +47,7 @@ public final class AutomaticMultiblockGameTests {
                 .filter(e->e.getItem().is(item)).mapToInt(e->e.getItem().getCount()).sum();
     }
     @GameTest(template="empty",timeoutTicks=100)
-    public static void oneSurvivalItemPlacesAndFormsAllEightBlocks(GameTestHelper h) {
+    public static void oneSurvivalItemPlacesAndFormsAllTwentySevenBlocks(GameTestHelper h) {
         var pos=h.absolutePos(ORIGIN);var player=player(h,false,Direction.NORTH);
         h.assertTrue(place(player,pos).consumesAction() && player.getMainHandItem().getCount()==2,"placement did not consume exactly one item");
         var machine=machine(h,pos);
@@ -105,14 +105,14 @@ public final class AutomaticMultiblockGameTests {
         h.assertTrue(dropped(h,pos,machineItem())==0 && dropped(h,pos,Content.FACTORY.get(FactoryKind.CASING).get().asItem())==0,"rollback created free machine/casing drops");h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=100)
-    public static void breakingAnyCellReturnsOneMachineAndDropsInventoryOnce(GameTestHelper h) {
+    public static void breakingAnyCellReturnsOnePortableMachineWithoutLooseCopies(GameTestHelper h) {
         var pos=h.absolutePos(ORIGIN);var shape=cells(pos,Direction.NORTH);
         for(int hit=0;hit<shape.size();hit++) {
             var player=player(h,false,Direction.NORTH);h.assertTrue(place(player,pos).consumesAction(),"test placement failed");
             var machine=machine(h,pos);machine.items.setStackInSlot(0,new ItemStack(Items.RAW_IRON,3));machine.items.setStackInSlot(4,new ItemStack(Items.DIAMOND,5));
             h.getLevel().destroyBlock(shape.get(hit),true);
             for(var p:shape)h.assertTrue(h.getLevel().getBlockState(p).isAir(),"demolition left cell "+p+" after hitting "+hit+": "+h.getLevel().getBlockState(p));
-            h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.RAW_IRON)==3 && dropped(h,pos,Items.DIAMOND)==5,"demolition duplicated or lost machine/inventory at cell "+hit);
+            h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.RAW_IRON)==0 && dropped(h,pos,Items.DIAMOND)==0,"demolition duplicated or lost machine/inventory at cell "+hit);
             h.assertTrue(dropped(h,pos,Content.FACTORY.get(FactoryKind.CASING).get().asItem())==0,"generated parts dropped craftable resources");
             h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(pos).inflate(3)).forEach(ItemEntity::discard);
         }
@@ -140,7 +140,7 @@ public final class AutomaticMultiblockGameTests {
             h.getLevel().setBlockEntity(BlockEntity.loadStatic(part,state,tag,h.getLevel().registryAccess()));
             h.runAfterDelay(5,()->{
                 h.assertTrue(h.getLevel().getBlockState(part).isAir(),"late loaded generated orphan became a free casing");
-                h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.DIAMOND)==4,"late cleanup duplicated inventory or machine");h.succeed();
+                h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.DIAMOND)==0,"late cleanup duplicated inventory or machine");h.succeed();
             });
         });
     }
@@ -152,7 +152,7 @@ public final class AutomaticMultiblockGameTests {
             player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Content.WRENCH.get()));player.setItemInHand(InteractionHand.OFF_HAND,new ItemStack(Items.TORCH));player.setShiftKeyDown(true);
             var part=machine.assembly().positions().getFirst();player.getMainHandItem().onItemUseFirst(context(player,part));
             for(var p:cells(pos,Direction.NORTH))h.assertTrue(h.getLevel().getBlockState(p).isAir(),"wrench left part of the machine");
-            h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.RAW_IRON)==3,"wrench lost or duplicated machine/input");h.succeed();
+            h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.RAW_IRON)==0,"wrench lost or duplicated machine/input");h.succeed();
         });
     }
     @GameTest(template="empty",timeoutTicks=100)
@@ -168,22 +168,10 @@ public final class AutomaticMultiblockGameTests {
         h.assertTrue(!place(player,pos).consumesAction() && player.getMainHandItem().getCount()==3,"unloaded footprint accepted");
         h.assertTrue(!h.getLevel().hasChunkAt(neighbor) && h.getLevel().getBlockState(pos).isAir(),"placement force-loaded neighbor or left controller");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=500)
+    @GameTest(template="empty",timeoutTicks=1200)
     public static void anItemPlacedFurnaceRunsTheCompleteAutomatedLine(GameTestHelper h) {
-        var pos=h.absolutePos(ORIGIN);h.assertTrue(place(player(h,false,Direction.NORTH),pos).consumesAction(),"automatic furnace placement failed");
-        h.setBlock(new BlockPos(6,2,4),Blocks.CHEST);h.setBlock(new BlockPos(3,2,1),Blocks.CHEST);
-        var source=(net.minecraft.world.level.block.entity.ChestBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(6,2,4)));
-        source.setItem(0,new ItemStack(Items.RAW_IRON,6));
-        var output=(net.minecraft.world.level.block.entity.ChestBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(3,2,1)));
-        h.setBlock(new BlockPos(5,2,4),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.WEST));
-        h.setBlock(new BlockPos(3,2,2),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState().setValue(FactoryBlock.FACING,Direction.NORTH));
-        h.setBlock(new BlockPos(6,2,2),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-        machine(h,h.absolutePos(new BlockPos(6,2,2))).items.setStackInSlot(8,new ItemStack(Items.COAL));
-        h.setBlock(new BlockPos(5,2,3),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
-        h.succeedWhen(()->{
-            h.assertTrue(source.isEmpty() && output.getItem(0).is(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,"iron_plate")))
-                    && output.getItem(0).getCount()==6,"item-placed furnace has not delivered all plates");
-        });
+        var chest=factorycraft.core.FactoryCommands.ironLine(h.getLevel(),h.absolutePos(new BlockPos(1,2,1)),true);
+        h.succeedWhen(()->h.assertTrue(chest.getItem(0).getCount()>=3,"full-size industrial line has not delivered gears"));
     }
     @GameTest(template="empty",timeoutTicks=160)
     public static void automaticStructureResumesSerializedPartialProduction(GameTestHelper h) {
@@ -230,7 +218,7 @@ public final class AutomaticMultiblockGameTests {
         var shape=cells(pos,Direction.NORTH);Collections.rotate(shape,3);
         for(var p:shape)h.getLevel().getBlockState(p).onExplosionHit(h.getLevel(),p,explosion,(stack,where)->Block.popResource(h.getLevel(),where,stack));
         for(var p:shape)h.assertTrue(h.getLevel().getBlockState(p).isAir(),"explosion left generated parts");
-        h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.RAW_IRON)==3 && dropped(h,pos,Content.FACTORY.get(FactoryKind.CASING).get().asItem())==0,"explosion duplicated or lost resources");h.succeed();
+        h.assertTrue(dropped(h,pos,machineItem())==1 && dropped(h,pos,Items.RAW_IRON)==0 && dropped(h,pos,Content.FACTORY.get(FactoryKind.CASING).get().asItem())==0,"explosion duplicated or lost resources");h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void pickingAGeneratedPartReturnsTheMachineInsteadOfACasing(GameTestHelper h) {

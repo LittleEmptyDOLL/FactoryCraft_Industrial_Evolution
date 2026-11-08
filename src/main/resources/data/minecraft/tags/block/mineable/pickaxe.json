@@ -14,6 +14,8 @@
     "factorycraft:iron_ore",
     "factorycraft:copper_ore",
     "factorycraft:industrial_furnace",
-    "factorycraft:machine_casing"
+    "factorycraft:machine_casing",
+    "factorycraft:coal_deposit",
+    "factorycraft:stone_deposit"
   ]
 }

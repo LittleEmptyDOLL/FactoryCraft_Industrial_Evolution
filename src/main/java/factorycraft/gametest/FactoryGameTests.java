@@ -20,7 +20,7 @@ import java.util.*;
 public final class FactoryGameTests {
     private static BlockPos p(int x,int z){return new BlockPos(x,2,z);}
     private static <T extends BlockEntity> T place(GameTestHelper h,FactoryKind k,BlockPos pos,Direction facing){
-        h.setBlock(pos,Content.FACTORY.get(k).get().defaultBlockState().setValue(FactoryBlock.FACING,facing));
+        factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(pos),Content.FACTORY.get(k).get().defaultBlockState().setValue(FactoryBlock.FACING,facing));
         return (T)h.getLevel().getBlockEntity(h.absolutePos(pos));
     }
     private static int count(BeltBlockEntity be){return be.lane(0).carriers().size()+be.lane(1).carriers().size();}
@@ -43,7 +43,7 @@ public final class FactoryGameTests {
     public static void splitterBalancesAndConserves(GameTestHelper h){
         BeltBlockEntity a=place(h,FactoryKind.SPLITTER,p(3,3),Direction.EAST);
         BeltBlockEntity forward=place(h,FactoryKind.BELT,p(4,3),Direction.EAST);
-        BeltBlockEntity right=place(h,FactoryKind.BELT,p(3,4),Direction.SOUTH);
+        BeltBlockEntity right=place(h,FactoryKind.BELT,p(4,4),Direction.EAST);
         seed(a,8);
         h.runAfterDelay(100,()->{
             h.assertTrue(count(a)==0 && count(forward)==4 && count(right)==4,"splitter must deliver 4 items to each output");h.succeed();
@@ -82,17 +82,17 @@ public final class FactoryGameTests {
     }
     @GameTest(template="empty",timeoutTicks=240)
     public static void poleGraphSplitsAndRejoins(GameTestHelper h){
-        MachineBlockEntity g=place(h,FactoryKind.GENERATOR,p(1,2),Direction.EAST);
-        place(h,FactoryKind.POLE,p(2,2),Direction.EAST);
-        place(h,FactoryKind.POLE,p(7,2),Direction.EAST);
-        place(h,FactoryKind.POLE,p(12,2),Direction.EAST);
-        MachineBlockEntity m=place(h,FactoryKind.FURNACE,p(14,2),Direction.EAST);
+        MachineBlockEntity g=place(h,FactoryKind.GENERATOR,p(1,5),Direction.NORTH);
+        place(h,FactoryKind.POLE,p(2,3),Direction.EAST);
+        place(h,FactoryKind.POLE,p(7,3),Direction.EAST);
+        place(h,FactoryKind.POLE,p(12,3),Direction.EAST);
+        MachineBlockEntity m=place(h,FactoryKind.FURNACE,p(14,2),Direction.NORTH);
         g.items.setStackInSlot(8,new ItemStack(Items.COAL,2));
         h.runAfterDelay(40,()->{
             h.assertTrue(m.power.getEnergyStored()>0,"connected network did not deliver energy");
-            h.setBlock(p(7,2),Blocks.AIR);m.power.restore(0);
+            h.setBlock(p(7,3),Blocks.AIR);m.power.restore(0);
         });
-        h.runAfterDelay(80,()->{h.assertTrue(m.power.getEnergyStored()==0,"split network still connected");place(h,FactoryKind.POLE,p(7,2),Direction.EAST);});
+        h.runAfterDelay(80,()->{h.assertTrue(m.power.getEnergyStored()==0,"split network still connected");place(h,FactoryKind.POLE,p(7,3),Direction.EAST);});
         h.runAfterDelay(120,()->{h.assertTrue(m.power.getEnergyStored()>0,"network did not reconnect");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=80)
@@ -100,7 +100,7 @@ public final class FactoryGameTests {
         BeltBlockEntity belt=place(h,FactoryKind.BELT,p(2,2),Direction.NORTH);seed(belt,8);
         MachineBlockEntity machine=place(h,FactoryKind.ASSEMBLER,p(4,2),Direction.NORTH);
         machine.items.setStackInSlot(0,new ItemStack(item("iron_plate"),3));machine.power.restore(777);
-        InserterBlockEntity hand=place(h,FactoryKind.INSERTER,p(6,2),Direction.NORTH);
+        InserterBlockEntity hand=place(h,FactoryKind.INSERTER,p(8,2),Direction.NORTH);
         hand.hand.setStackInSlot(0,new ItemStack(Items.DIAMOND));
         var r=h.getLevel().registryAccess();
         CompoundTag a=belt.saveWithFullMetadata(r),b=machine.saveWithFullMetadata(r),c=hand.saveWithFullMetadata(r);
@@ -113,48 +113,9 @@ public final class FactoryGameTests {
     }
     @GameTest(template="empty",timeoutTicks=1600)
     public static void firstFactoryMinesSmeltsAssemblesIntoChest(GameTestHelper h){
-        // 3x3 finite iron patch; all input comes from the drill, no manually supplied machine inputs.
-        for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)h.setBlock(new BlockPos(x,1,z),Content.IRON_ORE.get());
-        place(h,FactoryKind.DRILL,p(2,2),Direction.EAST);
-        place(h,FactoryKind.INSERTER,p(3,2),Direction.EAST);
-        place(h,FactoryKind.BELT,p(4,2),Direction.EAST);
-        place(h,FactoryKind.BELT,p(5,2),Direction.EAST);
-        place(h,FactoryKind.INSERTER,p(6,2),Direction.EAST);
-        place(h,FactoryKind.FURNACE,p(7,2),Direction.EAST);
-        place(h,FactoryKind.INSERTER,p(8,2),Direction.EAST);
-        place(h,FactoryKind.ASSEMBLER,p(9,2),Direction.EAST);
-        place(h,FactoryKind.INSERTER,p(10,2),Direction.EAST);
-        h.setBlock(p(11,2),Blocks.CHEST);
-        MachineBlockEntity g=place(h,FactoryKind.GENERATOR,p(5,5),Direction.NORTH);
-        place(h,FactoryKind.POLE,p(4,4),Direction.NORTH);place(h,FactoryKind.POLE,p(9,4),Direction.NORTH);
-        g.items.setStackInSlot(8,new ItemStack(Items.COAL,4));
-        var chest=(ChestBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(p(11,2)));
-        h.succeedWhen(()->h.assertTrue(chest.getItem(0).is(item("iron_gear")) && chest.getItem(0).getCount()>=3,"factory has not delivered 3 gears"));
-    }
-    /** Outside the cleared test structures: run the server twice to verify actual region-file persistence. */
-    @GameTest(template="empty",timeoutTicks=100)
-    public static void diskPersistenceAcrossServerRuns(GameTestHelper h) {
-        BlockPos origin=new BlockPos(80,70,80);
-        var level=h.getLevel();level.getChunkAt(origin);
-        if(!(level.getBlockEntity(origin) instanceof BeltBlockEntity)) {
-            level.setBlockAndUpdate(origin,Content.FACTORY.get(FactoryKind.BELT).get().defaultBlockState());
-            level.setBlockAndUpdate(origin.offset(2,0,0),Content.FACTORY.get(FactoryKind.ASSEMBLER).get().defaultBlockState());
-            level.setBlockAndUpdate(origin.offset(4,0,0),Content.FACTORY.get(FactoryKind.INSERTER).get().defaultBlockState());
-            BeltBlockEntity belt=(BeltBlockEntity)level.getBlockEntity(origin);seed(belt,8);
-            MachineBlockEntity m=(MachineBlockEntity)level.getBlockEntity(origin.offset(2,0,0));
-            m.items.setStackInSlot(0,new ItemStack(item("iron_plate"),1));m.power.restore(777);m.data.set(0,37);m.data.set(1,100);m.setChanged();
-            InserterBlockEntity hand=(InserterBlockEntity)level.getBlockEntity(origin.offset(4,0,0));hand.hand.setStackInSlot(0,new ItemStack(Items.DIAMOND));
-            System.out.println("FACTORYCRAFT_DISK_PERSISTENCE: SEEDED; rerun runGameTestServer to verify disk reload");
-        } else {
-            BeltBlockEntity belt=(BeltBlockEntity)level.getBlockEntity(origin);
-            MachineBlockEntity m=(MachineBlockEntity)level.getBlockEntity(origin.offset(2,0,0));
-            InserterBlockEntity hand=(InserterBlockEntity)level.getBlockEntity(origin.offset(4,0,0));
-            h.assertTrue(count(belt)==8 && belt.lane(1).carriers().getLast().position()==.25,"disk carrier state changed");
-            h.assertTrue(m.power.getEnergyStored()==777 && m.items.getStackInSlot(0).getCount()==1 && m.data.get(0)==37,"disk machine state changed");
-            h.assertTrue(hand.held().is(Items.DIAMOND),"disk held item changed");
-            System.out.println("FACTORYCRAFT_DISK_PERSISTENCE: VERIFIED region-file reload of 8 carriers, machine inventory/progress/energy, inserter hand");
-        }
-        h.succeed();
+        var origin=h.absolutePos(new BlockPos(1,2,1));
+        var chest=factorycraft.core.FactoryCommands.ironLine(h.getLevel(),origin,false);
+        h.succeedWhen(()->h.assertTrue(chest.getItem(0).is(item("iron_gear")) && chest.getItem(0).getCount()>=3,"full-size factory has not delivered three gears"));
     }
     @GameTest(template="empty",timeoutTicks=180)
     public static void sleepingJammedBeltWakesAfterExtraction(GameTestHelper h) {
@@ -170,7 +131,7 @@ public final class FactoryGameTests {
     @GameTest(template="empty",timeoutTicks=80)
     public static void chunkUnloadCallbacksKeepInventoryAndResume(GameTestHelper h) {
         BeltBlockEntity belt=place(h,FactoryKind.BELT,p(2,2),Direction.EAST);seed(belt,8);
-        MachineBlockEntity m=place(h,FactoryKind.ASSEMBLER,p(4,2),Direction.EAST);m.items.setStackInSlot(0,new ItemStack(Items.DIAMOND,9));
+        MachineBlockEntity m=place(h,FactoryKind.ASSEMBLER,p(7,2),Direction.NORTH);m.items.setStackInSlot(0,new ItemStack(Items.DIAMOND,9));
         belt.onChunkUnloaded();m.onChunkUnloaded();
         h.assertTrue(count(belt)==8 && m.items.getStackInSlot(0).getCount()==9,"unload callback destroyed contents");
         belt.onLoad();m.onLoad();

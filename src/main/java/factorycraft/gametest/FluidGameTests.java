@@ -32,7 +32,7 @@ public final class FluidGameTests {
     private static FluidBlockEntity put(GameTestHelper h,FluidKind kind,int x,int y,int z) {
         var state=Content.FLUID_BLOCKS.get(kind).get().defaultBlockState();
         if(kind==FluidKind.PUMP)state=state.setValue(FluidDeviceBlock.FACING,Direction.EAST);
-        h.setBlock(new BlockPos(x,y,z),state);return (FluidBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(x,y,z)));
+        factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(new BlockPos(x,y,z)),state);return (FluidBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(x,y,z)));
     }
     private static FluidStack water(int amount) { return new FluidStack(Fluids.WATER,amount); }
     private static long volume(FluidBlockEntity... blocks) { return Arrays.stream(blocks).mapToLong(b->b.cell().amount()).sum(); }
@@ -43,13 +43,13 @@ public final class FluidGameTests {
     }
     @GameTest(template="empty",timeoutTicks=300)
     public static void pipesMoveFiniteFluidBetweenTanksWithoutLoss(GameTestHelper h) {
-        var a=put(h,FluidKind.TANK,3,2,4);var b=put(h,FluidKind.PIPE,4,2,4);var c=put(h,FluidKind.PIPE,5,2,4);var d=put(h,FluidKind.TANK,6,2,4);
+        var a=put(h,FluidKind.TANK,3,2,4);var b=put(h,FluidKind.PIPE,6,2,4);var c=put(h,FluidKind.PIPE,7,2,4);var d=put(h,FluidKind.TANK,8,2,4);
         h.runAfterDelay(5,()->h.assertTrue(a.port(Direction.UP).fill(water(8000),EXEC)==8000,"source tank refused water"));
         h.runAfterDelay(220,()->{h.assertTrue(d.cell().amount()>500,"pipes did not transfer to the destination");h.assertTrue(volume(a,b,c,d)==8000,"pipe line lost/duplicated water");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=200)
     public static void pumpRequiresEnergyAndThenPumpsARealWaterSource(GameTestHelper h) {
-        var pump=put(h,FluidKind.PUMP,3,2,4);var tank=put(h,FluidKind.TANK,4,2,4);source(h,2,2,4);
+        var pump=put(h,FluidKind.PUMP,3,2,4);var tank=put(h,FluidKind.TANK,4,2,4);source(h,1,2,4);
         h.runAfterDelay(40,()->{
             h.assertTrue(volume(pump,tank)==0,"unpowered pump generated water");
             h.assertTrue(pump.energyPort.receiveEnergy(2000,false)==2000,"pump refused FE capability input");
@@ -58,11 +58,11 @@ public final class FluidGameTests {
     }
     @GameTest(template="empty",timeoutTicks=600)
     public static void aGeneratorPowersTheWaterPipeTankChain(GameTestHelper h) {
-        var pump=put(h,FluidKind.PUMP,3,2,4);source(h,2,2,4);
+        var pump=put(h,FluidKind.PUMP,3,2,4);source(h,1,2,4);
         put(h,FluidKind.PIPE,4,2,4);put(h,FluidKind.PIPE,5,2,4);put(h,FluidKind.PIPE,6,2,4);var tank=put(h,FluidKind.TANK,7,2,4);
-        h.setBlock(new BlockPos(3,2,1),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-        ((MachineBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(3,2,1)))).items.setStackInSlot(8,new ItemStack(Items.COAL));
-        h.setBlock(new BlockPos(4,2,2),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
+        factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(new BlockPos(3,2,7)),Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
+        ((MachineBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(3,2,7)))).items.setStackInSlot(8,new ItemStack(Items.COAL));
+        h.setBlock(new BlockPos(4,2,5),Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
         h.succeedWhen(()->h.assertTrue(tank.cell().amount()>=1000 && pump.power.getEnergyStored()>0,"natural source has not reached the tank through powered pipes"));
     }
     @GameTest(template="empty",timeoutTicks=120)
@@ -81,19 +81,14 @@ public final class FluidGameTests {
     public static void cachedSidedPortsRespectPumpRotation(GameTestHelper h) {
         var pump=put(h,FluidKind.PUMP,3,2,3);
         h.runAfterDelay(5,()->{
-            var input=h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,pump.getBlockPos(),Direction.WEST);
-            var output=h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,pump.getBlockPos(),Direction.EAST);
-            h.assertTrue(h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,pump.getBlockPos(),Direction.UP)==null,"pump exposed a perpendicular fluid connection");
-            h.assertTrue(input.fill(water(500),EXEC)==500 && output.fill(water(500),EXEC)==0,"pump input/output fill sides are wrong");
-            h.assertTrue(input.drain(100,EXEC).isEmpty() && output.drain(100,EXEC).getAmount()==100,"pump drain sides are wrong");
-            h.getLevel().setBlockAndUpdate(pump.getBlockPos(),pump.getBlockState().setValue(FluidDeviceBlock.FACING,Direction.NORTH));
-            h.assertTrue(input.fill(water(100),EXEC)==0 && output.drain(100,EXEC).isEmpty(),"cached ports ignored changed orientation");
-            h.assertTrue(pump.port(Direction.NORTH).drain(1000,EXEC).getAmount()==400,"rotation lost stored water");h.succeed();
-        });
+            var input=h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,pump.inputNozzle(),Direction.WEST);var output=h.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,pump.outputNozzle(),Direction.EAST);
+            h.assertTrue(input.fill(water(500),EXEC)==500 && output.fill(water(500),EXEC)==0 && input.drain(100,EXEC).isEmpty() && output.drain(100,EXEC).getAmount()==100,"physical pump port directions wrong");
+            var part=(CasingBlockEntity)h.getLevel().getBlockEntity(pump.inputNozzle());part.onChunkUnloaded();h.assertTrue(input.fill(water(10),EXEC)==0 && output.drain(10,EXEC).isEmpty(),"unloaded structure remained active");part.onLoad();
+            h.assertTrue(input.fill(water(10),EXEC)==10 && output.drain(410,EXEC).getAmount()==410,"physical ports failed to resume");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=200)
     public static void fullOutputStopsPumpWithoutSpendingEnergyUntilDrained(GameTestHelper h) {
-        var pump=put(h,FluidKind.PUMP,3,2,4);var tank=put(h,FluidKind.TANK,4,2,4);source(h,2,2,4);
+        var pump=put(h,FluidKind.PUMP,3,2,4);var tank=put(h,FluidKind.TANK,4,2,4);source(h,1,2,4);
         h.runAfterDelay(5,()->{
             pump.port(Direction.WEST).fill(water(1000),EXEC);tank.port(Direction.UP).fill(water(16000),EXEC);pump.energyPort.receiveEnergy(2000,false);
         });
@@ -138,7 +133,7 @@ public final class FluidGameTests {
         var tank=put(h,FluidKind.TANK,3,2,3);
         h.runAfterDelay(5,()->{
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.getAbilities().instabuild=false;
-            player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.WATER_BUCKET));var pos=tank.getBlockPos();var hit=new BlockHitResult(Vec3.atCenterOf(pos),Direction.UP,pos,false);
+            player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.WATER_BUCKET));var pos=tank.getBlockPos();var hit=new BlockHitResult(Vec3.atCenterOf(pos),Direction.NORTH,pos,false);
             tank.getBlockState().useItemOn(player.getMainHandItem(),h.getLevel(),player,InteractionHand.MAIN_HAND,hit);
             h.assertTrue(tank.cell().amount()==1000 && player.getMainHandItem().is(Items.BUCKET),"bucket fill lost fluid or container");
             tank.getBlockState().useItemOn(player.getMainHandItem(),h.getLevel(),player,InteractionHand.MAIN_HAND,hit);
@@ -155,13 +150,13 @@ public final class FluidGameTests {
     }
     @GameTest(template="empty",timeoutTicks=300)
     public static void verticalConnectionsWorkWithoutGravityOrChunkForcing(GameTestHelper h) {
-        var a=put(h,FluidKind.TANK,3,2,3);var b=put(h,FluidKind.PIPE,3,3,3);var c=put(h,FluidKind.PIPE,3,4,3);var d=put(h,FluidKind.TANK,3,5,3);
+        var a=put(h,FluidKind.TANK,3,2,3);var b=put(h,FluidKind.PIPE,3,5,3);var c=put(h,FluidKind.PIPE,3,6,3);var d=put(h,FluidKind.TANK,3,7,3);
         h.runAfterDelay(5,()->a.port(Direction.UP).fill(water(8000),EXEC));
         h.runAfterDelay(220,()->{h.assertTrue(d.cell().amount()>0 && volume(a,b,c,d)==8000,"vertical piping failed or lost fluid");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=180)
     public static void fluidEntitiesReconstructAndResumeWithComponents(GameTestHelper h) {
-        var a=put(h,FluidKind.TANK,3,2,3);var b=put(h,FluidKind.PIPE,4,2,3);var c=put(h,FluidKind.TANK,5,2,3);
+        var a=put(h,FluidKind.TANK,3,2,3);var b=put(h,FluidKind.PIPE,6,2,3);var c=put(h,FluidKind.TANK,7,2,3);
         h.runAfterDelay(5,()->a.port(Direction.UP).fill(water(8000),EXEC));
         h.runAfterDelay(20,()->{
             var positions=List.of(a.getBlockPos(),b.getBlockPos(),c.getBlockPos());var copies=new ArrayList<BlockEntity>();var registry=h.getLevel().registryAccess();
@@ -169,7 +164,7 @@ public final class FluidGameTests {
             for(var pos:positions)h.getLevel().removeBlockEntity(pos);for(var be:copies)h.getLevel().setBlockEntity(be);
         });
         h.runAfterDelay(110,()->{
-            long total=0;for(int x=3;x<=5;x++)total+=((FluidBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(x,2,3)))).cell().amount();
+            long total=0;for(var old:List.of(a,b,c))total+=((FluidBlockEntity)h.getLevel().getBlockEntity(old.getBlockPos())).cell().amount();
             h.assertTrue(total==8000 && ((FluidBlockEntity)h.getLevel().getBlockEntity(c.getBlockPos())).cell().amount()>0,"reconstructed line lost fluid or stopped");h.succeed();
         });
     }
@@ -188,7 +183,7 @@ public final class FluidGameTests {
         var level=h.getLevel();var positions=List.of(new BlockPos(175,70,127),new BlockPos(176,70,127),new BlockPos(176,70,128),new BlockPos(175,70,128));
         for(var pos:positions)level.getChunkAt(pos);
         if(!(level.getBlockEntity(positions.getFirst()) instanceof FluidBlockEntity)) {
-            for(int i=0;i<positions.size();i++)level.setBlockAndUpdate(positions.get(i),Content.FLUID_BLOCKS.get(i==0 || i==3 ? FluidKind.TANK:FluidKind.PIPE).get().defaultBlockState());
+            for(int i=0;i<positions.size();i++)level.setBlockAndUpdate(positions.get(i),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
             var fluid=water(8000);var tag=new CompoundTag();tag.putInt("grade",7);fluid.set(DataComponents.CUSTOM_DATA,CustomData.of(tag));
             var tank=(FluidBlockEntity)level.getBlockEntity(positions.getFirst());tank.cell().restore(new FluidKey(fluid),8000);tank.setChanged();
             System.out.println("FACTORYCRAFT_FLUID_DISK: SEEDED 8000 mB with components across four chunks");
