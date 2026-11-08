@@ -12,6 +12,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
     public FactoryScreen(FactoryMenu menu,Inventory inv,Component title) { super(menu,inv,title);imageWidth=206;imageHeight=248;inventoryLabelY=154; }
     @Override protected void init() {
         super.init();
+        if(menu.machine.kind().processing())addRenderableWidget(Button.builder(Component.translatable("gui.factorycraft.modules"),b->minecraft.gameMode.handleInventoryButtonClick(menu.containerId,99)).bounds(leftPos+18,topPos+80,73,20).build());
         if(menu.machine.kind().processing())
             addRenderableWidget(Button.builder(Component.translatable("gui.factorycraft.select"),b->minecraft.gameMode.handleInventoryButtonClick(menu.containerId,0)).bounds(leftPos+96,topPos+80,94,20).build());
     }

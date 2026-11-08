@@ -1,0 +1,22 @@
+{
+  "release": "0.11.0 prevalidation only",
+  "probeVersion": 1,
+  "controller": [
+    751,
+    70,
+    751
+  ],
+  "beacon": [
+    759,
+    70,
+    751
+  ],
+  "initialBeaconFE": 6312,
+  "observedBeaconFE": 32,
+  "machineFE": 7312,
+  "workFraction": 4321,
+  "productivityCredit": 2800,
+  "cause": "Pre-tick billed loaded non-block-ticking chunks",
+  "resolution": "Block-ticking and frozen-tick guards; retained read-only v1 evidence, separate strict v2 fixture",
+  "resourceRefillOrWorldReset": false
+}

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "factorycraft:iron_plate",
+    "factorycraft:copper_plate",
+    "factorycraft:steel_plate",
+    "factorycraft:iron_gear",
+    "factorycraft:copper_wire",
+    "factorycraft:electronic_circuit",
+    "factorycraft:advanced_circuit",
+    "factorycraft:processing_unit",
+    "factorycraft:engine_unit",
+    "factorycraft:electric_engine_unit",
+    "factorycraft:automation_science_pack",
+    "factorycraft:logistic_science_pack",
+    "factorycraft:chemical_science_pack",
+    "factorycraft:plastic_bar",
+    "factorycraft:sulfur",
+    "factorycraft:battery"
+  ]
+}

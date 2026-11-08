@@ -12,13 +12,14 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
     public PetroleumScreen(PetroleumMenu menu,Inventory inv,Component title) { super(menu,inv,title);imageWidth=240;imageHeight=240;inventoryLabelX=39;inventoryLabelY=149; }
     protected void init() {
         super.init();
+        if(menu.machine.kind().processing())addRenderableWidget(Button.builder(Component.literal("M"),b->minecraft.gameMode.handleInventoryButtonClick(menu.containerId,99)).bounds(leftPos+91,topPos+110,26,18).tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("gui.factorycraft.modules"))).build());
         if(menu.machine.kind()!=FactoryKind.PUMPJACK)for(int tank=0;tank<2;tank++) {
             final int buttonId=tank+1;
             addRenderableWidget(Button.builder(Component.literal("↑"), b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId,buttonId))
                     .bounds(leftPos+223,topPos+20+tank*11,14,11)
                     .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("gui.factorycraft.recover_fluid"))).build());
         }
-        if(menu.machine.kind()!=FactoryKind.PUMPJACK)addRenderableWidget(Button.builder(Component.translatable("gui.factorycraft.select"),b->minecraft.gameMode.handleInventoryButtonClick(menu.containerId,0)).bounds(leftPos+18,topPos+110,99,18).build());
+        if(menu.machine.kind()!=FactoryKind.PUMPJACK)addRenderableWidget(Button.builder(Component.translatable("gui.factorycraft.select"),b->minecraft.gameMode.handleInventoryButtonClick(menu.containerId,0)).bounds(leftPos+18,topPos+110,70,18).build());
     }
     protected void renderBg(GuiGraphics g,float partial,int mx,int my) {
         int x=leftPos,y=topPos;g.fill(x,y,x+imageWidth,y+imageHeight,0xff202933);g.fill(x+3,y+3,x+imageWidth-3,y+imageHeight-3,0xff34414b);

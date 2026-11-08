@@ -43,6 +43,7 @@ public final class FactoryBlock extends BaseEntityBlock {
         return Shapes.block();
     }
     @Override public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+        if(kind==FactoryKind.BEACON)return new factorycraft.blockentity.BeaconBlockEntity(p,s);
         if(kind==FactoryKind.LAB)return new LabBlockEntity(p,s);
         if (kind.belt()) return new BeltBlockEntity(p, s);
         if (kind == FactoryKind.INSERTER) return new InserterBlockEntity(p, s);
@@ -65,7 +66,8 @@ public final class FactoryBlock extends BaseEntityBlock {
     @Override protected InteractionResult useWithoutItem(BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
         if (l.isClientSide) return InteractionResult.SUCCESS;
         if(player.getMainHandItem().is(Content.WRENCH.get()))return useWrench(l,p,player);
-        if(l.getBlockEntity(p) instanceof LabBlockEntity lab){if(factorycraft.research.ResearchTeams.member(player,lab.scope()))player.openMenu(lab,p);else player.displayClientMessage(Component.translatable("message.factorycraft.research_team_required"),true);}
+        if(l.getBlockEntity(p) instanceof factorycraft.blockentity.BeaconBlockEntity beacon)player.openMenu(beacon,p);
+        else if(l.getBlockEntity(p) instanceof LabBlockEntity lab){if(factorycraft.research.ResearchTeams.member(player,lab.scope()))player.openMenu(lab,p);else player.displayClientMessage(Component.translatable("message.factorycraft.research_team_required"),true);}
         else if (l.getBlockEntity(p) instanceof MachineBlockEntity machine) {
             if(machine.assembly()!=null && !machine.assembly().formed() && !machine.assembly().form())
                 player.displayClientMessage(Component.translatable("message.factorycraft.assembly_missing"),true);

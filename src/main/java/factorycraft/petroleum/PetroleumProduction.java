@@ -170,27 +170,35 @@ public final class PetroleumProduction {
     }
     private boolean produce() {
         refreshRecipes();List<BatchInventory.Stack<ItemKey>> before=null;Cached chosen=null;List<BatchInventory.Stack<ItemKey>> itemPlan=null;boolean blocked=false,locked=false;
+        boolean modular=machine.modules.enabled();var effects=modular ? machine.modules.effects():factorycraft.simulation.modules.ModuleEffects.NONE;
+        int chosenRate=0;
         for(int i=0;i<recipes.size();i++) {
             var cached=recipes.get(i);if(!selectedId.isEmpty() && !selectedId.equals(cached.holder.id().toString()))continue;var recipe=cached.holder.value();boolean matches=true;
             for(int f=0;f<recipe.fluids().size();f++)if(!recipe.fluids().get(f).test(stored(f))) { matches=false;break; }
-            if(!matches)continue;if(!machine.recipeAllowed(cached.holder.id())){locked=true;continue;}if(before==null)before=inventory();var plan=BatchInventory.plan(before,cached.items,cached.outputs);if(plan!=null) { chosen=cached;itemPlan=plan;break; }else if(BatchInventory.plan(before,cached.items,List.of())!=null)blocked=true;
+            if(!matches)continue;if(!machine.recipeAllowed(cached.holder.id())){locked=true;continue;}if(before==null)before=inventory();int rate=modular && recipe.fluidResults().isEmpty() && !recipe.results().isEmpty() && recipe.results().stream().allMatch(machine.modules::productive) ? effects.productivity():0;
+            int batches=machine.modules.batches(cached.signature,rate,recipe.ticks()-(!active.equals(cached.signature) || machine.modules.identityChanged(cached.signature) ? 0:Math.min(progress,recipe.ticks()-1)),recipe.ticks());
+            var outputs=batches==1 ? cached.outputs:cached.outputs.stream().map(o->new BatchInventory.Stack<>(o.key(),o.count()*batches,o.limit())).toList();
+            var plan=BatchInventory.plan(before,cached.items,outputs);if(plan!=null) { chosen=cached;itemPlan=plan;chosenRate=rate;break; }else if(BatchInventory.plan(before,cached.items,List.of())!=null)blocked=true;
         }
         if(chosen==null) { status=locked ? 5:blocked ? 2:1;return false; }
         preview=recipes.indexOf(chosen)+1;var recipe=chosen.holder.value();duration=recipe.ticks();
         for(int i=0;i<chosen.fluids.size();i++)if(cells.get(i+2).space()<chosen.volumes.get(i) || !cells.get(i+2).accepts(chosen.fluids.get(i))) { status=2;return false; }
-        if(!machine.power.spend(recipe.energy())) { status=3;return false; }
-        if(!active.equals(chosen.signature)) { progress=0;active=chosen.signature; }
-        progress=Math.min(progress,duration-1)+1;changed();status=4;
+        int current=!active.equals(chosen.signature) || modular && machine.modules.identityChanged(chosen.signature) ? 0:progress;
+        var step=modular ? effects.plan(recipe.energy(),1,duration-Math.min(current,duration-1),machine.modules.identityChanged(chosen.signature) ? 0:machine.modules.fraction()):null;
+        if(!machine.power.spend(modular ? step.energy():recipe.energy())) { status=3;return false; }
+        active=chosen.signature;progress=Math.min(current,duration-1)+(modular ? step.work():1);
+        if(modular)machine.modules.advance(chosen.signature,step.remainder(),step.work(),duration,chosenRate);
+        changed();status=4;
         if(progress>=duration) {
             var mutations=new ArrayList<FluidCell.Mutation<FluidKey>>(cells.size());
             for(int i=0;i<recipe.fluids().size();i++) { var c=cells.get(i);mutations.add(new FluidCell.Mutation<>(c,c.key(),c.amount()-recipe.fluids().get(i).amount())); }
             for(int i=0;i<chosen.fluids.size();i++) { var c=cells.get(i+2);mutations.add(new FluidCell.Mutation<>(c,chosen.fluids.get(i),c.amount()+chosen.volumes.get(i))); }
-            var committed=itemPlan;
+            var committed=itemPlan;final int productivityRate=chosenRate;
             machine.beginPetroleumInventoryTransaction();
             try {
                 boolean success=FluidCell.commitBatch(mutations,()->{
                     for(int i=0;i<8;i++) { var s=committed.get(i);machine.items.setStackInSlot(i,s.count()==0 ? ItemStack.EMPTY:s.key().stack(s.count())); }
-                    progress=0;active="";
+                    if(modular)machine.modules.finish();progress=0;active="";
                 },false);
                 if(!success)throw new IllegalStateException("Validated mixed recipe commit failed");
             } finally { machine.endPetroleumInventoryTransaction(); }

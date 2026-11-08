@@ -60,3 +60,8 @@
 * Canister recovery commits a private item copy and exact input remainder before observers. Keep native SimpleFluidContent/components, capacity remainder/overflow, current-menu/range/spectator/assembly guards, and ordinary stale slot protection. Never replace sub-bucket fluid with a lossy bucket or discard it when changing recipes. Preserve the four-chunk chemical-science/canister checkpoint without reseeding.
 
 * Research search owns non-Escape keyboard input while focused; do not let container or viewer shortcuts close the menu when typing technology names. Keep a manual typed-query/pan check when changing this screen.
+
+* Modules accrue productivity from actual paid recipe work, never a completion-only current-module sample. Reserve all base/bonus outputs before FE and commit credit with items/fluids before observers. Keep canonical recipe-local credit/remainders and omit default Modules NBT. Never make modules/beacons themselves productive by default.
+* Beacon pre-tick billing must require block-ticking controller chunks and a complete loaded structure; never charge a merely loaded chunk or a frozen tick. Keep recipient invalidation spatial/local and transient paid leases out of saves. Retain the known unreleased v1 diagnostic debit as evidence without refilling it; the strict v2 module checkpoint and inactive billing regression must pass independently.
+
+* A removed beacon can remain in the current immutable billing snapshot. Billing must reject unloaded/noncanonical/removed controllers before any state write, so it cannot recreate a removed block.

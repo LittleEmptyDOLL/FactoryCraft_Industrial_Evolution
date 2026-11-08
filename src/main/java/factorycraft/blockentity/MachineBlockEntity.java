@@ -26,6 +26,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
     @Override public boolean generatesElectricity() { return kind()==FactoryKind.GENERATOR; }
     @Override public int receiveGridEnergy(int n,boolean simulate) { return loaded() && factorycraft.multiblock.AssemblyAccess.ready(this) && factorycraft.fluids.FluidConnections.canonical(this) ? power.receiveEnergy(n,simulate):0; }
     @Override public PowerBuffer gridBuffer() { return power; }
+    public final factorycraft.modules.MachineModules modules=new factorycraft.modules.MachineModules(this);
     private boolean loaded;
     private String researchScope="";
     public void bindResearch(String scope){researchScope=scope;setChanged();}
@@ -166,6 +167,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
             if(recipeAllowed(r.id()) && r.value().matches(input,level)) { chosen=r; break; }
         }
         if(chosen==null) return false;
+        if(modules.enabled())return produceWithModules(chosen,input);
         var recipe=chosen.value();
         if(!output(recipe.result(),true).isEmpty()) return false;
         int step=kind()==FactoryKind.INDUSTRIAL_FURNACE ? 2:1;
@@ -183,6 +185,19 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
                 progress=0; activeRecipe=""; sync();
             }
         }
+        return true;
+    }
+    private boolean produceWithModules(RecipeHolder<FactoryRecipe> chosen,FactoryInput input) {
+        var recipe=chosen.value();
+        String key=modules.identity(chosen);
+        var effects=modules.effects();int rate=modules.productive(recipe.result()) ? effects.productivity():0;
+        int batches=modules.batches(key,rate,recipe.ticks()-(modules.identityChanged(key) ? 0:Math.min(progress,recipe.ticks()-1)),recipe.ticks());var result=recipe.result().copyWithCount(recipe.result().getCount()*batches);
+        if(!output(result,true).isEmpty())return false;
+        int current=modules.identityChanged(key) ? 0:progress;
+        var step=effects.plan(recipe.energy(),kind()==FactoryKind.INDUSTRIAL_FURNACE ? 2:1,recipe.ticks()-Math.min(current,recipe.ticks()-1),modules.identityChanged(key) ? 0:modules.fraction());
+        if(!power.spend(step.energy()))return false;
+        progress=current+step.work();duration=recipe.ticks();activeRecipe=chosen.id().toString();modules.advance(key,step.remainder(),step.work(),duration,rate);
+        if(progress>=duration){var plan=recipe.consumptionPlan(input);if(plan==null)throw new IllegalStateException("Reserved module ingredients changed");beginPetroleumInventoryTransaction();try{for(int s=0;s<plan.length;s++)if(plan[s]>0)items.extractItem(s,plan[s],false);output(result,false);modules.finish();progress=0;activeRecipe="";}finally{endPetroleumInventoryTransaction();}sync();}
         return true;
     }
     public ItemStack output(ItemStack stack, boolean simulate) {
@@ -231,17 +246,17 @@ public final class MachineBlockEntity extends FactoryBlockEntity implements fact
         super.setBlockState(state);if(petroleum!=null && rotated) { petroleum.rotated();if(level!=null && !level.isClientSide)level.invalidateCapabilities(worldPosition); }
     }
     @Override public void dropContents() { if(assembly!=null)assembly.dismantle();if(assembly==null)super.dropContents(); }
-    @Override public void onLoad() { super.onLoad();loaded=true; if(assembly!=null)assembly.invalidate();if(!level.isClientSide) { if(petroleum!=null)petroleumAvailable();PowerGrid.add(this); } }
-    @Override public void setRemoved() { loaded=false;petroleumChunk=null;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.setRemoved(); }
-    @Override public void onChunkUnloaded() { loaded=false;petroleumChunk=null;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) PowerGrid.remove(this); super.onChunkUnloaded(); }
+    @Override public void onLoad() { super.onLoad();loaded=true; if(assembly!=null)assembly.invalidate();if(!level.isClientSide) { if(petroleum!=null)petroleumAvailable();PowerGrid.add(this);factorycraft.modules.BeaconIndex.add(this); } }
+    @Override public void setRemoved() { loaded=false;petroleumChunk=null;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) {PowerGrid.remove(this);factorycraft.modules.BeaconIndex.remove(this);} super.setRemoved(); }
+    @Override public void onChunkUnloaded() { loaded=false;petroleumChunk=null;if(assembly!=null)assembly.invalidate();if(level!=null && !level.isClientSide) {PowerGrid.remove(this);factorycraft.modules.BeaconIndex.remove(this);} super.onChunkUnloaded(); }
     @Override public Component getDisplayName() { return Component.translatable("block.factorycraft."+kind().id); }
     @Override public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) { return petroleum==null ? new FactoryMenu(id,inv,this,data):new factorycraft.petroleum.PetroleumMenu(id,inv,this,petroleum.data); }
     @Override protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
-        super.saveAdditional(t,r);if(!researchScope.isEmpty())t.putString("ResearchScope",researchScope); t.putInt("Schema",1); t.put("Items",items.serializeNBT(r)); t.putInt("Energy",power.getEnergyStored());
+        super.saveAdditional(t,r);modules.save(t,r);if(!researchScope.isEmpty())t.putString("ResearchScope",researchScope); t.putInt("Schema",1); t.put("Items",items.serializeNBT(r)); t.putInt("Energy",power.getEnergyStored());
         t.putInt("Progress",progress); t.putInt("Duration",duration); t.putInt("Fuel",fuelTicks); t.putString("Selected",selected); t.putString("ActiveRecipe",activeRecipe);if(assembly!=null)assembly.save(t);if(petroleum!=null)petroleum.save(t,r);
     }
     @Override protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
-        super.loadAdditional(t,r);researchScope=t.getString("ResearchScope"); items.deserializeNBT(r,t.getCompound("Items")); power.restore(t.getInt("Energy"));
+        super.loadAdditional(t,r);modules.load(t,r);researchScope=t.getString("ResearchScope"); items.deserializeNBT(r,t.getCompound("Items")); power.restore(t.getInt("Energy"));
         progress=Math.max(0,t.getInt("Progress")); duration=Math.max(1,t.getInt("Duration")); fuelTicks=Math.max(0,t.getInt("Fuel"));
         selected=t.getString("Selected"); activeRecipe=t.getString("ActiveRecipe"); recipeCacheTick=Long.MIN_VALUE;if(assembly!=null)assembly.load(t);if(petroleum!=null)petroleum.load(t,r);
     }

@@ -1,0 +1,24 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:processing_unit"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:productivity_module",
+    "count": 1
+  },
+  "ticks": 300,
+  "energy": 24
+}

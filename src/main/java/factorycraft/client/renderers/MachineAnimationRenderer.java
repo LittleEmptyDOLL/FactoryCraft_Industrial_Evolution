@@ -29,6 +29,7 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
         pose.pushPose();var facing=profile.facing(be.getBlockState());pose.translate(.5,0,.5);pose.mulPose(Axis.YP.rotationDegrees(180-facing.toYRot()));pose.translate(-.5,0,-.5);
         float unit=Math.max(profile.layout.width(),Math.max(profile.layout.height(),profile.layout.depth()));pose.scale(unit,unit,unit);
         switch(profile) {
+            case BEACON -> rotate(pose,unit,1.5,2,1.5,Axis.YP,(float)(phase.time*4));
             case LAB -> rotate(pose,unit,1.5,1.35,1.5,Axis.YP,(float)(phase.time*8));
             case DRILL -> rotate(pose,unit,1.5,.9,1.5,Axis.YP,(float)(phase.time*18));
             case ASSEMBLER, ADVANCED_ASSEMBLER -> pose.translate(0,-.22*(1-Math.cos(phase.time*.32))/unit,0);

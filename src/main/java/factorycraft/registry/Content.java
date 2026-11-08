@@ -98,6 +98,11 @@ public final class Content {
     public static final DeferredItem<Item> ENGINE_UNIT = ITEMS.registerSimpleItem("engine_unit");
     public static final DeferredItem<Item> ELECTRIC_ENGINE_UNIT = ITEMS.registerSimpleItem("electric_engine_unit");
     public static final DeferredItem<Item> PROCESSING_UNIT = ITEMS.registerSimpleItem("processing_unit");
+    public static final DeferredItem<factorycraft.modules.ModuleItem> SPEED_MODULE=ITEMS.register("speed_module",()->new factorycraft.modules.ModuleItem(factorycraft.modules.ModuleItem.Kind.SPEED,new Item.Properties()));
+    public static final DeferredItem<factorycraft.modules.ModuleItem> EFFICIENCY_MODULE=ITEMS.register("efficiency_module",()->new factorycraft.modules.ModuleItem(factorycraft.modules.ModuleItem.Kind.EFFICIENCY,new Item.Properties()));
+    public static final DeferredItem<factorycraft.modules.ModuleItem> PRODUCTIVITY_MODULE=ITEMS.register("productivity_module",()->new factorycraft.modules.ModuleItem(factorycraft.modules.ModuleItem.Kind.PRODUCTIVITY,new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<BeaconBlockEntity>> BEACON=ENTITIES.register("beacon",()->BlockEntityType.Builder.of(BeaconBlockEntity::new,blocks(FactoryKind.BEACON)).build(null));
+    public static final DeferredHolder<MenuType<?>,MenuType<factorycraft.modules.ModuleMenu>> MODULE_MENU=MENUS.register("modules",()->IMenuTypeExtension.create(factorycraft.modules.ModuleMenu::new));
     public static final DeferredItem<Item> SCIENCE_BLUE = ITEMS.registerSimpleItem("chemical_science_pack");
     public static final DeferredItem<Item> SCIENCE_RED=ITEMS.registerSimpleItem("automation_science_pack");
     public static final DeferredItem<Item> SCIENCE_GREEN=ITEMS.registerSimpleItem("logistic_science_pack");
@@ -118,6 +123,8 @@ public final class Content {
         bus.addListener(Content::capabilities);
     }
     private static void capabilities(RegisterCapabilitiesEvent e) {
+        e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,BEACON.get(),(be,side)->be.inventory());
+        e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,BEACON.get(),(be,side)->be.energy);
         e.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> factorycraft.items.FluidCanisterItem.handler(stack), FLUID_CANISTER.get());
         e.registerBlockEntity(Capabilities.ItemHandler.BLOCK,LAB.get(),(be,side)->be.inventory());
         e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,LAB.get(),(be,side)->be.energy);

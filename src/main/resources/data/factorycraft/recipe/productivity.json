@@ -1,0 +1,20 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:modules",
+    "factorycraft:advanced_electronics_2"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 25,
+  "ticks": 120,
+  "repeatable": false,
+  "unlocks": [
+    "factorycraft:productivity_module"
+  ],
+  "x": 5,
+  "y": 2
+}

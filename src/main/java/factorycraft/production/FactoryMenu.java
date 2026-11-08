@@ -25,6 +25,7 @@ public final class FactoryMenu extends AbstractContainerMenu {
     }
     @Override public boolean stillValid(Player p) { return machine.loaded() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getX()+.5,machine.getBlockPos().getY()+.5,machine.getBlockPos().getZ()+.5)<=64; }
     @Override public boolean clickMenuButton(Player p,int id) {
+        if(id==99 && p.containerMenu==this && stillValid(p))return factorycraft.modules.ModuleMenu.open(machine,p);
         if(id!=0 || !stillValid(p) || p.isSpectator())return false;
         machine.cycleRecipe(); return true;
     }

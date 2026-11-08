@@ -67,7 +67,7 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Implement real machine module slots and bounded speed/efficiency/productivity effects, with research/recipes using advanced components and exact production/FE ledgers. Then add beacon coverage through cached topology, not global per-tick scans. Keep legacy machines, team ownership, native components and all exact saved checkpoints.
+1. Add underground belts with bounded loaded-only pairing, both independent lanes, stored in-flight ownership, blocked/unloaded output conservation and real inserter/port integration; then priority/filter splitter controls. Preserve module/research/chemistry fixtures and legacy checkpoint hashes.
 2. Extend modules/beacons and higher science tiers, then logistics/circuits. Continue UI polish/coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
 
@@ -126,3 +126,9 @@ Added authoritative menu payloads and team/distance/prerequisite validation, dep
 Add steel/engines, a second-tier 3×3×3 fluid assembler using the existing mixed transaction engine, electric engines/lubricant and processors/acid, chemical science and six bounded prerequisite technologies. Keep old assembler logic, recipe codecs and exact legacy NBT unchanged. Add a component-preserving 4000-mB canister with NeoForge item fluid capability and validated petroleum-menu recovery for input leftovers; never discard/round fluid or allow stale/spectator/unloaded menu mutation. Test actual production/gating, backpressure/energy, full-size placement/portable/chunk/disk state, native item components and GUI/viewers, then build, dedicated profiles and the preserved full benchmark. Publish tested changes to main with an expected-head lease.
 
 Implemented steel/engines, second fluid assembler with inherited dry recipes, electric engines/processors, chemical science and six new technologies. Added native component-preserving canister, exact-volume input recovery and a finite component-fed engine/science example. Existing assembler and six technology definitions remain unchanged. Native tests cover three-pack shared completion, gates/energy/backpressure, pipes/canister return, stale/unloaded menus, placement/geometry, portable/live reconstruction and exact four-chunk disk state. Final commands/results/client limits are recorded in VALIDATION.md. Next session starts at priority 1 above; do not reset any existing diagnostic fixture.
+
+## Delivered milestone — 0.11.0 modules and beacons
+
+Implement real speed/efficiency/productivity modules with separate persistent slots, bounded fixed-point work, recipe-specific productivity credit, complete output reservations and server-owned menus. Preserve the exact empty-module legacy path/NBT/checkpoints. Add powered 3×3×3 one-item beacons with local spatial invalidation, no forced chunks, unavailable-part guards and speed/efficiency-only transmission. Verify independent arithmetic, native production/FE/backpressure/recipes/portable/chunk/disk, optional dependencies, graphical menus and benchmark compatibility before publishing main.
+
+Delivered local module arithmetic/GUI, canonical actual-work productivity, powered spatial beacons, progression and finite comparison factory. Follow MODULES.md and the exact validation results/limits. Next session starts with the underground-belt task above; do not reset old checkpoints or the retained unreleased v1 module failure evidence.

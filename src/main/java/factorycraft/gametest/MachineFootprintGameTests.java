@@ -17,7 +17,7 @@ import net.neoforged.neoforge.gametest.*;
 @GameTestHolder(FactoryCraft.ID)
 @PrefixGameTestTemplate(false)
 public final class MachineFootprintGameTests {
-    private static void verify(GameTestHelper h,String id) {
+    static void verify(GameTestHelper h,String id) {
         var profile=MachineProfile.byId(id);var anchor=h.absolutePos(new BlockPos(10,2,10));var block=BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID,id));
         for(var direction:Direction.Plane.HORIZONTAL) {
             var player=h.makeMockPlayer(GameType.SURVIVAL);player.getAbilities().instabuild=false;player.setYRot((profile==MachineProfile.SPLITTER ? direction:direction.getOpposite()).toYRot());player.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(block,2));

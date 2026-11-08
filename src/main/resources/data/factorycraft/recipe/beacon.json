@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:processing_unit"
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:beacon",
+    "count": 1
+  },
+  "ticks": 400,
+  "energy": 30
+}

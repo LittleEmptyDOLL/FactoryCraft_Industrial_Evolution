@@ -1,3 +1,10 @@
+# 0.11.0 — productive modules and powered beacons (8 November 2026)
+
+* Added tier-1 speed/efficiency/productivity items, separate guarded production-machine slots/menu, bounded fixed-point speed/energy and recipe-specific actual-work productivity credit. Both item and mixed fluid production reserve the complete base/bonus output before energy and commit all owners before observers. Empty/default module state preserves legacy NBT/work.
+* Added a centered one-item 3×3×3 beacon, sole module/FE owner, standard ports, original animated antenna, normal-quality diminishing transmission and local spatial recipient caching. Only speed/efficiency transmit; powered block-ticking complete beacons pay 40 FE/t before work. Inactive/frozen/unloaded equipment cannot provide free effects or consume standby energy.
+* Added three technologies/recipes, productive-output datapack tag and `/factorycraft moduleworks`, a finite chest/belt/inserter/coal-powered comparison factory. Native and independent tests cover arithmetic, gates/output backpressure, mixed FE/fluid ledgers, late insertion, portable/live state, range/power/unload and disk persistence. An unreleased v1 probe's premature debit is retained as evidence; the corrected v2 checkpoint is separate and strict.
+* Preserved main's JEI 19.21.1.248 choice and corrected its API-only runtime dependency to the actual viewer. Higher module tiers/quality, drill/lab/thermal effects and coverage overlays remain future work.
+
 # 0.10.0 — chemical science and exact fluid recovery (8 November 2026)
 
 * Added steel/engines, electric engines, processors and chemical science with real production recipes and six prerequisite technologies. Original six technologies/partial work stay intact.
