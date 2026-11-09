@@ -20,6 +20,7 @@ public final class AssemblyAccess {
         if(be instanceof LabBlockEntity lab)return lab.inventory();
         if(be instanceof MachineBlockEntity m)return m.automation(side);
         if(be instanceof ThermalBlockEntity thermal)return thermal.automation();
+        if(be instanceof factorycraft.circuits.CircuitNodeBlockEntity circuit)factorycraft.circuits.CircuitSimulation.changed(circuit);
         if(be instanceof BeltBlockEntity belt)return belt.inventory();return EMPTY;
     }
     public static IEnergyStorage energy(AssemblyOwner owner) {

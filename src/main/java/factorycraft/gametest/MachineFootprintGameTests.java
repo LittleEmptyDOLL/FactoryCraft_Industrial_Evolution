@@ -25,7 +25,8 @@ public final class MachineFootprintGameTests {
     for (var direction : Direction.Plane.HORIZONTAL) {
       var player = h.makeMockPlayer(GameType.SURVIVAL);
       player.getAbilities().instabuild = false;
-      player.setYRot((profile.splitter() ? direction : direction.getOpposite()).toYRot());
+      player.setYRot(
+          (profile.splitter() || profile.circuit() ? direction : direction.getOpposite()).toYRot());
       player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(block, 2));
       var context =
           new UseOnContext(
@@ -83,6 +84,16 @@ public final class MachineFootprintGameTests {
         h.assertTrue(h.getLevel().getBlockState(cell).isAir(), "demolition left a generated block");
     }
     h.succeed();
+  }
+
+  @GameTest(template = "empty", timeoutTicks = 100)
+  public static void arithmeticCombinatorMatchesPreviewInEveryOrientation(GameTestHelper h) {
+    verify(h, "arithmetic_combinator");
+  }
+
+  @GameTest(template = "empty", timeoutTicks = 100)
+  public static void deciderCombinatorMatchesPreviewInEveryOrientation(GameTestHelper h) {
+    verify(h, "decider_combinator");
   }
 
   @GameTest(template = "empty", timeoutTicks = 100)

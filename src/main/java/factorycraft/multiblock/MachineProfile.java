@@ -26,7 +26,12 @@ public enum MachineProfile implements StringRepresentable {
   ADVANCED_ASSEMBLER("assembling_machine_2", 3, 3, 3),
   BEACON("beacon", 3, 3, 3),
   FAST_SPLITTER("fast_splitter", 2, 1, 1),
-  EXPRESS_SPLITTER("express_splitter", 2, 1, 1);
+  EXPRESS_SPLITTER("express_splitter", 2, 1, 1),
+  CONSTANT("constant_combinator", 1, 1, 1),
+  ARITHMETIC("arithmetic_combinator", 1, 1, 2),
+  DECIDER("decider_combinator", 1, 1, 2),
+  CIRCUIT_READER("circuit_reader", 1, 1, 1),
+  CIRCUIT_CONTROLLER("circuit_controller", 1, 1, 1);
   public final String id;
   public final CuboidLayout layout;
 
@@ -81,12 +86,20 @@ public enum MachineProfile implements StringRepresentable {
         .immutable();
   }
 
+  public boolean circuit() {
+    return this == CONSTANT
+        || this == ARITHMETIC
+        || this == DECIDER
+        || this == CIRCUIT_READER
+        || this == CIRCUIT_CONTROLLER;
+  }
+
   public boolean splitter() {
     return this == SPLITTER || this == FAST_SPLITTER || this == EXPRESS_SPLITTER;
   }
 
   public Direction placementFacing(Direction look) {
-    return splitter() ? look : look.getOpposite();
+    return splitter() || circuit() ? look : look.getOpposite();
   }
 
   public Direction facing(BlockState state) {

@@ -24,6 +24,7 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements factor
     private static final IItemHandler EMPTY=new ItemStackHandler(0);
     private final factorycraft.multiblock.IndustrialAssembly assembly;
     public factorycraft.multiblock.IndustrialAssembly assembly() { return assembly; }
+    public factorycraft.circuits.CircuitBinding circuitBinding;
     private boolean loaded;
     private final FluidKind kind;
     private final FluidCell<FluidKey> cell;
@@ -142,10 +143,10 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements factor
     @Override public Component getDisplayName() { return Component.translatable("block.factorycraft."+kind.id); }
     @Override public AbstractContainerMenu createMenu(int id,Inventory inventory,Player player) { return new FluidMenu(id,inventory,FluidBlockEntity.this,data); }
     @Override protected void saveAdditional(CompoundTag tag,HolderLookup.Provider registries) {
-        super.saveAdditional(tag,registries);if(assembly!=null)assembly.save(tag);tag.putInt("Schema",1);tag.put("StoredFluid",stored().saveOptional(registries));tag.putInt("Energy",power.getEnergyStored());
+        super.saveAdditional(tag,registries);if(circuitBinding!=null)tag.put("CircuitControl",circuitBinding.save());if(assembly!=null)assembly.save(tag);tag.putInt("Schema",1);tag.put("StoredFluid",stored().saveOptional(registries));tag.putInt("Energy",power.getEnergyStored());
     }
     @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries) {
-        super.loadAdditional(tag,registries);if(assembly!=null)assembly.load(tag);var fluid=FluidStack.parseOptional(registries,tag.getCompound("StoredFluid"));
+        super.loadAdditional(tag,registries);circuitBinding=factorycraft.circuits.CircuitBinding.load(tag.getCompound("CircuitControl"));if(assembly!=null)assembly.load(tag);var fluid=FluidStack.parseOptional(registries,tag.getCompound("StoredFluid"));
         cell.restore(fluid.isEmpty() ? null:new FluidKey(fluid),fluid.getAmount());power.restore(tag.getInt("Energy"));
         if(loaded())FluidSimulation.changed(this);
     }

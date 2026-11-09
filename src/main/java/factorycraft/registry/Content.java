@@ -136,6 +136,34 @@ public final class Content {
               () ->
                   BlockEntityType.Builder.of(OilDepositBlockEntity::new, OIL_DEPOSIT.get())
                       .build(null));
+  public static final DeferredHolder<
+          BlockEntityType<?>, BlockEntityType<factorycraft.circuits.CircuitNodeBlockEntity>>
+      CIRCUIT =
+          ENTITIES.register(
+              "circuit",
+              () ->
+                  BlockEntityType.Builder.of(
+                          factorycraft.circuits.CircuitNodeBlockEntity::new,
+                          Arrays.stream(FactoryKind.values())
+                              .filter(FactoryKind::circuit)
+                              .map(k -> FACTORY.get(k).get())
+                              .toArray(Block[]::new))
+                      .build(null));
+  public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.circuits.CircuitMenu>>
+      CIRCUIT_MENU =
+          MENUS.register(
+              "circuit", () -> IMenuTypeExtension.create(factorycraft.circuits.CircuitMenu::new));
+  public static final DeferredItem<factorycraft.circuits.CircuitWireItem>
+      RED_CIRCUIT_WIRE =
+          ITEMS.register(
+              "red_circuit_wire",
+              () ->
+                  new factorycraft.circuits.CircuitWireItem(0, new Item.Properties().stacksTo(1))),
+      GREEN_CIRCUIT_WIRE =
+          ITEMS.register(
+              "green_circuit_wire",
+              () ->
+                  new factorycraft.circuits.CircuitWireItem(1, new Item.Properties().stacksTo(1)));
   public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.inserters.InserterMenu>>
       INSERTER_MENU =
           MENUS.register(

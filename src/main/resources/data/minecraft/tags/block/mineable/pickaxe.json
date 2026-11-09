@@ -30,6 +30,11 @@
     "factorycraft:express_splitter",
     "factorycraft:fast_inserter",
     "factorycraft:long_inserter",
-    "factorycraft:filter_inserter"
+    "factorycraft:filter_inserter",
+    "factorycraft:constant_combinator",
+    "factorycraft:arithmetic_combinator",
+    "factorycraft:decider_combinator",
+    "factorycraft:circuit_reader",
+    "factorycraft:circuit_controller"
   ]
 }

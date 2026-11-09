@@ -83,6 +83,8 @@ public final class FactoryBlock extends BaseEntityBlock {
       if (cell != null) return factorycraft.belts.TransportShapes.shape(cell);
       return box(0, 0, 0, 16, 3, 16);
     }
+    if (kind.circuit() || kind.casing() && s.getValue(PROFILE).circuit())
+      return box(0, 0, 0, 16, 8, 16);
     if (kind.inserter()) return box(5, 0, 5, 11, 8, 11);
     if (kind == FactoryKind.POLE) return box(6, 0, 6, 10, 16, 10);
     return Shapes.block();
@@ -90,6 +92,7 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+    if (kind.circuit()) return new factorycraft.circuits.CircuitNodeBlockEntity(p, s);
     if (kind == FactoryKind.TRANSPORT_PART) return new TransportPartBlockEntity(p, s);
     if (kind == FactoryKind.BEACON) return new factorycraft.blockentity.BeaconBlockEntity(p, s);
     if (kind == FactoryKind.LAB) return new LabBlockEntity(p, s);
@@ -125,6 +128,10 @@ public final class FactoryBlock extends BaseEntityBlock {
       Player player,
       InteractionHand hand,
       BlockHitResult hit) {
+    if (stack.getItem() instanceof factorycraft.circuits.CircuitWireItem wire) {
+      var result = wire.useOn(new net.minecraft.world.item.context.UseOnContext(player, hand, hit));
+      return result.consumesAction() ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
+    }
     if (kind.large() || kind.casing())
       return factorycraft.fluids.FluidBlocks.useItem(
           stack, level, pos, player, hand, hit.getDirection());
@@ -150,6 +157,8 @@ public final class FactoryBlock extends BaseEntityBlock {
       player.openMenu(machine, p);
     } else if (l.getBlockEntity(p) instanceof InserterBlockEntity arm && arm.electric()) {
       factorycraft.inserters.InserterMenu.open(arm, player);
+    } else if (l.getBlockEntity(p) instanceof factorycraft.circuits.CircuitNodeBlockEntity node) {
+      player.openMenu(node, p);
     } else if (l.getBlockEntity(p) instanceof CasingBlockEntity part) {
       var owner = part.genericForRemoval();
       if (owner instanceof BeltBlockEntity belt && belt.kind().splitter())

@@ -4,6 +4,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class FactoryConfig {
     public static final ModConfigSpec SPEC;
+    public static final ModConfigSpec.IntValue CIRCUIT_PORTS,CIRCUIT_COMPONENT_WORK,CIRCUIT_DEVICE_WORK;
     public static final ModConfigSpec.IntValue LIFT_HEIGHT;
     public static final ModConfigSpec.IntValue GENERATOR_FE;
     public static final ModConfigSpec.IntValue POLE_RADIUS;
@@ -27,6 +28,9 @@ public final class FactoryConfig {
                 .defineInRange("fluidWorkPerTick",16384,64,1048576);
         OIL_RICHNESS=b.comment("Initial mB in each newly initialized finite oil deposit. Existing reserves never reset.").defineInRange("oilDepositRichness",64000,1000,10000000);
         ORE_RICHNESS=b.comment("Units in each newly initialized solid resource tile; surviving tiles never refill.").defineInRange("oreTileRichness",1000,1,10000000);
+        CIRCUIT_PORTS=b.comment("Maximum ports per individual red/green circuit component; startup setting.").defineInRange("circuitPortsPerNetwork",256,2,4096);
+        CIRCUIT_COMPONENT_WORK=b.comment("Maximum bounded local circuit components rebuilt per tick.").defineInRange("circuitComponentWork",8,1,64);
+        CIRCUIT_DEVICE_WORK=b.comment("Circuit devices evaluated per tick; queued changes are retained.").defineInRange("circuitDeviceWork",512,8,65536);
         SPEC = b.build();
     }
     private FactoryConfig() {}

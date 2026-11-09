@@ -1,0 +1,22 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:electronics",
+    "factorycraft:logistics"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 20,
+  "ticks": 60,
+  "unlocks": [
+    "factorycraft:constant_combinator",
+    "factorycraft:arithmetic_combinator",
+    "factorycraft:decider_combinator",
+    "factorycraft:circuit_reader",
+    "factorycraft:circuit_controller"
+  ],
+  "x": 3,
+  "y": 5
+}

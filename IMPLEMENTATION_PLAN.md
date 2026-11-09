@@ -31,7 +31,7 @@ Maintain the delivered automation/energy/fluid/chemistry slice and the first sta
 
 ## Next session
 
-Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the current priority list below for the next transport/inserter work. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
+Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the next concrete circuit-reader task recorded at the end; inspect only the relevant guide/code ranges. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
 
 ## Delivered in 0.1.0
 
@@ -67,7 +67,7 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Implement the first bounded red/green circuit graph with explicit signal arithmetic/tick semantics, local cached topology, persistent connections and deterministic combinators. Start with enable conditions for the existing inserter/pump controls; preserve paid hand/FE ownership, packet guards and no force-loading. Do not start robot/train construction before this slice is playable and validated.
+1. Continue the delivered 0.16.0 circuit slice with guarded fluid sensing and finite pump feedback (see final next-task section). Keep scalar semantics, local graph limits, saved UUID bindings and paid hand/FE ownership; do not start unrelated robot/train construction.
 2. Extend inserters with bulk/stack capacity only after a counted transfer/reservation model covers partial target acceptance, held batches, hand component equality, power budgets and portable/chunk/process state. Keep the existing four models and all diagnostic fixtures intact.
 3. Extend modules/beacons and higher science tiers. Continue coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
@@ -161,3 +161,11 @@ Delivered appended fast/express kinds/profiles with 2×1 centered one-item prote
 Implement fast (reach 1, swing 3 ticks, 4 FE/work tick), long (reach 2, swing 7, 3 FE/work tick) and filter (reach 1, swing 3, 4 FE/work tick) variants through the original persistent-hand model. Keep the mechanical swing-12/free path and legacy NBT exact. Add guarded pole/FE input, early chunk/freeze gating, one-owner portable electric demolition, live filter/enable menus, reach-scaled client arms, additive research/assembler recipes and a finite powered example. Check pure cycle math, native transactions/parts/belt positions/power starvation/menus, exact separate-JVM hand/FE/settings and old checkpoint compatibility. Run affected local validation; leave independent full CI jobs to GitHub and hand off with their pending status rather than polling. Circuits/bulk/stack are separate future work.
 
 Delivered fast/long/filter electric arms in the original persistent-hand adapter, independent paid ArmCycle, pole/guarded FE input, all-direction cached reach, server ghost/hand menus, early chunk/freeze guards and exactly one portable electric device on demolition. Added original colored bases/reach-scaled animation, one additive technology, component-strict assembler recipes and the finite coal/pole-powered `/factorycraft inserterworks`. Mechanical NBT/timing and old factories remain compatible. See INSERTERS.md and VALIDATION.md for measured costs, actual checks and remaining CI status. The next task is priority 1 above; do not start it automatically.
+
+## Delivered slice — 0.16.0 bounded circuit networks
+
+Delivered reusable red/green wire tools, constant/arithmetic/decider programs, inventory readers and adjacent electrical inserter/pump controllers. New one-item profiles have centered previews and distinct physical IN/OUT cells. Cached independently bounded components retain reciprocal UUID links, integer wrap semantics and staged signal outputs. Native menus validate ordinary slots/buttons and signed payloads; portable devices clear old coordinates without losing programs/resources. Added the circuit research, manufacturing recipes, original geometry/wires, EN/RU text, diagnostics and finite coal-powered eight-item feedback example. CIRCUITS.md defines polling/overload latency, direct fail-closed behavior, downstream sample-hold and the deliberate zero-FE logic limitation. Native persistence checks retain separate circuit/link and controller/held-item checkpoints. See VALIDATION.md for exact checks; independent optional/full CI jobs remain separate.
+
+### Next concrete task after 0.16.0
+
+Extend existing circuit readers with explicit item/fluid modes and component-sensitive fluid readings, preserving unavailable-as-unknown semantics and strict saved binding checkpoints. Add real pump-tank feedback, native guarded menu tests and an honest sensor-latency budget. Consider powered logic and wildcard rules only as separately validated additions. Do not start robots/trains/blueprints automatically. See CIRCUITS.md for the exact delivered scalar scope and output sample-hold behavior.

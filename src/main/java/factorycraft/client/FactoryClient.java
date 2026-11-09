@@ -30,7 +30,8 @@ public final class FactoryClient {
     for (var p : factorycraft.multiblock.MachineProfile.values())
       if (p != factorycraft.multiblock.MachineProfile.TANK
           && p != factorycraft.multiblock.MachineProfile.PUMP
-          && !p.splitter())
+          && !p.splitter()
+          && !p.circuit())
         event.register(
             net.minecraft.client.resources.model.ModelResourceLocation.standalone(
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
@@ -39,6 +40,7 @@ public final class FactoryClient {
 
   @SubscribeEvent
   public static void menus(RegisterMenuScreensEvent e) {
+    e.register(Content.CIRCUIT_MENU.get(), factorycraft.client.screens.CircuitScreen::new);
     e.register(Content.INSERTER_MENU.get(), factorycraft.client.screens.InserterScreen::new);
     e.register(Content.SPLITTER_MENU.get(), factorycraft.client.screens.SplitterScreen::new);
     e.register(Content.MODULE_MENU.get(), factorycraft.client.screens.ModuleScreen::new);
@@ -99,6 +101,8 @@ public final class FactoryClient {
     e.registerBlockEntityRenderer(Content.MACHINE.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.THERMAL.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.BELT.get(), BeltRenderer::new);
+    e.registerBlockEntityRenderer(
+        Content.CIRCUIT.get(), factorycraft.client.renderers.CircuitRenderer::new);
     e.registerBlockEntityRenderer(Content.INSERTER.get(), InserterRenderer::new);
   }
 }

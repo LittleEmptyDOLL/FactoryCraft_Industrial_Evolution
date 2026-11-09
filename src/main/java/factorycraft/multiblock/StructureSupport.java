@@ -19,7 +19,7 @@ public final class StructureSupport {
         var be=context.getOptionalParameter(LootContextParams.BLOCK_ENTITY);var owner=AssemblyAccess.owner(be);
         if(owner!=null)for(var item:drops)if(item.is(be.getBlockState().getBlock().asItem())) {
             be.saveToItem(item,context.getLevel().registryAccess());var data=item.get(DataComponents.BLOCK_ENTITY_DATA);
-            if(data!=null) { var tag=data.copyTag();tag.remove("Assembly");item.set(DataComponents.BLOCK_ENTITY_DATA,CustomData.of(tag)); }
+            if(data!=null) { var tag=data.copyTag();tag.remove("Assembly");tag.remove("CircuitControl");if(be instanceof factorycraft.circuits.CircuitNodeBlockEntity)tag.getCompound("Circuit").remove("Links");item.set(DataComponents.BLOCK_ENTITY_DATA,CustomData.of(tag)); }
         }
         return drops;
     }

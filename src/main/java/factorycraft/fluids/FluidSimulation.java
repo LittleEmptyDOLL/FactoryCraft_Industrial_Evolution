@@ -109,6 +109,7 @@ public final class FluidSimulation {
         s.nanos+=System.nanoTime()-start;
     }
     private static boolean pump(State s,Link link) {
+        if(!factorycraft.circuits.CircuitBinding.allowed(link.be))return false;
         var be=link.be;var cell=be.cell();if(be.power.getEnergyStored()<PUMP_FE)return false;
         var facing=be.facing();var input=neighbor(s,be,true);var output=neighbor(s,be,false);
         if(input!=null && !input.be.simulationAvailable())input=null;

@@ -21,7 +21,7 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
 
   static {
     for (var p : MachineProfile.values())
-      if (p != MachineProfile.TANK && p != MachineProfile.PUMP && !p.splitter())
+      if (p != MachineProfile.TANK && p != MachineProfile.PUMP && !p.splitter() && !p.circuit())
         MODELS.put(
             p,
             ModelResourceLocation.standalone(

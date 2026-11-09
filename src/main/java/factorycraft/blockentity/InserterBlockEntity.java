@@ -26,6 +26,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
           sync();
         }
       };
+  public factorycraft.circuits.CircuitBinding circuitBinding;
   public final PowerBuffer power = new PowerBuffer(2000, this::markPersistentState);
   private final ArmCycle cycle;
   private long phaseTick;
@@ -225,7 +226,8 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
   }
 
   private void work() {
-    if (!ready() || electric() && !enabled) {
+    if (!ready()
+        || electric() && (!enabled || !factorycraft.circuits.CircuitBinding.allowed(this))) {
       moving(false);
       return;
     }
@@ -330,6 +332,14 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
     if (electric()) {
       var stack = new ItemStack(getBlockState().getBlock());
       saveToItem(stack, level.registryAccess());
+      var portable = stack.get(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA);
+      if (portable != null) {
+        var data = portable.copyTag();
+        data.remove("CircuitControl");
+        stack.set(
+            net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA,
+            net.minecraft.world.item.component.CustomData.of(data));
+      }
       packed = true;
       hand.setStackInSlot(0, ItemStack.EMPTY);
       power.restore(0);
@@ -354,6 +364,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
   @Override
   protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
     super.saveAdditional(t, r);
+    if (circuitBinding != null) t.put("CircuitControl", circuitBinding.save());
     t.putInt("Schema", 1);
     t.put("Hand", hand.serializeNBT(r));
     t.putInt("Phase", cycle.remaining());
@@ -379,6 +390,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
   @Override
   protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
     super.loadAdditional(t, r);
+    circuitBinding = factorycraft.circuits.CircuitBinding.load(t.getCompound("CircuitControl"));
     hand.deserializeNBT(r, t.getCompound("Hand"));
     cycle.restore(t.getInt("Phase"));
     phaseTick = t.getLong("PhaseTick");

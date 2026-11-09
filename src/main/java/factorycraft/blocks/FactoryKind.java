@@ -31,13 +31,30 @@ public enum FactoryKind {
   EXPRESS_SPLITTER("express_splitter", 3),
   FAST_INSERTER("fast_inserter", 0),
   LONG_INSERTER("long_inserter", 0),
-  FILTER_INSERTER("filter_inserter", 0);
+  FILTER_INSERTER("filter_inserter", 0),
+  CONSTANT("constant_combinator", 0),
+  ARITHMETIC("arithmetic_combinator", 0),
+  DECIDER("decider_combinator", 0),
+  CIRCUIT_READER("circuit_reader", 0),
+  CIRCUIT_CONTROLLER("circuit_controller", 0);
   public final String id;
   public final int beltTier;
 
   FactoryKind(String id, int beltTier) {
     this.id = id;
     this.beltTier = beltTier;
+  }
+
+  public boolean circuit() {
+    return this == CONSTANT
+        || this == ARITHMETIC
+        || this == DECIDER
+        || this == CIRCUIT_READER
+        || this == CIRCUIT_CONTROLLER;
+  }
+
+  public boolean dualCircuit() {
+    return this == ARITHMETIC || this == DECIDER;
   }
 
   public boolean inserter() {

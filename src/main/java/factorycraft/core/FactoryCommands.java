@@ -37,7 +37,8 @@ public final class FactoryCommands {
           "transportworks",
           "sortingworks",
           "tieredsortingworks",
-          "inserterworks"
+          "inserterworks",
+          "circuitworks"
         }) root.then(Commands.literal(name).executes(c -> build(c.getSource(), name)));
     root.then(
         Commands.literal("showroom")
@@ -81,6 +82,19 @@ public final class FactoryCommands {
                           false);
                   return 1;
                 }));
+    root.then(
+        Commands.literal("circuits")
+            .executes(
+                c -> {
+                  c.getSource()
+                      .sendSuccess(
+                          () ->
+                              Component.literal(
+                                  factorycraft.circuits.CircuitSimulation.statistics(
+                                      c.getSource().getLevel())),
+                          false);
+                  return 1;
+                }));
     event.getDispatcher().register(root);
   }
 
@@ -118,6 +132,7 @@ public final class FactoryCommands {
       case "oilworks" -> oilLine(level, origin.above());
       case "petrochemistry" ->
           factorycraft.diagnostics.AdvancedOilFactory.build(level, origin.above());
+      case "circuitworks" -> factorycraft.diagnostics.CircuitFactory.build(level, origin.above());
       case "inserterworks" -> factorycraft.diagnostics.InserterFactory.build(level, origin.above());
       case "tieredsortingworks" ->
           factorycraft.diagnostics.SortingFactory.buildTiered(level, origin.above());

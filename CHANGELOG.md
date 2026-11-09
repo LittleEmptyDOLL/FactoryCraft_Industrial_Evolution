@@ -1,3 +1,10 @@
+# 0.16.0 — bounded circuit networks (9 November 2026)
+
+* Added red/green reusable wiring tools, cached bounded components, signed int32 scalar logic, constant/arithmetic/decider programs, inventory readers and adjacent inserter/pump controllers. Combinators have separate physical ports and one-item centered 1×2 placement; smaller nodes occupy 1×1.
+* Added guarded native program menus/payloads, visible original wire geometry, research/manufacturing recipes and EN/RU UI. UUID-bound reciprocal links/programs and explicit device bindings survive restart; portable relocation clears old coordinates while retaining programs and resources. Closed gates preserve paid hands/FE and finite fluids.
+* Added `/factorycraft circuitworks`, a real coal/pole-powered finite eight-item feedback example and staged two-color logic, plus `/factorycraft circuits` statistics. Independent graph/math and native lifecycle/menu/placement/actuator/persistence tests cover the slice.
+* Logic itself currently needs no FE. CIRCUITS.md documents bounded polling latency and downstream output sample-hold. Fluid signals, wildcards, multiple rules and other device conditions remain planned.
+
 # 0.11.0 — productive modules and powered beacons (8 November 2026)
 
 * Added tier-1 speed/efficiency/productivity items, separate guarded production-machine slots/menu, bounded fixed-point speed/energy and recipe-specific actual-work productivity credit. Both item and mixed fluid production reserve the complete base/bonus output before energy and commit all owners before observers. Empty/default module state preserves legacy NBT/work.

@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "modVersion": "0.16.0",
+  "localStatus": "PASS",
+  "junit": 146,
+  "requiredGameTests": 262,
+  "separateJvmCheckpoints": {
+    "circuit": {
+      "positions": [
+        [
+          15015,
+          70,
+          15015
+        ],
+        [
+          15017,
+          70,
+          15015
+        ]
+      ],
+      "output": 10,
+      "links": "reciprocal UUID-bound ports",
+      "status": "VERIFIED"
+    },
+    "actuator": {
+      "positions": [
+        [
+          15118,
+          70,
+          15119
+        ],
+        [
+          15119,
+          70,
+          15119
+        ]
+      ],
+      "FE": 731,
+      "hand": {
+        "id": "minecraft:diamond",
+        "count": 1
+      },
+      "binding": "persisted controller UUID",
+      "enabled": false,
+      "status": "SEEDED then VERIFIED"
+    }
+  },
+  "client": {
+    "runtime": "Real Gradle runClient, viewer-free Minecraft 1.21.1 / NeoForge, Xvfb/Mesa",
+    "world": "FactoryCraftScale",
+    "floor": [
+      1206,
+      111,
+      106
+    ],
+    "targetRawIron": 8,
+    "feedbackGate": false,
+    "signedInput": 2147483647,
+    "add3Output": -2147483646,
+    "restoredChainOutputs": [
+      7,
+      1
+    ],
+    "wiring": "Native two-click add/remove verified by reciprocal NBT",
+    "languages": [
+      "ru_ru",
+      "en_us"
+    ],
+    "saveReload": true,
+    "ghostSampleRawIronRetained": 3,
+    "screenshots": [
+      "docs/screenshots/circuit-wires-0.16.0.png",
+      "docs/screenshots/circuit-arithmetic-ru-0.16.0.png",
+      "docs/screenshots/circuit-controller-en-0.16.0.png",
+      "docs/screenshots/circuit-constant-en-0.16.0.png",
+      "docs/screenshots/circuit-feedback-0.16.0.png"
+    ]
+  },
+  "legacyCompatibility": "PASS FULL exact old NBT hash, resumed 10000/1000/500 fixture",
+  "resources": {
+    "idempotent": true,
+    "curatedPngsUnchanged": 65,
+    "oldMachineDefinitionsUnchanged": 18
+  },
+  "pendingCi": [
+    "Optional FTB/EMI/JEI profile",
+    "Fresh FULL/MIXED workloads and restarts"
+  ],
+  "limits": [
+    "Scalar logic requires no FE yet",
+    "Budgeted polling delays large-factory feedback",
+    "Unavailable combinator input holds its last output; downstream safety is not transitive",
+    "No new two-client test or large-circuit TPS guarantee"
+  ]
+}

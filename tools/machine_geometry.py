@@ -59,7 +59,14 @@ def generate(root,write,png):
     xx=(0,.16) if side=='left' else (w-.16,w)
     for a,b in [((xx[0],.2,z-.29),(xx[1],.8,z-.2)),((xx[0],.2,z+.2),(xx[1],.8,z+.29)),((xx[0],.2,z-.2),(xx[1],.29,z+.2)),((xx[0],.71,z-.2),(xx[1],.8,z+.2))]:box(a,b,'steel')
     box((xx[0],.3,z-.195),(xx[1],.7,z+.195),mat)
-  if name in ['splitter','fast_splitter','express_splitter']:
+  if name in ['constant_combinator','arithmetic_combinator','decider_combinator','circuit_reader','circuit_controller']:
+   trim={'constant_combinator':'yellow','arithmetic_combinator':'teal','decider_combinator':'orange','circuit_reader':'inlet','circuit_controller':'red'}[name]
+   box((.05,0,.05),(w-.05,.15,d-.05),'dark');box((.12,.15,.12),(w-.12,.44,d-.12),trim)
+   box((.22,.44,.22),(w-.22,.48,d-.22),'glass')
+   for z in [.12,d-.12]:
+    box((.15,.44,z-.06),(.30,.5,z+.06),'red');box((.70,.44,z-.06),(.85,.5,z+.06),'teal')
+   box((.40,.441,.16),(.60,.49,.36),'indicator')
+  elif name in ['splitter','fast_splitter','express_splitter']:
    trim={'splitter':'yellow','fast_splitter':'red','express_splitter':'inlet'}[name]
    box((0,0,0),(2,.10,1),'dark')
    for track in range(2):
