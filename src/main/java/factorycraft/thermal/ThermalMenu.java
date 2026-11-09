@@ -19,9 +19,10 @@ public final class ThermalMenu extends AbstractContainerMenu {
         for(int col=0;col<9;col++)addSlot(new Slot(inventory,col,17+col*18,180));
     }
     public int value(int index) { return (data.get(index)&65535)|((data.get(index+1)&65535)<<16); }
-    @Override public boolean stillValid(Player player) { return machine!=null && machine.available() && player.level()==machine.getLevel() && player.level().getBlockEntity(machine.getBlockPos())==machine && player.distanceToSqr(machine.getBlockPos().getCenter())<=64; }
+    @Override public boolean stillValid(Player player) { return machine!=null && machine.available() && player.level()==machine.getLevel() && player.level().getBlockEntity(machine.getBlockPos())==machine && factorycraft.multiblock.MachineInteraction.inRange(machine,player); }
+    @Override public void clicked(int slot,int button,ClickType type,Player player) { if(player.level().isClientSide || !player.isSpectator() && player.containerMenu==this && stillValid(player))super.clicked(slot,button,type,player); }
     @Override public ItemStack quickMoveStack(Player player,int index) {
-        if(index<0 || index>=slots.size())return ItemStack.EMPTY;
+        if(player.isSpectator() || player.containerMenu!=this || !stillValid(player) || index<0 || index>=slots.size())return ItemStack.EMPTY;
         var slot=slots.get(index);if(!slot.hasItem())return ItemStack.EMPTY;var stack=slot.getItem();var original=stack.copy();
         if(index==0) { if(!moveItemStackTo(stack,1,37,true))return ItemStack.EMPTY; }
         else if(!machine.items.isItemValid(0,stack) || !moveItemStackTo(stack,0,1,false))return ItemStack.EMPTY;

@@ -60,26 +60,18 @@ public final class FluidBlockEntity extends FactoryBlockEntity implements factor
         return level.isClientSide ? level.hasChunkAt(worldPosition) && level.getBlockEntity(worldPosition)==this:simulationAvailable();
     }
     public Direction facing() { return kind==FluidKind.PIPE ? Direction.NORTH:getBlockState().getValue(FluidDeviceBlock.FACING); }
-    public BlockPos inputNozzle() { return kind==FluidKind.PUMP ? worldPosition.relative(facing().getOpposite()):worldPosition; }
-    public BlockPos outputNozzle() { return worldPosition; }
+    private java.util.List<factorycraft.multiblock.MachinePorts.Port> mappedPorts() { return factorycraft.multiblock.MachinePorts.forController(this); }
+    public BlockPos inputNozzle() { if(kind==FluidKind.PIPE)return worldPosition;for(var p:assembly.ports())if(p.port().input()>=0)return p.position();throw new IllegalStateException("No input port"); }
+    public BlockPos outputNozzle() { if(kind==FluidKind.PIPE)return worldPosition;for(var p:assembly.ports())if(p.port().output()>=0)return p.position();throw new IllegalStateException("No output port"); }
     public record Connection(BlockPos pos,Direction side) {}
     public java.util.List<Connection> connections() {
-        if(kind==FluidKind.PUMP)return java.util.List.of(new Connection(inputNozzle(),facing().getOpposite()),new Connection(outputNozzle(),facing()));
         if(kind==FluidKind.PIPE)return java.util.Arrays.stream(Direction.values()).map(d->new Connection(worldPosition,d)).toList();
-        var profile=factorycraft.multiblock.MachineProfile.TANK;var all=new java.util.HashSet<>(profile.cells(worldPosition,facing()));var list=new java.util.ArrayList<Connection>();
-        for(var pos:all)for(var side:Direction.values())if(!all.contains(pos.relative(side)))list.add(new Connection(pos,side));return list;
+        return mappedPorts().stream().map(p->new Connection(p.position(assembly.profile(),worldPosition,facing()),p.side(facing()))).toList();
     }
     public IFluidHandler structurePort(BlockPos pos,Direction side) {
-        if(side==null)return port(null);
-        if(kind==FluidKind.PIPE)return pos.equals(worldPosition) ? port(side):null;
-        if(kind==FluidKind.PUMP)return pos.equals(inputNozzle()) && side==facing().getOpposite() || pos.equals(outputNozzle()) && side==facing() ? port(side):null;
-        var profile=factorycraft.multiblock.MachineProfile.TANK;var delta=pos.subtract(worldPosition);var right=facing().getClockWise();
-        int r=delta.getX()*right.getStepX()+delta.getZ()*right.getStepZ(),b=-delta.getX()*facing().getStepX()-delta.getZ()*facing().getStepZ(),y=delta.getY();
-        if(r<0 || r>=profile.layout.width() || b<0 || b>=profile.layout.depth() || y<0 || y>=profile.layout.height())return null;
-        boolean edge=side==Direction.UP ? y==profile.layout.height()-1:side==Direction.DOWN ? y==0:side==facing() ? b==0:side==facing().getOpposite() ? b==profile.layout.depth()-1:side==right ? r==profile.layout.width()-1:r==0;
-        return edge ? port(side):null;
+        return kind==FluidKind.PIPE?(pos.equals(worldPosition)?ports[side==null?6:side.get3DDataValue()]:null):factorycraft.multiblock.MachineFluidAccess.port(this,pos,side);
     }
-    public IFluidHandler port(Direction side) { return ports[side==null ? 6:side.get3DDataValue()]; }
+    public IFluidHandler port(Direction side) { return structurePort(worldPosition,side); }
     public FluidStack stored() { return cell.amount()==0 ? FluidStack.EMPTY:cell.key().stack(cell.amount()); }
     @Override public IItemHandler inventory() { return EMPTY; }
     @Override public PowerBuffer gridBuffer() { return power; }

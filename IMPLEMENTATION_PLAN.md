@@ -11,7 +11,7 @@ Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle *
 * `multiblock`: controller-owned resources and progress; casing parts have only an identity and stable guarded forwarding ports. Larger machine footprints may use this design, per the user’s instruction.
 * `inserters`: a persistent held stack owns extracted items until the destination accepts them; breaking drops held items.
 * `client`: renderers interpolate server snapshots; production menus use vanilla buttons; research uses bounded native payloads. Every request is validated server-side.
-* Ordinary belt NBT schema 2 reads schema 1; splitters use schema 3/four lanes and read old two-lane data. Machine inventory stays schema 1, assembly/casing schema 3; refinery Petroleum schema 2 appends Fluid4 while other petroleum machines stay schema 1. Unloading pauses simulation. Whole-machine demolition retains resources in one portable owner.
+* Ordinary belt NBT schema 2 reads schema 1; splitters use schema 3/four lanes and read old two-lane data. Machine inventory stays schema 1, assembly/casing schema 4; refinery Petroleum schema 2 appends Fluid4 while other petroleum machines stay schema 1. Unloading pauses simulation. Whole-machine demolition retains resources in one portable owner.
 * No off-thread world access. 20 Minecraft ticks = one simulation second. Belt basic/fast/express rates target 15/30/45 individual items per second across two lanes.
 
 ## Stages
@@ -31,7 +31,7 @@ Maintain the delivered automation/energy/fluid/chemistry slice and the first sta
 
 ## Next session
 
-Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the next concrete task recorded at the end; inspect only the relevant guide/code ranges. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
+Read AGENTS.md, MACHINE_DIMENSIONS.md, FLUIDS.md, PETROLEUM.md and the current VALIDATION.md entry. Schema-4 assemblies intentionally require fresh worlds; retain older world/checkpoint directories as archives and never reset/reseed them. Follow the active user-priority task at the end, not older roadmap headings. Full benchmark and optional-mod profiles remain CI work unless an affected behavior requires local execution.
 
 ## Delivered in 0.1.0
 
@@ -189,3 +189,17 @@ Delivered cached event-driven gates on all splitter tiers, a distinct kernel mot
 ### Next concrete task after 0.18.0
 
 Add bulk/stack electric inserters with counted hand ownership and partial target acceptance through the existing ArmCycle. Define exact energy/stack/quality-component rules, retain paid phase and held remainders through gate changes/chunks/portable state, and test real belt/machine/chest integration plus separate-JVM saves. Keep per-input circuit color masks, powered logic, wildcard rules, robots/trains/blueprints as separate future work.
+
+## Active user-priority overhaul — 0.19.0 schema-4 machines
+
+Explicitly supersedes the bulk/stack continuation. Separate layout origin/controller/placement anchors; unify Factorio-2.0.77 physical fluid ports (INPUT/OUTPUT/BOTH, distinct cell channels) and geometry from one descriptor. Fix real-hit/reach preview, whole-machine interaction and one-owner portable teardown. Preserve production kernels. Old schema-3 worlds/checkpoints are archived, not migrated/reset; new native fixtures use an isolated v0190 directory. Check all profiles/facings, physical capabilities/pipe exchange, no mixing, protection/rollback, menus, chunk lifecycle and separate-JVM persistence plus a real client. No unrelated progression/circuit/pole/deposit features.
+
+## Delivered 0.19.0 — independent multiblock geometry and physical ports
+
+Controller-local positions and placement anchors are separate from layout origin. Shared validated JSON covers eight fluid machines, guarded INPUT/OUTPUT/BOTH views, same-point distinct channels, physical pipe shapes and baked markers. Wrench X reflection persists and preserves channel contents; one portable item carries all state with a new placement identity. Menus retain clicked-part contacts and module navigation. Real-hit/reach checks remove MISS/air preview. Small/medium/large placement modes share PlacementPlan. Technical parts have no items/loot. New schema-4 worlds/checkpoints are isolated from preserved archives.
+
+### Next task within this overhaul
+
+Review the new CI results once requested. Migrate the thirty explicitly archived hardcoded showcase/old-port diagnostics to actual descriptor endpoints and restore their full end-to-end layouts, starting with thermal, oil and fluid-circuit administrative examples. Do not mark them passed meanwhile. Consider recipe-dependent assembler port visibility without breaking existing auto selection. These are remaining limitations, not permission to start inserters, poles, circuits/selectors, recipe UI, worldgen or progression work. Local results and exact follow-up scope are recorded in VALIDATION.md.
+
+Local validation for 0.19.0: 152 JUnit / 260 required native tests, repeated process persistence including mirror state; smoke measure/reload PASS; real client placement/MISS/blocked/part menu/pipe/wrench reflection and clean save/reopen. Full/mixed and optional profiles remain CI. See VALIDATION.md and the explicit 30-scenario archive before continuing.

@@ -171,11 +171,9 @@ public final class FactoryCommands {
 
   public static MachineBlockEntity machine(
       ServerLevel level, BlockPos pos, FactoryKind kind, Direction facing) {
-    StructurePlacement.place(
-        level,
-        pos,
-        Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING, facing));
-    return level.getBlockEntity(pos) instanceof MachineBlockEntity m ? m : null;
+    var state=Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,facing);
+    var controller=StructurePlacement.fromOrigin(level,pos,state);
+    return level.getBlockEntity(controller) instanceof MachineBlockEntity m?m:null;
   }
 
   private static void pole(ServerLevel level, BlockPos origin, int x, int z) {

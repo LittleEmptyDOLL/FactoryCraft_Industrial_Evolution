@@ -21,9 +21,6 @@ public final class PetroleumProduction {
     public static final int CAPACITY=4000,TRANSFER=100;
     private final MachineBlockEntity machine;
     public final List<FluidCell<FluidKey>> cells;
-    private final IFluidHandler[] handlers=new IFluidHandler[7];
-    private BlockPos[] nozzles;
-    private Direction[] directions;
     private BlockPos deposit;
     private int progress,duration=1,selected,status,preview;
     private String active="",selectedId="";
@@ -36,7 +33,7 @@ public final class PetroleumProduction {
         var storage=new ArrayList<FluidCell<FluidKey>>(5);
         for(int i=0;i<(machine.kind()==FactoryKind.REFINERY ? 5:4);i++)storage.add(new FluidCell<>(CAPACITY,this::changed));
         cells=List.copyOf(storage);
-        for(int i=0;i<7;i++)handlers[i]=new Port(i==6 ? null:Direction.from3DDataValue(i));
+
     }
     public boolean ready() { return machine.petroleumAvailable() && (machine.assembly()==null || machine.assembly().ready()); }
     private boolean pump() { return machine.kind()==FactoryKind.PUMPJACK; }
@@ -45,65 +42,38 @@ public final class PetroleumProduction {
     }
     public void changed() { syncPending=true;machine.markPetroleumState(); }
     public FluidStack stored(int i) { var c=cells.get(i);return c.amount()==0 ? FluidStack.EMPTY:c.key().stack(c.amount()); }
-    private void positions() {
-        var forward=machine.getBlockState().getValue(FactoryBlock.FACING);var right=forward.getClockWise();var anchor=machine.getBlockPos();var profile=factorycraft.multiblock.MachineProfile.of(machine.getBlockState());
-        directions=new Direction[]{forward.getOpposite(),right.getOpposite(),forward,right,forward};
-        nozzles=new BlockPos[]{profile.offset(anchor,forward,profile.layout.width()/2,0,profile.layout.depth()-1),profile.offset(anchor,forward,0,0,profile.layout.depth()/2),profile.offset(anchor,forward,profile.layout.width()/2,0,0),profile.offset(anchor,forward,profile.layout.width()-1,0,profile.layout.depth()/2),anchor};
+    public void rotated() { deposit=null; }
+    private java.util.List<factorycraft.multiblock.MachinePorts.Port> ports() { return factorycraft.multiblock.MachinePorts.forController(machine); }
+    private factorycraft.multiblock.MachinePorts.Port channel(int index) {
+        return ports().stream().filter(p->p.input()==index||p.output()==index).findFirst().orElseThrow(()->new IllegalArgumentException("No physical port for channel "+index));
     }
-    public void rotated() { nozzles=null;directions=null;deposit=null; }
-    public BlockPos nozzle(int index) { Objects.checkIndex(index,cells.size());if(nozzles==null)positions();return nozzles[index]; }
-    public Direction direction(int index) { Objects.checkIndex(index,cells.size());if(directions==null)positions();return directions[index]; }
-    private int index(BlockPos physical,Direction side) {
-        if(side==null)return -1;
-        for(int i=pump() ? 2:0;i<(pump() ? 3:cells.size());i++)if(side==direction(i) && physical.equals(nozzle(i)))return i;return -2;
-    }
-    public boolean hasPort(BlockPos pos,Direction side) { return side==null || index(pos,side)>=0; }
-    public FluidCell<FluidKey> input(BlockPos pos,Direction side) { int i=index(pos,side);return ready() && i>=0 && i<2 ? cells.get(i):null; }
-    public FluidCell<FluidKey> output(BlockPos pos,Direction side) { int i=index(pos,side);return ready() && i>=2 ? cells.get(i):null; }
-    public IFluidHandler port(BlockPos pos,Direction side) { return pos.equals(machine.getBlockPos()) ? handlers[side==null ? 6:side.get3DDataValue()]:new PortAt(pos,side); }
-    private class PortAt implements IFluidHandler {
-        final BlockPos pos;final Direction side;
-        PortAt(BlockPos pos,Direction side) { this.pos=pos.immutable();this.side=side; }
-        private boolean accessible() { return ready() && FluidConnections.at(machine.getLevel(),pos) instanceof FactoryBlockEntity && (pos.equals(machine.getBlockPos()) || FluidConnections.at(machine.getLevel(),pos) instanceof CasingBlockEntity part && part.loaded() && part.owner()==machine); }
-        public int getTanks() { return side==null ? cells.size():1; }
-        private int tank(int i) { Objects.checkIndex(i,getTanks());return side==null ? i:Math.max(0,index(pos,side)); }
-        public FluidStack getFluidInTank(int i) { int index=tank(i);return machine.getLevel()!=null && machine.getLevel().isClientSide || accessible() ? stored(index):FluidStack.EMPTY; }
-        public int getTankCapacity(int i) { var c=cells.get(tank(i));return Math.max(c.capacity(),c.amount()); }
-        public boolean isFluidValid(int i,FluidStack stack) { int index=tank(i);return accessible() && !pump() && index<2 && !stack.isEmpty() && (side==null || PetroleumProduction.this.index(pos,side)==index); }
-        public int fill(FluidStack stack,FluidAction action) {
-            if(!accessible() || pump() || stack.isEmpty())return 0;
-            int first=side==null ? 0:index(pos,side);if(first<0 || first>1)return 0;
-            var key=new FluidKey(stack);int filled=0;
-            for(int i=first;i<(side==null ? 2:first+1) && filled<stack.getAmount();i++)filled+=cells.get(i).fill(key,stack.getAmount()-filled,action.simulate());
-            return filled;
-        }
-        public FluidStack drain(FluidStack request,FluidAction action) {
-            if(request.isEmpty())return FluidStack.EMPTY;return drainMatching(request.getAmount(),new FluidKey(request),action);
-        }
-        public FluidStack drain(int amount,FluidAction action) { return drainMatching(amount,null,action); }
-        private FluidStack drainMatching(int amount,FluidKey key,FluidAction action) {
-            if(!accessible() || amount<=0)return FluidStack.EMPTY;
-            int first=side==null ? 0:index(pos,side);if(first<0 || side!=null && first<2)return FluidStack.EMPTY;
-            for(int i=first;i<(side==null ? cells.size():first+1);i++) { var c=cells.get(i);if(c.amount()>0 && (key==null || key.equals(c.key()))) { var fluid=c.key();return fluid.stack(c.drain(amount,action.simulate())); } }
-            return FluidStack.EMPTY;
-        }
-    }
-    private final class Port extends PortAt { Port(Direction side) { super(machine.getBlockPos(),side); } }
+    public BlockPos nozzle(int index) { var p=channel(index);return p.position(machine.assembly().profile(),machine.getBlockPos(),machine.getBlockState().getValue(FactoryBlock.FACING)); }
+    public Direction direction(int index) { return channel(index).side(machine.getBlockState().getValue(FactoryBlock.FACING)); }
+    public boolean hasPort(BlockPos pos,Direction side) { return factorycraft.multiblock.MachineFluidAccess.definition(machine,pos,side)!=null; }
+    public FluidCell<FluidKey> input(BlockPos pos,Direction side) { var p=factorycraft.multiblock.MachineFluidAccess.definition(machine,pos,side);return p!=null&&p.input()>=0&&ready()?cells.get(p.input()):null; }
+    public FluidCell<FluidKey> output(BlockPos pos,Direction side) { return factorycraft.multiblock.MachineFluidAccess.output(machine,pos,side); }
+    public IFluidHandler port(BlockPos pos,Direction side) { return factorycraft.multiblock.MachineFluidAccess.port(machine,pos,side); }
     public void tickSync() { if(syncPending && Math.floorMod(machine.getLevel().getGameTime()+machine.getBlockPos().asLong(),5)==0) { syncPending=false;machine.syncPetroleum(); } }
     public boolean tick() {
         if(!ready())return false;
-        if(!pump())for(int i=0;i<2;i++)if(cells.get(i).space()>0) {
-            var from=FluidConnections.output(machine.getLevel(),nozzle(i).relative(direction(i)),direction(i).getOpposite());
-            if(from!=null)from.transferTo(cells.get(i),TRANSFER,false);
+        var profile=machine.assembly().profile();var facing=profile.facing(machine.getBlockState());
+        for(var site:machine.assembly().ports()) {
+            var p=site.port();if(p.input()<0||cells.get(p.input()).space()==0)continue;
+            var pos=site.position();var side=site.side();
+            var from=FluidConnections.output(machine.getLevel(),site.adjacent(),side.getOpposite());
+            if(from!=null)from.transferTo(cells.get(p.input()),factorycraft.multiblock.MachineFluidAccess.transferLimit(p,from,cells.get(p.input()),TRANSFER),false);
         }
         if(!ready())return false;
         boolean worked=pump() ? extract():produce();
-        if(ready())for(int i=2;i<(pump() ? 3:cells.size());i++)if(cells.get(i).amount()>0) {
-            var to=FluidConnections.input(machine.getLevel(),nozzle(i).relative(direction(i)),direction(i).getOpposite(),cells.get(i).key());
-            if(to!=null)cells.get(i).transferTo(to,TRANSFER,false);
+        if(ready())for(var site:machine.assembly().ports()) {
+            var p=site.port();if(p.output()<0||cells.get(p.output()).amount()==0)continue;
+            var c=cells.get(p.output());var pos=site.position();var side=site.side();
+            var to=FluidConnections.input(machine.getLevel(),site.adjacent(),side.getOpposite(),c.key());
+            if(to!=null)c.transferTo(to,factorycraft.multiblock.MachineFluidAccess.transferLimit(p,c,to,TRANSFER),false);
         }
         return worked;
     }
+
     private boolean extract() {
         duration=1;var target=deposit==null ? null:FluidConnections.at(machine.getLevel(),deposit);
         if(!(target instanceof OilDepositBlockEntity oil) || !oil.available() || oil.remaining()==0) {

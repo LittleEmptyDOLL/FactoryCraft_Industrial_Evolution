@@ -34,6 +34,11 @@ public final class FluidGameTests {
         if(kind==FluidKind.PUMP)state=state.setValue(FluidDeviceBlock.FACING,Direction.EAST);
         factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(new BlockPos(x,y,z)),state);return (FluidBlockEntity)h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(x,y,z)));
     }
+    private static IFluidHandler physical(FluidBlockEntity be,int index) {
+        var profile=factorycraft.multiblock.MachineProfile.of(be.getBlockState());if(profile==null)return be.port(null);
+        var p=factorycraft.multiblock.MachinePorts.definitions(profile).get(index);var facing=profile.facing(be.getBlockState());
+        return be.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,p.position(profile,be.getBlockPos(),facing),p.side(facing));
+    }
     private static FluidStack water(int amount) { return new FluidStack(Fluids.WATER,amount); }
     private static long volume(FluidBlockEntity... blocks) { return Arrays.stream(blocks).mapToLong(b->b.cell().amount()).sum(); }
     private static void source(GameTestHelper h,int x,int y,int z) {
@@ -41,13 +46,13 @@ public final class FluidGameTests {
         for(var d:Direction.Plane.HORIZONTAL)if(level.getBlockState(pos.relative(d)).isAir())level.setBlockAndUpdate(pos.relative(d),Blocks.STONE.defaultBlockState());
         level.setBlockAndUpdate(pos,Blocks.WATER.defaultBlockState());
     }
-    @GameTest(template="empty",timeoutTicks=300)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=300)
     public static void pipesMoveFiniteFluidBetweenTanksWithoutLoss(GameTestHelper h) {
         var a=put(h,FluidKind.TANK,3,2,4);var b=put(h,FluidKind.PIPE,6,2,4);var c=put(h,FluidKind.PIPE,7,2,4);var d=put(h,FluidKind.TANK,8,2,4);
-        h.runAfterDelay(5,()->h.assertTrue(a.port(Direction.UP).fill(water(8000),EXEC)==8000,"source tank refused water"));
+        h.runAfterDelay(5,()->h.assertTrue(physical(a,0).fill(water(8000),EXEC)==8000,"source tank refused water"));
         h.runAfterDelay(220,()->{h.assertTrue(d.cell().amount()>500,"pipes did not transfer to the destination");h.assertTrue(volume(a,b,c,d)==8000,"pipe line lost/duplicated water");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=200)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=200)
     public static void pumpRequiresEnergyAndThenPumpsARealWaterSource(GameTestHelper h) {
         var pump=put(h,FluidKind.PUMP,3,2,4);var tank=put(h,FluidKind.TANK,4,2,4);source(h,1,2,4);
         h.runAfterDelay(40,()->{
@@ -56,7 +61,7 @@ public final class FluidGameTests {
         });
         h.runAfterDelay(100,()->{h.assertTrue(tank.cell().amount()>0 && pump.power.getEnergyStored()<2000,"powered pump did not move water or spend energy");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=600)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=600)
     public static void aGeneratorPowersTheWaterPipeTankChain(GameTestHelper h) {
         var pump=put(h,FluidKind.PUMP,3,2,4);source(h,1,2,4);
         put(h,FluidKind.PIPE,4,2,4);put(h,FluidKind.PIPE,5,2,4);put(h,FluidKind.PIPE,6,2,4);var tank=put(h,FluidKind.TANK,7,2,4);
@@ -70,7 +75,7 @@ public final class FluidGameTests {
         var tank=put(h,FluidKind.TANK,3,2,3);
         h.runAfterDelay(5,()->{
             var special=water(1000);var data=new CompoundTag();data.putInt("grade",7);special.set(DataComponents.CUSTOM_DATA,CustomData.of(data));
-            var port=tank.port(Direction.UP);h.assertTrue(port.fill(special,SIM)==1000 && tank.cell().amount()==0,"simulation mutated storage");
+            var port=physical(tank,0);h.assertTrue(port.fill(special,SIM)==1000 && tank.cell().amount()==0,"simulation mutated storage");
             h.assertTrue(port.fill(special,EXEC)==1000 && port.fill(water(500),EXEC)==0 && port.fill(new FluidStack(Fluids.LAVA,500),EXEC)==0,"different fluids/components mixed");
             var copy=port.getFluidInTank(0);copy.setAmount(1);h.assertTrue(tank.cell().amount()==1000,"capability exposed a mutable stored stack");
             h.assertTrue(port.drain(water(1000),EXEC).isEmpty(),"component mismatch drained the tank");
@@ -86,15 +91,15 @@ public final class FluidGameTests {
             var part=(CasingBlockEntity)h.getLevel().getBlockEntity(pump.inputNozzle());part.onChunkUnloaded();h.assertTrue(input.fill(water(10),EXEC)==0 && output.drain(10,EXEC).isEmpty(),"unloaded structure remained active");part.onLoad();
             h.assertTrue(input.fill(water(10),EXEC)==10 && output.drain(410,EXEC).getAmount()==410,"physical ports failed to resume");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=200)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=200)
     public static void fullOutputStopsPumpWithoutSpendingEnergyUntilDrained(GameTestHelper h) {
         var pump=put(h,FluidKind.PUMP,3,2,4);var tank=put(h,FluidKind.TANK,4,2,4);source(h,1,2,4);
         h.runAfterDelay(5,()->{
-            pump.port(Direction.WEST).fill(water(1000),EXEC);tank.port(Direction.UP).fill(water(16000),EXEC);pump.energyPort.receiveEnergy(2000,false);
+            physical(pump,0).fill(water(1000),EXEC);physical(tank,0).fill(water(16000),EXEC);pump.energyPort.receiveEnergy(2000,false);
         });
         h.runAfterDelay(70,()->{
             h.assertTrue(pump.power.getEnergyStored()==2000 && volume(pump,tank)==17000,"blocked pump consumed energy or fluid");
-            tank.port(Direction.UP).drain(1000,EXEC);
+            physical(tank,0).drain(1000,EXEC);
         });
         h.runAfterDelay(140,()->{h.assertTrue(tank.cell().amount()>15000 && pump.power.getEnergyStored()<2000,"draining did not wake the sleeping pump");h.succeed();});
     }
@@ -102,9 +107,9 @@ public final class FluidGameTests {
     public static void unloadedPartsSuspendCachedPortsAndReconnectWithTheirFluid(GameTestHelper h) {
         var a=put(h,FluidKind.PIPE,3,2,3);var b=put(h,FluidKind.PIPE,4,2,3);
         h.runAfterDelay(5,()->{
-            a.port(Direction.UP).fill(water(1000),EXEC);
+            physical(a,0).fill(water(1000),EXEC);
             h.runAfterDelay(5,()->{
-                var port=b.port(Direction.UP);b.onChunkUnloaded();int old=b.cell().amount();int filled=a.port(Direction.UP).fill(water(1000),EXEC);long expected=1000L+filled;
+                var port=physical(b,0);b.onChunkUnloaded();int old=b.cell().amount();int filled=physical(a,0).fill(water(1000),EXEC);long expected=1000L+filled;
                 h.assertTrue(port.fill(water(100),EXEC)==0 && port.drain(100,EXEC).isEmpty(),"cached port modified an unloaded cell");
                 h.runAfterDelay(20,()->{
                     h.assertTrue(b.cell().amount()==old && volume(a,b)==expected,"unload lost fluid or kept transferring");b.onLoad();
@@ -117,7 +122,7 @@ public final class FluidGameTests {
     public static void harvestingAndReplacingATankKeepsItsContentsExactlyOnce(GameTestHelper h) {
         var tank=put(h,FluidKind.TANK,3,2,3);
         h.runAfterDelay(5,()->{
-            var port=tank.port(Direction.UP);port.fill(water(7000),EXEC);var pos=tank.getBlockPos();h.getLevel().destroyBlock(pos,true);
+            var port=physical(tank,0);port.fill(water(7000),EXEC);var pos=tank.getBlockPos();h.getLevel().destroyBlock(pos,true);
             var drops=h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(pos).inflate(2)).stream().filter(e->e.getItem().is(Content.FLUID_BLOCKS.get(FluidKind.TANK).get().asItem())).toList();
             h.assertTrue(drops.size()==1 && drops.getFirst().getItem().getCount()==1,"harvesting duplicated the tank");
             h.assertTrue(port.drain(7000,EXEC).isEmpty(),"old tank capability still owns dropped water");
@@ -128,7 +133,7 @@ public final class FluidGameTests {
             h.runAfterDelay(5,()->{var restored=(FluidBlockEntity)h.getLevel().getBlockEntity(target);h.assertTrue(restored.cell().amount()==7000,"tank item lost or duplicated its fluid");h.succeed();});
         });
     }
-    @GameTest(template="empty",timeoutTicks=120)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=120)
     public static void bucketsUseTheActualBlockInteractionWithoutLosingContainers(GameTestHelper h) {
         var tank=put(h,FluidKind.TANK,3,2,3);
         h.runAfterDelay(5,()->{
@@ -144,20 +149,20 @@ public final class FluidGameTests {
     public static void multiplePortsCannotExtractTheSameFluidTwice(GameTestHelper h) {
         var tank=put(h,FluidKind.TANK,3,2,3);
         h.runAfterDelay(5,()->{
-            tank.port(Direction.UP).fill(water(1000),EXEC);int extracted=tank.port(Direction.NORTH).drain(750,EXEC).getAmount()+tank.port(Direction.SOUTH).drain(750,EXEC).getAmount();
+            physical(tank,0).fill(water(1000),EXEC);int extracted=physical(tank,0).drain(750,EXEC).getAmount()+physical(tank,2).drain(750,EXEC).getAmount();
             h.assertTrue(extracted==1000 && tank.cell().amount()==0,"two viewers/ports duplicated water");h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=300)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=300)
     public static void verticalConnectionsWorkWithoutGravityOrChunkForcing(GameTestHelper h) {
         var a=put(h,FluidKind.TANK,3,2,3);var b=put(h,FluidKind.PIPE,3,5,3);var c=put(h,FluidKind.PIPE,3,6,3);var d=put(h,FluidKind.TANK,3,7,3);
-        h.runAfterDelay(5,()->a.port(Direction.UP).fill(water(8000),EXEC));
+        h.runAfterDelay(5,()->physical(a,0).fill(water(8000),EXEC));
         h.runAfterDelay(220,()->{h.assertTrue(d.cell().amount()>0 && volume(a,b,c,d)==8000,"vertical piping failed or lost fluid");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=180)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=180)
     public static void fluidEntitiesReconstructAndResumeWithComponents(GameTestHelper h) {
         var a=put(h,FluidKind.TANK,3,2,3);var b=put(h,FluidKind.PIPE,6,2,3);var c=put(h,FluidKind.TANK,7,2,3);
-        h.runAfterDelay(5,()->a.port(Direction.UP).fill(water(8000),EXEC));
+        h.runAfterDelay(5,()->physical(a,0).fill(water(8000),EXEC));
         h.runAfterDelay(20,()->{
             var positions=List.of(a.getBlockPos(),b.getBlockPos(),c.getBlockPos());var copies=new ArrayList<BlockEntity>();var registry=h.getLevel().registryAccess();
             for(var pos:positions) { var be=h.getLevel().getBlockEntity(pos);copies.add(BlockEntity.loadStatic(pos,be.getBlockState(),be.saveWithFullMetadata(registry),registry)); }
@@ -175,7 +180,7 @@ public final class FluidGameTests {
             tank.cell().restore(new FluidKey(water(1)),Integer.MAX_VALUE);tank.setChanged();
             var menu=new FluidMenu(42,h.makeMockPlayer(GameType.SURVIVAL).getInventory(),tank,tank.data);
             h.assertTrue(menu.amount()==Integer.MAX_VALUE && menu.capacity()==Integer.MAX_VALUE,"menu truncated 32-bit volume");
-            h.assertTrue(tank.port(Direction.UP).fill(water(1),EXEC)==0 && tank.port(Direction.UP).drain(1000,EXEC).getAmount()==1000,"oversized legacy storage was discarded or overflowed");h.succeed();
+            h.assertTrue(physical(tank,0).fill(water(1),EXEC)==0 && physical(tank,0).drain(1000,EXEC).getAmount()==1000,"oversized legacy storage was discarded or overflowed");h.succeed();
         });
     }
     @GameTest(template="empty",timeoutTicks=100)
@@ -212,7 +217,7 @@ public final class FluidGameTests {
         level.removeBlock(pos,false);level.setBlockAndUpdate(pos,Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
         h.runAfterDelay(5,()->{
             try {
-                var be=(FluidBlockEntity)level.getBlockEntity(pos);var port=be.port(Direction.UP);port.fill(water(400),EXEC);
+                var be=(FluidBlockEntity)level.getBlockEntity(pos);var port=physical(be,0);port.fill(water(400),EXEC);
                 var chunk=level.getChunkAt(pos);chunk.setUnsaved(false);
                 net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(chunk));
                 h.assertTrue(!be.loaded() && port.drain(400,EXEC).isEmpty() && chunk.isUnsaved(),"outgoing chunk was not frozen/dirty before serialization");

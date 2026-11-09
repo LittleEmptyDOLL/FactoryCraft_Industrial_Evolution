@@ -1,4 +1,32 @@
-# Validation — 0.18.0 (9 November 2026, Europe/Moscow)
+# Validation — 0.19.0 (9 November 2026, UTC)
+
+Minecraft **1.21.1 / NeoForge 21.1.252 / Java 21.0.13**. This release intentionally replaces intermediate schema-3 assembly coordinates with schema 4. Old worlds and failed diagnostic evidence were retained untouched; no reset, refill, reseed or migration was used to obtain a pass.
+
+* `./gradlew build runGameTestServer`: **152 JUnit tests**, zero failures/errors/skips; **260 required native GameTests passed**, including a later separate-JVM run. Dedicated GameTestServer loads the common mod without client classes. The 23 profile checks cover four orientations, real one-item placement, full footprint/model-data agreement, generated part identity and unload/reload.
+* New schema-4 tests cover all eight physical fluid machine maps/faces in four orientations, absence of vertical/unsided casing bypass, BOTH shared cells, coincident input/output with distinct cells, component/fluid isolation, actual pipe exchange through remote tank parts, cached capability closure on unload/damage, mirrored channel/visual mapping, actual item replacement of a filled mirrored refinery with a fresh UUID, menu reach at the clicked part, and real BLOCK/MISS/air/unreachable target predicates. Existing protection/collision/rollback, production, module/research persistence and inventory conservation checks remain registered where their coordinate assumptions still apply.
+* A live **pipe → water BOTH port → boiler → steam pipe → engine** test makes useful FE and checks exact `water + steam + generatedFE/12 = 1000`. Same-cell BOTH exchange uses bounded fill-fraction equalization, preventing immediate return of every intake batch. Counted recipe and energy ratios are unchanged.
+* Two detached four-chunk refinery fixtures at `(18015,72,18015)` and `(18111,72,18111)` preserve exact **731 crude, 137 heavy oil, 3 diamonds, 1234 FE, progress 7**, owner/part identity and normal/reflected configuration across server JVMs. Logs print `FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED ... mirror=false/true`; partial fixtures fail without reseeding. Previous checkpoint directories remain archived.
+* `./gradlew runBenchmarkServer -PbenchmarkProfile=smoke`, then a separate JVM with `-PbenchmarkMode=verify`: **PASS/PASS**. Fresh `run-benchmark/smoke-v0190` uses **100 belts, 20 processing machines, 5 generators, 10 inserters, 650 parts** in seven harness-pinned chunks. Belt and iron ledgers remain **200 / 2560**; exact initial reload hash `8e3a446b08506d098c17541254c498f22b6850a8f85891c04cb3e21dc9533086` and identity hash match. The verify run then advances legitimately and saves a new checkpoint. Reports: [measure](docs/validation/0.19.0/smoke-measure.json), [verify](docs/validation/0.19.0/smoke-verify.json). This small fixture does not certify the 10k/1k/500 target or universal TPS/FPS.
+* Actual `./gradlew build runClient -PsmokeWorld=FactoryCraftAssembly019` under Xvfb/software OpenGL: placed a refinery from one item with near-edge preview; checked green clear/red blocked/MISS sky behavior, menu through a remote physical part, exact port coordinates and an item-placed pipe whose `south=true` connection was confirmed by the server. Saved cleanly, relaunched the same new world, reopened the machine, mirrored ports with the real wrench, and observed gas output change **(12,5,10) → (8,5,10)** in the synchronized menu. The final client has no unknown technical-item loot errors. Offline Mojang authentication/key-fetch warnings are environment warnings, not mod validation passes/failures.
+* `python tools/generate_resources.py` and `git diff --check` succeed. Original item artwork remains protected by the existing generator.
+
+Evidence from real clients:
+
+- [Clear placement](docs/screenshots/assembly-preview-clear-0.19.0.png), [blocked placement](docs/screenshots/assembly-preview-blocked-0.19.0.png), [MISS without preview](docs/screenshots/assembly-preview-miss-0.19.0.png).
+- [Physical pipe/nozzle](docs/screenshots/assembly-physical-port-0.19.0.png), [actual port coordinates](docs/screenshots/assembly-port-menu-0.19.0.png), [reflected coordinates](docs/screenshots/assembly-reflected-port-0.19.0.png).
+
+Limits and CI work:
+
+* **30 old hardcoded layout/all-face-port scenarios are archived source, not passed tests.** [Manifest](validation/assembly-v4-archive.md). They assume removed schema-3 coordinates, generic ports or old administrative pipe routes. The earlier 278-test result below is historical. New checks replace the fundamental layout/port/ownership scenarios; elaborate thermal/petrochemical/fluid-circuit showcase routes still need migration and are not re-certified here.
+* Assembler 2 retains static physical ports and existing automatic recipe selection; recipe-dependent `off_when_no_fluid_recipe` visibility is not implemented. Port reflection affects connections/markers, not the body silhouette. Placement preview remains a footprint frame. Installed selection/collision geometry was deliberately not redesigned.
+* A complete 10,000-belt/1,000-machine/500-inserter run, mixed 3D benchmark/reload, optional FTB Teams/EMI/JEI runtime profiles and third-party fluid-pipe mods were not executed locally. CI runs the registered native suite twice, optional profiles, full and mixed benchmarks in separate schema-4 directories. Standard external capability fill/drain was tested with native callers; no named third-party pipe implementation is claimed tested. No new two-client manual session was run.
+* This is a multiblock/physical-port change, not completion of the full Factorio roadmap. Production kernels, recipes/progression, ore generation, inserter variants and circuit simulation were not revised. Circuit/splitter menu edits only apply shared physical-contact range checks.
+
+The logs/worlds outside Git are preserved in the current workspace under `/workspace/work/v0190-*.log`, `run-gametest/v0190`, `run-benchmark/smoke-v0190`, `run/saves/FactoryCraftAssembly019`. Historical entries below retain their original version-specific meaning.
+
+---
+
+# Historical validation — 0.18.0 (9 November 2026, Europe/Moscow)
 
 Java 21 / Minecraft 1.21.1 / NeoForge 21.1.252. Uses existing native controller/menu/BE sync and loaded-only physical part APIs; the independent transport kernel does not access the world. Blue/white append IDs 2/3; red/green stay 0/1.
 

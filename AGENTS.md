@@ -16,6 +16,16 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
+## Active architecture override — 0.19.0 (explicit user instruction, 9 November 2026)
+
+* The user explicitly permits breaking old intermediate world/assembly coordinates and NBT. The current assembly/part schema is 4; new payloads must preserve mirror settings without importing old assembly UUIDs. Requirements below about exact old schema-3/corner coordinates, old fixture hashes, old port positions or mandatory 0.6.0+ compatibility are **historical**, not constraints on this overhaul. Do not migrate/reset/delete old worlds to make tests pass. Retain old diagnostic files as archives and use separately named schema-4 worlds/checkpoints.
+* Schema-3 hardcoded diagnostic scenarios explicitly archived in `validation/assembly-v4-archive.md` are compiled reference source, not passing tests. Re-enable only after adapting their physical endpoints; never reset an archived checkpoint to do so. Current GameTests and new schema-4 fixtures remain required.
+* New schema-4 resources remain strictly conserved: one item/structure/controller owns inventory, fluids, FE, recipes, modules and research. Parts keep only identity/local location. All physical ports share one descriptor source, guarded at the actual cell/face and full loaded structure; no arbitrary casing or unsided bypass.
+* Separate layout origin, controller cell and placement target. Apply one rotation transform everywhere. Shared PlacementPlan drives client/server; preview requires a real BLOCK hit, nonair surface and actual player block-interaction reach. Preserve one-item protection/collision/unloaded checks and rollback.
+* Only this multiblock/port/interaction overhaul is in scope. Do not implement inserter variants, poles, circuit/selector changes, recipe UI, deposits or progression. Publish successful targeted work to main with an expected-head lease, preserving others' changes. Full CI remains separate and must not be polled to completion.
+
+## Historical invariants (resource conservation still applies; superseded coordinate/schema constraints do not)
+
 * Target Java 21 / Minecraft 1.21.1 / NeoForge 21.1.252 only. Confirm APIs against this dependency's sources and https://docs.neoforged.net/docs/1.21.1/.
 * Inspect existing behavior before edits. Keep a buildable playable slice; no empty registered feature placeholders.
 * Server owns inventories, recipes, mining and energy. Client code belongs under `factorycraft.client` and must never load on a dedicated server.

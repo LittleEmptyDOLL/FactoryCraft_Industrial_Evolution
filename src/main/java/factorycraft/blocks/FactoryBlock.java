@@ -144,9 +144,9 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (l.isClientSide) return InteractionResult.SUCCESS;
     if (player.getMainHandItem().is(Content.WRENCH.get())) return useWrench(l, p, player);
     if (l.getBlockEntity(p) instanceof factorycraft.blockentity.BeaconBlockEntity beacon)
-      player.openMenu(beacon, p);
+      factorycraft.multiblock.MachineInteraction.open(beacon,player,p);
     else if (l.getBlockEntity(p) instanceof LabBlockEntity lab) {
-      if (factorycraft.research.ResearchTeams.member(player, lab.scope())) player.openMenu(lab, p);
+      if (factorycraft.research.ResearchTeams.member(player, lab.scope())) factorycraft.multiblock.MachineInteraction.open(lab,player,p);
       else
         player.displayClientMessage(
             Component.translatable("message.factorycraft.research_team_required"), true);
@@ -154,21 +154,21 @@ public final class FactoryBlock extends BaseEntityBlock {
       if (machine.assembly() != null && !machine.assembly().formed() && !machine.assembly().form())
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
-      player.openMenu(machine, p);
+      factorycraft.multiblock.MachineInteraction.open(machine,player,p);
     } else if (l.getBlockEntity(p) instanceof InserterBlockEntity arm && arm.electric()) {
       factorycraft.inserters.InserterMenu.open(arm, player);
     } else if (l.getBlockEntity(p) instanceof factorycraft.circuits.CircuitNodeBlockEntity node) {
-      player.openMenu(node, p);
+      factorycraft.multiblock.MachineInteraction.open(node,player,p);
     } else if (l.getBlockEntity(p) instanceof CasingBlockEntity part) {
       var owner = part.genericForRemoval();
       if (owner instanceof BeltBlockEntity belt && belt.kind().splitter())
-        factorycraft.logistics.SplitterMenu.open(belt, player);
-      else if (owner != null) factorycraft.multiblock.AssemblyAccess.open(owner, player);
+        factorycraft.logistics.SplitterMenu.open(belt, player,p);
+      else if (owner != null) factorycraft.multiblock.MachineInteraction.open(owner.factoryEntity(),player,p);
       else
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
     } else if (l.getBlockEntity(p) instanceof BeltBlockEntity belt) {
-      if (belt.kind().splitter()) factorycraft.logistics.SplitterMenu.open(belt, player);
+      if (belt.kind().splitter()) factorycraft.logistics.SplitterMenu.open(belt, player,p);
       else showTransport(belt, player);
     } else if (l.getBlockEntity(p) instanceof TransportPartBlockEntity part
         && part.ownerForRemoval() != null) showTransport(part.ownerForRemoval(), player);

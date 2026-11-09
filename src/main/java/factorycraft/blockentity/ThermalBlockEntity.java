@@ -65,19 +65,17 @@ public final class ThermalBlockEntity extends FactoryBlockEntity implements fact
         public boolean canReceive() { return false; }
         public boolean canExtract() { return available() && generatesElectricity(); }
     };
-    private final IFluidHandler[] ports=new IFluidHandler[7];
     public ThermalBlockEntity(BlockPos pos,BlockState state) {
         super(Content.THERMAL.get(),pos,state);assembly=new factorycraft.multiblock.IndustrialAssembly(this);positions();
-        for(int i=0;i<7;i++)ports[i]=new Port(i==6 ? null:Direction.from3DDataValue(i));
+
     }
     public ThermalKind kind() { return ((ThermalBlock)getBlockState().getBlock()).kind; }
     public Direction facing() { return getBlockState().getValue(ThermalBlock.FACING); }
-    public BlockPos inputNozzle() { var p=factorycraft.multiblock.MachineProfile.of(getBlockState());return p.offset(worldPosition,facing(),p.layout.width()/2,0,p.layout.depth()-1); }
-    public BlockPos outputNozzle() { var p=factorycraft.multiblock.MachineProfile.of(getBlockState());return p.offset(worldPosition,facing(),p.layout.width()/2,0,0); }
-    private void positions() { intake=inputNozzle().relative(facing().getOpposite());outlet=outputNozzle().relative(facing()); }
-    public IFluidHandler structurePort(BlockPos pos,Direction side) {
-        return side==null ? port(null):pos.equals(inputNozzle()) && side==facing().getOpposite() || kind()==ThermalKind.BOILER && pos.equals(outputNozzle()) && side==facing() ? port(side):null;
-    }
+    private java.util.List<factorycraft.multiblock.MachinePorts.Port> connections() { return factorycraft.multiblock.MachinePorts.forController(this); }
+    public BlockPos inputNozzle() { return connections().stream().filter(p->p.input()>=0).findFirst().orElseThrow().position(assembly.profile(),worldPosition,facing()); }
+    public BlockPos outputNozzle() { return connections().stream().filter(p->p.output()>=0&&(kind()!=ThermalKind.BOILER||p.output()==1)).findFirst().orElseThrow().position(assembly.profile(),worldPosition,facing()); }
+    private void positions() { intake=null;outlet=null; }
+    public IFluidHandler structurePort(BlockPos pos,Direction side) { return factorycraft.multiblock.MachineFluidAccess.port(this,pos,side); }
     public boolean generatesElectricity() { return kind()==ThermalKind.ENGINE; }
     public boolean available() {
         if(!loaded || isRemoved() || !(level instanceof net.minecraft.server.level.ServerLevel server))return false;
@@ -97,62 +95,31 @@ public final class ThermalBlockEntity extends FactoryBlockEntity implements fact
     public boolean hasContents() { return water.amount()>0 || steam.amount()>0 || engine.energy()>0 || boiler.fuel()>0 || boiler.progress()>0 || !items.getStackInSlot(0).isEmpty(); }
     @Override public IItemHandler inventory() { return items; }
     public IItemHandler automation() { return automation; }
-    public IFluidHandler port(Direction side) { return ports[side==null ? 6:side.get3DDataValue()]; }
-    private boolean acceptsSteam(FluidKey key) { return key!=null && key.stack(1).getFluid().getFluidType()==SteamFluids.TYPE.get(); }
-    private FluidCell<FluidKey> input(Direction side) {
-        return side==null || side==facing().getOpposite() ? kind()==ThermalKind.BOILER ? water:steam:null;
-    }
-    private FluidCell<FluidKey> output(Direction side) { return kind()==ThermalKind.BOILER && (side==null || side==facing()) ? steam:null; }
-    private final class Port implements IFluidHandler {
-        final Direction side;
-        Port(Direction side) { this.side=side; }
-        public int getTanks() { return side==null && kind()==ThermalKind.BOILER ? 2:1; }
-        private FluidCell<FluidKey> tank(int index) {
-            Objects.checkIndex(index,getTanks());return side==null && kind()==ThermalKind.BOILER ? index==0 ? water:steam:side==facing() ? steam:kind()==ThermalKind.BOILER ? water:steam;
-        }
-        public FluidStack getFluidInTank(int index) { var cell=tank(index);return readable() ? contents(cell):FluidStack.EMPTY; }
-        public int getTankCapacity(int index) { var cell=tank(index);return Math.max(FLUID_CAPACITY,cell.amount()); }
-        public boolean isFluidValid(int index,FluidStack fluid) { var cell=tank(index);return available() && cell==input(side) && !fluid.isEmpty() && (kind()==ThermalKind.BOILER || acceptsSteam(new FluidKey(fluid))); }
-        public int fill(FluidStack fluid,FluidAction action) {
-            var cell=input(side);return !available() || cell==null || fluid.isEmpty() || kind()==ThermalKind.ENGINE && !acceptsSteam(new FluidKey(fluid)) ? 0:cell.fill(new FluidKey(fluid),fluid.getAmount(),action.simulate());
-        }
-        public FluidStack drain(FluidStack fluid,FluidAction action) {
-            if(fluid.isEmpty())return FluidStack.EMPTY;
-            var cell=drainCell(fluid);if(cell==null)return FluidStack.EMPTY;
-            var key=cell.key();return key.stack(cell.drain(fluid.getAmount(),action.simulate()));
-        }
-        private FluidCell<FluidKey> drainCell(FluidStack requested) {
-            if(!available())return null;
-            if(side==null) {
-                for(var cell:List.of(water,steam))if(cell.amount()>0 && (requested==null || cell.key().equals(new FluidKey(requested))))return cell;
-                return null;
-            }
-            var cell=output(side);
-            return cell!=null && cell.amount()>0 && (requested==null || cell.key().equals(new FluidKey(requested))) ? cell:null;
-        }
-        public FluidStack drain(int amount,FluidAction action) {
-            if(amount<=0)return FluidStack.EMPTY;var cell=drainCell(null);if(cell==null)return FluidStack.EMPTY;
-            var key=cell.key();return key.stack(cell.drain(amount,action.simulate()));
-        }
-    }
-    public FluidCell<FluidKey> externalInput(Direction side,FluidKey key) { return available() && (kind()==ThermalKind.BOILER || acceptsSteam(key)) ? input(side):null; }
-    public FluidCell<FluidKey> externalOutput(Direction side) { return available() ? output(side):null; }
+    public IFluidHandler port(Direction side) { return structurePort(worldPosition,side); }
+    private boolean acceptsSteam(FluidKey key) { return key!=null&&key.stack(1).getFluid().getFluidType()==SteamFluids.TYPE.get(); }
+    public FluidCell<FluidKey> externalInput(Direction side,FluidKey key) { return factorycraft.multiblock.MachineFluidAccess.input(this,worldPosition,side,key); }
+    public FluidCell<FluidKey> externalOutput(Direction side) { return factorycraft.multiblock.MachineFluidAccess.output(this,worldPosition,side); }
     public void tick() {
         if(!available())return;
-        var incoming=kind()==ThermalKind.BOILER ? water:steam;
-        if(incoming.space()>0) {
-            var from=FluidConnections.output(level,intake,facing());
-            if(from!=null && (kind()==ThermalKind.BOILER || acceptsSteam(from.key())))from.transferTo(incoming,PORT_RATE,false);
+        for(var site:assembly.ports()) {
+            var p=site.port();if(p.input()<0)continue;
+            var incoming=factorycraft.multiblock.MachineFluidAccess.cell(this,p.input());var side=site.side();
+            var from=FluidConnections.output(level,site.adjacent(),side.getOpposite());
+            if(from!=null&&incoming.space()>0&&factorycraft.multiblock.MachineFluidAccess.accepts(this,p.input(),from.key()))from.transferTo(incoming,factorycraft.multiblock.MachineFluidAccess.transferLimit(p,from,incoming,PORT_RATE),false);
         }
         if(!available())return;
         boolean worked;
         if(kind()==ThermalKind.BOILER) {
             worked=boil();
-            if(available() && steam.amount()>0) { var to=FluidConnections.input(level,outlet,facing().getOpposite(),steam.key());if(to!=null)steam.transferTo(to,PORT_RATE,false); }
         } else {
             int made=engine.generate(acceptsSteam(steam.key()));
             int delivered=engine.energy()>0 && PowerGrid.hasDemand(this) ? PowerGrid.distribute(this,Math.min(120,engine.energy())):0;
             engine.extract(delivered,false);worked=made>0 || delivered>0;
+        }
+        if(available())for(var site:assembly.ports()) {
+            var p=site.port();if(p.output()<0)continue;
+            var c=factorycraft.multiblock.MachineFluidAccess.cell(this,p.output());var side=site.side();
+            if(c.amount()>0){var to=FluidConnections.input(level,site.adjacent(),side.getOpposite(),c.key());if(to!=null)c.transferTo(to,factorycraft.multiblock.MachineFluidAccess.transferLimit(p,c,to,PORT_RATE),false);}
         }
         if(!available())return;
         if(getBlockState().getValue(ThermalBlock.ACTIVE)!=worked)level.setBlock(worldPosition,getBlockState().setValue(ThermalBlock.ACTIVE,worked),3);

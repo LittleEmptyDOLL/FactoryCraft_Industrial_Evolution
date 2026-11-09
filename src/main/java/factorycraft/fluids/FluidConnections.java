@@ -22,15 +22,13 @@ public final class FluidConnections {
     public static FluidBlockEntity fluidDevice(Level level,BlockPos pos) { var be=endpoint(level,pos);return be instanceof FluidBlockEntity fluid ? fluid:null; }
     public static FluidCell<FluidKey> input(Level level,BlockPos pos,Direction side,FluidKey key) {
         var be=endpoint(level,pos);
-        if(be instanceof FluidBlockEntity fluid && fluid.simulationAvailable() && fluid.structurePort(pos,side)!=null && (fluid.kind()!=FluidKind.PUMP || side==fluid.facing().getOpposite()))return fluid.cell();
-        if(be instanceof ThermalBlockEntity thermal && thermal.structurePort(pos,side)!=null)return thermal.externalInput(side,key);
-        return be instanceof MachineBlockEntity machine && machine.petroleum()!=null ? machine.petroleum().input(pos,side):null;
+        if(be instanceof FluidBlockEntity f&&f.kind()==FluidKind.PIPE)return f.simulationAvailable()?f.cell():null;
+        return be==null?null:factorycraft.multiblock.MachineFluidAccess.input(be,pos,side,key);
     }
     public static FluidCell<FluidKey> output(Level level,BlockPos pos,Direction side) {
         var be=endpoint(level,pos);
-        if(be instanceof FluidBlockEntity fluid && fluid.simulationAvailable() && fluid.structurePort(pos,side)!=null && (fluid.kind()!=FluidKind.PUMP || side==fluid.facing()))return fluid.cell();
-        if(be instanceof ThermalBlockEntity thermal && thermal.structurePort(pos,side)!=null)return thermal.externalOutput(side);
-        return be instanceof MachineBlockEntity machine && machine.petroleum()!=null ? machine.petroleum().output(pos,side):null;
+        if(be instanceof FluidBlockEntity f&&f.kind()==FluidKind.PIPE)return f.simulationAvailable()?f.cell():null;
+        return be==null?null:factorycraft.multiblock.MachineFluidAccess.output(be,pos,side);
     }
     private FluidConnections() {}
 }

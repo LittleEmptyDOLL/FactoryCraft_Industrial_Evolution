@@ -20,7 +20,7 @@ public final class PetroleumMenu extends AbstractContainerMenu {
     }
     public int progress() { return (data.get(0)&65535)|((data.get(1)&65535)<<16); }
     public int duration() { return (data.get(2)&65535)|((data.get(3)&65535)<<16); }
-    public boolean stillValid(Player p) { if(p.level().isClientSide)return true;return machine.petroleum()!=null && machine.petroleum().ready() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getCenter())<=64; }
+    public boolean stillValid(Player p) { if(p.level().isClientSide)return true;return machine.petroleum()!=null && machine.petroleum().ready() && p.level()==machine.getLevel() && factorycraft.multiblock.MachineInteraction.inRange(machine,p); }
     public boolean clickMenuButton(Player p,int id) {
         if(id==99 && p.containerMenu==this && stillValid(p))return factorycraft.modules.ModuleMenu.open(machine,p);
         if(p.containerMenu!=this || !stillValid(p) || p.isSpectator())return false;

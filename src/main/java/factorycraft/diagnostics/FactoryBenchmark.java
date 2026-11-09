@@ -40,7 +40,7 @@ public final class FactoryBenchmark {
     var root = server.getServerDirectory().toAbsolutePath().normalize();
     require(
         server.isDedicatedServer()
-            && (root.getFileName().toString().equals("run-benchmark")
+            && (root.getFileName().toString().equals(profile+"-v0190") && root.getParent().getFileName().toString().equals("run-benchmark")
                 || profile.equals("mixed")
                     && root.getFileName().toString().matches("mixed(?:-[a-z0-9]+)*")
                     && root.getParent().getFileName().toString().equals("run-benchmark"))

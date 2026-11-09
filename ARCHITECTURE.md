@@ -1,4 +1,4 @@
-# Architecture decisions — 0.9.0 (assembly/parts schema 3; native resource schema 1)
+# Architecture decisions — 0.19.0 (assembly/parts schema 4; native resource schema 1)
 
 ## Authority and persistence
 
@@ -44,15 +44,17 @@ Consumer lists are shared per wire component. Routes carry a generation number r
 
 `PowerGrid` ticks the bounded rebuild after each server level tick. All node load/unload/place/break operations are O(1) registry updates; matching graph changes are processed incrementally. Coal generation remains an internal network source; steam-engine FE extraction is implemented. Batteries, solar and nuclear remain future work. Power coverage uses the lower horizontal center of a full-size machine. Diagnostics are available through `/factorycraft power`.
 
-## Multiblock ownership and lifecycle — 0.6.0
+## Multiblock ownership and lifecycle — schema 4
 
-MachineProfile defines all 13 current large footprints and explicit 3D heights. CuboidLayout rotates offsets from a front-left-bottom controller; AssemblyOwner/AssemblyAccess compose the existing machine, thermal, fluid and splitter kernels without duplicating resources. IndustrialAssembly (now generic) validates and caches canonical part identity/readiness. Parts store only anchor/UUID and expose guarded item, FE and fluid forwarding; they have no production tick.
+MachineProfile dimensions, local layout origin, local controller and placement target are independent. `factorycraft/machine_layouts.json` defines per-profile controller and physical fluid descriptors; MachinePorts validates bounds, outward faces, channels and unambiguous cell/side pairs, caches normal/reflected definitions and resolved owner endpoint/neighbor positions, rebuilding only on facing/mirror changes, and applies the shared profile rotation. Default controllers are front-center; fluid-intensive profiles may choose base center. Geometry never owns resources.
 
-MachineItem/PlacementPlan validate the entire loaded volume before writing. Normal NeoForge captured snapshots cover the controller and generated parts; cancellation restores cells and item count. The client PlacementPreview uses the same inspect function and draws volume/footprint/blocked cells; it never authorizes server writes. StructurePlacement is only an administrative fixture helper and is not the player placement path.
+AssemblyOwner/AssemblyAccess compose existing machine, thermal, fluid, research, beacon and splitter kernels. IndustrialAssembly caches full loaded identity/readiness. CasingBlockEntity stores only controller position, UUID and visual mirror metadata; a part is a fluid port only at descriptor-defined cells/faces. No structural item is registered or dropped. MachineFluidAccess views map INPUT/OUTPUT/BOTH to distinct owned cells, reject unsided/nonport access and recheck canonical ownership, UUID, complete readiness and fluid identity on every operation. Part unload/break invalidates capabilities before serialization. No neighbor chunk is force-loaded.
 
-One portable machine item owns all inventory/fluid/FE/progress after any part/controller destruction or Shift-wrench. StructureSupport strips Assembly from the item so new placement binds a fresh UUID. Parts never drop as resources. Creative removal returns no machine item. Early AssemblyLifecycle chunk unload invalidates the owner and freezes ports before save; reload rechecks identities. Readiness scans parts only when topology/availability changes, not on every production tick.
+A single MachineItem forms the whole loaded footprint through native multi-place snapshots and rollback. PlacementPlan drives client and server with small-cell/medium-center/large-near-edge anchors and Shift center override. PlacementTarget rejects MISS, air and out-of-reach targets without reading unloaded cells. MachineInteraction records the clicked physical contact per server menu; proximity and owner UUID are checked for later operations, including module navigation.
 
-0.6.0 intentionally starts new worlds: old compact assemblies are not migrated, as explicitly permitted by the user. Native processing/boiling/chemistry recipe formats remain unchanged. See MACHINE_DIMENSIONS.md and RESOURCE_FIELDS.md.
+Whole-machine demolition retires the formed identity before removing cells and produces at most one portable owner. StructureSupport strips assembly identity/links, preserving resources and a separate portable mirror setting. Native BlockItem merges saved state into the newly formed owner; MachineItem refreshes mirrored part metadata after that merge. Ordinary wrench mirrors fluid ports; Shift wrench dismantles. Layout/configuration changes invalidate topology only when they occur.
+
+Schema 3/corner worlds are deliberately unsupported under the user's explicit 0.19 override. Existing worlds/checkpoints are archived untouched; schema-4 fixtures live in separate directories. No automatic migration, deletion, reseeding or refill occurs. Item/processing/boiling/chemistry kernels and codecs are retained. Earlier version-labelled sections below are historical design records; current coordinates/capability rules are those above and in MACHINE_DIMENSIONS.md / FLUIDS.md / PETROLEUM.md.
 
 ## Timing and performance evidence
 

@@ -20,7 +20,7 @@ public final class PlacementPreview {
     private static PlacementPlan current;
     @SubscribeEvent public static void render(RenderLevelStageEvent event) {
         if(event.getStage()!=RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS)return;
-        current=null;var mc=Minecraft.getInstance();if(mc.level==null || mc.player==null || mc.screen!=null || !(mc.hitResult instanceof BlockHitResult hit))return;
+        current=null;var mc=Minecraft.getInstance();if(mc.level==null || mc.player==null || mc.screen!=null || !(mc.hitResult instanceof BlockHitResult hit) || !validTarget(mc,hit))return;
         for(var hand:InteractionHand.values()) {
             var stack=mc.player.getItemInHand(hand);if(!(stack.getItem() instanceof MachineItem item))continue;
             var context=new BlockPlaceContext(new UseOnContext(mc.player,hand,hit));var state=item.getBlock().getStateForPlacement(context);if(state==null)return;
@@ -35,13 +35,25 @@ public final class PlacementPreview {
         for(var cell:current.cells())if(cell.getY()==current.anchor().getY())LevelRenderer.renderLineBox(pose,lines,new AABB(cell).setMaxY(cell.getY()+.025).inflate(.004),red,green,.3f,.7f);
         for(var cell:current.blocked())LevelRenderer.renderLineBox(pose,lines,new AABB(cell).inflate(.012),1f,.05f,.05f,1f);
         // Highlight the selected central base cell, independently of the internal controller.
-        LevelRenderer.renderLineBox(pose,lines,new AABB(current.center()).inflate(.025),.2f,.65f,1f,1f);
+        LevelRenderer.renderLineBox(pose,lines,new AABB(current.target()).inflate(.025),.2f,.65f,1f,1f);
         buffers.endBatch(RenderType.lines());pose.popPose();
     }
     @SubscribeEvent public static void hud(RenderGuiEvent.Post event) {
-        var mc=Minecraft.getInstance();if(current==null || mc.screen!=null)return;var p=current.profile();
+        var mc=Minecraft.getInstance();
+        if(mc.screen!=null||mc.level==null||mc.player==null)return;
+        if(!(mc.hitResult instanceof BlockHitResult hit)||!validTarget(mc,hit)){current=null;return;}
+        if(current==null) {
+            if(mc.level.getBlockEntity(hit.getBlockPos()) instanceof factorycraft.blockentity.CasingBlockEntity part)
+                event.getGuiGraphics().drawCenteredString(mc.font,Component.translatable("block.factorycraft."+part.getBlockState().getValue(factorycraft.blocks.FactoryBlock.PROFILE).id),event.getGuiGraphics().guiWidth()/2,event.getGuiGraphics().guiHeight()/2+16,0xc0d8e0);
+            return;
+        }
+        boolean held=false;for(var hand:InteractionHand.values())if(mc.player.getItemInHand(hand).getItem() instanceof MachineItem)held=true;
+        if(!held){current=null;return;}var p=current.profile();
         var label=Component.translatable("preview.factorycraft."+(current.valid() ? "valid":"blocked"),p.layout.width(),p.layout.depth(),p.layout.height(),current.blocked().size());
         event.getGuiGraphics().drawCenteredString(mc.font,label,event.getGuiGraphics().guiWidth()/2,event.getGuiGraphics().guiHeight()/2+24,current.valid() ? 0x70ff90:0xff7070);
+    }
+    public static boolean validTarget(Minecraft mc,BlockHitResult hit) {
+        return factorycraft.multiblock.PlacementTarget.valid(mc.level,mc.player,hit);
     }
     private PlacementPreview() {}
 }

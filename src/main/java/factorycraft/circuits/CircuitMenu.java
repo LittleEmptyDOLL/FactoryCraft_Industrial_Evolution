@@ -126,7 +126,7 @@ public final class CircuitMenu extends AbstractContainerMenu {
         || owner != null
             && p.level() == owner.getLevel()
             && owner.available()
-            && p.distanceToSqr(owner.getBlockPos().getCenter()) <= 64;
+            && factorycraft.multiblock.MachineInteraction.inRange(owner,p);
   }
 
   public boolean allowed(Player p) {

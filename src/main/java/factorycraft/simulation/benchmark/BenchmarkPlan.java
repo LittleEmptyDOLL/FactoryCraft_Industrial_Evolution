@@ -122,9 +122,10 @@ public final class BenchmarkPlan {
   }
 
   private static void machine(List<Cell> cells, int x, int z, Role role) {
-    add(cells, x, 0, z, role, Heading.NORTH);
-    for (var part : new CuboidLayout(3, 3, 3).parts(0, -1))
-      add(cells, x + part.x(), part.y(), z + part.z(), Role.CASING, Heading.NORTH);
+    // Schema 4: body origin remains fixed; controller is the front-center base cell.
+    add(cells, x + 1, 0, z, role, Heading.NORTH);
+    for(int y=0;y<3;y++)for(int dz=0;dz<3;dz++)for(int dx=0;dx<3;dx++)
+      if(dx!=1 || y!=0 || dz!=0)add(cells,x+dx,y,z+dz,Role.CASING,Heading.NORTH);
   }
 
   public static int poleCount(Profile p) {

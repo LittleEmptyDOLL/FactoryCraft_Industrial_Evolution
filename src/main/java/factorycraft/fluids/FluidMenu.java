@@ -16,6 +16,6 @@ public final class FluidMenu extends AbstractContainerMenu {
     public int amount() { return (data.get(0)&65535)|((data.get(1)&65535)<<16); }
     public int capacity() { return (data.get(2)&65535)|((data.get(3)&65535)<<16); }
     public int fluidId() { return (data.get(5)&65535)|((data.get(6)&65535)<<16); }
-    @Override public boolean stillValid(Player player) { return machine!=null && machine.loaded() && player.level()==machine.getLevel() && player.level().getBlockEntity(machine.getBlockPos())==machine && player.distanceToSqr(machine.getBlockPos().getCenter())<=64; }
+    @Override public boolean stillValid(Player player) { return machine!=null && machine.loaded() && player.level()==machine.getLevel() && player.level().getBlockEntity(machine.getBlockPos())==machine && factorycraft.multiblock.MachineInteraction.inRange(machine,player); }
     @Override public ItemStack quickMoveStack(Player player,int index) { return ItemStack.EMPTY; }
 }

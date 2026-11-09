@@ -47,7 +47,7 @@ public final class MachineFootprintGameTests {
           "one-item formation failed: " + id + " " + direction);
       var controller = preview.anchor();
       h.assertTrue(
-          preview.center().equals(anchor), "preview is not centered on selected base cell");
+          preview.target().equals(anchor), "preview is not centered on selected base cell");
       var owner = AssemblyAccess.owner(h.getLevel().getBlockEntity(controller));
       h.assertTrue(owner != null && owner.assembly().formed(), "controller failed to form");
       for (var cell : preview.cells())
@@ -59,15 +59,13 @@ public final class MachineFootprintGameTests {
       for (var cell : preview.cells())
         if (!cell.equals(controller)) {
           var data = h.getLevel().getBlockEntity(cell).getModelData().get(MachineModelData.CELL);
-          var delta = cell.subtract(controller);
-          var right = direction.getClockWise();
-          int r = delta.getX() * right.getStepX() + delta.getZ() * right.getStepZ(),
-              back = -delta.getX() * direction.getStepX() - delta.getZ() * direction.getStepZ();
+          var local=profile.local(controller,direction,cell);
+          int r=local.getX(),back=local.getZ();
           h.assertTrue(
               data != null
                   && data.profile() == profile
                   && data.right() == r
-                  && data.up() == delta.getY()
+                  && data.up() == local.getY()
                   && data.back() == back,
               "part mesh coordinates disagree with rotated placement");
         }
@@ -194,11 +192,12 @@ public final class MachineFootprintGameTests {
     h.getLevel().addFreshEntity(body);
     var hit = new BlockHitResult(Vec3.atCenterOf(anchor), Direction.UP, anchor, false);
     var context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
+    var controller = PlacementPlan.controllerFor(new BlockPlaceContext(context),((net.minecraft.world.item.BlockItem)factorycraft.registry.Content.FACTORY.get(factorycraft.blocks.FactoryKind.REFINERY).get().asItem()).getBlock().defaultBlockState().setValue(factorycraft.blocks.FactoryBlock.FACING,Direction.NORTH));
     h.assertTrue(
         player.getMainHandItem().useOn(context).consumesAction()
             && player.getMainHandItem().isEmpty(),
         "5x5 refinery could not be placed from normal survival reach");
-    var controller = MachineProfile.REFINERY.anchorAtCenter(anchor, Direction.NORTH);
+
     var owner = AssemblyAccess.owner(h.getLevel().getBlockEntity(controller));
     h.assertTrue(
         owner != null && owner.assembly().positions().size() == 99, "wrong refinery volume");

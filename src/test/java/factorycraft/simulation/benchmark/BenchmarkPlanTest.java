@@ -74,9 +74,12 @@ class BenchmarkPlanTest {
                 || target.role() == Role.CASING);
       }
       if (c.role() == Role.INDUSTRIAL_FURNACE) {
-        for (var p : new factorycraft.simulation.multiblock.CuboidLayout(3, 3, 3).parts(0, -1))
-          assertEquals(
-              Role.CASING, map.get(new Point(c.x() + p.x(), c.y() + p.y(), c.z() + p.z())).role());
+        for(int y=0;y<3;y++)for(int z=0;z<3;z++)for(int x=0;x<3;x++) {
+          if(x==1 && y==0 && z==0)continue;
+          var part=map.get(new Point(c.x()+x-1,c.y()+y,c.z()+z));
+          assertNotNull(part);
+          assertEquals(Role.CASING,part.role());
+        }
       }
     }
   }

@@ -112,7 +112,7 @@ public final class PowerAndMultiblockGameTests {
         var drops=h.getLevel().getEntitiesOfClass(ItemEntity.class,new AABB(machine.getBlockPos()).inflate(4));
         h.assertTrue(drops.stream().filter(e->e.getItem().is(Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().asItem())).count()==1 && drops.stream().noneMatch(e->e.getItem().is(Items.RAW_IRON)),"inventory must remain in sole portable owner");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=500)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=500)
     public static void insertersAutomateTheMultiblockThroughACasingPort(GameTestHelper h) {
         var machine=formed(h,ORIGIN,Direction.NORTH);machine.power.restore(16000);
         h.setBlock(new BlockPos(7,2,4),Blocks.CHEST);((ChestBlockEntity)h.getBlockEntity(new BlockPos(7,2,4))).setItem(0,new ItemStack(Items.RAW_IRON,4));

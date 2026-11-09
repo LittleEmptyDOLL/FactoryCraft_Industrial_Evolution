@@ -51,7 +51,14 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
         int row=(my-topPos-22)/9;
         if(mx>=leftPos+18 && mx<=leftPos+222 && my>=topPos+22 && row<menu.machine.petroleum().cells.size()) {
             var fluid=menu.machine.petroleum().stored(row);var text=fluid.isEmpty() ? Component.translatable("gui.factorycraft.fluid_empty"):fluid.getHoverName();
-            g.renderComponentTooltip(font,java.util.List.of(Component.translatable("gui.factorycraft.chemical_fluid_"+row,text,fluid.getAmount()),Component.translatable("gui.factorycraft.chemical_port_"+row)),mx,my);
+            var lines=new java.util.ArrayList<Component>();lines.add(Component.translatable("gui.factorycraft.chemical_fluid_"+row,text,fluid.getAmount()));
+            var profile=menu.machine.assembly().profile();var facing=profile.facing(menu.machine.getBlockState());
+            for(var p:factorycraft.multiblock.MachinePorts.forController(menu.machine))if(p.input()==row||p.output()==row) {
+                var at=p.position(profile,menu.machine.getBlockPos(),facing);
+                lines.add(Component.translatable("gui.factorycraft.physical_port",Component.translatable("gui.factorycraft.port_"+p.mode().name().toLowerCase(java.util.Locale.ROOT)),Component.translatable("gui.factorycraft.side_"+p.side(facing).getName()),at.getX(),at.getY(),at.getZ()));
+            }
+            if(lines.size()==1)lines.add(Component.translatable("gui.factorycraft.internal_channel"));
+            g.renderComponentTooltip(font,lines,mx,my);
         }
         if(mx<leftPos+18 || mx>leftPos+228 || my<topPos+134 || my>topPos+149)return;
         var recipes=menu.machine.petroleum().recipes();int index=menu.data.get(6)>0 ? menu.data.get(6):menu.data.get(8);if(index<1 || index>recipes.size())return;

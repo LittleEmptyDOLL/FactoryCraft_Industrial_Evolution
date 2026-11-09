@@ -158,13 +158,6 @@ def generate(root,write,png):
    elif name=='electric_pump':
     box((.18,.34,.3),(.82,.77,1.7),'teal');box((.26,.77,.4),(.74,.96,.98),'shell')
     box((.32,.44,.18),(.68,.67,.62),'piston')
-   if name in ['pumpjack','oil_refinery','chemical_plant','assembling_machine_2','boiler','steam_engine','electric_pump']:
-    if name!='pumpjack':port('rear','inlet')
-    if name!='steam_engine':port('front','outlet')
-    if name in ['oil_refinery','chemical_plant','assembling_machine_2']:port('left','inlet');port('right','outlet')
-   if name=='oil_refinery':port('front','outlet3',.5)
-   if name=='fluid_tank':
-    for side in ['front','rear','left','right']:port(side,'bidi')
   specs.append({'profile':name,'boxes':boxes})
   def vanilla(mesh,scale,offset):
    elements=[]
@@ -172,8 +165,18 @@ def generate(root,write,png):
     a=[round(b['from'][i]*scale[i]+offset[i],5) for i in range(3)];z=[round(b['to'][i]*scale[i]+offset[i],5) for i in range(3)]
     elements.append({'from':a,'to':z,'faces':{f:{'texture':'#'+('indicator_off' if b['material']=='indicator' else b['material']),'uv':[0,0,16,16]} for f in ['down','up','north','south','west','east']}})
    return {'parent':'minecraft:block/block','textures':textures,'elements':elements}
+  # Item ports use the same descriptor as server capabilities and the chunk mesh baker.
+  item_ports=[]
+  layouts=json.loads((root/'factorycraft/machine_layouts.json').read_text())['machines']
+  for p in layouts.get(name,{}).get('ports',[]):
+   x,y,z=p['at'];side=p['face'];mat={'INPUT':'inlet','OUTPUT':'outlet','BOTH':'bidi'}[p['mode']]
+   a=[x+.27,y+.27,z+.27];b=[x+.73,y+.73,z+.73]
+   axis=0 if side in ['east','west'] else 2
+   a[axis]=[x,y,z][axis]+(.84 if side in ['east','south'] else .001)
+   b[axis]=[x,y,z][axis]+(.999 if side in ['east','south'] else .16)
+   item_ports.append({'from':a,'to':b,'material':mat})
   unit=max(w,h,d);scale=14/unit
-  write(f'assets/factorycraft/models/item/{name}.json',vanilla(boxes+parts,[scale]*3,[(16-w*scale)/2,.5,(16-d*scale)/2]))
+  write(f'assets/factorycraft/models/item/{name}.json',vanilla(boxes+parts+item_ports,[scale]*3,[(16-w*scale)/2,.5,(16-d*scale)/2]))
   if parts:
    write(f'assets/factorycraft/models/block/machine/{name}_moving.json',vanilla(parts,[16/unit]*3,[0,0,0]));moving[name]=True
   write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'':{'model':'factorycraft:block/machine_shell'}}})

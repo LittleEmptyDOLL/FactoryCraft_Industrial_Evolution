@@ -389,7 +389,7 @@ for index,name in enumerate(['iron_ore','copper_ore','coal_deposit','stone_depos
  write(f'data/factorycraft/worldgen/placed_feature/{name}.json',{'feature':'factorycraft:'+name,'placement':[{'type':'minecraft:biome'}]})
 for lang in ['en_us','ru_ru']:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
- data['tooltip.factorycraft.machine_preview']='Установка от центра основания. Синяя ячейка — выбранный центр; красное — препятствие.' if ru else 'Places around the base center. Blue cell = selected center; red = obstruction.'
+ data['tooltip.factorycraft.machine_preview']='3×3 — от центра; крупные — от ближайшего края. Shift: от центра. Синяя ячейка — точка установки.' if ru else '3×3: center; large: nearest edge. Hold Shift for center. Blue cell: placement target.'
  write(f'assets/factorycraft/lang/{lang}.json',data)
 
 # 0.7 original unified mesh specifications, item models and fixed nozzle markers.
@@ -652,3 +652,28 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
   strings['tooltip.factorycraft.'+n]=('Four independent wire colors. Right-click for program. Controller can gate an adjacent electric arm, pump or splitter.','Четыре независимых цвета проводов. ПКМ: программа. Контроллер управляет соседним электроманипулятором, насосом или разделителем.')[index]
  for value,en,ru in [(0,'Circuit: unbound','Логика: нет привязки'),(1,'Circuit: enabled','Логика: разрешено'),(2,'Circuit: stopped','Логика: остановлено')]:strings['gui.factorycraft.splitter_circuit.'+str(value)]=(en,ru)[index]
  write(str(path.relative_to(ROOT)),strings)
+
+# Schema-4 physical-port labels; channel coordinates come from MachinePorts at runtime.
+for locale,ru in [('en_us',False),('ru_ru',True)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text())
+ data.update({
+  'gui.factorycraft.physical_port':'%s, %s (%s, %s, %s)',
+  'gui.factorycraft.port_input':'Вход' if ru else 'Input',
+  'gui.factorycraft.port_output':'Выход' if ru else 'Output',
+  'gui.factorycraft.port_both':'Вход/выход' if ru else 'Input/output',
+  'gui.factorycraft.internal_channel':'Внутренняя ёмкость без внешнего порта' if ru else 'Internal cell without an external port',
+  'gui.factorycraft.boiler_ports':'Вода: сбоку ↔; пар: спереди →' if ru else 'Water: sides ↔; steam: front →',
+  'gui.factorycraft.engine_ports':'Пар: оба торца ↔' if ru else 'Steam: both ends ↔'
+ })
+ for side,en,rus in [('north','North','Север'),('east','East','Восток'),('south','South','Юг'),('west','West','Запад'),('up','Up','Верх'),('down','Down','Низ')]:data['gui.factorycraft.side_'+side]=rus if ru else en
+ write(f'assets/factorycraft/lang/{locale}.json',data)
+
+# Internal parts have no inventory item and never drop separately.
+for name in ['machine_casing','refinery_casing']:
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[]})
+
+for locale,ru in [('en_us',False),('ru_ru',True)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text())
+ data['message.factorycraft.ports_mirrored']='Порты отражены слева направо. Shift + ключ: безопасная разборка.' if ru else 'Ports mirrored left/right. Sneak + wrench: safe dismantling.'
+ data['tooltip.factorycraft.fluid_nozzles']+=' Ключ: отразить порты.' if ru else ' Wrench: mirror ports.'
+ write(f'assets/factorycraft/lang/{locale}.json',data)

@@ -169,7 +169,7 @@ public final class PetroleumGameTests {
         } finally { net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(listener); }
         h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=100)
     public static void petroleumStateAndFourChunkIdentityPersistAcrossServerProcesses(GameTestHelper h) {
         var level=h.getLevel();var anchor=new BlockPos(271,70,271);var plantPos=new BlockPos(281,70,271);var resource=new BlockPos(280,69,271);var exhausted=new BlockPos(281,69,271);
         var all=new ArrayList<>(factorycraft.multiblock.MachineProfile.REFINERY.parts(anchor,Direction.NORTH));all.addAll(List.of(anchor,plantPos,resource,exhausted));all.addAll(factorycraft.multiblock.MachineProfile.CHEMICAL.parts(plantPos,Direction.NORTH));for(var p:all)level.getChunkAt(p);
@@ -196,7 +196,7 @@ public final class PetroleumGameTests {
         for(var p:all) { var be=level.getBlockEntity(p);if(be!=null) { be.onChunkUnloaded();level.getChunkAt(p).setUnsaved(true); } }
         h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=2000)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=2000)
     public static void finiteDepositBecomesPlasticThroughPoweredPipesAndInserters(GameTestHelper h) {
         var o=h.absolutePos(new BlockPos(1,2,1));factorycraft.core.FactoryCommands.oilLine(h.getLevel(),o);
         h.runAfterDelay(1700,()->{

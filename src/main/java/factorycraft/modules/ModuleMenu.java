@@ -81,7 +81,7 @@ public final class ModuleMenu extends AbstractContainerMenu {
         || p.level() == owner.getLevel()
             && FluidConnections.canonical(owner)
             && AssemblyAccess.ready(owner)
-            && p.distanceToSqr(owner.getBlockPos().getCenter()) <= 64;
+            && factorycraft.multiblock.MachineInteraction.inRange(owner,p);
   }
 
   public void clicked(int slot, int button, ClickType type, Player p) {
@@ -112,12 +112,14 @@ public final class ModuleMenu extends AbstractContainerMenu {
         || !machine.kind().processing()
         || !machine.loaded()
         || !AssemblyAccess.ready(machine)
-        || player.distanceToSqr(machine.getBlockPos().getCenter()) > 64) return false;
+        || !factorycraft.multiblock.MachineInteraction.inRange(machine,player)) return false;
+    var previous=player.containerMenu;
     player.openMenu(
         new net.minecraft.world.SimpleMenuProvider(
             (id, inv, p) -> new ModuleMenu(id, inv, machine),
             net.minecraft.network.chat.Component.translatable("gui.factorycraft.modules")),
         machine.getBlockPos());
+    factorycraft.multiblock.MachineInteraction.inherit(previous,player.containerMenu);
     return true;
   }
 }

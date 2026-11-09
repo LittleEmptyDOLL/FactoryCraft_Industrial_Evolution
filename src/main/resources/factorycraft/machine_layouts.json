@@ -1,0 +1,412 @@
+{
+  "schema": 4,
+  "reference": {
+    "factorio": "2.0.77",
+    "commit": "ce6741a54c3199caad4ed147e9987fd8d5653fdf",
+    "note": "Numbers only, original code/art excluded; tank/pump heights are Minecraft adaptations."
+  },
+  "machines": {
+    "oil_refinery": {
+      "controller": [
+        2,
+        0,
+        2
+      ],
+      "ports": [
+        {
+          "name": "crude",
+          "at": [
+            1,
+            0,
+            4
+          ],
+          "face": "south",
+          "mode": "INPUT",
+          "input": 0
+        },
+        {
+          "name": "water",
+          "at": [
+            3,
+            0,
+            4
+          ],
+          "face": "south",
+          "mode": "INPUT",
+          "input": 1
+        },
+        {
+          "name": "heavy",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 4
+        },
+        {
+          "name": "light",
+          "at": [
+            2,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 3
+        },
+        {
+          "name": "gas",
+          "at": [
+            4,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 2
+        }
+      ]
+    },
+    "chemical_plant": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": [
+        {
+          "name": "input_a",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "INPUT",
+          "input": 0
+        },
+        {
+          "name": "input_b",
+          "at": [
+            2,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "INPUT",
+          "input": 1
+        },
+        {
+          "name": "output_a",
+          "at": [
+            0,
+            0,
+            2
+          ],
+          "face": "south",
+          "mode": "OUTPUT",
+          "output": 2
+        },
+        {
+          "name": "output_b",
+          "at": [
+            2,
+            0,
+            2
+          ],
+          "face": "south",
+          "mode": "OUTPUT",
+          "output": 3
+        }
+      ]
+    },
+    "pumpjack": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": [
+        {
+          "name": "oil",
+          "at": [
+            2,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 2,
+          "odd_at": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "boiler": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": [
+        {
+          "name": "water_left",
+          "at": [
+            0,
+            0,
+            1
+          ],
+          "face": "west",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        },
+        {
+          "name": "water_right",
+          "at": [
+            2,
+            0,
+            1
+          ],
+          "face": "east",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        },
+        {
+          "name": "steam",
+          "at": [
+            1,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 1
+        }
+      ]
+    },
+    "steam_engine": {
+      "controller": [
+        1,
+        0,
+        2
+      ],
+      "ports": [
+        {
+          "name": "steam_front",
+          "at": [
+            1,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "BOTH",
+          "input": 1,
+          "output": 1
+        },
+        {
+          "name": "steam_back",
+          "at": [
+            1,
+            0,
+            4
+          ],
+          "face": "south",
+          "mode": "BOTH",
+          "input": 1,
+          "output": 1
+        }
+      ]
+    },
+    "assembling_machine_2": {
+      "controller": [
+        1,
+        0,
+        1
+      ],
+      "ports": [
+        {
+          "name": "input",
+          "at": [
+            1,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "INPUT",
+          "input": 0
+        },
+        {
+          "name": "output",
+          "at": [
+            1,
+            0,
+            2
+          ],
+          "face": "south",
+          "mode": "OUTPUT",
+          "output": 2
+        }
+      ]
+    },
+    "fluid_tank": {
+      "controller": [
+        1,
+        0,
+        1
+      ],
+      "ports": [
+        {
+          "name": "north",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        },
+        {
+          "name": "west",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "face": "west",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        },
+        {
+          "name": "south",
+          "at": [
+            2,
+            0,
+            2
+          ],
+          "face": "south",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        },
+        {
+          "name": "east",
+          "at": [
+            2,
+            0,
+            2
+          ],
+          "face": "east",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        }
+      ]
+    },
+    "electric_pump": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": [
+        {
+          "name": "input",
+          "at": [
+            0,
+            0,
+            1
+          ],
+          "face": "south",
+          "mode": "INPUT",
+          "input": 0
+        },
+        {
+          "name": "output",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 0
+        }
+      ]
+    },
+    "splitter": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "fast_splitter": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "express_splitter": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "constant_combinator": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "arithmetic_combinator": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "decider_combinator": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "circuit_reader": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "circuit_controller": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    }
+  }
+}

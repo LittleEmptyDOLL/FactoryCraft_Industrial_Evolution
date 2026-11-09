@@ -17,9 +17,17 @@ import java.util.List;
 
 public final class FluidBlocks {
     public static FluidKind kind(BlockState state) { return state.getBlock() instanceof FluidDeviceBlock device ? device.kind:FluidKind.PIPE; }
-    public static boolean port(BlockState state,Direction face) {
-        return state.getBlock() instanceof FactoryBlock machine && machine.kind.petroleum() && face.getAxis().isHorizontal() || state.getBlock() instanceof FactoryBlock part && part.kind==FactoryKind.REFINERY_CASING && face.getAxis().isHorizontal() || state.getBlock() instanceof ThermalBlock thermal && thermal.port(state,face) || state.getBlock() instanceof FluidPipeBlock || state.getBlock() instanceof FluidDeviceBlock device &&
-                (device.kind==FluidKind.TANK || face==state.getValue(FluidDeviceBlock.FACING) || face==state.getValue(FluidDeviceBlock.FACING).getOpposite());
+    public static boolean port(net.minecraft.world.level.LevelAccessor level,BlockPos pos,Direction side) {
+        if(!level.hasChunkAt(pos))return false;
+        var state=level.getBlockState(pos);
+        if(state.getBlock() instanceof FluidPipeBlock)return true;
+        var profile=factorycraft.multiblock.MachineProfile.of(state);
+        var be=level.getBlockEntity(pos);
+        if(be instanceof factorycraft.blockentity.CasingBlockEntity part) {
+            var owner=level instanceof Level actual && actual.isClientSide ? part.genericForRemoval():part.genericOwner();
+            return owner!=null && factorycraft.multiblock.MachineFluidAccess.definition(owner.factoryEntity(),pos,side)!=null;
+        }
+        return profile!=null && be instanceof factorycraft.blockentity.FactoryBlockEntity owner && factorycraft.multiblock.MachineFluidAccess.definition(owner,pos,side)!=null && (level instanceof Level actual && actual.isClientSide || factorycraft.multiblock.MachineFluidAccess.ready(owner,pos));
     }
     public static ItemInteractionResult useItem(ItemStack stack,Level level,BlockPos pos,Player player,InteractionHand hand,Direction side) {
         if(FluidUtil.getFluidHandler(stack).isEmpty())return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -35,7 +43,7 @@ public final class FluidBlocks {
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
     public static InteractionResult open(Level level,BlockPos pos,Player player) {
-        if(!level.isClientSide && level.getBlockEntity(pos) instanceof FluidBlockEntity be)player.openMenu(be,pos);
+        if(!level.isClientSide && level.getBlockEntity(pos) instanceof FluidBlockEntity be)factorycraft.multiblock.MachineInteraction.open(be,player,pos);
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
     public static List<ItemStack> preserve(List<ItemStack> drops,LootParams.Builder context) {

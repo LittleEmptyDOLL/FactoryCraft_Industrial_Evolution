@@ -55,9 +55,14 @@ public enum MachineProfile implements StringRepresentable {
   }
 
   public List<BlockPos> parts(BlockPos anchor, Direction facing) {
-    return layout.parts(facing.getStepX(), facing.getStepZ()).stream()
-        .map(o -> anchor.offset(o.x(), o.y(), o.z()).immutable())
-        .toList();
+    var out = new ArrayList<BlockPos>();
+    for (int y = 0; y < layout.height(); y++)
+      for (int x = 0; x < layout.width(); x++)
+        for (int z = 0; z < layout.depth(); z++) {
+          var p = offset(anchor, facing, x, y, z);
+          if (!p.equals(anchor)) out.add(p);
+        }
+    return List.copyOf(out);
   }
 
   public List<BlockPos> cells(BlockPos anchor, Direction facing) {
@@ -68,10 +73,11 @@ public enum MachineProfile implements StringRepresentable {
   }
 
   public BlockPos offset(BlockPos anchor, Direction facing, int right, int up, int back) {
+    var c = controllerLocal();
     return anchor
-        .relative(facing.getClockWise(), right)
-        .above(up)
-        .relative(facing.getOpposite(), back)
+        .relative(facing.getClockWise(), right - c.getX())
+        .above(up - c.getY())
+        .relative(facing.getOpposite(), back - c.getZ())
         .immutable();
   }
 
@@ -80,10 +86,37 @@ public enum MachineProfile implements StringRepresentable {
   }
 
   public BlockPos anchorAtCenter(BlockPos center, Direction facing) {
-    return center
-        .relative(facing.getCounterClockWise(), layout.width() / 2)
-        .relative(facing, layout.depth() / 2)
+    return controllerAt(center, facing, new BlockPos(layout.width() / 2, 0, layout.depth() / 2));
+  }
+
+  private volatile BlockPos controlCache;
+
+  public BlockPos controllerLocal() {
+    var p = controlCache;
+    if (p == null) controlCache = p = MachinePorts.controller(this);
+    return p;
+  }
+
+  public BlockPos origin(BlockPos controller, Direction facing) {
+    return offset(controller, facing, 0, 0, 0);
+  }
+
+  public BlockPos controllerAt(BlockPos target, Direction facing, BlockPos targetLocal) {
+    var c = controllerLocal();
+    return target
+        .relative(facing.getClockWise(), c.getX() - targetLocal.getX())
+        .above(c.getY() - targetLocal.getY())
+        .relative(facing.getOpposite(), c.getZ() - targetLocal.getZ())
         .immutable();
+  }
+
+  public BlockPos local(BlockPos controller, Direction facing, BlockPos physical) {
+    var d = physical.subtract(origin(controller, facing));
+    var r = facing.getClockWise();
+    return new BlockPos(
+        d.getX() * r.getStepX() + d.getZ() * r.getStepZ(),
+        d.getY(),
+        -d.getX() * facing.getStepX() - d.getZ() * facing.getStepZ());
   }
 
   public boolean circuit() {

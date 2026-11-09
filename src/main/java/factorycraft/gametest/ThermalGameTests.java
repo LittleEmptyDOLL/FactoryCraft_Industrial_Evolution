@@ -30,12 +30,17 @@ public final class ThermalGameTests {
         var p=new BlockPos(x,2,z);factorycraft.multiblock.StructurePlacement.place(h.getLevel(),h.absolutePos(p),Content.THERMAL_BLOCKS.get(kind).get().defaultBlockState().setValue(ThermalBlock.FACING,Direction.EAST));
         return (ThermalBlockEntity)h.getBlockEntity(p);
     }
+    private static IFluidHandler physical(ThermalBlockEntity be,boolean output) {
+        var p=factorycraft.multiblock.MachinePorts.definitions(be.assembly().profile()).stream().filter(port->output?port.output()==(be.kind()==ThermalKind.BOILER?1:1):port.input()>=0).findFirst().orElseThrow();
+        var facing=be.getBlockState().getValue(ThermalBlock.FACING);
+        return be.getLevel().getCapability(Capabilities.FluidHandler.BLOCK,p.position(be.assembly().profile(),be.getBlockPos(),facing),p.side(facing));
+    }
     private static FluidStack water(int n) { return new FluidStack(Fluids.WATER,n); }
     private static FluidStack steam(int n) { return new FluidStack(SteamFluids.STEAM.get(),n); }
     @GameTest(template="empty",timeoutTicks=100)
     public static void boilerNeedsWaterAndFuelThenMakesSteamByDatapackRecipe(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
-        h.runAfterDelay(10,()->{h.assertTrue(b.steam.amount()==0 && b.boiler.fuel()==0,"empty boiler worked");b.port(Direction.WEST).fill(water(200),EXEC);});
+        h.runAfterDelay(10,()->{h.assertTrue(b.steam.amount()==0 && b.boiler.fuel()==0,"empty boiler worked");physical(b,false).fill(water(200),EXEC);});
         h.runAfterDelay(20,()->{h.assertTrue(b.water.amount()==200 && b.boiler.progress()==0,"unfueled boiler worked");b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
         h.runAfterDelay(60,()->{h.assertTrue(b.water.amount()==0 && b.steam.amount()==200 && b.boiler.fuel()==1580,"boiling recipe/fuel balance incorrect");h.succeed();});
     }
@@ -43,13 +48,13 @@ public final class ThermalGameTests {
     public static void fullSteamOutputPausesFuelAndResumesAfterDrain(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
         h.runAfterDelay(5,()->{b.water.fill(new FluidKey(water(1)),200,false);b.steam.fill(new FluidKey(steam(1)),4000,false);b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
-        h.runAfterDelay(35,()->{h.assertTrue(b.boiler.fuel()==0 && b.items.getStackInSlot(0).getCount()==1,"blocked boiler spent fuel");b.port(Direction.EAST).drain(200,EXEC);});
+        h.runAfterDelay(35,()->{h.assertTrue(b.boiler.fuel()==0 && b.items.getStackInSlot(0).getCount()==1,"blocked boiler spent fuel");physical(b,true).drain(200,EXEC);});
         h.runAfterDelay(80,()->{h.assertTrue(b.steam.amount()==4000 && b.water.amount()==0 && b.boiler.fuel()==1580,"blocked boiler failed to resume");h.succeed();});
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void engineConsumesFiniteSteamAndExportsOnlyGeneratedEnergy(GameTestHelper h) {
         var e=put(h,ThermalKind.ENGINE,4,4);
-        h.runAfterDelay(5,()->{h.assertTrue(e.port(Direction.WEST).fill(water(100),EXEC)==0,"engine accepted water");e.port(Direction.WEST).fill(steam(2000),EXEC);});
+        h.runAfterDelay(5,()->{h.assertTrue(physical(e,false).fill(water(100),EXEC)==0,"engine accepted water");physical(e,false).fill(steam(2000),EXEC);});
         h.runAfterDelay(40,()->{
             int n=e.energyPort.extractEnergy(Integer.MAX_VALUE,true);h.assertTrue(n>0 && e.engine.energy()==n,"FE simulation mutated buffer");
             int actual=e.energyPort.extractEnergy(Integer.MAX_VALUE,false);h.assertTrue(actual==n && actual+12L*e.steam.amount()==24000,"steam/FE ledger failed");
@@ -59,13 +64,13 @@ public final class ThermalGameTests {
     @GameTest(template="empty",timeoutTicks=240)
     public static void fullEnergyBufferStopsSteamConsumptionWithoutRoundingLoss(GameTestHelper h) {
         var e=put(h,ThermalKind.ENGINE,4,4);
-        h.runAfterDelay(5,()->e.port(Direction.WEST).fill(steam(2000),EXEC));
+        h.runAfterDelay(5,()->physical(e,false).fill(steam(2000),EXEC));
         h.runAfterDelay(170,()->{
             h.assertTrue(e.engine.energy()==15996 && e.steam.amount()==667,"FE buffer overfilled or steam wasted");e.energyPort.extractEnergy(8,false);
         });
         h.runAfterDelay(200,()->{h.assertTrue(e.engine.energy()==16000 && e.steam.amount()==666,"12-FE remainder did not resume exactly");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=100)
     public static void cachedThermalPortsFollowRotationAndUnload(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
         h.runAfterDelay(5,()->{
@@ -74,7 +79,7 @@ public final class ThermalGameTests {
             var part=(factorycraft.blockentity.CasingBlockEntity)h.getLevel().getBlockEntity(b.inputNozzle());part.onChunkUnloaded();h.assertTrue(input.fill(water(10),EXEC)==0,"unloaded structure remained writable");
             part.onLoad();h.assertTrue(input.fill(water(10),EXEC)==10,"physical thermal port failed to resume");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=100)
     public static void steamBucketsUseRealNeoForgeContainerCapabilities(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
         h.runAfterDelay(5,()->{
@@ -90,7 +95,7 @@ public final class ThermalGameTests {
     @GameTest(template="empty",timeoutTicks=120)
     public static void fuelContainerRemainderIsNotLostAndCanBeAutomated(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
-        h.runAfterDelay(5,()->{b.port(Direction.WEST).fill(water(200),EXEC);b.automation().insertItem(0,new ItemStack(Items.LAVA_BUCKET),false);});
+        h.runAfterDelay(5,()->{physical(b,false).fill(water(200),EXEC);b.automation().insertItem(0,new ItemStack(Items.LAVA_BUCKET),false);});
         h.runAfterDelay(55,()->{
             h.assertTrue(b.steam.amount()==200 && b.boiler.fuel()==19980,"container fuel incorrect");
             h.assertTrue(b.automation().extractItem(0,1,false).is(Items.BUCKET),"fuel remainder was destroyed or unextractable");h.succeed();
@@ -113,22 +118,22 @@ public final class ThermalGameTests {
     @GameTest(template="empty",timeoutTicks=120)
     public static void thermalNbtReconstructionResumesPartialRecipe(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
-        h.runAfterDelay(5,()->{b.port(Direction.WEST).fill(water(200),EXEC);b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
+        h.runAfterDelay(5,()->{physical(b,false).fill(water(200),EXEC);b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
         h.runAfterDelay(15,()->{
             var level=h.getLevel();var copy=(ThermalBlockEntity)BlockEntity.loadStatic(b.getBlockPos(),b.getBlockState(),b.saveWithFullMetadata(level.registryAccess()),level.registryAccess());
             h.assertTrue(copy.boiler.progress()>0 && copy.boiler.progress()<20,"fixture did not preserve partial progress");b.setRemoved();level.setBlockEntity(copy);copy.onLoad();
         });
         h.runAfterDelay(50,()->{var be=(ThermalBlockEntity)h.getBlockEntity(new BlockPos(4,2,4));h.assertTrue(be.water.amount()==0 && be.steam.amount()==200 && be.boiler.fuel()==1580,"partial recipe did not resume exactly");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=300)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=300)
     public static void finiteBoilerPipeEngineLineConservesEveryUnit(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);var e=put(h,ThermalKind.ENGINE,11,4);
         h.setBlock(new BlockPos(5,2,5),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());h.setBlock(new BlockPos(6,2,5),Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-        h.runAfterDelay(5,()->{b.port(Direction.WEST).fill(water(1000),EXEC);b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
+        h.runAfterDelay(5,()->{physical(b,false).fill(water(1000),EXEC);b.items.setStackInSlot(0,new ItemStack(Items.COAL));});
         h.runAfterDelay(220,()->{var p=(FluidBlockEntity)h.getBlockEntity(new BlockPos(5,2,5));var q=(FluidBlockEntity)h.getBlockEntity(new BlockPos(6,2,5));long fluid=b.water.amount()+b.steam.amount()+p.cell().amount()+q.cell().amount()+e.steam.amount();
             h.assertTrue(e.engine.energy()>0 && fluid*12+e.engine.energy()==12000 && b.boiler.fuel()==1500,"full-size thermal line ledger failed");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=900)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=900)
     public static void naturalWaterSteamPowersThePumpAndProductionWithoutCoalGenerator(GameTestHelper h) {
         var o=h.absolutePos(new BlockPos(1,2,1));
         factorycraft.multiblock.StructurePlacement.place(h.getLevel(),o.offset(3,0,2),Content.FLUID_BLOCKS.get(FluidKind.PUMP).get().defaultBlockState().setValue(FluidDeviceBlock.FACING,Direction.EAST));
@@ -155,7 +160,7 @@ public final class ThermalGameTests {
         h.assertTrue(factorycraft.recipes.BoilingRecipe.CODEC.codec().parse(ops,json).error().isPresent(),"oversized recipe accepted");
         h.assertTrue(!SteamFluids.TYPE.get().canBePlacedInLevel(h.getLevel(),h.absolutePos(BlockPos.ZERO),steam(1000)),"container-only steam became world-placeable");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=100)
     public static void plainBucketsCannotEraseFluidComponents(GameTestHelper h) {
         var b=put(h,ThermalKind.BOILER,4,4);
         h.runAfterDelay(5,()->{

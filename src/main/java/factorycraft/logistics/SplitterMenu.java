@@ -83,7 +83,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
             && owner.loaded()
             && owner.structureReady()
             && FluidConnections.canonical(owner)
-            && player.distanceToSqr(owner.getBlockPos().getCenter()) <= 64;
+            && factorycraft.multiblock.MachineInteraction.inRange(owner,player);
   }
 
   private boolean permitted(Player player) {
@@ -150,18 +150,11 @@ public final class SplitterMenu extends AbstractContainerMenu {
   }
 
   public static boolean open(BeltBlockEntity belt, Player player) {
-    if (player.level().isClientSide
-        || player.isSpectator()
-        || !belt.kind().splitter()
-        || !belt.loaded()
-        || !belt.structureReady()
-        || !FluidConnections.canonical(belt)
-        || player.distanceToSqr(belt.getBlockPos().getCenter()) > 64) return false;
-    player.openMenu(
-        new SimpleMenuProvider(
-            (id, inv, p) -> new SplitterMenu(id, inv, belt),
-            Component.translatable("gui.factorycraft.splitter")),
-        belt.getBlockPos());
-    return true;
+    return open(belt,player,belt.getBlockPos());
+  }
+  public static boolean open(BeltBlockEntity belt,Player player,net.minecraft.core.BlockPos physical) {
+    if(!belt.kind().splitter())return false;
+    return factorycraft.multiblock.MachineInteraction.open(belt,player,physical,
+        new SimpleMenuProvider((id,inv,p)->new SplitterMenu(id,inv,belt),Component.translatable("gui.factorycraft.splitter")));
   }
 }

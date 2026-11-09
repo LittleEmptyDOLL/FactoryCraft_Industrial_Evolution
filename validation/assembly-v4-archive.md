@@ -1,0 +1,34 @@
+# Schema-3 diagnostic archive
+
+These source fixtures assume removed corner ownership, all-face/vertical fluid access or old showcase pipe routes. They are retained with `@LegacyAssemblyFixture`, are not counted as passed, and need new physical-layout scenarios before reactivation. Existing on-disk fixtures are untouched. New schema-4 coverage: MachineFootprintGameTests and AssemblyV4GameTests.
+
+- `AdvancedPetroleumGameTests.finiteOilBecomesBatteriesThroughPoweredPipesAndInserters`
+- `AdvancedPetroleumGameTests.refineryNozzlesRemainDistinctInAllFourFacings`
+- `AdvancedPetroleumGameTests.thirdNozzleMovesIntoARealPipeAndCachedPortStopsOnUnload`
+- `ChemicalScienceGameTests.fluidAssemblyPausesForEnergyFullOutputAndPartUnload`
+- `ChemicalScienceGameTests.poweredComponentLineBuildsEnginesThenChemicalScienceWithoutManualTransfers`
+- `CircuitGameTests.pumpGateStopsBillingAndResumesFiniteFluidWithoutLoss`
+- `FluidCircuitGameTests.adjacentTankChunkLossImmediatelyQuarantinesPhysicalSensor`
+- `FluidCircuitGameTests.finiteCoalPoweredTankFeedbackStopsPumpAndConservesEveryMillibucket`
+- `FluidCircuitGameTests.fluidReaderMatchesComponentsWithoutMutatingSampleOrTank`
+- `FluidCircuitGameTests.malformedFluidSampleIsUnknownAndLegacyDefaultsOmitReaderNbt`
+- `FluidCircuitGameTests.missingFluidHandlerClosesEqualityButRealEmptyTankEnablesIt`
+- `FluidCircuitGameTests.nativeFluidSampleAndCrossChunkTankRetainExactDiskState`
+- `FluidGameTests.aGeneratorPowersTheWaterPipeTankChain`
+- `FluidGameTests.bucketsUseTheActualBlockInteractionWithoutLosingContainers`
+- `FluidGameTests.fluidEntitiesReconstructAndResumeWithComponents`
+- `FluidGameTests.fullOutputStopsPumpWithoutSpendingEnergyUntilDrained`
+- `FluidGameTests.pipesMoveFiniteFluidBetweenTanksWithoutLoss`
+- `FluidGameTests.pumpRequiresEnergyAndThenPumpsARealWaterSource`
+- `FluidGameTests.verticalConnectionsWorkWithoutGravityOrChunkForcing`
+- `ModuleGameTests.beaconEffectsRespectDistanceAndTwoBeaconAttenuation`
+- `ModuleGameTests.finitePoweredModuleFactoryDeliversExactProductiveAndBeaconResults`
+- `PetroleumGameTests.finiteDepositBecomesPlasticThroughPoweredPipesAndInserters`
+- `PetroleumGameTests.petroleumStateAndFourChunkIdentityPersistAcrossServerProcesses`
+- `PowerAndMultiblockGameTests.insertersAutomateTheMultiblockThroughACasingPort`
+- `ResearchGameTests.automatedScienceLineActuallyUnlocksLogisticPacks`
+- `ThermalGameTests.cachedThermalPortsFollowRotationAndUnload`
+- `ThermalGameTests.finiteBoilerPipeEngineLineConservesEveryUnit`
+- `ThermalGameTests.naturalWaterSteamPowersThePumpAndProductionWithoutCoalGenerator`
+- `ThermalGameTests.plainBucketsCannotEraseFluidComponents`
+- `ThermalGameTests.steamBucketsUseRealNeoForgeContainerCapabilities`

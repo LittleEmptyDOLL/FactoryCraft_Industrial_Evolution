@@ -23,13 +23,15 @@ public final class FactoryMenu extends AbstractContainerMenu {
         for(int col=0;col<9;col++)addSlot(new Slot(inv,col,22+col*18,224));
         addDataSlots(data);
     }
-    @Override public boolean stillValid(Player p) { return machine.loaded() && p.level()==machine.getLevel() && p.distanceToSqr(machine.getBlockPos().getX()+.5,machine.getBlockPos().getY()+.5,machine.getBlockPos().getZ()+.5)<=64; }
+    @Override public boolean stillValid(Player p) { return machine.loaded() && p.level()==machine.getLevel() && factorycraft.multiblock.MachineInteraction.inRange(machine,p); }
     @Override public boolean clickMenuButton(Player p,int id) {
         if(id==99 && p.containerMenu==this && stillValid(p))return factorycraft.modules.ModuleMenu.open(machine,p);
-        if(id!=0 || !stillValid(p) || p.isSpectator())return false;
+        if(p.containerMenu!=this || id!=0 || !stillValid(p) || p.isSpectator())return false;
         machine.cycleRecipe(); return true;
     }
+    @Override public void clicked(int slot,int button,ClickType type,Player player) { if(player.level().isClientSide || !player.isSpectator() && player.containerMenu==this && stillValid(player))super.clicked(slot,button,type,player); }
     @Override public ItemStack quickMoveStack(Player p,int index) {
+        if(p.isSpectator() || p.containerMenu!=this || !stillValid(p) || index<0 || index>=slots.size())return ItemStack.EMPTY;
         Slot slot=slots.get(index); if(!slot.hasItem())return ItemStack.EMPTY;
         ItemStack stack=slot.getItem(), original=stack.copy();
         if(index<9) { if(!moveItemStackTo(stack,9,45,true))return ItemStack.EMPTY; }

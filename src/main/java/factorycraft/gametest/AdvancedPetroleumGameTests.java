@@ -68,7 +68,7 @@ public final class AdvancedPetroleumGameTests {
         h.runAfterDelay(40,()->{h.assertTrue(r.petroleum().data.get(0)==10 && r.petroleum().cells.get(0).amount()==100 && r.petroleum().cells.get(4).amount()==0 && r.power.getEnergyStored()==0,"partial refining spent inputs or lost progress");r.power.restore(2700);});
         h.runAfterDelay(155,()->{assertProducts(h,r);h.assertTrue(r.power.getEnergyStored()==0,"resumed refining FE incorrect");h.succeed();});
     }
-    @GameTest(template="empty",timeoutTicks=180)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=180)
     public static void thirdNozzleMovesIntoARealPipeAndCachedPortStopsOnUnload(GameTestHelper h) {
         var r=machine(h,FactoryKind.REFINERY,5,5);var pos=r.petroleum().nozzle(4).north();h.getLevel().setBlockAndUpdate(pos,Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
         h.runAfterDelay(5,()->{advancedInput(r);r.power.restore(3000);});
@@ -79,7 +79,7 @@ public final class AdvancedPetroleumGameTests {
             h.assertTrue(port.drain(100,EXEC).isEmpty(),"cached third-output capability escaped assembly suspension");part.onLoad();h.assertTrue(port.drain(100,EXEC).getAmount()==41,"cached nozzle did not resume");h.succeed();
         });
     }
-    @GameTest(template="empty",timeoutTicks=100)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=100)
     public static void refineryNozzlesRemainDistinctInAllFourFacings(GameTestHelper h) {
         var pos=h.absolutePos(new BlockPos(8,2,8));
         for(var facing:Direction.Plane.HORIZONTAL){StructurePlacement.place(h.getLevel(),pos,Content.FACTORY.get(FactoryKind.REFINERY).get().defaultBlockState().setValue(FactoryBlock.FACING,facing));var r=(MachineBlockEntity)h.getLevel().getBlockEntity(pos);for(var cell:MachineProfile.REFINERY.cells(pos,facing))h.getLevel().getBlockEntity(cell).onLoad();var ports=new HashSet<BlockPos>();
@@ -172,7 +172,7 @@ public final class AdvancedPetroleumGameTests {
         }
         h.assertTrue(componentHeavy(1000).getFluidType().getBucket(componentHeavy(1000)).isEmpty(),"bucket erased fluid components");h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=5600)
+    @LegacyAssemblyFixture(template="empty",timeoutTicks=5600)
     public static void finiteOilBecomesBatteriesThroughPoweredPipesAndInserters(GameTestHelper h) {
         var origin=h.absolutePos(new BlockPos(1,2,1));factorycraft.diagnostics.AdvancedOilFactory.build(h.getLevel(),origin);
         h.runAfterDelay(5000,()->{

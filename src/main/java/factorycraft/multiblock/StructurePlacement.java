@@ -17,5 +17,9 @@ public final class StructurePlacement {
         for(var p:profile.parts(anchor,profile.facing(state)))level.setBlockAndUpdate(p,part);
         if(!AssemblyAccess.owner(level.getBlockEntity(anchor)).assembly().formAutomatic())throw new IllegalStateException("Structure formation failed: "+anchor);
     }
+    public static BlockPos fromOrigin(ServerLevel level,BlockPos origin,BlockState state) {
+        var p=MachineProfile.of(state);var controller=p==null?origin:p.controllerAt(origin,p.facing(state),BlockPos.ZERO);
+        place(level,controller,state);return controller;
+    }
     private StructurePlacement() {}
 }

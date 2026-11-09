@@ -1,4 +1,4 @@
-# Fluid logistics — 0.6.0
+# Fluid logistics — 0.19.0
 
 0.17.0 adds nonmutating fluid circuit measurements through physical sided capabilities and threshold-controlled pumps. Fluid rates, capacities, costs and solver remain unchanged. See CIRCUITS.md for exact samples, unavailable readings and polling/overshoot limits.
 
@@ -9,16 +9,16 @@ Target: Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. All quantities use integ
 | Block | Capacity | Connections / behavior |
 |---|---:|---|
 | Fluid pipe | 1000 mB | six adjacent faces; passive finite flow |
-| Fluid tank | 16000 mB | six adjacent faces; passive finite flow |
+| Fluid tank | 16000 mB | four horizontal BOTH faces in two opposite corner cells; passive finite flow |
 | Electric pump | 1000 mB | horizontal back input/front output; no side fluid ports; 16000 FE buffer |
 
-The arrow on the pump points toward its output; right-click with the factory wrench rotates it. Normal pole coverage powers pumps; guarded external NeoForge energy input also works. Passive pipes/tanks need no power. A pump spends **20 FE once per working tick**, whether one or both ports move, with a **100 mB/tick per-port upper bound** (2000 mB/s at 20 TPS). It stops without energy, supply or available capacity. Filling a free chamber can still consume energy while downstream is blocked; a full blocked chamber consumes none.
+The arrow on the pump points toward its output; ordinary wrench mirrors physical ports; Shift-wrench returns a portable pump. Normal pole coverage powers pumps; guarded external NeoForge energy input also works. Passive pipes/tanks need no power. A pump spends **20 FE once per working tick**, whether one or both ports move, with a **100 mB/tick per-port upper bound** (2000 mB/s at 20 TPS). It stops without energy, supply or available capacity. Filling a free chamber can still consume energy while downstream is blocked; a full blocked chamber consumes none.
 
 The pump accepts a genuine vanilla source-water block immediately behind it as unlimited offshore-style input; it does not remove that world source. Flowing/waterlogged blocks and other world fluids are not extracted. Finite containers are actually drained. Passive cells can hold any registered FluidStack, including vanilla lava and component-bearing fluids. Empty cells accept one identity; incompatible fluids or components never mix. Pump intake/output use the chamber present before that tick's port planning, so newly collected water cannot pass straight through an empty pump in the same tick.
 
-Right-click with a bucket for standard NeoForge container interaction; right-click otherwise for a readonly gauge (and pump FE). Standard sided fluid capabilities allow other mods to push/pull; pipe/pump automatic neighbor discovery currently connects only FactoryCraft fluid nodes. Unsided pump access exposes maintenance fill/drain; sided access enforces back/front roles even on a previously cached handler after rotation.
+Right-click with a bucket for standard NeoForge container interaction; right-click otherwise for a readonly gauge (and pump FE). Standard sided fluid capabilities allow other mods to push/pull; pipe/pump automatic neighbor discovery currently connects only FactoryCraft fluid nodes. Profiled machines expose no unsided fluid capability. Only listed physical cell/face pairs work; all cached views recheck current mapping and complete loaded ownership. Plain pipes retain six-face/unsided access.
 
-Breaking a filled block returns one block item retaining the canonical native FluidStack (including components) and stored FE. Freshly crafted items stack normally; harvested structures retain controller NBT. Place the returned item to restore contents. Standard creative breaking produces no block item. Tanks are now 3×3×3 and pumps occupy 1×2, automatically formed from one item. Pipes remain one block. External tank faces and fixed pump nozzles forward to one controller; see MACHINE_DIMENSIONS.md.
+Breaking a filled block returns one block item retaining the canonical native FluidStack (including components) and stored FE. Freshly crafted items stack normally; harvested structures retain controller NBT. Place the returned item to restore contents. Standard creative breaking produces no block item. Tanks are now 3×3×3 and pumps occupy 1×2, automatically formed from one item. Pipes remain one block. Only descriptor-defined tank/pump nozzles forward to one controller; see MACHINE_DIMENSIONS.md.
 
 ## Chosen transport model and Factorio 2.0 comparison
 
@@ -48,7 +48,7 @@ New block entities use fluid schema 1 and the native FluidStack codec. Productio
 
 ![Tank gauge in the actual Russian client](docs/screenshots/fluid-tank-0.3.0.png)
 
-## Evidence and next work
+## Historical evidence and next work (current results in VALIDATION.md)
 
 JUnit covers storage simulation/atomicity/overflow, component-style identities, sleeping/wakeup, topology/splits, budget fairness, blocked/unavailable endpoints, callback ordering/failure, six-way stability and a randomized 10000-cell conservation graph. Dedicated GameTests exercise real NeoForge ports, buckets and harvested-item placement, powered world-water supply, vertical flow, live NBT reload, early chunk unload and exact 8000 mB persistence across four chunks in separate JVMs. See VALIDATION.md for results and limits. The pure 10000-cell exercise is not an in-world fluid TPS benchmark.
 
@@ -69,3 +69,21 @@ The reusable `factorycraft:fluid_canister` holds **4000 mB**, has a standard Neo
 To remove leftover fluid from either input of a refinery, chemical plant or assembling machine 2, carry a canister **on the mouse cursor** and press the small ↑ button beside that input row. The server validates current menu, range, spectator state, canonical loaded controller and complete assembly. It fills a private canister copy, commits the source remainder and cursor owner before fluid observers, and then lets ordinary menu synchronization send the new item. A full/mismatched canister changes nothing. Overflow restored in a machine is drained only up to available canister space; e.g. 5001 mB becomes 4000 + 1001, never truncated or rounded to buckets. Partial recipe work stays paused until adequate input returns; recovery neither refunds FE nor grants a result. This is a synchronous game-state transaction, not a cross-file crash write-ahead journal.
 
 The cursor remains vanilla container ownership: closing/disconnecting returns it according to Minecraft's menu rules. Recovery does not discard fluid, open input drains to pipe networks, change the finite-pressure solver, or create fluid entities. Pumpjacks have no recovery buttons because their only active reservoir is an output. Canisters work with normal output/tank interactions as well.
+
+## Physical ports — schema 4
+
+The shared descriptor is `src/main/resources/factorycraft/machine_layouts.json`, derived from numeric `fluid_boxes/pipe_connections` in Factorio **2.0.77**, commit `ce6741a54c3199caad4ed147e9987fd8d5653fdf`. Canonical NORTH coordinates use layout origin, not controller position; rotate every point/face together. All ports are at Y=0. Minecraft rounds the boiler/pump half-tile rows into their two-block depth.
+
+| Machine | Local cells and faces | Channels / mode |
+|---|---|---|
+| Boiler | (0,0,1) W; (2,0,1) E; (1,0,0) N | water BOTH 0/0 on both sides; steam OUTPUT 1 |
+| Steam engine | (1,0,0) N; (1,0,4) S | steam BOTH 1/1 at both ends; rejects water |
+| Tank | (0,0,0) N/W; (2,0,2) S/E | four BOTH 0/0 connections to the sole tank |
+| Pump | (0,0,1) S; (0,0,0) N | INPUT 0; OUTPUT 0 |
+| Assembler 2 | (1,0,0) N; (1,0,2) S | INPUT 0; OUTPUT 2 |
+
+Refinery/chemical/pumpjack maps are in PETROLEUM.md. One physical BOTH view may expose two different internal channels; fill reaches only input, drain only output. Components and incompatible fluids never mix. Real pipe shapes look up the actual physical part and face, and the existing finite-pressure graph links remote owner cells through those parts. External conforming NeoForge handlers see the same mapping. Automatic neighbor transfers still target FactoryCraft endpoints; third-party pipes must push/pull through the standard capability.
+
+Ordinary wrench reflects port positions and east/west faces across local X; repeated use restores the canonical map. Stored fluids do not move between channels. No FE is charged. The physical/visual mapping and portable setting persist. Ports are static for the selected physical configuration; assembler 2 retains existing auto-recipe behavior and does not yet hide unused ports as Factorio's `off_when_no_fluid_recipe` does. The existing pipe graph solver, rate/capacity and production balance remain. Same-cell BOTH adapters exchange at most 100 mB/t according to positive fill-fraction difference: `q = clamp((Va*Cb−Vb*Ca)/(Ca+Cb),0,100)`. This avoids returning a freshly pulled batch through the same port before a boiler can accumulate its recipe. Distinct input/output channels retain independent directional transfers. A native pipe→boiler→pipe→engine fixture checks useful production and an exact water/steam/FE ledger.
+
+Previous version-labelled evidence/maintenance descriptions above are historical; this section supersedes old all-face/unsided access and old nozzle coordinates. Thirty obsolete coordinate/port diagnostics remain archived source rather than passed tests; see validation/assembly-v4-archive.md.

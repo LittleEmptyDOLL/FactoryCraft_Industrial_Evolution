@@ -276,7 +276,7 @@ public final class CircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 120)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 120)
   public static void pumpGateStopsBillingAndResumesFiniteFluidWithoutLoss(GameTestHelper h) {
     var pp = h.absolutePos(new BlockPos(8, 3, 5));
     StructurePlacement.place(

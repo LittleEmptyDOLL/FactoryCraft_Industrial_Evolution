@@ -1,6 +1,8 @@
-# Feature matrix — 0.18.0
+# Feature matrix — 0.19.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.18.0 adds blue/white independent wire colors and cached whole-splitter motor gates, preserving the existing transport kernel and legacy defaults. Stage 3 and later systems remain partial.
+0.19.0 delivers schema-4 independent controller/layout/anchor coordinates, shared physical INPUT/OUTPUT/BOTH ports, wrench port reflection, guarded part interaction and real-hit placement preview. Intermediate worlds are intentionally incompatible. Thirty obsolete layout diagnostics are archived explicitly; current evidence and limits are in VALIDATION.md. Existing production kernels/recipes remain unchanged.
+
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Previous version 0.18.0 added blue/white independent wire colors and cached whole-splitter motor gates, preserving the existing transport kernel and legacy defaults. Stage 3 and later systems remain partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -37,3 +39,9 @@
 | Performance | active/sleeping lanes, cached belt links, reused carriers, no per-item Entity, cached pole graph, 10000 two-lane segment kernel test | partial; JFR-guided single-route kernel optimization with exact differential checks; cached block-ticking readiness; individual machine/inserter tickers remain |
 | Required 10000/1000/500 load | isolated real dedicated world, all belts move, all producers return results, all inserters deliver; shared grid split/rejoin; item/FE ledger, JSON/JFR and process reload | implemented legacy + mixed 3D workloads, all 9800 mixed moving owners live (200 output terminals own none); native unload and separate JVM pass; optimized mean 48.372 ms / p95 62.721 ms on two processors, zero benchmark clients; no universal TPS/FPS guarantee |
 | Compatibility | standard NeoForge item/FE/fluid capabilities, steam/petroleum buckets, engine FE extraction and recipe tags | partial; optional JEI 19.21.1.248 / EMI 1.1.24 and FTB Teams 2101.1.12 supported; broad mod interoperability remains unverified |
+
+| Schema-4 multiblocks | Implemented | 23 profiles × four rotations; one owner, portable filled machines, independent controller/origin/anchor, no technical item drops |
+| Physical fluid ports | Implemented | Factorio 2.0.77 maps for refinery, chemical, pumpjack, boiler, engine, assembler 2, tank, pump; INPUT/OUTPUT/BOTH, separate channels, guarded remote parts, wrench X reflection |
+| Placement and contact menus | Implemented | small cell / medium center / large nearest edge, Shift center, real BLOCK/reach preview, per-contact server menu checks |
+| Recipe-dependent hiding of physical ports | Planned | assembler 2 retains auto mode; empty/unused static ports remain visible |
+| Previous administrative petrochemical/thermal layouts | Needs revision | Old hardcoded showcase routes are archived diagnostic scenarios, not a current integration pass |

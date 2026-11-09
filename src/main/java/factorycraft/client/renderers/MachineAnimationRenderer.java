@@ -60,6 +60,7 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
     pose.translate(.5, 0, .5);
     pose.mulPose(Axis.YP.rotationDegrees(180 - facing.toYRot()));
     pose.translate(-.5, 0, -.5);
+    var control=profile.controllerLocal();pose.translate(-control.getX(),-control.getY(),-control.getZ());
     float unit =
         Math.max(profile.layout.width(), Math.max(profile.layout.height(), profile.layout.depth()));
     pose.scale(unit, unit, unit);

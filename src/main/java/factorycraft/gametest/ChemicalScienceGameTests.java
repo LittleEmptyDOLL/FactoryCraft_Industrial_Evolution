@@ -113,7 +113,7 @@ public final class ChemicalScienceGameTests {
         });
     }
 
-    @GameTest(template="empty", timeoutTicks=380)
+    @LegacyAssemblyFixture(template="empty", timeoutTicks=380)
     public static void fluidAssemblyPausesForEnergyFullOutputAndPartUnload(GameTestHelper h) {
         var m = machine(h, FactoryKind.ADVANCED_ASSEMBLER, 4);
         h.runAfterDelay(5, () -> processorInput(m));
@@ -207,7 +207,7 @@ public final class ChemicalScienceGameTests {
     }
     private static boolean sourceUnchanged(MachineBlockEntity m) { return m.petroleum().cells.get(0).amount()==37; }
 
-    @GameTest(template="empty", timeoutTicks=4400)
+    @LegacyAssemblyFixture(template="empty", timeoutTicks=4400)
     public static void poweredComponentLineBuildsEnginesThenChemicalScienceWithoutManualTransfers(GameTestHelper h) {
         var scope=ResearchGameTests.personal(h,"chemical-line");var ledger=ResearchData.get(h.getLevel().getServer()).team(scope);
         ledger.restore("",Map.of(id("engine").toString(),1,id("chemical_science").toString(),1),Map.of());

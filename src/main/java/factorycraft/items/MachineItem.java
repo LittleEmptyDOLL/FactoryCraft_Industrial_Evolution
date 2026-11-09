@@ -23,9 +23,17 @@ public final class MachineItem extends BlockItem {
     if (state == null) return null;
     var profile = MachineProfile.of(state);
     return new CenteredPlacementContext(
-        context, profile.anchorAtCenter(context.getClickedPos(), profile.facing(state)));
+        context, PlacementPlan.controllerFor(context,state));
   }
 
+  @Override protected boolean updateCustomBlockEntityTag(net.minecraft.core.BlockPos pos,net.minecraft.world.level.Level level,net.minecraft.world.entity.player.Player player,ItemStack stack,BlockState state) {
+    boolean updated=super.updateCustomBlockEntityTag(pos,level,player,stack,state);
+    if(!level.isClientSide) {
+      var owner=AssemblyAccess.owner(level.getBlockEntity(pos));
+      if(owner!=null && owner.assembly().mirrored())owner.assembly().refreshParts();
+    }
+    return updated;
+  }
   protected boolean canPlace(BlockPlaceContext context, BlockState state) {
     if (!super.canPlace(context, state)) return false;
     boolean valid = PlacementPlan.inspect(context, state).valid();

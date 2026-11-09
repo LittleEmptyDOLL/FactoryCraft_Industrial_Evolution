@@ -27,6 +27,20 @@ public abstract class FactoryBlockEntity extends BlockEntity {
     }
     @Override public CompoundTag getUpdateTag(HolderLookup.Provider r) { return saveWithoutMetadata(r); }
     @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
+    @Override public net.neoforged.neoforge.client.model.data.ModelData getModelData() {
+        var owner=factorycraft.multiblock.AssemblyAccess.owner(this);
+        if(owner==null)return net.neoforged.neoforge.client.model.data.ModelData.EMPTY;
+        var profile=owner.assembly().profile();var at=profile.controllerLocal();
+        return net.neoforged.neoforge.client.model.data.ModelData.builder().with(factorycraft.multiblock.MachineModelData.CELL,new factorycraft.multiblock.MachineModelData.Cell(profile,at.getX(),at.getY(),at.getZ(),owner.assembly().mirrored())).build();
+    }
+    private boolean mirroredModelState;
+    @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries) {
+        super.loadAdditional(tag,registries);
+        boolean mirror=tag.getCompound("Assembly").getBoolean("MirroredPorts");
+        if(level!=null&&level.isClientSide && mirror!=mirroredModelState) {
+            mirroredModelState=mirror;requestModelDataUpdate();level.sendBlockUpdated(worldPosition,getBlockState(),getBlockState(),3);
+        }
+    }
     public abstract IItemHandler inventory();
     public void dropContents() {
         if (level == null || level.isClientSide) return;

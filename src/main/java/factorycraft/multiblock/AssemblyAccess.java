@@ -26,10 +26,7 @@ public final class AssemblyAccess {
         var be=owner.factoryEntity();return be instanceof BeaconBlockEntity beacon ? beacon.energy:be instanceof LabBlockEntity lab ? lab.energy:be instanceof MachineBlockEntity m ? m.energyPort:be instanceof ThermalBlockEntity t ? t.energyPort:be instanceof FluidBlockEntity f ? f.energyPort:null;
     }
     public static IFluidHandler fluid(AssemblyOwner owner,BlockPos physical,Direction side) {
-        var be=owner.factoryEntity();
-        if(be instanceof MachineBlockEntity m && m.petroleum()!=null)return m.petroleum().hasPort(physical,side) ? m.petroleum().port(physical,side):null;
-        if(be instanceof ThermalBlockEntity t)return t.structurePort(physical,side);
-        if(be instanceof FluidBlockEntity f)return f.structurePort(physical,side);return null;
+        return MachineFluidAccess.port(owner.factoryEntity(),physical,side);
     }
     public static void changed(AssemblyOwner owner) {
         var be=owner.factoryEntity();
@@ -37,6 +34,6 @@ public final class AssemblyAccess {
         if(be instanceof BeltBlockEntity belt)factorycraft.simulation.BeltSimulation.topologyChanged(belt);
         if(be instanceof FluidBlockEntity fluid)factorycraft.fluids.FluidSimulation.topologyChanged(fluid);
     }
-    public static void open(AssemblyOwner owner,Player player) { if(owner.factoryEntity() instanceof MenuProvider menu)player.openMenu(menu,owner.factoryEntity().getBlockPos()); }
+    public static void open(AssemblyOwner owner,Player player) { MachineInteraction.open(owner.factoryEntity(),player,owner.factoryEntity().getBlockPos()); }
     private AssemblyAccess() {}
 }

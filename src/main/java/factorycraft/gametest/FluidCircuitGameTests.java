@@ -47,7 +47,7 @@ public final class FluidCircuitGameTests {
     t.setChanged();
   }
 
-  @GameTest(template = "empty", timeoutTicks = 110)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 110)
   public static void fluidReaderMatchesComponentsWithoutMutatingSampleOrTank(GameTestHelper h) {
     var n = reader(h);
     var tank = tank(h, n.targetPosition());
@@ -149,7 +149,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 100)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 100)
   public static void missingFluidHandlerClosesEqualityButRealEmptyTankEnablesIt(GameTestHelper h) {
     var n = reader(h);
     var gate = CircuitGameTests.node(h, FactoryKind.CIRCUIT_CONTROLLER, 9, 4, Direction.SOUTH);
@@ -191,7 +191,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", batch = "circuit_sensor_lifecycle", timeoutTicks = 90)
+  @LegacyAssemblyFixture(template = "empty", batch = "circuit_sensor_lifecycle", timeoutTicks = 90)
   public static void adjacentTankChunkLossImmediatelyQuarantinesPhysicalSensor(GameTestHelper h) {
     var origin = h.absolutePos(new BlockPos(2, 3, 5));
     var target = new BlockPos((origin.getX() & ~15) + 15, origin.getY(), origin.getZ());
@@ -247,7 +247,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 100)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 100)
   public static void malformedFluidSampleIsUnknownAndLegacyDefaultsOmitReaderNbt(GameTestHelper h) {
     var n = reader(h);
     tank(h, n.targetPosition());
@@ -278,7 +278,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 500)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 500)
   public static void finiteCoalPoweredTankFeedbackStopsPumpAndConservesEveryMillibucket(
       GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(1, 3, 1));
@@ -392,7 +392,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 80)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 80)
   public static void nativeFluidSampleAndCrossChunkTankRetainExactDiskState(GameTestHelper h) {
     var level = h.getLevel();
     var p = new BlockPos(16015, 70, 16015);

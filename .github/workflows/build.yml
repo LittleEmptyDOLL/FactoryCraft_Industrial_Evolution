@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 
-# Independent jobs reduce the critical path. Every legacy check remains in full CI.
+# Independent jobs cover the registered schema-4 suite; obsolete fixtures are documented in validation/assembly-v4-archive.md.
 # Only main pushes and pull requests trigger automatically, avoiding duplicate branch-push CI.
 jobs:
   build:
@@ -63,7 +63,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/reports/
+            run-gametest/v0190/reports/
 
   compatibility:
     name: FTB Teams, EMI and JEI compatibility
@@ -90,7 +90,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/reports/
+            run-gametest/v0190/reports/
 
   benchmark:
     name: Full factory benchmark and disk reload
@@ -116,7 +116,7 @@ jobs:
           name: factorycraft-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/reports/
+            run-benchmark/full-v0190/reports/
 
   mixed_benchmark:
     name: Mixed 3D factory, chunk unload and reload
@@ -142,4 +142,4 @@ jobs:
           name: factorycraft-mixed-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/mixed/reports/
+            run-benchmark/mixed-v0190/reports/

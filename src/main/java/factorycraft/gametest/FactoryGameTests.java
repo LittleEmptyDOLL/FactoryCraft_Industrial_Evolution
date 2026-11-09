@@ -162,8 +162,10 @@ public final class FactoryGameTests {
         MachineBlockEntity m=place(h,FactoryKind.ASSEMBLER,p(2,2),Direction.EAST);
         m.items.setStackInSlot(4,new ItemStack(item("iron_gear"),1));
         var a=h.makeMockPlayer(net.minecraft.world.level.GameType.CREATIVE);var b=h.makeMockPlayer(net.minecraft.world.level.GameType.CREATIVE);
+        m.assembly().positions().forEach(pos->h.getLevel().getBlockEntity(pos).onLoad());m.onLoad();
         var first=new factorycraft.production.FactoryMenu(1,a.getInventory(),m,m.data);
         var second=new factorycraft.production.FactoryMenu(2,b.getInventory(),m,m.data);
+        a.containerMenu=first;b.containerMenu=second;a.setPos(m.getBlockPos().getX(),m.getBlockPos().getY(),m.getBlockPos().getZ());b.setPos(a.getX(),a.getY(),a.getZ());
         first.quickMoveStack(a,4);second.quickMoveStack(b,4);
         int count=0;for(int i=0;i<a.getInventory().getContainerSize();i++) {
             if(a.getInventory().getItem(i).is(item("iron_gear")))count+=a.getInventory().getItem(i).getCount();

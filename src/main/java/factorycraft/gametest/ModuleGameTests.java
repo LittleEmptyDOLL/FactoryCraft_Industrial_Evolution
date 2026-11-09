@@ -189,7 +189,7 @@ public final class ModuleGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 100)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 100)
   public static void beaconEffectsRespectDistanceAndTwoBeaconAttenuation(GameTestHelper h) {
     var m = machine(h, 4);
     var a = beacon(h, 4, 8);
@@ -428,7 +428,7 @@ public final class ModuleGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 2400)
+  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 2400)
   public static void finitePoweredModuleFactoryDeliversExactProductiveAndBeaconResults(
       GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(1, 2, 1));

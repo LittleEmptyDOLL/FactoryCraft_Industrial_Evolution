@@ -107,7 +107,7 @@ public final class Content {
                                   ? net.minecraft.world.level.material.PushReaction.BLOCK
                                   : net.minecraft.world.level.material.PushReaction.NORMAL)));
       FACTORY.put(kind, block);
-      if (kind == FactoryKind.TRANSPORT_PART) continue;
+      if (kind == FactoryKind.TRANSPORT_PART || kind.casing()) continue;
       ITEMS.register(
           kind.id,
           () ->

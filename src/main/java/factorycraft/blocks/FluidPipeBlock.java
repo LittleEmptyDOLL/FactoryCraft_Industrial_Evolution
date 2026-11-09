@@ -32,12 +32,12 @@ public final class FluidPipeBlock extends BaseEntityBlock {
     @Override public BlockState getStateForPlacement(BlockPlaceContext context) {
         var state=defaultBlockState();for(var direction:Direction.values()) {
             var neighbor=context.getClickedPos().relative(direction);
-            state=state.setValue(CONNECTIONS[direction.get3DDataValue()],context.getLevel().hasChunkAt(neighbor) && FluidBlocks.port(context.getLevel().getBlockState(neighbor),direction.getOpposite()));
+            state=state.setValue(CONNECTIONS[direction.get3DDataValue()],context.getLevel().hasChunkAt(neighbor) && FluidBlocks.port(context.getLevel(),neighbor,direction.getOpposite()));
         }
         return state;
     }
     @Override protected BlockState updateShape(BlockState state,Direction direction,BlockState neighbor,LevelAccessor level,BlockPos pos,BlockPos neighborPos) {
-        return state.setValue(CONNECTIONS[direction.get3DDataValue()],FluidBlocks.port(neighbor,direction.getOpposite()));
+        return state.setValue(CONNECTIONS[direction.get3DDataValue()],FluidBlocks.port(level,neighborPos,direction.getOpposite()));
     }
     @Override protected VoxelShape getShape(BlockState state,BlockGetter level,BlockPos pos,CollisionContext context) {
         int mask=0;for(int i=0;i<6;i++)if(state.getValue(CONNECTIONS[i]))mask|=1<<i;return SHAPES[mask];

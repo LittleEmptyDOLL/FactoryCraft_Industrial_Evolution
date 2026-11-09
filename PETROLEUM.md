@@ -1,4 +1,4 @@
-# Petroleum and mixed processing — 0.8.0
+# Petroleum and mixed processing — 0.19.0
 
 Minecraft **1.21.1 / NeoForge 21.1.252 / Java 21**. Finite extraction, basic/advanced refining, cracking, lubricant, sulfur, acid, plastic and batteries work with existing full-size machines, pole grids, pipes, inserters and vanilla chests. Research and later production chains remain incomplete.
 
@@ -32,31 +32,36 @@ The powered pumpjack searches the loaded 3×3 area below its base center, up to 
 
 One item forms the complete 5×4×5 refinery around the selected **horizontal base center**. Internal controllers stay front-left-bottom for 0.6.0+ compatibility; their coordinates are not the player's targeting origin. Protection, loaded-volume validation, centered previews and snapshot rollback remain. Parts contain position/UUID only. Breaking any part or removing with a wrench returns at most one portable machine with the sole inventory/fluids/FE/progress; placement binds fresh identities. See MACHINE_DIMENSIONS.md.
 
-Lower-layer refinery ports, relative to its internal controller (F = forward, R = right):
+Canonical NORTH ports below are relative to **layout origin**, independent of the base-center refinery controller. All local Y=0. Numeric definitions follow Factorio 2.0.77 (`base/prototypes/entity/entities.lua`, `mining-drill.lua`), pinned commit `ce6741a54c3199caad4ed147e9987fd8d5653fdf`; only coordinates were consulted, no code/art is distributed.
 
-| Cell / persisted key | Side | Physical block | Adjacent connection | Advanced product |
-|---|---|---|---|---|
-| Input 1 / Fluid0 | rear −F | controller + 2R − 4F | controller + 2R − 5F | crude |
-| Input 2 / Fluid1 | left −R | controller − 2F | controller − R − 2F | water |
-| Output 1 / Fluid2 | front +F | controller + 2R | controller + 2R + F | gas |
-| Output 2 / Fluid3 | right +R | controller + 4R − 2F | controller + 5R − 2F | light oil |
-| **Output 3 / Fluid4** | **front +F** | **controller** | **controller + F** | **heavy oil** |
+| Device / port | Local (X,Y,Z) | Face | Mode / owned cell |
+|---|---|---|---|
+| Refinery crude | (1,0,4) | S | INPUT Fluid0 |
+| Refinery water | (3,0,4) | S | INPUT Fluid1 |
+| Refinery heavy | (0,0,0) | N | OUTPUT Fluid4 |
+| Refinery light | (2,0,0) | N | OUTPUT Fluid3 |
+| Refinery gas | (4,0,0) | N | OUTPUT Fluid2 |
+| Chemical input A/B | (0,0,0) / (2,0,0) | N | INPUT Fluid0 / Fluid1 |
+| Chemical output A/B | (0,0,2) / (2,0,2) | S | OUTPUT Fluid2 / Fluid3 |
+| Pumpjack oil | (2,0,0) | N | OUTPUT Fluid2 |
 
-The new output is **front-left**, marked with an orange arrow and **3**. Existing ports and stored fluids never move or swap. Old two-output refinery NBT gains an empty fifth cell; no stock is invented. Existing Fluid3 contents remain in output 2 even if they block a newly selected advanced recipe. Remove incompatible fluid through the maintenance capability/buckets before switching production.
+Pumpjack's original per-orientation offsets are not a simple rotated point: for EAST/WEST its canonical point becomes (0,0,0) before rotation. `odd_at` records this explicitly. Wrench reflection maps local X to width−1−X and reverses E/W faces before orientation; channels keep their identity and contents. This lets players swap left/right process connections without moving the controller or mixing cells. Boiler/engine/tank/pump/assembler 2 maps are in FLUIDS.md.
 
-Chemical plants keep rear/left inputs and front/right outputs at the centered boundary cells of their 3×3 footprint. Heavy/light cracking takes oil at input 1, water at input 2; lubricant takes heavy oil at input 1. Sulfur takes gas at input 1/water at input 2. Acid takes water at input 1 plus item-fed sulfur/iron; batteries take acid at input 1 plus iron/copper. Basic refining needs only input 1/output 1. Items enter via ordinary guarded capabilities/inserters, not fluid ports.
+Heavy/light cracking takes oil at chemical input A and water at B; lubricant takes heavy oil at A. Sulfur takes gas at A/water at B; acid takes water at A plus item-fed sulfur/iron; batteries take acid at A plus iron/copper. Basic refining uses crude/Fluid0 and gas/Fluid2. Existing recipe/output indexing and stoichiometry are retained; new physical positions do not reassign stored products.
 
-Each nozzle pulls/pushes up to **100 mB/tick** to adjacent canonical FactoryCraft fluid endpoints. Pipes still use the finite local-pressure approximation in FLUIDS.md. Every cached capability rechecks canonical loaded ownership and full assembly readiness; unavailable parts pause production and transfer before chunk serialization. Unsided maintenance access enumerates all cells (five at a refinery), fills inputs and drains recoverable contents. There is no dedicated tank-flush button or arbitrary external-tank adjacency scanner. Other mods can use the guarded NeoForge capabilities.
+Each mapped input/output transfers up to **100 mB/tick** with adjacent canonical FactoryCraft fluid endpoints. NeoForge fluid views exist only at the mapped physical cell/face, with strict INPUT/OUTPUT/BOTH behavior, UUID/canonical/loaded full-assembly guards and component-sensitive storage. Arbitrary casing, vertical and unsided maintenance access are removed. UI canister recovery remains a separately authorized menu operation. External pipes may use the exact sided capabilities. Rendering, pipe shapes, active transfer and menu coordinate tooltips share MachinePorts definitions.
 
 Crude, gas, heavy/light oil, lubricant and acid have native plain buckets and original textures. Component-bearing fluids refuse lossy bucket conversion; portable machines/tanks preserve full native components and restored overflow. Lubricant is currently produced/stored/transported; engines consuming it and accumulator recipes consuming batteries are future progression work.
 
-## Interface and automatic examples
+## Interface and archived automatic examples
 
 Right-click any machine part for the controller menu. Five refinery rows show every cell; hovering a row gives full content and physical port. Hover the recipe line / `?` for counted inputs, **all three** outputs, duration and FE. Named EN/RU recipes distinguish basic and advanced oil even though both make gas. Datapack recipes without a translation fall back to the first result's name. Selection persists by ID; use the select button to prevent auto mode from choosing another matching recipe. No JEI is required.
 
-`/factorycraft oilworks` retains the 30×8×13 finite oil → plastic example. `/factorycraft petrochemistry` requires a loaded clear **30×8×16** region from player position + (3,0,3). It builds a real native water intake/pump, finite oil deposit/pumpjack, explicitly advanced refinery, three chemical plants, isolated gas/heavy/light/acid pipe networks, two byproduct tanks, inserters/chests and pole power. Inputs are eight generator coal, sixteen iron plates for acid, eight iron/eight copper plates for batteries. It injects **no crude, gas, sulfur, acid or battery**. Refill raw supplies and fuel for continued work. Heavy/light tank backpressure correctly stops refining when full; add cracking/lubricant production to use them.
+**Historical schema-3 showcase layouts below require new physical pipe routes; their old coordinate fixtures are archived, not current validation evidence.** The machine systems remain usable through the new physical ports.
 
-The example's refinery faces east. From the machine-layer origin: refinery controller (11,0,1), heavy tank (19,0,0), light tank (19,0,4), sulfur plant (17,0,2), acid plant (17,0,8), battery plant (23,0,8), final chest (25,0,9). Water runs at Y+2, byproduct lines at Y+4 with an offset riser to avoid mixing at crossings. Finite local-pressure pipes need initial fill; byproduct reservoirs receive fluid after the empty lines build pressure. These are administrative fixture coordinates; survival placement remains centered.
+`/factorycraft oilworks` previously provided the 30×8×13 finite oil → plastic example. `/factorycraft petrochemistry` requires a loaded clear **30×8×16** region from player position + (3,0,3). It builds a real native water intake/pump, finite oil deposit/pumpjack, explicitly advanced refinery, three chemical plants, isolated gas/heavy/light/acid pipe networks, two byproduct tanks, inserters/chests and pole power. Inputs are eight generator coal, sixteen iron plates for acid, eight iron/eight copper plates for batteries. It injects **no crude, gas, sulfur, acid or battery**. Refill raw supplies and fuel for continued work. Heavy/light tank backpressure correctly stops refining when full; add cracking/lubricant production to use them.
+
+The example's refinery faces east. From the machine-layer origin: refinery controller (11,0,1), heavy tank (19,0,0), light tank (19,0,4), sulfur plant (17,0,2), acid plant (17,0,8), battery plant (23,0,8), final chest (25,0,9). Water runs at Y+2, byproduct lines at Y+4 with an offset riser to avoid mixing at crossings. Finite local-pressure pipes need initial fill; byproduct reservoirs receive fluid after the empty lines build pressure. These are administrative fixture coordinates; survival placement now follows MACHINE_DIMENSIONS.md.
 
 ![Powered finite oil-to-battery factory](docs/screenshots/petrochemistry-0.8.0.png)
 
@@ -99,3 +104,7 @@ These checks do not establish two real network-client interoperability, natural 
 ## 0.10.0 continuation
 
 The same mixed-transaction adapter now also serves a 3×3×3 assembling machine 2, with lubricant/electric-engine and acid/processor recipes plus original dry assembler recipes. Existing chemical/refinery machine bounds, JSON field names, wire order, port order and saved canonical signatures are retained. Its new recipe machine allows 0–100000 FE/t to represent the original processing definitions; refinery/chemical-plant definitions still require 1–16000. Invalid JSON definitions return codec errors. Exact-volume canister recovery removes input leftovers through a validated menu transaction; see FLUIDS.md / PROGRESSION.md.
+
+## Schema-4 boundary
+
+Assembly and part coordinates/NBT intentionally break intermediate schema-3 worlds. Production cells, counted recipes and chemistry codec are retained; no old world is deleted, migrated or refilled. Use a fresh world. New dedicated fixtures verify one portable filled owner, fresh identity, component isolation, reflected ports and exact four-chunk resources/progress/identity across JVMs. Old pipeline screenshots and prior results are retained for comparison, not re-certified for this layout.
