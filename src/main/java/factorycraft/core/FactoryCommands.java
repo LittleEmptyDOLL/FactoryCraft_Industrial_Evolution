@@ -38,7 +38,8 @@ public final class FactoryCommands {
           "sortingworks",
           "tieredsortingworks",
           "inserterworks",
-          "circuitworks"
+          "circuitworks",
+          "fluidcircuitworks"
         }) root.then(Commands.literal(name).executes(c -> build(c.getSource(), name)));
     root.then(
         Commands.literal("showroom")
@@ -133,6 +134,8 @@ public final class FactoryCommands {
       case "petrochemistry" ->
           factorycraft.diagnostics.AdvancedOilFactory.build(level, origin.above());
       case "circuitworks" -> factorycraft.diagnostics.CircuitFactory.build(level, origin.above());
+      case "fluidcircuitworks" ->
+          factorycraft.diagnostics.FluidCircuitFactory.build(level, origin.above());
       case "inserterworks" -> factorycraft.diagnostics.InserterFactory.build(level, origin.above());
       case "tieredsortingworks" ->
           factorycraft.diagnostics.SortingFactory.buildTiered(level, origin.above());

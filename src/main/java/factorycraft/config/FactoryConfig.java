@@ -4,7 +4,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class FactoryConfig {
     public static final ModConfigSpec SPEC;
-    public static final ModConfigSpec.IntValue CIRCUIT_PORTS,CIRCUIT_COMPONENT_WORK,CIRCUIT_DEVICE_WORK;
+    public static final ModConfigSpec.IntValue CIRCUIT_PORTS,CIRCUIT_COMPONENT_WORK,CIRCUIT_DEVICE_WORK,CIRCUIT_SENSOR_WORK;
     public static final ModConfigSpec.IntValue LIFT_HEIGHT;
     public static final ModConfigSpec.IntValue GENERATOR_FE;
     public static final ModConfigSpec.IntValue POLE_RADIUS;
@@ -31,6 +31,7 @@ public final class FactoryConfig {
         CIRCUIT_PORTS=b.comment("Maximum ports per individual red/green circuit component; startup setting.").defineInRange("circuitPortsPerNetwork",256,2,4096);
         CIRCUIT_COMPONENT_WORK=b.comment("Maximum bounded local circuit components rebuilt per tick.").defineInRange("circuitComponentWork",8,1,64);
         CIRCUIT_DEVICE_WORK=b.comment("Circuit devices evaluated per tick; queued changes are retained.").defineInRange("circuitDeviceWork",512,8,65536);
+        CIRCUIT_SENSOR_WORK=b.comment("Inventory/fluid sensor and controller polls per level tick; FIFO backlog increases feedback latency.").defineInRange("circuitSensorWork",32,1,4096);
         SPEC = b.build();
     }
     private FactoryConfig() {}

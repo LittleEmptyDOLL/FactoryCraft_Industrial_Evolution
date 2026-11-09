@@ -23,6 +23,7 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
   public boolean active, gate, readerReady;
   public int inputValue, lastOutput;
   private CircuitProgram program = CircuitProgram.DEFAULT;
+  private ReaderSettings readerSettings = ReaderSettings.DEFAULT;
   public final List<CircuitLink> links = new ArrayList<>();
   private static final IItemHandler EMPTY = new net.neoforged.neoforge.items.ItemStackHandler(0);
 
@@ -38,6 +39,19 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
 
   public CircuitProgram program() {
     return program;
+  }
+
+  public ReaderSettings readerSettings() {
+    return readerSettings;
+  }
+
+  public boolean configureReader(ReaderSettings settings) {
+    if (kind() != FactoryKind.CIRCUIT_READER || !available()) return false;
+    readerSettings = settings;
+    readerReady = false;
+    sync();
+    CircuitSimulation.programChanged(this);
+    return true;
   }
 
   @Override
@@ -137,6 +151,7 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
     data.put("Program", program.save());
     data.putInt("Output", lastOutput);
     data.putInt("InputValue", inputValue);
+    if (!readerSettings.isDefault()) data.put("Reader", readerSettings.save(r));
     var list = new ListTag();
     for (var link : links) list.add(link.save());
     data.put("Links", list);
@@ -154,6 +169,8 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
             : CircuitProgram.DEFAULT;
     lastOutput = d.getInt("Output");
     inputValue = d.getInt("InputValue");
+    readerSettings = ReaderSettings.load(d.getCompound("Reader"), r);
+    readerReady = false;
     links.clear();
     if (t.contains("Assembly"))
       for (var item : d.getList("Links", 10)) {

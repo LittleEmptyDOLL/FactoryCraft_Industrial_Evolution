@@ -1,3 +1,9 @@
+# 0.17.0 — component-sensitive fluid circuits (9 November 2026)
+
+* Extended the existing circuit reader with guarded item/fluid modes, native exact-component fluid samples, nonconsuming bucket/canister ghost selection, millibucket output and availability status. Old item-reader defaults/NBT remain unchanged.
+* Added spatial sensor dependencies for all discovered target-structure chunks, immediate direct-bus quarantine on unload/ticket demotion, configurable FIFO polling and queue statistics. Fixed the circuit assembly invalidation callback to run on topology changes rather than inventory capability lookup.
+* Added finite coal-powered tank/pump feedback and `/factorycraft fluidcircuitworks`, native sample/menu/unknown/portable/chunk/disk tests and RU/EN help. Documented real last-packet threshold overshoot; no fluid solver or FE ratios changed.
+
 # 0.16.0 — bounded circuit networks (9 November 2026)
 
 * Added red/green reusable wiring tools, cached bounded components, signed int32 scalar logic, constant/arithmetic/decider programs, inventory readers and adjacent inserter/pump controllers. Combinators have separate physical ports and one-item centered 1×2 placement; smaller nodes occupy 1×1.

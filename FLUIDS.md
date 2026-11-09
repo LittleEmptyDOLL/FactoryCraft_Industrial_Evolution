@@ -1,5 +1,7 @@
 # Fluid logistics — 0.6.0
 
+0.17.0 adds nonmutating fluid circuit measurements through physical sided capabilities and threshold-controlled pumps. Fluid rates, capacities, costs and solver remain unchanged. See CIRCUITS.md for exact samples, unavailable readings and polling/overshoot limits.
+
 Target: Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. All quantities use integer millibuckets (mB); one vanilla bucket is 1000 mB. Simulation runs on the server at 20 ticks/second.
 
 ## Usable blocks

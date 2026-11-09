@@ -306,8 +306,8 @@
   "block.factorycraft.decider_combinator": "Решающий комбинатор",
   "recipe.factorycraft.decider_combinator": "Решающий комбинатор",
   "tooltip.factorycraft.decider_combinator": "Предметные и виртуальные сигналы двух цветов. ПКМ: программа. Контроллер/считыватель смотрит на соседнюю цель.",
-  "block.factorycraft.circuit_reader": "Считыватель инвентаря",
-  "recipe.factorycraft.circuit_reader": "Считыватель инвентаря",
+  "block.factorycraft.circuit_reader": "Считыватель логической сети",
+  "recipe.factorycraft.circuit_reader": "Считыватель логической сети",
   "tooltip.factorycraft.circuit_reader": "Предметные и виртуальные сигналы двух цветов. ПКМ: программа. Контроллер/считыватель смотрит на соседнюю цель.",
   "block.factorycraft.circuit_controller": "Логический контроллер",
   "recipe.factorycraft.circuit_controller": "Логический контроллер",
@@ -332,5 +332,14 @@
   "technology.factorycraft.circuit_networks": "Логические сети",
   "item.factorycraft.red_circuit_wire": "Красный логический провод",
   "item.factorycraft.green_circuit_wire": "Зелёный логический провод",
-  "tooltip.factorycraft.circuit_wire": "Многоразовый: нажмите два контакта. Shift+ПКМ очищает контакт/цвет. Дальность 16."
+  "tooltip.factorycraft.circuit_wire": "Многоразовый: нажмите два контакта. Shift+ПКМ очищает контакт/цвет. Дальность 16.",
+  "gui.factorycraft.circuit_reader_mode.0": "Режим: предметы",
+  "gui.factorycraft.circuit_reader_mode.1": "Режим: жидкости (мБ)",
+  "gui.factorycraft.circuit_reader_mode.2": "Неверный режим: сбросить",
+  "gui.factorycraft.circuit_fluid_filter": "Жидкость",
+  "gui.factorycraft.circuit_fluid_output": "Выход: %s мБ",
+  "gui.factorycraft.circuit_fluid_hint": "Нажмите заполненным ведром/канистрой: учитываются жидкость И компоненты. Образец не расходуется. ПКМ или пустой курсор: все жидкости. Объём в мБ.",
+  "gui.factorycraft.circuit_sensor_ready.0": "Показание недоступно",
+  "gui.factorycraft.circuit_sensor_ready.1": "Показание доступно",
+  "gui.factorycraft.circuit_all_fluids": "Все жидкости"
 }

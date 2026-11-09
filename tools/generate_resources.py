@@ -630,3 +630,13 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
  strings.update({'gui.factorycraft.'+k:v[index] for k,v in circuit_ui.items()});strings.update({'message.factorycraft.'+k:v[index] for k,v in circuit_messages.items()});strings['technology.factorycraft.circuit_networks']=('Circuit networks','Логические сети')[index]
  strings['item.factorycraft.red_circuit_wire']=('Red Circuit Wire','Красный логический провод')[index];strings['item.factorycraft.green_circuit_wire']=('Green Circuit Wire','Зелёный логический провод')[index];strings['tooltip.factorycraft.circuit_wire']=('Reusable: click two contacts. Sneak-click clears this contact/color. Range 16.','Многоразовый: нажмите два контакта. Shift+ПКМ очищает контакт/цвет. Дальность 16.')[index]
  write(str(path.relative_to(ROOT)),strings)
+
+# 0.17: component-sensitive fluid reader mode, without changing legacy recipe IDs.
+fluid_reader_ui={'circuit_reader_mode.0':('Mode: items','Режим: предметы'),'circuit_reader_mode.1':('Mode: fluids (mB)','Режим: жидкости (мБ)'),'circuit_reader_mode.2':('Invalid mode: click to reset','Неверный режим: сбросить'),'circuit_fluid_filter':('Fluid sample','Жидкость'),'circuit_fluid_output':('Output: %s mB','Выход: %s мБ'),'circuit_fluid_hint':('Click with a filled bucket/canister to select its fluid AND components. Sample is not consumed. Right-click or empty cursor counts all fluids. The volume is in mB.','Нажмите заполненным ведром/канистрой: учитываются жидкость И компоненты. Образец не расходуется. ПКМ или пустой курсор: все жидкости. Объём в мБ.')}
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings.update({'gui.factorycraft.'+k:v[index] for k,v in fluid_reader_ui.items()});strings['block.factorycraft.circuit_reader']=('Circuit Reader','Считыватель логической сети')[index];strings['recipe.factorycraft.circuit_reader']=strings['block.factorycraft.circuit_reader'];write(str(path.relative_to(ROOT)),strings)
+
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings['gui.factorycraft.circuit_sensor_ready.0']=('Reading unavailable','Показание недоступно')[index];strings['gui.factorycraft.circuit_sensor_ready.1']=('Reading available','Показание доступно')[index];write(str(path.relative_to(ROOT)),strings)
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings['gui.factorycraft.circuit_all_fluids']=('All fluids','Все жидкости')[index];write(str(path.relative_to(ROOT)),strings)

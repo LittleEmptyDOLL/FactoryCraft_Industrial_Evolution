@@ -30,6 +30,8 @@ public final class CircuitSimulation {
     final Map<Long, Set<CircuitNodeBlockEntity>> chunks = new HashMap<>();
     final Map<CircuitNodeBlockEntity, Set<BlockPos>> watched = new IdentityHashMap<>();
     final Map<CircuitNodeBlockEntity, Set<Long>> physicalChunks = new IdentityHashMap<>();
+    final Map<Long, Set<CircuitNodeBlockEntity>> sensorChunks = new HashMap<>();
+    final Map<CircuitNodeBlockEntity, Set<Long>> sensorDependencies = new IdentityHashMap<>();
     final LinkedHashSet<CircuitNodeBlockEntity> pending = new LinkedHashSet<>(),
         dirty = new LinkedHashSet<>(),
         poll = new LinkedHashSet<>();
@@ -62,6 +64,7 @@ public final class CircuitSimulation {
       s.physicalChunks.computeIfAbsent(n, k -> new HashSet<>()).add(chunk);
     }
     index(n, s);
+    watchSensor(n, s, null);
     s.pending.add(n);
     notifyPeers(n, s);
   }
@@ -110,6 +113,7 @@ public final class CircuitSimulation {
     s.nodes.remove(n.getBlockPos(), n);
     s.pending.remove(n);
     unindex(n, s);
+    unwatchSensor(n, s);
     var chunks = s.physicalChunks.remove(n);
     if (chunks != null)
       for (long c : chunks) {
@@ -333,7 +337,47 @@ public final class CircuitSimulation {
 
   private record Reading(boolean valid, int value) {}
 
-  private static Reading read(CircuitNodeBlockEntity n) {
+  private static void unwatchSensor(CircuitNodeBlockEntity n, State s) {
+    var old = s.sensorDependencies.remove(n);
+    if (old == null) return;
+    for (long c : old) {
+      var set = s.sensorChunks.get(c);
+      if (set != null) {
+        set.remove(n);
+        if (set.isEmpty()) s.sensorChunks.remove(c);
+      }
+    }
+  }
+
+  private static void watchSensor(CircuitNodeBlockEntity n, State s, FactoryBlockEntity endpoint) {
+    if (n.kind() != FactoryKind.CIRCUIT_READER) return;
+    var keys = new HashSet<Long>();
+    keys.add(
+        net.minecraft.world.level.ChunkPos.asLong(
+            n.targetPosition().getX() >> 4, n.targetPosition().getZ() >> 4));
+    var owner = factorycraft.multiblock.AssemblyAccess.owner(endpoint);
+    if (owner != null)
+      for (var p :
+          owner
+              .assembly()
+              .profile()
+              .cells(
+                  endpoint.getBlockPos(),
+                  owner.assembly().profile().facing(endpoint.getBlockState())))
+        keys.add(net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
+    if (keys.equals(s.sensorDependencies.get(n))) return;
+    unwatchSensor(n, s);
+    s.sensorDependencies.put(n, keys);
+    for (long c : keys) s.sensorChunks.computeIfAbsent(c, k -> new HashSet<>()).add(n);
+  }
+
+  private static void unknownSensor(CircuitNodeBlockEntity n, State s) {
+    n.readerReady = false;
+    for (int c = 0; c < 2; c++) s.graph.complete(key(n, 0, c), false);
+    s.pending.add(n);
+  }
+
+  private static Reading read(CircuitNodeBlockEntity n, State s) {
     var level = (ServerLevel) n.getLevel();
     var p = n.targetPosition();
     if (level.getChunkSource().getChunkNow(p.getX() >> 4, p.getZ() >> 4) == null
@@ -341,6 +385,9 @@ public final class CircuitSimulation {
             net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4)))
       return new Reading(false, 0);
     var endpoint = FluidConnections.endpoint(level, p);
+    watchSensor(n, s, endpoint);
+    if (endpoint instanceof FluidBlockEntity fluid && !fluid.simulationAvailable())
+      return new Reading(false, 0);
     var owner = factorycraft.multiblock.AssemblyAccess.owner(endpoint);
     if (owner != null) {
       if (!owner.loaded() || !owner.assembly().ready()) return new Reading(false, 0);
@@ -358,6 +405,22 @@ public final class CircuitSimulation {
     if (endpoint instanceof BeltBlockEntity belt
         && (!belt.loaded() || !factorycraft.simulation.BeltSimulation.tickable(belt)))
       return new Reading(false, 0);
+    if (!n.readerSettings().valid()) return new Reading(false, 0);
+    if (n.readerSettings().fluids()) {
+      var fluidHandler =
+          level.getCapability(
+              Capabilities.FluidHandler.BLOCK,
+              p,
+              n.getBlockState().getValue(FactoryBlock.FACING).getOpposite());
+      if (fluidHandler == null || fluidHandler.getTanks() < 1 || fluidHandler.getTanks() > 64)
+        return new Reading(false, 0);
+      int total = 0;
+      for (int i = 0; i < fluidHandler.getTanks(); i++) {
+        var fluid = fluidHandler.getFluidInTank(i);
+        if (n.readerSettings().accepts(fluid)) total += fluid.getAmount();
+      }
+      return new Reading(true, total);
+    }
     var handler =
         level.getCapability(
             Capabilities.ItemHandler.BLOCK,
@@ -386,14 +449,16 @@ public final class CircuitSimulation {
       s.pending.remove(n);
       if (s.nodes.get(n.getBlockPos()) == n) refresh(n, s);
     }
-    for (int i = 0, size = Math.min(32, s.poll.size()); i < size; i++) {
+    for (int i = 0, size = Math.min(FactoryConfig.CIRCUIT_SENSOR_WORK.get(), s.poll.size());
+        i < size;
+        i++) {
       var n = s.poll.iterator().next();
       s.poll.remove(n);
       if (n.active) {
         s.poll.add(n);
         s.dirty.add(n);
         if (n.kind() == FactoryKind.CIRCUIT_READER) {
-          var sample = read(n);
+          var sample = read(n, s);
           n.readerReady = sample.valid();
           if (sample.valid() && sample.value() != n.lastOutput) {
             n.lastOutput = sample.value();
@@ -467,12 +532,16 @@ public final class CircuitSimulation {
     var s = STATES.get(e.getLevel());
     if (s == null) return;
     var owners = s.chunks.get(e.getChunkPos());
-    if (owners == null) return;
-    for (var n : owners) {
-      if (!net.minecraft.server.level.ChunkLevel.isBlockTicking(e.getNewTicketLevel()))
-        deactivate(n, s);
-      s.pending.add(n);
-    }
+    if (owners != null)
+      for (var n : owners) {
+        if (!net.minecraft.server.level.ChunkLevel.isBlockTicking(e.getNewTicketLevel()))
+          deactivate(n, s);
+        s.pending.add(n);
+      }
+    var sensors = s.sensorChunks.get(e.getChunkPos());
+    if (sensors != null
+        && !net.minecraft.server.level.ChunkLevel.isBlockTicking(e.getNewTicketLevel()))
+      for (var n : sensors) unknownSensor(n, s);
   }
 
   @SubscribeEvent
@@ -481,11 +550,13 @@ public final class CircuitSimulation {
     var s = STATES.get(chunk.getLevel());
     if (s == null) return;
     var owners = s.chunks.get(chunk.getPos().toLong());
-    if (owners == null) return;
-    for (var n : List.copyOf(owners)) {
-      deactivate(n, s);
-      s.pending.add(n);
-    }
+    if (owners != null)
+      for (var n : List.copyOf(owners)) {
+        deactivate(n, s);
+        s.pending.add(n);
+      }
+    var sensors = s.sensorChunks.get(chunk.getPos().toLong());
+    if (sensors != null) for (var n : sensors) unknownSensor(n, s);
   }
 
   @SubscribeEvent
@@ -503,6 +574,11 @@ public final class CircuitSimulation {
             + s.dirty.size()
             + ", pending topology: "
             + s.pending.size()
+            + ", sensor/controller polls: "
+            + s.poll.size()
+            + "/"
+            + FactoryConfig.CIRCUIT_SENSOR_WORK.get()
+            + " per tick"
             + ", rebuilds: "
             + s.graph.rebuilds()
             + ", graph visits: "

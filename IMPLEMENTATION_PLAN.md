@@ -31,7 +31,7 @@ Maintain the delivered automation/energy/fluid/chemistry slice and the first sta
 
 ## Next session
 
-Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the next concrete circuit-reader task recorded at the end; inspect only the relevant guide/code ranges. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
+Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the next concrete circuit-control task recorded at the end; inspect only the relevant guide/code ranges. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
 
 ## Delivered in 0.1.0
 
@@ -67,7 +67,7 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Continue the delivered 0.16.0 circuit slice with guarded fluid sensing and finite pump feedback (see final next-task section). Keep scalar semantics, local graph limits, saved UUID bindings and paid hand/FE ownership; do not start unrelated robot/train construction.
+1. Continue the delivered 0.17.0 circuit slice with enable conditions for existing splitters (see final next-task section). Keep scalar semantics, local graph limits, saved UUID bindings, reservations and headway; do not start unrelated robot/train construction.
 2. Extend inserters with bulk/stack capacity only after a counted transfer/reservation model covers partial target acceptance, held batches, hand component equality, power budgets and portable/chunk/process state. Keep the existing four models and all diagnostic fixtures intact.
 3. Extend modules/beacons and higher science tiers. Continue coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
@@ -166,6 +166,16 @@ Delivered fast/long/filter electric arms in the original persistent-hand adapter
 
 Delivered reusable red/green wire tools, constant/arithmetic/decider programs, inventory readers and adjacent electrical inserter/pump controllers. New one-item profiles have centered previews and distinct physical IN/OUT cells. Cached independently bounded components retain reciprocal UUID links, integer wrap semantics and staged signal outputs. Native menus validate ordinary slots/buttons and signed payloads; portable devices clear old coordinates without losing programs/resources. Added the circuit research, manufacturing recipes, original geometry/wires, EN/RU text, diagnostics and finite coal-powered eight-item feedback example. CIRCUITS.md defines polling/overload latency, direct fail-closed behavior, downstream sample-hold and the deliberate zero-FE logic limitation. Native persistence checks retain separate circuit/link and controller/held-item checkpoints. See VALIDATION.md for exact checks; independent optional/full CI jobs remain separate.
 
-### Next concrete task after 0.16.0
+### Completed continuation after 0.16.0
 
 Extend existing circuit readers with explicit item/fluid modes and component-sensitive fluid readings, preserving unavailable-as-unknown semantics and strict saved binding checkpoints. Add real pump-tank feedback, native guarded menu tests and an honest sensor-latency budget. Consider powered logic and wildcard rules only as separately validated additions. Do not start robots/trains/blueprints automatically. See CIRCUITS.md for the exact delivered scalar scope and output sample-hold behavior.
+
+## Delivered slice — 0.17.0 fluid circuit readers
+
+Extend the existing reader with item/fluid modes and component-sensitive native fluid samples, bounded physical-side capability reads and a server-guarded mode/filter menu. Keep default 0.16 circuit NBT unchanged, omit absent settings, and retain invalid/unavailable readings as unknown. Add finite coal-powered tank/pump feedback, cross-chunk sensor quarantine, portable/strict separate-JVM state and real client checks. Reuse the existing graph/controller path; no second circuit engine, logic FE or wildcard expansion in this slice.
+
+Delivered native item/fluid reader settings, exact-component sample selection, physical-port measurements, unknown-state UI, target-chunk dependency quarantine, configurable polling and finite coal-powered pump feedback. Existing 0.16 defaults and earlier diagnostic worlds remain readable. See CIRCUITS.md and VALIDATION.md for actual evidence and last-packet/queue limits.
+
+### Next concrete task after 0.17.0
+
+Add circuit enable conditions to the existing splitter controls without duplicating the transport simulation. Define disabled-segment/headway and already committed approach behavior, preserve settings/portable ownership/default NBT, and test all-tier saturated routing, signal changes under congestion, chunk unload and separate-JVM persistence. Keep powered logic, wildcards, trains/robots/blueprints as separate future work.

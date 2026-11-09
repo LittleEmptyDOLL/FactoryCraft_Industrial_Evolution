@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class CircuitScreen extends AbstractContainerScreen<CircuitMenu> {
   private EditBox operand;
-  private Button apply, operation, count;
+  private Button apply, operation, count, mode;
   private int lastOperand = Integer.MIN_VALUE;
 
   public CircuitScreen(CircuitMenu m, Inventory inv, Component title) {
@@ -67,6 +67,14 @@ public final class CircuitScreen extends AbstractContainerScreen<CircuitMenu> {
                 .bounds(leftPos + 8, topPos + 92, 160, 18)
                 .build());
     count.visible = menu.owner.kind() == FactoryKind.DECIDER;
+    mode =
+        addRenderableWidget(
+            Button.builder(
+                    Component.empty(),
+                    b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 2))
+                .bounds(leftPos + 8, topPos + 92, 160, 18)
+                .build());
+    mode.visible = menu.owner.kind() == FactoryKind.CIRCUIT_READER;
     if (menu.owner.kind() == FactoryKind.CIRCUIT_READER) {
       operand.setVisible(false);
       apply.visible = false;
@@ -96,7 +104,15 @@ public final class CircuitScreen extends AbstractContainerScreen<CircuitMenu> {
     g.drawString(font, title, 8, 8, 0xffffff, false);
     if (menu.slots.get(0).isActive())
       g.drawString(
-          font, Component.translatable("gui.factorycraft.circuit_input"), 8, 27, 0xbacbd4, false);
+          font,
+          Component.translatable(
+              menu.fluidReader()
+                  ? "gui.factorycraft.circuit_fluid_filter"
+                  : "gui.factorycraft.circuit_input"),
+          8,
+          27,
+          0xbacbd4,
+          false);
     if (menu.slots.get(1).isActive())
       g.drawString(
           font,
@@ -119,13 +135,23 @@ public final class CircuitScreen extends AbstractContainerScreen<CircuitMenu> {
         Component.translatable(
             menu.owner.kind() == FactoryKind.CIRCUIT_CONTROLLER
                 ? "gui.factorycraft.circuit_enabled"
-                : "gui.factorycraft.circuit_live_output",
+                : menu.fluidReader()
+                    ? "gui.factorycraft.circuit_fluid_output"
+                    : "gui.factorycraft.circuit_live_output",
             menu.owner.kind() == FactoryKind.CIRCUIT_CONTROLLER ? menu.data.get(8) : menu.output()),
         8,
         126,
         0xffd680,
         false);
     g.drawString(font, playerInventoryTitle, 8, 142, 0xffffff, false);
+    if (menu.owner.kind() == FactoryKind.CIRCUIT_READER)
+      g.drawString(
+          font,
+          Component.translatable("gui.factorycraft.circuit_sensor_ready." + menu.data.get(10)),
+          8,
+          114,
+          menu.data.get(10) == 1 ? 0x80dca0 : 0xffa080,
+          false);
   }
 
   public void render(GuiGraphics g, int mx, int my, float partial) {
@@ -139,6 +165,8 @@ public final class CircuitScreen extends AbstractContainerScreen<CircuitMenu> {
             : new String[] {">", "<", "=", "≠", "≥", "≤"};
     operation.setMessage(Component.literal(names[Math.floorMod(menu.data.get(0), names.length)]));
     count.setMessage(Component.translatable("gui.factorycraft.circuit_count." + menu.data.get(3)));
+    mode.setMessage(
+        Component.translatable("gui.factorycraft.circuit_reader_mode." + menu.data.get(9)));
     try {
       Integer.parseInt(operand.getValue());
       apply.active = true;
@@ -152,10 +180,28 @@ public final class CircuitScreen extends AbstractContainerScreen<CircuitMenu> {
             && my < topPos + 60
             && (mx >= leftPos + 23 && mx < leftPos + 42
                 || mx >= leftPos + 135 && mx < leftPos + 154);
-    if (ghost)
+    if (ghost && menu.fluidReader() && mx < leftPos + 60) {
+      var fluid =
+          factorycraft.items.FluidCanisterItem.handler(menu.slots.getFirst().getItem().copy())
+              .getFluid();
+      var lines = new java.util.ArrayList<net.minecraft.util.FormattedCharSequence>();
+      lines.addAll(
+          font.split(
+              fluid.isEmpty()
+                  ? Component.translatable("gui.factorycraft.circuit_all_fluids")
+                  : fluid.getHoverName(),
+              150));
+      lines.addAll(font.split(Component.translatable("gui.factorycraft.circuit_fluid_hint"), 150));
+      g.renderTooltip(font, lines, mx, my);
+    } else if (ghost)
       g.renderTooltip(
           font,
-          font.split(Component.translatable("gui.factorycraft.circuit_signal_hint"), 150),
+          font.split(
+              Component.translatable(
+                  menu.fluidReader() && mx < leftPos + 60
+                      ? "gui.factorycraft.circuit_fluid_hint"
+                      : "gui.factorycraft.circuit_signal_hint"),
+              150),
           mx,
           my);
     else renderTooltip(g, mx, my);

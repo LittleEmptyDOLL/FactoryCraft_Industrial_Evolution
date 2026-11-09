@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "modVersion": "0.17.0",
+  "junit": 146,
+  "requiredGameTests": 271,
+  "localStatus": "PASS",
+  "separateJvmCheckpoint": {
+    "tank": [
+      16015,
+      70,
+      16015
+    ],
+    "reader": [
+      16014,
+      70,
+      16015
+    ],
+    "fluid": "minecraft:water",
+    "amountMb": 1237,
+    "fluidCustomData": {
+      "grade": 7
+    },
+    "sampleVolumeMb": 1,
+    "status": "SEEDED then VERIFIED in separate JVMs"
+  },
+  "finiteExample": {
+    "sourceMb": 4000,
+    "targetThresholdMb": 1000,
+    "observedTargetMb": 1009,
+    "assertedRangeMb": [
+      1000,
+      1099
+    ],
+    "totalMb": 4000,
+    "power": "Finite coal generator and native pole grid; no seeded pump FE or output"
+  },
+  "firstTestFailure": "Exact 1000-mB assertion failed at 1009 because finite pressure supplies partial packets. Corrected threshold expectation to [1000,1099], preserving exact 4000-mB global ledger. No diagnostic checkpoint reset/refill.",
+  "nativeCoverage": [
+    "component-sensitive matching and immutable samples",
+    "unavailable versus valid empty tank",
+    "private-copy canister sampling, dry sample rejection and explicit reset",
+    "current, distant, stale and spectator menu guards",
+    "mode round trip retains exact sample",
+    "different target-part chunk ticket demotion immediately invalidates direct bus",
+    "portable owner retains sample with fresh identity and no old wires",
+    "strict four-chunk disk reload",
+    "combinator part unload pauses immediately without any inventory capability query"
+  ],
+  "legacyCompatibility": "PASS FULL retained 10000/1000/500 world and exact pre-tick old NBT hash",
+  "client": {
+    "status": "PASS",
+    "runtime": "Real Gradle build runClient; Minecraft 1.21.1 / NeoForge, Xvfb/Mesa, viewer-free",
+    "world": "FactoryCraftScale",
+    "floor": [
+      1406,
+      111,
+      106
+    ],
+    "targetMb": 1009,
+    "restoredTargetMb": 1009,
+    "restoredSample": {
+      "mode": "FLUID",
+      "id": "minecraft:water",
+      "amount": 1
+    },
+    "sampleBucketRetained": true,
+    "modeToggle": "Fluid -> item: reading unavailable; back to fluid: 1009 mB, available",
+    "languages": [
+      "en_us",
+      "ru_ru"
+    ],
+    "saveReload": true,
+    "screenshots": [
+      "docs/screenshots/fluid-circuit-reader-ru-0.17.0.png",
+      "docs/screenshots/fluid-circuit-reader-en-0.17.0.png",
+      "docs/screenshots/fluid-circuit-unavailable-0.17.0.png",
+      "docs/screenshots/fluid-circuit-feedback-0.17.0.png"
+    ]
+  },
+  "pendingCi": [
+    "Optional FTB/EMI/JEI profile",
+    "Fresh FULL/MIXED workloads and restart checks"
+  ],
+  "limits": [
+    "Logic itself still consumes no FE",
+    "Sensor/controller FIFO budget adds feedback latency",
+    "No exact dosing guarantee; last packet may cross threshold",
+    "No new two-client or large-circuit timing claim"
+  ]
+}

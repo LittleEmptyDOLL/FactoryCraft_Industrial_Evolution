@@ -306,8 +306,8 @@
   "block.factorycraft.decider_combinator": "Decider Combinator",
   "recipe.factorycraft.decider_combinator": "Decider Combinator",
   "tooltip.factorycraft.decider_combinator": "Red/green item/virtual signals. Right-click for program. Controller/reader faces its adjacent target.",
-  "block.factorycraft.circuit_reader": "Inventory Reader",
-  "recipe.factorycraft.circuit_reader": "Inventory Reader",
+  "block.factorycraft.circuit_reader": "Circuit Reader",
+  "recipe.factorycraft.circuit_reader": "Circuit Reader",
   "tooltip.factorycraft.circuit_reader": "Red/green item/virtual signals. Right-click for program. Controller/reader faces its adjacent target.",
   "block.factorycraft.circuit_controller": "Circuit Controller",
   "recipe.factorycraft.circuit_controller": "Circuit Controller",
@@ -332,5 +332,14 @@
   "technology.factorycraft.circuit_networks": "Circuit networks",
   "item.factorycraft.red_circuit_wire": "Red Circuit Wire",
   "item.factorycraft.green_circuit_wire": "Green Circuit Wire",
-  "tooltip.factorycraft.circuit_wire": "Reusable: click two contacts. Sneak-click clears this contact/color. Range 16."
+  "tooltip.factorycraft.circuit_wire": "Reusable: click two contacts. Sneak-click clears this contact/color. Range 16.",
+  "gui.factorycraft.circuit_reader_mode.0": "Mode: items",
+  "gui.factorycraft.circuit_reader_mode.1": "Mode: fluids (mB)",
+  "gui.factorycraft.circuit_reader_mode.2": "Invalid mode: click to reset",
+  "gui.factorycraft.circuit_fluid_filter": "Fluid sample",
+  "gui.factorycraft.circuit_fluid_output": "Output: %s mB",
+  "gui.factorycraft.circuit_fluid_hint": "Click with a filled bucket/canister to select its fluid AND components. Sample is not consumed. Right-click or empty cursor counts all fluids. The volume is in mB.",
+  "gui.factorycraft.circuit_sensor_ready.0": "Reading unavailable",
+  "gui.factorycraft.circuit_sensor_ready.1": "Reading available",
+  "gui.factorycraft.circuit_all_fluids": "All fluids"
 }

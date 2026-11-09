@@ -1,6 +1,6 @@
-# Feature matrix — 0.16.0
+# Feature matrix — 0.17.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.16.0 adds the first bounded red/green circuit graph, scalar combinators, inventory sensors and persisted paid-inserter/pump controls. Stage 3 and later systems remain partial.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.17.0 extends the bounded circuit graph with component-sensitive fluid readers, explicit sensor modes, physical-port measurements and pump/tank feedback. Stage 3 and later systems remain partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -25,7 +25,7 @@
 | Railways | none | planned: independent rails, wagons, signals, schedules, routing |
 | Robots | none | planned: logistics/construction/charging/task allocation |
 | Blueprints | none | planned: versioned import, selection, placement, undo/redo/book |
-| Circuits | bounded cached red/green components, signed signals, scalar constant/arithmetic/decider programs, inventory readers, adjacent inserter/pump enable gates, menus, physical wires, UUID persistence and portable relocation | partial; no logic FE yet, wildcards/multiple rules/fluid sensing/station/splitter controls remain planned; see CIRCUITS.md |
+| Circuits | bounded cached red/green components, signed signals, scalar constant/arithmetic/decider programs, item/fluid readers with exact component samples, adjacent inserter/pump enable gates, menus, physical wires, UUID persistence and portable relocation | partial; no logic FE yet, wildcards/multiple rules/station/splitter controls remain planned; see CIRCUITS.md |
 | Pollution/enemies | none | planned: diffusion, absorption, evolution, original enemies/raids |
 | Combat | none | planned: turrets/artillery/ammunition/armor/radar/shields |
 | Vehicles | none | planned: car/tank/construction/remote control |
