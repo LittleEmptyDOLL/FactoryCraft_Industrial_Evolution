@@ -28,6 +28,21 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   private factorycraft.logistics.SplitterSettings splitterSettings =
       factorycraft.logistics.SplitterSettings.DEFAULT;
   private final int[] committedOutputs = new int[4];
+  public factorycraft.circuits.CircuitBinding circuitBinding;
+  private boolean circuitRunning = true;
+
+  public boolean circuitRunning() {
+    return circuitRunning;
+  }
+
+  public void refreshCircuitControl() {
+    if (!kind().splitter() || level == null || level.isClientSide) return;
+    boolean enabled = factorycraft.circuits.CircuitBinding.allowed(this);
+    if (enabled == circuitRunning) return;
+    circuitRunning = enabled;
+    if (transport != null) for (var n : nodes) transport.setEnabled(n, enabled);
+    sync();
+  }
 
   public factorycraft.logistics.SplitterSettings splitterSettings() {
     return splitterSettings;
@@ -514,6 +529,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
       n.restorePreference(alternate[i]);
       n.restoreCommittedOutput(committedOutputs[i]);
       nodes.add(n);
+      if (kind().splitter()) transport.setEnabled(n, circuitRunning);
     }
     applySplitterSettings();
   }
@@ -654,17 +670,22 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     if (!level.isClientSide && !simulationLoaded) {
       simulationLoaded = true;
       BeltSimulation.register(this);
+      if (kind().splitter()) factorycraft.circuits.CircuitSimulation.watchSplitter(this, null);
       if (assembly != null) assembly.invalidate();
     }
   }
 
   public void setRemoved() {
     if (simulationLoaded) BeltSimulation.unregister(this);
+    if (kind().splitter())
+      factorycraft.circuits.CircuitSimulation.watchSplitter(this, circuitBinding);
     super.setRemoved();
   }
 
   public void onChunkUnloaded() {
     if (simulationLoaded) BeltSimulation.unregister(this);
+    if (kind().splitter())
+      factorycraft.circuits.CircuitSimulation.watchSplitter(this, circuitBinding);
     super.onChunkUnloaded();
   }
 
@@ -692,6 +713,10 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
   protected void saveAdditional(CompoundTag tag, HolderLookup.Provider r) {
     super.saveAdditional(tag, r);
+    if (circuitBinding != null) {
+      tag.put("CircuitControl", circuitBinding.save());
+      tag.putBoolean("CircuitMoving", circuitRunning);
+    }
     if (assembly != null) assembly.save(tag);
     tag.putInt("Schema", tracks() == 2 ? 3 : 2);
     tag.putLong("SnapshotTick", level == null ? 0 : level.getGameTime());
@@ -707,7 +732,8 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     if (special()) tag.putUUID("TransportIdentity", transportIdentity);
     if (undergroundOutput) tag.putBoolean("UndergroundOutput", true);
     if (kind().splitter()
-        && !splitterSettings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)) {
+        && (!splitterSettings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)
+            || circuitBinding != null)) {
       var settings = splitterSettings.save();
       int[] outputs = committedOutputs.clone();
       if (transport != null && !nodes.isEmpty())
@@ -733,6 +759,14 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
   protected void loadAdditional(CompoundTag tag, HolderLookup.Provider r) {
     super.loadAdditional(tag, r);
+    var oldBinding = circuitBinding;
+    circuitBinding = factorycraft.circuits.CircuitBinding.load(tag.getCompound("CircuitControl"));
+    circuitRunning =
+        circuitBinding == null
+            || level != null && level.isClientSide && tag.getBoolean("CircuitMoving");
+    if (transport != null) for (var n : nodes) transport.setEnabled(n, circuitRunning);
+    if (level != null && !level.isClientSide && kind().splitter())
+      factorycraft.circuits.CircuitSimulation.watchSplitter(this, oldBinding);
     if (assembly != null) assembly.load(tag);
     snapshotTick = tag.getLong("SnapshotTick");
     if (kind().splitter()) {

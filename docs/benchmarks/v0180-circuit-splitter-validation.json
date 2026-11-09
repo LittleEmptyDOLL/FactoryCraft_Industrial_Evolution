@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "modVersion": "0.18.0",
+  "junit": 150,
+  "requiredGameTests": 278,
+  "localStatus": "PASS",
+  "colors": {
+    "red": 0,
+    "green": 1,
+    "blue": 2,
+    "white": 3,
+    "maxLinksPerDualPortNode": 64
+  },
+  "separateJvmCheckpoints": {
+    "positions": [
+      [
+        17015,
+        70,
+        17015
+      ],
+      [
+        17063,
+        70,
+        17015
+      ],
+      [
+        17111,
+        70,
+        17015
+      ]
+    ],
+    "carriersPerSplitter": 16,
+    "units": [
+      96,
+      72,
+      48,
+      24
+    ],
+    "items": "Alternating raw iron/copper in every lane",
+    "state": "paused with UUID-bound controller and four reciprocal colors",
+    "status": "SEEDED then VERIFIED in separate JVMs"
+  },
+  "pureCoverage": [
+    "all 27 input/splitter/output tier combinations through repeated gates and jams: frozen positions, exact ledger, local/cross-edge headway and complete draining",
+    "sleeping frozen merge approach holds route across filter change",
+    "full packed rings resume all tiers",
+    "external pickup frees paused approach without enabling motor",
+    "unchanged exact 30/60/90 item/s saturated phase tests"
+  ],
+  "nativeCoverage": [
+    "four-color independence and sum at shared ports",
+    "native reusable blue/white wire clicks and per-color clear",
+    "all-tier direct quarantine on source unload, then recovery",
+    "control through second splitter cell",
+    "one portable cargo/policy owner with fresh identity and no old coordinates",
+    "finite closed-then-open three-tier sorting",
+    "exact separate-JVM paused state, contents and four-color UUID links"
+  ],
+  "initialFailures": "New tests caught backward projection on stopped contenders and a stalled packed-cycle wakeup. Fixed with frozen projection/retained approach claims and event-driven wakeup of occupied cached incoming chains. A ring transfer-count assertion was corrected to the real travel interval. Diagnostic worlds were not reset/refilled.",
+  "legacyCompatibility": "PASS FULL: exact retained legacy NBT hash and resumed 10000/1000/500 factory",
+  "client": {
+    "runtime": "Real Gradle build runClient; Xvfb/Mesa; no optional mods",
+    "world": "FactoryCraftScale",
+    "floor": [
+      1606,
+      111,
+      106
+    ],
+    "states": [
+      "stopped",
+      "enabled"
+    ],
+    "manualConstantChange": "Each scalar 0 -> 1 through actual menu",
+    "outputsPerTier": {
+      "raw_iron": 32,
+      "raw_copper": 32
+    },
+    "manualNativeWireTools": "Blue and white each toggled their own existing connection: CircuitMoving 0 then 1; both tools retained count 1",
+    "saveReload": true,
+    "screenshots": [
+      "docs/screenshots/splitter-circuit-stopped-ru-0.18.0.png",
+      "docs/screenshots/splitter-circuit-enabled-ru-0.18.0.png",
+      "docs/screenshots/four-color-circuits-0.18.0.png",
+      "docs/screenshots/splitter-circuit-enabled-en-0.18.0.png"
+    ],
+    "languages": [
+      "ru_ru",
+      "en_us"
+    ],
+    "restored": "Blue=2 and white=3 reciprocal links, enabled bindings, all six output chests still contain 32 correct raw items"
+  },
+  "pendingCi": [
+    "Optional FTB/EMI/JEI profile",
+    "Fresh FULL/MIXED workloads and restart checks"
+  ],
+  "limits": [
+    "Scalar gates retain circuit processing budgets",
+    "Logic consumes no FE yet",
+    "Connected colors sum; no per-input color mask yet",
+    "No new two-client, natural-distance gate unload or universal TPS guarantee"
+  ]
+}

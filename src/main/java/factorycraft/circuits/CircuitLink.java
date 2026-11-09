@@ -13,7 +13,8 @@ public record CircuitLink(BlockPos peer, UUID identity, int localPort, int remot
         || remotePort < 0
         || remotePort > 1
         || color < 0
-        || color > 1) throw new IllegalArgumentException("Invalid circuit connector");
+        || !WireColors.valid(color))
+      throw new IllegalArgumentException("Invalid circuit connector");
   }
 
   public CompoundTag save() {

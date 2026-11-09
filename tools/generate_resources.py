@@ -640,3 +640,15 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings['gui.factorycraft.circuit_sensor_ready.0']=('Reading unavailable','Показание недоступно')[index];strings['gui.factorycraft.circuit_sensor_ready.1']=('Reading available','Показание доступно')[index];write(str(path.relative_to(ROOT)),strings)
 for locale,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings['gui.factorycraft.circuit_all_fluids']=('All fluids','Все жидкости')[index];write(str(path.relative_to(ROOT)),strings)
+
+# 0.18: appended independent colors; old wire assets and recipes remain unchanged.
+for name,color,dye in [('blue_circuit_wire',(64,128,255),'blue'),('white_circuit_wire',(240,240,240),'white')]:
+ texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
+ craft(name,['WD'],{'W':'factorycraft:copper_wire','D':'minecraft:'+dye+'_dye'})
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text())
+ strings['item.factorycraft.blue_circuit_wire']=('Blue Circuit Wire','Синий логический провод')[index];strings['item.factorycraft.white_circuit_wire']=('White Circuit Wire','Белый логический провод')[index]
+ for n in ['constant_combinator','arithmetic_combinator','decider_combinator','circuit_reader','circuit_controller']:
+  strings['tooltip.factorycraft.'+n]=('Four independent wire colors. Right-click for program. Controller can gate an adjacent electric arm, pump or splitter.','Четыре независимых цвета проводов. ПКМ: программа. Контроллер управляет соседним электроманипулятором, насосом или разделителем.')[index]
+ for value,en,ru in [(0,'Circuit: unbound','Логика: нет привязки'),(1,'Circuit: enabled','Логика: разрешено'),(2,'Circuit: stopped','Логика: остановлено')]:strings['gui.factorycraft.splitter_circuit.'+str(value)]=(en,ru)[index]
+ write(str(path.relative_to(ROOT)),strings)

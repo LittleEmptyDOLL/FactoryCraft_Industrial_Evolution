@@ -19,6 +19,7 @@ public record CircuitBinding(BlockPos controller, UUID identity) {
         && node.active
         && node.available()
         && node.gate
+        && CircuitSimulation.controls(node, device)
         && CircuitSimulation.inputReady(node);
   }
 
@@ -41,13 +42,21 @@ public record CircuitBinding(BlockPos controller, UUID identity) {
   public static CircuitBinding get(FactoryBlockEntity b) {
     return b instanceof InserterBlockEntity i
         ? i.circuitBinding
-        : b instanceof FluidBlockEntity f ? f.circuitBinding : null;
+        : b instanceof FluidBlockEntity f
+            ? f.circuitBinding
+            : b instanceof BeltBlockEntity belt ? belt.circuitBinding : null;
   }
 
   public static void set(FactoryBlockEntity b, CircuitBinding binding) {
+    var old = get(b);
     if (b instanceof InserterBlockEntity i) i.circuitBinding = binding;
     else if (b instanceof FluidBlockEntity f) f.circuitBinding = binding;
-    else return;
+    else if (b instanceof BeltBlockEntity belt && belt.kind().splitter()) {
+      belt.circuitBinding = binding;
+      belt.refreshCircuitControl();
+      CircuitSimulation.watchSplitter(belt, old);
+      belt.sync();
+    } else return;
     b.setChanged();
     if (b instanceof FluidBlockEntity f) factorycraft.fluids.FluidSimulation.activatePump(f);
   }

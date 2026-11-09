@@ -31,7 +31,7 @@ Maintain the delivered automation/energy/fluid/chemistry slice and the first sta
 
 ## Next session
 
-Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the next concrete circuit-control task recorded at the end; inspect only the relevant guide/code ranges. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
+Read AGENTS.md, PETROLEUM.md, MACHINE_DIMENSIONS.md, RESOURCE_FIELDS.md, VALIDATION.md and FEATURE_MATRIX.md. Follow the next concrete task recorded at the end; inspect only the relevant guide/code ranges. Preserve existing 0.6.0+ worlds and exact diagnostic checkpoints; do not reset or silently reseed a failed fixture. A fresh world is required only for compact versions older than 0.6.0. Build and run relevant native tests, including separate processes for saved-data changes and the marked benchmark compatibility check.
 
 ## Delivered in 0.1.0
 
@@ -67,7 +67,7 @@ Usable six-way pipes, tanks and directional electric pumps; finite component-sen
 
 ## Next concrete task (priority order)
 
-1. Continue the delivered 0.17.0 circuit slice with enable conditions for existing splitters (see final next-task section). Keep scalar semantics, local graph limits, saved UUID bindings, reservations and headway; do not start unrelated robot/train construction.
+1. Continue with counted bulk/stack inserter transfers (see final next-task section). Preserve four-color circuit bindings, splitter approach reservations, headway and legacy defaults.
 2. Extend inserters with bulk/stack capacity only after a counted transfer/reservation model covers partial target acceptance, held batches, hand component equality, power budgets and portable/chunk/process state. Keep the existing four models and all diagnostic fixtures intact.
 3. Extend modules/beacons and higher science tiers. Continue coverage tools and profile large research/petrochemical factories separately; keep robots/trains/hostile/space work honest in FEATURE_MATRIX.md.
 
@@ -176,6 +176,16 @@ Extend the existing reader with item/fluid modes and component-sensitive native 
 
 Delivered native item/fluid reader settings, exact-component sample selection, physical-port measurements, unknown-state UI, target-chunk dependency quarantine, configurable polling and finite coal-powered pump feedback. Existing 0.16 defaults and earlier diagnostic worlds remain readable. See CIRCUITS.md and VALIDATION.md for actual evidence and last-packet/queue limits.
 
-### Next concrete task after 0.17.0
+### Completed continuation after 0.17.0
 
 Add circuit enable conditions to the existing splitter controls without duplicating the transport simulation. Define disabled-segment/headway and already committed approach behavior, preserve settings/portable ownership/default NBT, and test all-tier saturated routing, signal changes under congestion, chunk unload and separate-JVM persistence. Keep powered logic, wildcards, trains/robots/blueprints as separate future work.
+
+## Delivered slice — 0.18.0 splitter circuit gates and four wire colors
+
+Use existing scalar controllers to gate all splitter tiers. Add a separate motor-enable bit in the original kernel, keeping physical connections, exact stopped positions and committed approach claims; no item may enter/exit a halted splitter. Cache event-driven gates and loaded binding indexes, avoiding world access in microsteps or scans of all belts. Preserve default NBT and portable ownership. Per the user's new request, append blue/white as independent color IDs 2/3; keep red/green IDs 0/1, item recipes and all legacy links. Verify paused merges/rings/throughput, native gates/four-color menus/portable/chunks, exact separate-JVM saves and actual client rendering.
+
+Delivered cached event-driven gates on all splitter tiers, a distinct kernel motor bit with static occupancy/approach claims, occupied-chain wakeup for packed rings, native menu status and portable/default-NBT compatibility. Appended blue/white colors preserve red/green link IDs and per-color graph independence; original assets, recipes and native tools are included. See VALIDATION.md for actual checks and retained failure evidence.
+
+### Next concrete task after 0.18.0
+
+Add bulk/stack electric inserters with counted hand ownership and partial target acceptance through the existing ArmCycle. Define exact energy/stack/quality-component rules, retain paid phase and held remainders through gate changes/chunks/portable state, and test real belt/machine/chest integration plus separate-JVM saves. Keep per-input circuit color masks, powered logic, wildcard rules, robots/trains/blueprints as separate future work.

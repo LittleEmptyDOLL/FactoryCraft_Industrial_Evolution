@@ -1,5 +1,7 @@
 # Разделители и сортировка — 0.14.0
 
+0.18.0 adds whole-device circuit enable conditions on all tiers through an adjacent scalar controller. A closed splitter retains every carrier position, blocks input and holds committed approaches; external extraction remains possible. Cached motor gates are separate from physical chunk availability. See [CIRCUITS.md](CIRCUITS.md) for wiring, persistence, polling limits and `/factorycraft circuitsortingworks`.
+
 Каждый разделитель занимает 2×1 блока: две физические дорожки, у каждой две независимые полосы. Он хранит до 16 отдельных предметов без Minecraft Entity. Две входные ленты ставятся позади половин, две выходные — перед ними. Левые и правые стороны полос сохраняются.
 
 ## Настройка

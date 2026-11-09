@@ -46,14 +46,15 @@ public final class CircuitRenderer implements BlockEntityRenderer<CircuitNodeBlo
           dz = tz - z,
           len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
       if (len == 0) continue;
-      float r = link.color() == 0 ? 1 : .1f, g = link.color() == 1 ? 1 : .12f;
+      int rgb = WireColors.rgb(link.color());
+      float r = ((rgb >> 16) & 255) / 255f, g = ((rgb >> 8) & 255) / 255f, bg = (rgb & 255) / 255f;
       for (int i = 0; i < 8; i++) {
         float t = i / 8f, u = (i + 1) / 8f;
         out.addVertex(matrix, x + dx * t, y + dy * t - .35f * 4 * t * (1 - t), z + dz * t)
-            .setColor(r, g, .1f, 1)
+            .setColor(r, g, bg, 1)
             .setNormal(matrix, dx / len, dy / len, dz / len);
         out.addVertex(matrix, x + dx * u, y + dy * u - .35f * 4 * u * (1 - u), z + dz * u)
-            .setColor(r, g, .1f, 1)
+            .setColor(r, g, bg, 1)
             .setNormal(matrix, dx / len, dy / len, dz / len);
       }
     }

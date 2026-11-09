@@ -1,3 +1,10 @@
+# 0.18.0 — four-color circuits and splitter gates (9 November 2026)
+
+* Added independent blue/white wires (IDs 2/3), original item assets, dye recipes and EN/RU text. Kept red/green IDs 0/1 and existing links; expanded bounded node persistence to 64 links.
+* Extended scalar controllers to every splitter tier/physical part with persisted UUID bindings, event-driven cached motor gates, status in the shared menu and relocation cleanup. Default unbound NBT remains unchanged; circuit protocol is 3 for the new menu layout.
+* Added a separate motor bit in the original kernel: frozen positions/ownership, preserved committed approaches, backpressure and occupied incoming-chain wakeup for packed cycles. Existing filters, priorities and all-tier saturated throughput remain covered.
+* Added finite `/factorycraft circuitsortingworks`, pure stopped-merge/ring/all-tier gate tests and native color/tool/control/chunk/portable/disk scenarios. See VALIDATION.md for exact results and limits.
+
 # 0.17.0 — component-sensitive fluid circuits (9 November 2026)
 
 * Extended the existing circuit reader with guarded item/fluid modes, native exact-component fluid samples, nonconsuming bucket/canister ghost selection, millibucket output and availability status. Old item-reader defaults/NBT remain unchanged.

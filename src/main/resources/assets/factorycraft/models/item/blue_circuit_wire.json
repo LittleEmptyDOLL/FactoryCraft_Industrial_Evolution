@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "factorycraft:item/blue_circuit_wire"
+  }
+}

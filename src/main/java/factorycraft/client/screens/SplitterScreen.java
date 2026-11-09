@@ -66,6 +66,13 @@ public final class SplitterScreen extends AbstractContainerScreen<SplitterMenu> 
   protected void renderLabels(GuiGraphics g, int mx, int my) {
     g.drawString(font, title, 8, 8, 0xffffff, false);
     g.drawString(
+        font,
+        Component.translatable("gui.factorycraft.splitter_circuit." + menu.data.get(3)),
+        8,
+        72,
+        menu.data.get(3) == 2 ? 0xffa080 : 0x80dca0,
+        false);
+    g.drawString(
         font, Component.translatable("gui.factorycraft.splitter_filter"), 8, 87, 0xffd680, false);
     g.drawWordWrap(
         font, Component.translatable("gui.factorycraft.splitter_hint"), 8, 109, 160, 0xbacbd4);

@@ -41,6 +41,7 @@ public final class BeltTransport<T> {
     private int count, cursor, inputPriority, savedOutput, lastOutput;
     private Routing<T> routing;
     private boolean available = true;
+    private boolean enabled = true;
     private boolean alternate, scheduled, removed, canExit, queued, dirty, contentDirty;
 
     private Node(
@@ -189,6 +190,35 @@ public final class BeltTransport<T> {
     changedExternally(node);
   }
 
+  /** Motor gate; the physical lane and committed approaches remain connected and occupied. */
+  public void setEnabled(Node<T> node, boolean enabled) {
+    requireOwned(node);
+    if (node.enabled == enabled) return;
+    node.enabled = enabled;
+    if (enabled) {
+      // A packed cycle has no initial gap: prepare its occupied incoming chain together.
+      // This follows cached edges only on an enable transition, never each simulation tick.
+      var backlog = new ArrayDeque<Node<T>>();
+      var seen = new java.util.IdentityHashMap<Node<T>, Boolean>();
+      backlog.add(node);
+      while (!backlog.isEmpty()) {
+        var n = backlog.removeFirst();
+        if (n.removed || !n.available || !n.enabled || n.lane.count() == 0) continue;
+        if (seen.put(n, Boolean.TRUE) != null) continue;
+        activate(n);
+        for (var input : n.inputs)
+          if (!seen.containsKey(input)
+              && input.available
+              && input.enabled
+              && !input.removed
+              && input.lane.count() > 0) backlog.add(input);
+      }
+    }
+    changedExternally(node);
+    if (node.primary != null) for (var input : node.primary.inputs) activate(input);
+    if (node.secondary != null) for (var input : node.secondary.inputs) activate(input);
+  }
+
   public void remove(Node<T> n) {
     if (n == null || n.removed) return;
     requireOwned(n);
@@ -218,6 +248,11 @@ public final class BeltTransport<T> {
     if (n == null || n.removed) return;
     activate(n);
     for (var input : n.inputs) activate(input);
+    // External pickup can release a sleeping halted approach without enabling its motor.
+    if (!n.enabled) {
+      if (n.primary != null) for (var input : n.primary.inputs) activate(input);
+      if (n.secondary != null) for (var input : n.secondary.inputs) activate(input);
+    }
   }
 
   /**
@@ -225,7 +260,7 @@ public final class BeltTransport<T> {
    */
   public boolean canInsert(Node<T> n) {
     requireOwned(n);
-    if (!n.available || !n.lane.canInsert()) return false;
+    if (!n.available || !n.enabled || !n.lane.canInsert()) return false;
     for (var input : n.inputs)
       if (input.lane.count() != 0 && input.lane.at(0).units > input.lane.length() - SPACING)
         return false;
@@ -268,15 +303,23 @@ public final class BeltTransport<T> {
       n.outgoing = null;
       n.queued = false;
       n.canExit = false;
-      int limit = n.lane.length() + n.speed;
+      int movement = n.enabled ? n.speed : 0;
+      int limit = n.lane.length() + movement;
       for (int i = 0; i < n.count; i++) {
-        n.projected[i] = Math.min(limit, n.lane.at(i).units + n.speed);
+        n.projected[i] = Math.min(limit, n.lane.at(i).units + movement);
         limit = n.projected[i] - SPACING;
       }
     }
     for (var n : active) {
       if (n.removed || !n.available || n.count == 0) continue;
-      if (singleRouteFastPath && n.secondary == null && n.routing == null) {
+      boolean heldApproach =
+          !n.enabled
+              && n.target != null
+              && n.lane.at(0).units > n.lane.length() - SPACING
+              && (n.target == n.primary || n.target == n.secondary);
+      if (heldApproach) {
+        // A halted carrier still occupies its original approach, even after policy changes.
+      } else if (singleRouteFastPath && n.secondary == null && n.routing == null) {
         n.target = n.primary;
         if (n.target != null) n.lastOutput = 1;
       } else {
@@ -322,7 +365,9 @@ public final class BeltTransport<T> {
         if (n.target != null) n.lastOutput = n.target == n.primary ? 1 : 2;
       }
       n.canExit =
-          n.target != null
+          n.enabled
+              && n.target != null
+              && n.target.enabled
               && n.target.available
               && !n.target.removed
               && n.projected[0] >= n.lane.length();
@@ -499,7 +544,7 @@ public final class BeltTransport<T> {
   }
 
   private boolean approachPossible(Node<T> source, Node<T> target) {
-    if (target == null || !target.available || target.removed) return false;
+    if (target == null || !target.available || target.removed || !target.enabled) return false;
     if (target.sink != null) return true;
     int tail = approachSpace(source, target);
     // A route is reserved during the last quarter of the source. Requiring a
@@ -539,6 +584,11 @@ public final class BeltTransport<T> {
   }
 
   private boolean constrain(Node<T> n) {
+    if (!n.enabled) {
+      boolean changed = n.canExit;
+      n.canExit = false;
+      return changed;
+    }
     int limit = n.lane.length();
     boolean canExit = false;
     if (n.target != null && n.target.available && !n.target.removed && n.target.sink != null) {
@@ -562,8 +612,27 @@ public final class BeltTransport<T> {
                     + Math.max(0, winner.projected[0] - winner.lane.length())
                     - SPACING);
       }
+      // A sleeping stopped approach keeps the entry reserved, while other branches
+      // may still occupy their own final quarter boundary. Never push a carrier backwards.
+      boolean heldByOther = false;
+      if (target.inputs.size() > 1)
+        for (var other : target.inputs)
+          if (other != n
+              && !other.enabled
+              && !other.removed
+              && other.target == target
+              && other.lane.count() > 0
+              && other.lane.at(0).units > other.lane.length() - SPACING) {
+            heldByOther = true;
+            limit = Math.min(limit, Math.max(n.lane.at(0).units, n.lane.length() - SPACING));
+          }
+      if (!target.enabled)
+        limit = Math.min(limit, Math.max(n.lane.at(0).units, n.lane.length() - SPACING));
       canExit =
-          n.canExit
+          n.enabled
+              && target.enabled
+              && !heldByOther
+              && n.canExit
               && winner == n
               && limit >= n.lane.length()
               && (count(target) < target.lane.capacity()

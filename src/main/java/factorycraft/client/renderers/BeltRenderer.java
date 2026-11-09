@@ -20,7 +20,7 @@ public final class BeltRenderer implements BlockEntityRenderer<BeltBlockEntity> 
         for(int lane=0;lane<be.laneCount();lane++) {
             var route=be.route();double limit=be.lane(lane).length();
             for(var carrier:be.lane(lane).carriers()) {
-                double position=Math.min(limit,carrier.positionUnits()+elapsed*be.speed()*96);limit=position-24;
+                double position=Math.min(limit,carrier.positionUnits()+(be.circuitRunning() ? elapsed*be.speed()*96 : 0));limit=position-24;
                 if(!route.visible(position,lane%2))continue;
                 var point=route.point(lane%2,position);var tangent=route.tangent(lane%2,position);
                 pose.pushPose();pose.translate((lane/2)*facing.getClockWise().getStepX(),0,(lane/2)*facing.getClockWise().getStepZ());pose.translate(.5,0,.5);pose.mulPose(Axis.YP.rotationDegrees(180-facing.toYRot()));

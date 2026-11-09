@@ -30,8 +30,8 @@ public final class CircuitNetwork {
 
   @SubscribeEvent
   public static void register(RegisterPayloadHandlersEvent e) {
-    // Menu mode/readiness data slots changed in 0.17; require matching circuit clients.
-    e.registrar("2")
+    // Menu mode/readiness data slots changed in 0.18; require matching circuit clients.
+    e.registrar("3")
         .playToServer(
             Operand.TYPE,
             Operand.CODEC,

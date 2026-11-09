@@ -1,6 +1,6 @@
-# Feature matrix — 0.17.0
+# Feature matrix — 0.18.0
 
-**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.17.0 extends the bounded circuit graph with component-sensitive fluid readers, explicit sensor modes, physical-port measurements and pump/tank feedback. Stage 3 and later systems remain partial.
+**Implemented** refers only to the explicit scope in the row. **Partial** is not the entire requested subsystem. Evidence: VALIDATION.md. This release delivers stage 1 and a playable part of stage 2; stages 3–8 are not complete. Version 0.18.0 adds blue/white independent wire colors and cached whole-splitter motor gates, preserving the existing transport kernel and legacy defaults. Stage 3 and later systems remain partial.
 
 | Area | Implemented scope | Status / remaining work |
 |---|---|---|
@@ -8,7 +8,7 @@
 | UI languages/assets | EN/RU, unified geometry and 3D items for 23 types, activity-driven components, nozzle markings, articulated inserter and belt items | implemented first-slice visuals; not final art |
 | Persistence/network | inventories, ordinary belt schema-2 positions, splitter schema-3 four lanes (reads schema 1/2), hand, progress/recipe/fuel/energy, shared research SavedData; vanilla BE/menu packets and validated research payloads | implemented; NBT and separate-process disk reload tested |
 | Belts | 2 lanes, 3 speeds, residual travel, cross-block spacing, fair merges, full rings, congestion, sleeping/wakeup | implemented straight/curved/sloped metric transport; see BELTS.md; mixed-topology world liveness/unload/restart and local profiling verified; no universal timing guarantee |
-| Splitter | 2×1, four physical lanes, two forward outputs, per-lane balancing/fallback, 16 persistent carriers, track-local ports, 30/60/90 item/s saturated independent-kernel flow in 24 input phases at all tiers | implemented three tiers with input/output priorities, strict item-type filter, shared menu/persistent reservations and gated manufacturing; circuit conditions and loaded-portable upgrades remain planned |
+| Splitter | 2×1, four physical lanes, two forward outputs, per-lane balancing/fallback, 16 persistent carriers, track-local ports, 30/60/90 item/s saturated independent-kernel flow in 24 input phases at all tiers | implemented three tiers with input/output priorities, strict item-type filter, shared menu/persistent reservations and gated manufacturing; circuit enable conditions implemented; loaded-portable upgrades remain planned |
 | Advanced belts | three-tier up/down one-item lifts, two-click preview, sole-owner parts; three-tier virtual underground pairs, real transit delay, nearest pairing, guarded output ports | implemented first 3D transport slice; basic splitter filter/priorities implemented; separate belt filters and drag-building remain planned |
 | Inserters | mechanical plus electric fast/long/filter, pole/FE power, persistent hand/phase/energy, guarded ghost menu, reach-2 animation, backpressure, exact physical-track sampling and portable electric devices | partial; bulk/stack variants remain planned; adjacent circuit enable conditions implemented; see INSERTERS.md |
 | Resources | finite per-tile iron/copper/coal/stone reserves, repeated manual harvesting, BE-aware large surface fields across chunks, radius/spacing/stock-range TOML and per-resource datapack settings | partial; uranium/late resources and world setup GUI absent |
@@ -25,7 +25,7 @@
 | Railways | none | planned: independent rails, wagons, signals, schedules, routing |
 | Robots | none | planned: logistics/construction/charging/task allocation |
 | Blueprints | none | planned: versioned import, selection, placement, undo/redo/book |
-| Circuits | bounded cached red/green components, signed signals, scalar constant/arithmetic/decider programs, item/fluid readers with exact component samples, adjacent inserter/pump enable gates, menus, physical wires, UUID persistence and portable relocation | partial; no logic FE yet, wildcards/multiple rules/station/splitter controls remain planned; see CIRCUITS.md |
+| Circuits | bounded cached red/green/blue/white components, signed signals, scalar constant/arithmetic/decider programs, item/fluid readers with exact component samples, adjacent inserter/pump/splitter enable gates, menus, physical wires, UUID persistence and portable relocation | partial; no logic FE yet, wildcards/multiple rules/per-input color masks/station controls remain planned; see CIRCUITS.md |
 | Pollution/enemies | none | planned: diffusion, absorption, evolution, original enemies/raids |
 | Combat | none | planned: turrets/artillery/ammunition/armor/radar/shields |
 | Vehicles | none | planned: car/tank/construction/remote control |

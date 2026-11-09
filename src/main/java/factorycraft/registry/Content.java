@@ -163,7 +163,17 @@ public final class Content {
           ITEMS.register(
               "green_circuit_wire",
               () ->
-                  new factorycraft.circuits.CircuitWireItem(1, new Item.Properties().stacksTo(1)));
+                  new factorycraft.circuits.CircuitWireItem(1, new Item.Properties().stacksTo(1))),
+      BLUE_CIRCUIT_WIRE =
+          ITEMS.register(
+              "blue_circuit_wire",
+              () ->
+                  new factorycraft.circuits.CircuitWireItem(2, new Item.Properties().stacksTo(1))),
+      WHITE_CIRCUIT_WIRE =
+          ITEMS.register(
+              "white_circuit_wire",
+              () ->
+                  new factorycraft.circuits.CircuitWireItem(3, new Item.Properties().stacksTo(1)));
   public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.inserters.InserterMenu>>
       INSERTER_MENU =
           MENUS.register(

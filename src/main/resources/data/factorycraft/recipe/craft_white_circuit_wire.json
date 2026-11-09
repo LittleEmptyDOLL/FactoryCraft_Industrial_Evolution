@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WD"
+  ],
+  "key": {
+    "W": {
+      "item": "factorycraft:copper_wire"
+    },
+    "D": {
+      "item": "minecraft:white_dye"
+    }
+  },
+  "result": {
+    "id": "factorycraft:white_circuit_wire",
+    "count": 1
+  }
+}

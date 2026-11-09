@@ -32,11 +32,47 @@ public final class CircuitSimulation {
     final Map<CircuitNodeBlockEntity, Set<Long>> physicalChunks = new IdentityHashMap<>();
     final Map<Long, Set<CircuitNodeBlockEntity>> sensorChunks = new HashMap<>();
     final Map<CircuitNodeBlockEntity, Set<Long>> sensorDependencies = new IdentityHashMap<>();
+    final Map<BlockPos, Set<BeltBlockEntity>> controlledSplitters = new HashMap<>();
     final LinkedHashSet<CircuitNodeBlockEntity> pending = new LinkedHashSet<>(),
         dirty = new LinkedHashSet<>(),
         poll = new LinkedHashSet<>();
     final CircuitGraph<Port, net.minecraft.resources.ResourceLocation> graph =
-        new CircuitGraph<>(FactoryConfig.CIRCUIT_PORTS.get(), 8, p -> dirty.add(p.owner));
+        new CircuitGraph<>(
+            FactoryConfig.CIRCUIT_PORTS.get(),
+            8,
+            p -> {
+              dirty.add(p.owner);
+              controlChanged(p.owner);
+            });
+  }
+
+  public static void watchSplitter(BeltBlockEntity belt, CircuitBinding old) {
+    if (belt.getLevel() == null || belt.getLevel().isClientSide) return;
+    var s = STATES.get(belt.getLevel());
+    if (old != null && s != null) {
+      var set = s.controlledSplitters.get(old.controller());
+      if (set != null) {
+        set.remove(belt);
+        if (set.isEmpty()) s.controlledSplitters.remove(old.controller());
+      }
+    }
+    if (belt.loaded() && belt.circuitBinding != null) {
+      s = STATES.computeIfAbsent(belt.getLevel(), l -> new State());
+      s.controlledSplitters
+          .computeIfAbsent(
+              belt.circuitBinding.controller(),
+              k -> Collections.newSetFromMap(new IdentityHashMap<>()))
+          .add(belt);
+    }
+    if (belt.loaded()) belt.refreshCircuitControl();
+  }
+
+  private static void controlChanged(CircuitNodeBlockEntity n) {
+    if (n.kind() != FactoryKind.CIRCUIT_CONTROLLER) return;
+    var s = STATES.get(n.getLevel());
+    var belts = s == null ? null : s.controlledSplitters.get(n.getBlockPos());
+    if (belts != null)
+      for (var belt : List.copyOf(belts)) if (belt.loaded()) belt.refreshCircuitControl();
   }
 
   private static Port key(CircuitNodeBlockEntity n, int p, int color) {
@@ -100,7 +136,9 @@ public final class CircuitSimulation {
     if (!n.active) return;
     n.active = false;
     n.gate = false;
-    for (int p = 0; p < n.ports(); p++) for (int c = 0; c < 2; c++) s.graph.remove(key(n, p, c));
+    controlChanged(n);
+    for (int p = 0; p < n.ports(); p++)
+      for (int c = 0; c < WireColors.COUNT; c++) s.graph.remove(key(n, p, c));
     s.dirty.remove(n);
     s.poll.remove(n);
     notifyPeers(n, s);
@@ -135,12 +173,13 @@ public final class CircuitSimulation {
   }
 
   public static void programChanged(CircuitNodeBlockEntity n) {
+    controlChanged(n);
     var s = STATES.get(n.getLevel());
     if (s != null) {
       s.dirty.add(n);
       if (n.kind() == FactoryKind.CIRCUIT_READER) {
         n.readerReady = false;
-        for (int c = 0; c < 2; c++) s.graph.complete(key(n, 0, c), false);
+        for (int c = 0; c < WireColors.COUNT; c++) s.graph.complete(key(n, 0, c), false);
         s.poll.add(n);
       }
     }
@@ -165,7 +204,7 @@ public final class CircuitSimulation {
         || !a.available()
         || !b.available()
         || color < 0
-        || color > 1
+        || !WireColors.valid(color)
         || pa < 0
         || pa >= a.ports()
         || pb < 0
@@ -219,7 +258,7 @@ public final class CircuitSimulation {
 
   public static void destroyed(CircuitNodeBlockEntity n) {
     if (n.getLevel() == null || n.getLevel().isClientSide) return;
-    for (int p = 0; p < n.ports(); p++) for (int c = 0; c < 2; c++) clear(n, p, c);
+    for (int p = 0; p < n.ports(); p++) for (int c = 0; c < WireColors.COUNT; c++) clear(n, p, c);
     var target = target(n);
     if (target != null) {
       var binding = CircuitBinding.get(target);
@@ -238,7 +277,8 @@ public final class CircuitSimulation {
     }
     if (!n.active) {
       n.active = true;
-      for (int p = 0; p < n.ports(); p++) for (int c = 0; c < 2; c++) s.graph.add(key(n, p, c));
+      for (int p = 0; p < n.ports(); p++)
+        for (int c = 0; c < WireColors.COUNT; c++) s.graph.add(key(n, p, c));
       publish(n, s);
       if (n.kind() == FactoryKind.CIRCUIT_READER || n.kind() == FactoryKind.CIRCUIT_CONTROLLER)
         s.poll.add(n);
@@ -278,7 +318,7 @@ public final class CircuitSimulation {
       notifyPeers(n, s);
     }
     for (int p = 0; p < n.ports(); p++)
-      for (int c = 0; c < 2; c++) {
+      for (int c = 0; c < WireColors.COUNT; c++) {
         boolean complete = n.kind() != FactoryKind.CIRCUIT_READER || n.readerReady;
         for (var l : n.links)
           if (l.localPort() == p && l.color() == c) {
@@ -297,21 +337,21 @@ public final class CircuitSimulation {
 
   public static boolean inputReady(CircuitNodeBlockEntity n) {
     var s = STATES.get(n.getLevel());
-    return s != null
-        && n.active
-        && n.links.stream().anyMatch(l -> l.localPort() == 0)
-        && s.graph.valid(key(n, 0, 0))
-        && s.graph.valid(key(n, 0, 1));
+    if (s == null || !n.active || n.links.stream().noneMatch(l -> l.localPort() == 0)) return false;
+    for (int c = 0; c < WireColors.COUNT; c++) if (!s.graph.valid(key(n, 0, c))) return false;
+    return true;
   }
 
   private static int input(CircuitNodeBlockEntity n, State s) {
-    return s.graph.value(key(n, 0, 0), n.program().input())
-        + s.graph.value(key(n, 0, 1), n.program().input());
+    int total = 0;
+    for (int c = 0; c < WireColors.COUNT; c++)
+      total += s.graph.value(key(n, 0, c), n.program().input());
+    return total;
   }
 
   private static void publish(CircuitNodeBlockEntity n, State s) {
     if (n.kind() == FactoryKind.CIRCUIT_CONTROLLER) return;
-    for (int c = 0; c < 2; c++)
+    for (int c = 0; c < WireColors.COUNT; c++)
       s.graph.output(key(n, n.outputPort(), c), n.program().output(), n.lastOutput);
   }
 
@@ -319,8 +359,13 @@ public final class CircuitSimulation {
     var b = FluidConnections.endpoint(n.getLevel(), n.targetPosition());
     return b instanceof InserterBlockEntity a && a.electric()
             || b instanceof FluidBlockEntity f && f.kind() == FluidKind.PUMP
+            || b instanceof BeltBlockEntity belt && belt.kind().splitter()
         ? b
         : null;
+  }
+
+  public static boolean controls(CircuitNodeBlockEntity node, FactoryBlockEntity device) {
+    return target(node) == device;
   }
 
   private static boolean bind(CircuitNodeBlockEntity n) {
@@ -373,7 +418,7 @@ public final class CircuitSimulation {
 
   private static void unknownSensor(CircuitNodeBlockEntity n, State s) {
     n.readerReady = false;
-    for (int c = 0; c < 2; c++) s.graph.complete(key(n, 0, c), false);
+    for (int c = 0; c < WireColors.COUNT; c++) s.graph.complete(key(n, 0, c), false);
     s.pending.add(n);
   }
 
@@ -519,6 +564,7 @@ public final class CircuitSimulation {
         n.persistSignal();
       }
       n.gate = u.gate();
+      controlChanged(n);
       publish(n, s);
       if (n.kind() == FactoryKind.CIRCUIT_CONTROLLER) {
         var target = target(n);

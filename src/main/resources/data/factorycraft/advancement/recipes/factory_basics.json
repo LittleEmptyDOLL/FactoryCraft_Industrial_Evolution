@@ -17,6 +17,7 @@
     "recipes": [
       "factorycraft:craft_assembling_machine",
       "factorycraft:craft_automation_science_pack",
+      "factorycraft:craft_blue_circuit_wire",
       "factorycraft:craft_boiler",
       "factorycraft:craft_chemical_plant",
       "factorycraft:craft_coal_generator",
@@ -46,6 +47,7 @@
       "factorycraft:craft_steam_engine",
       "factorycraft:craft_transport_belt",
       "factorycraft:craft_underground_belt",
+      "factorycraft:craft_white_circuit_wire",
       "factorycraft:craft_wrench"
     ]
   }

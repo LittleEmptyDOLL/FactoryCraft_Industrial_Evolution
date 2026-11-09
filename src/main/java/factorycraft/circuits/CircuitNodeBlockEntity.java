@@ -175,7 +175,8 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
     if (t.contains("Assembly"))
       for (var item : d.getList("Links", 10)) {
         var link = CircuitLink.load((CompoundTag) item);
-        if (link != null && !links.contains(link) && links.size() < 32) links.add(link);
+        if (link != null && !links.contains(link) && links.size() < WireColors.MAX_LINKS)
+          links.add(link);
       }
     gate = false;
   }

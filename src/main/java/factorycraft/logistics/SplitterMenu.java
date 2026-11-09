@@ -22,7 +22,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
         id,
         inv,
         (BeltBlockEntity) inv.player.level().getBlockEntity(buffer.readBlockPos()),
-        new SimpleContainerData(3));
+        new SimpleContainerData(4));
   }
 
   public SplitterMenu(int id, Inventory inv, BeltBlockEntity owner) {
@@ -36,6 +36,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
               case 0 -> owner.splitterSettings().input();
               case 1 -> owner.splitterSettings().output();
               case 2 -> owner.splitterSettings().filter() == null ? 0 : 1;
+              case 3 -> owner.circuitBinding == null ? 0 : owner.circuitRunning() ? 1 : 2;
               default -> 0;
             };
           }
@@ -43,7 +44,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
           public void set(int i, int value) {}
 
           public int getCount() {
-            return 3;
+            return 4;
           }
         });
   }
