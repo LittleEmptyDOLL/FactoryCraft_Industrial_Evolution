@@ -1,12 +1,28 @@
 # Development rules
 
+## Codex Cloud task scope, validation and CI budget
+
+These rules reduce repeated remote work, not correctness or conservation guarantees. Feature-specific invariants later in this file remain mandatory.
+
+* **Task boundaries:** implement only the user's requested scope. Do not automatically start the next roadmap item. Update IMPLEMENTATION_PLAN.md with next tasks, but do not begin them without a request.
+* **Focused inspection:** read only relevant code/doc ranges after AGENTS.md; use searches and concise diffs/test summaries rather than repeatedly reading full VALIDATION.md, historic logs, screenshots or benchmark reports. Keep documentation updates proportional to actual changes.
+* **Documentation-only:** check diff/format/links; do not run Gradle, servers or benchmarks unless generated runtime assets changed.
+* **Small/local UI, asset or config changes:** validate the changed file(s) and compile changed Java (e.g. `./gradlew classes`), with focused tests where relevant. No giant worlds, optional-mod profiles or real multiplayer QA without an affected behavior.
+* **Ordinary recipes, menus, worldgen or production changes:** run `./gradlew build` and relevant tests. Run native GameTests and separate-process reload if persisted game data is affected. Do not treat compile success as persistence validation.
+* **High-risk transport, power, fluids, NBT, chunks, multiplayer or performance changes:** run targeted invariant/ledger/headway tests, relevant native GameTests, and required separate-JVM persistence checks before publishing. Run a local benchmark if it validates the changed hot path, safety invariant or performance claim. Retain all pre-existing checkpoint fixtures and evidence. Full CI remains required for release-level validation.
+* **Visual verification:** launch real clients and capture new screenshots only when changed UI/rendering or network behavior needs it. Two-client QA is not a routine precondition for non-network changes.
+* **Avoid duplicated CI work:** .github/workflows/build.yml runs build, integration/restart, optional mod compatibility, full factory benchmark/restart, and mixed 3D benchmark/restart in independent jobs. Do not run *all* these jobs in Codex Cloud for every change; preserve stricter checks when risk warrants them.
+* **Publishing and handoff:** publish only with user authorization and successful relevant local checks. After push, report the commit, checks actually completed, checks left for GitHub Actions and the workflow link, then end the task. Do not repeatedly poll or wait for the complete CI run unless the user expressly requests a green CI result. Never call pending or unexecuted tests successful; follow up on concrete CI failures when requested.
+* **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
+
+
 * Target Java 21 / Minecraft 1.21.1 / NeoForge 21.1.252 only. Confirm APIs against this dependency's sources and https://docs.neoforged.net/docs/1.21.1/.
 * Inspect existing behavior before edits. Keep a buildable playable slice; no empty registered feature placeholders.
 * Server owns inventories, recipes, mining and energy. Client code belongs under `factorycraft.client` and must never load on a dedicated server.
 * Preserve item/energy conservation. Transfer simulation must not mutate source state; extracted inserter contents must have a persistent owner. Never force-load neighbor chunks.
 * Persist all authoritative changes. 0.6.0 intentionally requires new worlds under the user override below. Preserve 0.6.0 data in future changes unless explicitly authorized otherwise.
 * Graph topology caches invalidate on load/unload/place/break only. No global whole-world scan per tick or async access to Level.
-* Add meaningful JUnit or GameTests for changes affecting inventories, movement, recipes and persistence. Run `./gradlew build` and integration tests; record exact results and unresolved limits in VALIDATION.md.
+* Add meaningful JUnit or GameTests for changes affecting inventories, movement, recipes and persistence. Apply the risk-based execution policy below; preserve every safety invariant, and record exact results and unresolved limits in VALIDATION.md.
 * Update FEATURE_MATRIX.md honestly: implemented / partial / planned; registration alone never counts as implemented.
 * Original/properly licensed assets only. Keep scripts reproducible. No extracted Factorio assets.
 * Keep the next concrete task in IMPLEMENTATION_PLAN.md. Do not push or publish without user authorization.
