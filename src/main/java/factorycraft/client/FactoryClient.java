@@ -39,6 +39,7 @@ public final class FactoryClient {
 
   @SubscribeEvent
   public static void menus(RegisterMenuScreensEvent e) {
+    e.register(Content.INSERTER_MENU.get(), factorycraft.client.screens.InserterScreen::new);
     e.register(Content.SPLITTER_MENU.get(), factorycraft.client.screens.SplitterScreen::new);
     e.register(Content.MODULE_MENU.get(), factorycraft.client.screens.ModuleScreen::new);
     e.register(Content.RESEARCH_MENU.get(), factorycraft.client.screens.ResearchScreen::new);

@@ -279,5 +279,22 @@
   "technology.factorycraft.logistics_3": "Логистика 3",
   "tooltip.factorycraft.splitter_upgrade": "Для рецепта нужен обычный новый разделитель.",
   "tooltip.factorycraft.splitter_rate": "Две входные ленты: суммарно %s предметов/с. Без FE.",
-  "command.factorycraft.tiered_sorting": "Три конечные сортировочные линии построены: %s; на каждом уровне 32 железа + 32 меди."
+  "command.factorycraft.tiered_sorting": "Три конечные сортировочные линии построены: %s; на каждом уровне 32 железа + 32 меди.",
+  "block.factorycraft.fast_inserter": "Быстрый манипулятор",
+  "recipe.factorycraft.fast_inserter": "Быстрый манипулятор",
+  "tooltip.factorycraft.fast_inserter": "Дальность 1; 8 тиков/цикл; 4 FE за тик движения. ПКМ: настройка.",
+  "block.factorycraft.long_inserter": "Длинный манипулятор",
+  "recipe.factorycraft.long_inserter": "Длинный манипулятор",
+  "tooltip.factorycraft.long_inserter": "Дальность 2; 16 тиков/цикл; 3 FE за тик движения. ПКМ: настройка.",
+  "block.factorycraft.filter_inserter": "Фильтрующий манипулятор",
+  "recipe.factorycraft.filter_inserter": "Фильтрующий манипулятор",
+  "tooltip.factorycraft.filter_inserter": "Дальность 1; 8 тиков/цикл; 4 FE за тик движения. ПКМ: настройка.",
+  "gui.factorycraft.inserter": "Электроманипулятор",
+  "gui.factorycraft.inserter_enabled.0": "Выключен",
+  "gui.factorycraft.inserter_enabled.1": "Включён",
+  "gui.factorycraft.inserter_mode.0": "Принимать",
+  "gui.factorycraft.inserter_mode.1": "Исключать",
+  "gui.factorycraft.inserter_hand": "Рука",
+  "gui.factorycraft.inserter_power": "%s / 2000 FE",
+  "technology.factorycraft.electric_inserters": "Электрические манипуляторы"
 }

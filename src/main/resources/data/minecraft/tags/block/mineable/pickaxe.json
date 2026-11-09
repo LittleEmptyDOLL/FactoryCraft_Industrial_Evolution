@@ -27,6 +27,9 @@
     "factorycraft:express_underground_belt",
     "factorycraft:transport_part",
     "factorycraft:fast_splitter",
-    "factorycraft:express_splitter"
+    "factorycraft:express_splitter",
+    "factorycraft:fast_inserter",
+    "factorycraft:long_inserter",
+    "factorycraft:filter_inserter"
   ]
 }

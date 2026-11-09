@@ -279,5 +279,22 @@
   "technology.factorycraft.logistics_3": "Logistics 3",
   "tooltip.factorycraft.splitter_upgrade": "Upgrade recipe: plain, unused splitter only.",
   "tooltip.factorycraft.splitter_rate": "Two input belts: %s items/s total. No FE required.",
-  "command.factorycraft.tiered_sorting": "Three finite sorting lines built at %s; outputs: 32 iron + 32 copper per tier."
+  "command.factorycraft.tiered_sorting": "Three finite sorting lines built at %s; outputs: 32 iron + 32 copper per tier.",
+  "block.factorycraft.fast_inserter": "Fast Inserter",
+  "recipe.factorycraft.fast_inserter": "Fast Inserter",
+  "tooltip.factorycraft.fast_inserter": "Reach 1; 8 ticks/cycle; 4 FE per moving tick. Right-click to configure.",
+  "block.factorycraft.long_inserter": "Long Inserter",
+  "recipe.factorycraft.long_inserter": "Long Inserter",
+  "tooltip.factorycraft.long_inserter": "Reach 2; 16 ticks/cycle; 3 FE per moving tick. Right-click to configure.",
+  "block.factorycraft.filter_inserter": "Filter Inserter",
+  "recipe.factorycraft.filter_inserter": "Filter Inserter",
+  "tooltip.factorycraft.filter_inserter": "Reach 1; 8 ticks/cycle; 4 FE per moving tick. Right-click to configure.",
+  "gui.factorycraft.inserter": "Electric Inserter",
+  "gui.factorycraft.inserter_enabled.0": "Disabled",
+  "gui.factorycraft.inserter_enabled.1": "Enabled",
+  "gui.factorycraft.inserter_mode.0": "Allow type",
+  "gui.factorycraft.inserter_mode.1": "Deny type",
+  "gui.factorycraft.inserter_hand": "Hand",
+  "gui.factorycraft.inserter_power": "%s / 2000 FE",
+  "technology.factorycraft.electric_inserters": "Electric inserters"
 }

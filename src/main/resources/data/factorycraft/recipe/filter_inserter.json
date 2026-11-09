@@ -1,0 +1,35 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:inserter"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:filter_inserter",
+    "count": 1
+  },
+  "ticks": 40,
+  "energy": 16
+}

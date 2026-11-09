@@ -83,7 +83,7 @@ public final class FactoryBlock extends BaseEntityBlock {
       if (cell != null) return factorycraft.belts.TransportShapes.shape(cell);
       return box(0, 0, 0, 16, 3, 16);
     }
-    if (kind == FactoryKind.INSERTER) return box(5, 0, 5, 11, 8, 11);
+    if (kind.inserter()) return box(5, 0, 5, 11, 8, 11);
     if (kind == FactoryKind.POLE) return box(6, 0, 6, 10, 16, 10);
     return Shapes.block();
   }
@@ -94,7 +94,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (kind == FactoryKind.BEACON) return new factorycraft.blockentity.BeaconBlockEntity(p, s);
     if (kind == FactoryKind.LAB) return new LabBlockEntity(p, s);
     if (kind.belt()) return new BeltBlockEntity(p, s);
-    if (kind == FactoryKind.INSERTER) return new InserterBlockEntity(p, s);
+    if (kind.inserter()) return new InserterBlockEntity(p, s);
     if (kind == FactoryKind.POLE) return new PoleBlockEntity(p, s);
     if (kind.casing()) return new CasingBlockEntity(p, s);
     return new MachineBlockEntity(p, s);
@@ -109,7 +109,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (kind == FactoryKind.LAB)
       return createTickerHelper(t, Content.LAB.get(), (a, b, c, d) -> d.tick());
     if (kind.belt()) return null;
-    if (kind == FactoryKind.INSERTER)
+    if (kind.inserter())
       return createTickerHelper(t, Content.INSERTER.get(), (a, b, c, d) -> d.tick());
     if (kind.machine())
       return createTickerHelper(t, Content.MACHINE.get(), (a, b, c, d) -> d.tick());
@@ -148,6 +148,8 @@ public final class FactoryBlock extends BaseEntityBlock {
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
       player.openMenu(machine, p);
+    } else if (l.getBlockEntity(p) instanceof InserterBlockEntity arm && arm.electric()) {
+      factorycraft.inserters.InserterMenu.open(arm, player);
     } else if (l.getBlockEntity(p) instanceof CasingBlockEntity part) {
       var owner = part.genericForRemoval();
       if (owner instanceof BeltBlockEntity belt && belt.kind().splitter())
@@ -190,6 +192,10 @@ public final class FactoryBlock extends BaseEntityBlock {
       return factorycraft.multiblock.StructureSupport.wrench(level, pos, player);
     var target = level.getBlockEntity(pos);
     if (target instanceof TransportPartBlockEntity part) target = part.ownerForRemoval();
+    if (target instanceof InserterBlockEntity arm && arm.electric() && player.isShiftKeyDown()) {
+      if (!level.isClientSide) level.removeBlock(pos, false);
+      return InteractionResult.sidedSuccess(level.isClientSide);
+    }
     if (target instanceof BeltBlockEntity belt) {
       if (level.isClientSide) return InteractionResult.SUCCESS;
       if (belt.kind().lift()) {
@@ -241,6 +247,7 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    if (kind.electricInserter()) return List.of();
     if (kind == FactoryKind.TRANSPORT_PART
         || params.getOptionalParameter(LootContextParams.BLOCK_ENTITY)
                 instanceof BeltBlockEntity belt

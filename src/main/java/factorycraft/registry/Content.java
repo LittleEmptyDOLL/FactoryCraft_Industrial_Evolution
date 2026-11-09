@@ -136,6 +136,11 @@ public final class Content {
               () ->
                   BlockEntityType.Builder.of(OilDepositBlockEntity::new, OIL_DEPOSIT.get())
                       .build(null));
+  public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.inserters.InserterMenu>>
+      INSERTER_MENU =
+          MENUS.register(
+              "inserter",
+              () -> IMenuTypeExtension.create(factorycraft.inserters.InserterMenu::new));
   public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.logistics.SplitterMenu>>
       SPLITTER_MENU =
           MENUS.register(
@@ -240,7 +245,12 @@ public final class Content {
           ENTITIES.register(
               "inserter",
               () ->
-                  BlockEntityType.Builder.of(InserterBlockEntity::new, blocks(FactoryKind.INSERTER))
+                  BlockEntityType.Builder.of(
+                          InserterBlockEntity::new,
+                          Arrays.stream(FactoryKind.values())
+                              .filter(FactoryKind::inserter)
+                              .map(k -> FACTORY.get(k).get())
+                              .toArray(Block[]::new))
                       .build(null));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineBlockEntity>>
       MACHINE =
@@ -478,6 +488,10 @@ public final class Content {
     e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BELT.get(), (be, side) -> be.inventory());
     e.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK, INSERTER.get(), (be, side) -> be.inventory());
+    e.registerBlockEntity(
+        Capabilities.EnergyStorage.BLOCK,
+        INSERTER.get(),
+        (be, side) -> be.electric() ? be.energyPort : null);
     e.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK, MACHINE.get(), MachineBlockEntity::automation);
     e.registerBlockEntity(

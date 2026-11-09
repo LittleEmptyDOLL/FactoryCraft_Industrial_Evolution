@@ -28,13 +28,32 @@ public enum FactoryKind {
   CHEMICAL_PLANT("chemical_plant", 0),
   REFINERY_CASING("refinery_casing", 0),
   FAST_SPLITTER("fast_splitter", 2),
-  EXPRESS_SPLITTER("express_splitter", 3);
+  EXPRESS_SPLITTER("express_splitter", 3),
+  FAST_INSERTER("fast_inserter", 0),
+  LONG_INSERTER("long_inserter", 0),
+  FILTER_INSERTER("filter_inserter", 0);
   public final String id;
   public final int beltTier;
 
   FactoryKind(String id, int beltTier) {
     this.id = id;
     this.beltTier = beltTier;
+  }
+
+  public boolean inserter() {
+    return this == INSERTER || electricInserter();
+  }
+
+  public boolean electricInserter() {
+    return this == FAST_INSERTER || this == LONG_INSERTER || this == FILTER_INSERTER;
+  }
+
+  public factorycraft.simulation.inserters.ArmCycle.Spec armSpec() {
+    return switch (this) {
+      case FAST_INSERTER, FILTER_INSERTER -> factorycraft.simulation.inserters.ArmCycle.FAST;
+      case LONG_INSERTER -> factorycraft.simulation.inserters.ArmCycle.LONG;
+      default -> factorycraft.simulation.inserters.ArmCycle.MECHANICAL;
+    };
   }
 
   public boolean splitter() {

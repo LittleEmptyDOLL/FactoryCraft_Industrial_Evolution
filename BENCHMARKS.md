@@ -164,3 +164,7 @@ Mean tick work fell 21.7%, kernel CPU 28.6%, with identical measured transfer/wo
 ## 0.14.0 — saved-world compatibility
 
 The preserved legacy FULL and optimized MIXED checkpoints both pass exact pre-tick hash verification and resumed material/FE/identity audits on 0.14.0. See `docs/benchmarks/v0140-compat-verify.json` and `v0140-mixed-verify.json`. No existing world was reset/refilled. These runs establish compatibility; they do not measure a giant network of the new splitters or a new speed improvement. All-tier splitter throughput and mixed-tier headway/conservation are independently exercised, and a finite native three-tier sorting line delivers 32 iron/32 copper per tier. CI continues fresh FULL/MIXED measurements, unload/reload and separate-JVM checks.
+
+## 0.15.0 — mechanical adapter compatibility
+
+The preserved FULL checkpoint passes exact old pre-tick NBT and resumed material/FE/identity checks with the common inserter adapter extended for electric models (`docs/benchmarks/v0150-compat-verify.json`). Mechanical swing-12 timing and grid membership remain unchanged. This is a targeted saved-world regression, not a new giant electric-arm timing claim. Fresh FULL/MIXED measurements and optional profiles remain independent GitHub Actions jobs; they are not duplicated locally for this release.

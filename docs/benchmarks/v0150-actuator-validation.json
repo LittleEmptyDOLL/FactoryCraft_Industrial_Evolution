@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "modVersion": "0.15.0",
+  "status": "PASS",
+  "junit": 138,
+  "requiredGameTests": 248,
+  "inserters": {
+    "fast_inserter": {
+      "phase": 2,
+      "FE": 731,
+      "hand": {
+        "id": "minecraft:diamond",
+        "count": 1,
+        "CustomData": {
+          "grade": 17
+        }
+      },
+      "enabled": false,
+      "separateJvms": true
+    },
+    "long_inserter": {
+      "phase": 2,
+      "FE": 731,
+      "hand": {
+        "id": "minecraft:diamond",
+        "count": 1,
+        "CustomData": {
+          "grade": 17
+        }
+      },
+      "enabled": false,
+      "separateJvms": true
+    },
+    "filter_inserter": {
+      "phase": 2,
+      "FE": 731,
+      "hand": {
+        "id": "minecraft:diamond",
+        "count": 1,
+        "CustomData": {
+          "grade": 17
+        }
+      },
+      "enabled": false,
+      "separateJvms": true
+    }
+  },
+  "firstHarnessFailure": "The portable-item test invoked a helper requiring MachineProfile for a single-block arm. Corrected to normal ItemStack.useOn; persistent fixtures were not reset/refilled.",
+  "nativeFinitePowerExample": "Generator and poles, no arm energy seeded: fast/long each move 32 raw iron + 32 raw copper, filter moves 32 iron and leaves 32 copper.",
+  "pendingCi": [
+    "Optional FTB/EMI/JEI profile",
+    "Fresh FULL/MIXED benchmarks and their restart checks"
+  ],
+  "client": {
+    "runtime": "Real Minecraft 1.21.1 / NeoForge client via Gradle runClient, no optional mods, Xvfb/Mesa",
+    "world": "FactoryCraftScale, fresh platform floor (1003,110,103)",
+    "outputs": [
+      "fast: 32 raw iron + 32 raw copper",
+      "long: 32 raw iron + 32 raw copper",
+      "filter: 32 raw iron, 32 copper remain in source"
+    ],
+    "menu": "Native enable toggle/deny mode and ghost click, 2000 FE shown; three raw-iron samples remain in player inventory.",
+    "finalSettings": {
+      "enabled": false,
+      "blacklist": true,
+      "filter": "minecraft:raw_iron"
+    },
+    "screenshots": [
+      "docs/screenshots/electric-inserters-0.15.0.png",
+      "docs/screenshots/electric-inserter-menu-0.15.0.png"
+    ]
+  }
+}

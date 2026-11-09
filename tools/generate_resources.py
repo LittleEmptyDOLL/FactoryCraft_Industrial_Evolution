@@ -589,3 +589,24 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  data['tooltip.factorycraft.splitter_rate']=('Two input belts: %s items/s total. No FE required.','Две входные ленты: суммарно %s предметов/с. Без FE.')[index]
  data['command.factorycraft.tiered_sorting']=('Three finite sorting lines built at %s; outputs: 32 iron + 32 copper per tier.','Три конечные сортировочные линии построены: %s; на каждом уровне 32 железа + 32 меди.')[index]
  write(f'assets/factorycraft/lang/{lang}.json',data)
+
+# 0.15: original actuator bases; animated arms share the client renderer, no item entities.
+arm_types=[('fast_inserter',(57,126,194),1,8,4,'Fast Inserter','Быстрый манипулятор'),('long_inserter',(186,64,49),2,16,3,'Long Inserter','Длинный манипулятор'),('filter_inserter',(149,82,185),1,8,4,'Filter Inserter','Фильтрующий манипулятор')]
+for name,color,reach,cycle,fe,en,ru in arm_types:
+ texture('block/'+name,color,'machine')
+ tex='factorycraft:block/'+name
+ write(f'assets/factorycraft/models/block/{name}.json',{'parent':'minecraft:block/block','textures':{'all':tex,'particle':tex},'elements':[{'from':[5,0,5],'to':[11,7,11],'faces':{f:{'texture':'#all'} for f in ['up','down','north','south','east','west']}}]})
+ write(f'assets/factorycraft/models/item/{name}.json',{'parent':'factorycraft:block/'+name})
+ write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'facing='+d:{'model':'factorycraft:block/'+name,'y':rot} for d,rot in [('north',0),('east',90),('south',180),('west',270)]}})
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[]})
+ tag=json.loads((ROOT/'data/minecraft/tags/block/mineable/pickaxe.json').read_text());tag['values'].append('factorycraft:'+name);write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
+ process(name,'assembling_machine',[('factorycraft:inserter',1),('factorycraft:iron_gear',5),('factorycraft:electronic_circuit',2 if name!='filter_inserter' else 5)],name,1,40,16)
+ # Like splitter upgrades, never consume another owner's portable payload.
+ path=ROOT/f'data/factorycraft/recipe/{name}.json';recipe=json.loads(path.read_text());recipe['inputs'][0]['ingredient']={'type':'neoforge:components','items':['factorycraft:inserter'],'components':{},'strict':True};write(str(path.relative_to(ROOT)),recipe)
+ for locale,index in [('en_us',0),('ru_ru',1)]:
+  path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings['block.factorycraft.'+name]=(en,ru)[index];strings['recipe.factorycraft.'+name]=(en,ru)[index]
+  strings['tooltip.factorycraft.'+name]=(f'Reach {reach}; {cycle} ticks/cycle; {fe} FE per moving tick. Right-click to configure.',f'Дальность {reach}; {cycle} тиков/цикл; {fe} FE за тик движения. ПКМ: настройка.')[index];write(str(path.relative_to(ROOT)),strings)
+write('data/factorycraft/recipe/electric_inserters.json',{'type':'factorycraft:research','prerequisites':['factorycraft:logistics','factorycraft:electronics'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':25,'ticks':60,'unlocks':['factorycraft:'+x[0] for x in arm_types],'x':2,'y':5})
+arm_ui={'inserter':('Electric Inserter','Электроманипулятор'),'inserter_enabled.0':('Disabled','Выключен'),'inserter_enabled.1':('Enabled','Включён'),'inserter_mode.0':('Allow type','Принимать'),'inserter_mode.1':('Deny type','Исключать'),'inserter_hand':('Hand','Рука'),'inserter_power':('%s / 2000 FE','%s / 2000 FE')}
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings.update({'gui.factorycraft.'+k:v[index] for k,v in arm_ui.items()});strings['technology.factorycraft.electric_inserters']=('Electric inserters','Электрические манипуляторы')[index];write(str(path.relative_to(ROOT)),strings)
