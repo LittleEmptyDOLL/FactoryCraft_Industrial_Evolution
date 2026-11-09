@@ -73,8 +73,7 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   protected VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
-    if (kind.casing() && s.getValue(PROFILE) == factorycraft.multiblock.MachineProfile.SPLITTER)
-      return box(0, 0, 0, 16, 3, 16);
+    if (kind.casing() && s.getValue(PROFILE).splitter()) return box(0, 0, 0, 16, 3, 16);
     if (kind.belt() || kind == FactoryKind.TRANSPORT_PART) {
       var be = l.getBlockEntity(p);
       var cell =
@@ -151,15 +150,14 @@ public final class FactoryBlock extends BaseEntityBlock {
       player.openMenu(machine, p);
     } else if (l.getBlockEntity(p) instanceof CasingBlockEntity part) {
       var owner = part.genericForRemoval();
-      if (owner instanceof BeltBlockEntity belt && belt.kind() == FactoryKind.SPLITTER)
+      if (owner instanceof BeltBlockEntity belt && belt.kind().splitter())
         factorycraft.logistics.SplitterMenu.open(belt, player);
       else if (owner != null) factorycraft.multiblock.AssemblyAccess.open(owner, player);
       else
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
     } else if (l.getBlockEntity(p) instanceof BeltBlockEntity belt) {
-      if (belt.kind() == FactoryKind.SPLITTER)
-        factorycraft.logistics.SplitterMenu.open(belt, player);
+      if (belt.kind().splitter()) factorycraft.logistics.SplitterMenu.open(belt, player);
       else showTransport(belt, player);
     } else if (l.getBlockEntity(p) instanceof TransportPartBlockEntity part
         && part.ownerForRemoval() != null) showTransport(part.ownerForRemoval(), player);

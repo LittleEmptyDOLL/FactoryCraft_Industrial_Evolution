@@ -30,7 +30,7 @@ public final class FactoryClient {
     for (var p : factorycraft.multiblock.MachineProfile.values())
       if (p != factorycraft.multiblock.MachineProfile.TANK
           && p != factorycraft.multiblock.MachineProfile.PUMP
-          && p != factorycraft.multiblock.MachineProfile.SPLITTER)
+          && !p.splitter())
         event.register(
             net.minecraft.client.resources.model.ModelResourceLocation.standalone(
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(

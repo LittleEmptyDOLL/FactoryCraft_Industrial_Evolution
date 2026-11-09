@@ -1,0 +1,43 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "assembling_machine_2",
+  "items": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fast_splitter"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 10
+    }
+  ],
+  "fluids": [
+    {
+      "fluid": "factorycraft:lubricant",
+      "amount": 80
+    }
+  ],
+  "results": [
+    {
+      "id": "factorycraft:express_splitter",
+      "count": 1
+    }
+  ],
+  "ticks": 40,
+  "energy": 40
+}

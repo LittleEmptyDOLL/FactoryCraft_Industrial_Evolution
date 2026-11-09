@@ -1,0 +1,35 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:splitter"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:fast_splitter",
+    "count": 1
+  },
+  "ticks": 40,
+  "energy": 24
+}

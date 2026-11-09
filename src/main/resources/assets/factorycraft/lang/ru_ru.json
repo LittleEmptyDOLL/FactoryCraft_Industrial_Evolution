@@ -270,5 +270,14 @@
   "gui.factorycraft.splitter_filter": "Фильтр",
   "gui.factorycraft.splitter_clear": "Сброс",
   "gui.factorycraft.splitter_hint": "Стороны — по ходу ленты. Фильтр строгий.",
-  "gui.factorycraft.splitter_filter_tip": "Нажмите предметом на курсоре для выбора типа; ПКМ — очистить. Предмет не расходуется. Компоненты не учитываются."
+  "gui.factorycraft.splitter_filter_tip": "Нажмите предметом на курсоре для выбора типа; ПКМ — очистить. Предмет не расходуется. Компоненты не учитываются.",
+  "block.factorycraft.fast_splitter": "Быстрый разделитель",
+  "recipe.factorycraft.fast_splitter": "Быстрый разделитель",
+  "block.factorycraft.express_splitter": "Экспресс-разделитель",
+  "recipe.factorycraft.express_splitter": "Экспресс-разделитель",
+  "technology.factorycraft.logistics_2": "Логистика 2",
+  "technology.factorycraft.logistics_3": "Логистика 3",
+  "tooltip.factorycraft.splitter_upgrade": "Для рецепта нужен обычный новый разделитель.",
+  "tooltip.factorycraft.splitter_rate": "Две входные ленты: суммарно %s предметов/с. Без FE.",
+  "command.factorycraft.tiered_sorting": "Три конечные сортировочные линии построены: %s; на каждом уровне 32 железа + 32 меди."
 }

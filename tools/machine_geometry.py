@@ -59,12 +59,18 @@ def generate(root,write,png):
     xx=(0,.16) if side=='left' else (w-.16,w)
     for a,b in [((xx[0],.2,z-.29),(xx[1],.8,z-.2)),((xx[0],.2,z+.2),(xx[1],.8,z+.29)),((xx[0],.2,z-.2),(xx[1],.29,z+.2)),((xx[0],.71,z-.2),(xx[1],.8,z+.2))]:box(a,b,'steel')
     box((xx[0],.3,z-.195),(xx[1],.7,z+.195),mat)
-  if name=='splitter':
+  if name in ['splitter','fast_splitter','express_splitter']:
+   trim={'splitter':'yellow','fast_splitter':'red','express_splitter':'inlet'}[name]
    box((0,0,0),(2,.10,1),'dark')
    for track in range(2):
     box((track+.08,.10,0),(track+.92,.18,1),'belt')
-    box((track,.10,0),(track+.07,.1875,1),'yellow');box((track+.93,.10,0),(track+1,.1875,1),'yellow')
+    box((track,.10,0),(track+.07,.1875,1),trim);box((track+.93,.10,0),(track+1,.1875,1),trim)
    box((.87,.11,.36),(1.13,.1875,.64),'hazard')
+   if name!='splitter':
+    for track in range(2):
+     for side in [-1,1]:
+      box((track+.5+side*.10-.035,.181,.16),(track+.5+side*.10+.035,.1875,.30),trim)
+     box((track+.465,.181,.11),(track+.535,.1875,.21),trim)
   else:
    box((.05,0,.05),(w-.05,.24,d-.05),'dark')
    box((.08,.24,.08),(w-.08,.34,d-.08),'steel')

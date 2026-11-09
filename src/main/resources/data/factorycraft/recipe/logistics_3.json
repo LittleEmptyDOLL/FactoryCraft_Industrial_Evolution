@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:logistics_2",
+    "factorycraft:chemical_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 60,
+  "ticks": 60,
+  "unlocks": [
+    "factorycraft:express_splitter"
+  ],
+  "x": 3,
+  "y": 4
+}

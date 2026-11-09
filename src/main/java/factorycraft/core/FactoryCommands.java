@@ -35,7 +35,8 @@ public final class FactoryCommands {
           "chemicalworks",
           "moduleworks",
           "transportworks",
-          "sortingworks"
+          "sortingworks",
+          "tieredsortingworks"
         }) root.then(Commands.literal(name).executes(c -> build(c.getSource(), name)));
     root.then(
         Commands.literal("showroom")
@@ -116,6 +117,8 @@ public final class FactoryCommands {
       case "oilworks" -> oilLine(level, origin.above());
       case "petrochemistry" ->
           factorycraft.diagnostics.AdvancedOilFactory.build(level, origin.above());
+      case "tieredsortingworks" ->
+          factorycraft.diagnostics.SortingFactory.buildTiered(level, origin.above());
       case "sortingworks" -> factorycraft.diagnostics.SortingFactory.build(level, origin.above());
       case "transportworks" ->
           factorycraft.diagnostics.TransportFactory.build(level, origin.above());
@@ -134,8 +137,11 @@ public final class FactoryCommands {
     }
     source.sendSuccess(
         () ->
-            Component.translatable(
-                "command.factorycraft.full_size_built", name, origin.toShortString()),
+            name.equals("tieredsortingworks")
+                ? Component.translatable(
+                    "command.factorycraft.tiered_sorting", origin.toShortString())
+                : Component.translatable(
+                    "command.factorycraft.full_size_built", name, origin.toShortString()),
         true);
     return 1;
   }

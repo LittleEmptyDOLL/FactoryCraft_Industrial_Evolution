@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:logistics",
+    "factorycraft:electronics"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 40,
+  "ticks": 60,
+  "unlocks": [
+    "factorycraft:fast_splitter"
+  ],
+  "x": 2,
+  "y": 4
+}

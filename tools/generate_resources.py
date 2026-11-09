@@ -565,3 +565,27 @@ for locale in ['en_us','ru_ru']:
  'splitter_filter_tip':('Click with a carried item to set its type; right-click to clear. No item is consumed. Components are ignored.','Нажмите предметом на курсоре для выбора типа; ПКМ — очистить. Предмет не расходуется. Компоненты не учитываются.')}
  for key,value in labels.items():strings['gui.factorycraft.'+key]=value[1 if ru else 0]
  write(f'assets/factorycraft/lang/{locale}.json',strings)
+
+# 0.14: higher-tier splitters reuse the original four-lane transport and native viewers.
+process('fast_splitter','assembling_machine',[('factorycraft:splitter',1),('factorycraft:iron_gear',10),('factorycraft:electronic_circuit',10)],'fast_splitter',1,40,24)
+write('data/factorycraft/recipe/express_splitter.json',{'type':'factorycraft:chemistry','machine':'assembling_machine_2','items':[{'ingredient':ingredient(i),'count':n} for i,n in [('factorycraft:fast_splitter',1),('factorycraft:iron_gear',10),('factorycraft:advanced_circuit',10)]],'fluids':[{'fluid':'factorycraft:lubricant','amount':80}],'results':[{'id':'factorycraft:express_splitter','count':1}],'ticks':40,'energy':40})
+for name,parents,packs,x,y in [('logistics_2',['logistics','electronics'],['automation','logistic'],2,4),('logistics_3',['logistics_2','chemical_science'],['automation','logistic','chemical'],3,4)]:
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:research','prerequisites':['factorycraft:'+p for p in parents],'packs':{'factorycraft:'+p+'_science_pack':1 for p in packs},'units':40 if name=='logistics_2' else 60,'ticks':60,'unlocks':['factorycraft:'+('fast_splitter' if name=='logistics_2' else 'express_splitter')],'x':x,'y':y})
+for name,base,field in [('fast_splitter','splitter','inputs'),('express_splitter','fast_splitter','items')]:
+ path=ROOT/f'data/factorycraft/recipe/{name}.json';recipe=json.loads(path.read_text())
+ recipe[field][0]['ingredient']={'type':'neoforge:components','items':['factorycraft:'+base],'components':{},'strict':True}
+ write(str(path.relative_to(ROOT)),recipe)
+for name in ['fast_splitter','express_splitter']:
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
+ tag=json.loads((ROOT/'data/minecraft/tags/block/mineable/pickaxe.json').read_text())
+ if 'factorycraft:'+name not in tag['values']:tag['values'].append('factorycraft:'+name)
+ write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
+ for name,en,ru in [('fast_splitter','Fast Splitter','Быстрый разделитель'),('express_splitter','Express Splitter','Экспресс-разделитель')]:
+  data['block.factorycraft.'+name]=(en,ru)[index];data['recipe.factorycraft.'+name]=(en,ru)[index]
+ for name,en,ru in [('logistics_2','Logistics 2','Логистика 2'),('logistics_3','Logistics 3','Логистика 3')]:data['technology.factorycraft.'+name]=(en,ru)[index]
+ data['tooltip.factorycraft.splitter_upgrade']=('Upgrade recipe: plain, unused splitter only.','Для рецепта нужен обычный новый разделитель.')[index]
+ data['tooltip.factorycraft.splitter_rate']=('Two input belts: %s items/s total. No FE required.','Две входные ленты: суммарно %s предметов/с. Без FE.')[index]
+ data['command.factorycraft.tiered_sorting']=('Three finite sorting lines built at %s; outputs: 32 iron + 32 copper per tier.','Три конечные сортировочные линии построены: %s; на каждом уровне 32 железа + 32 меди.')[index]
+ write(f'assets/factorycraft/lang/{lang}.json',data)

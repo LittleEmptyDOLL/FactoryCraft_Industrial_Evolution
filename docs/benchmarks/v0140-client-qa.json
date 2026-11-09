@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "modVersion": "0.14.0",
+  "status": "PASS",
+  "scope": "Real integrated Minecraft client via Gradle runClient, Xvfb/Mesa, JEI 19.21.1.248 and FTB Teams 2101.1.12",
+  "world": "run/saves/FactoryCraftScale",
+  "addedPlatform": [
+    803,
+    110,
+    103
+  ],
+  "finiteOutputsPerTier": {
+    "minecraft:raw_iron": 32,
+    "minecraft:raw_copper": 32
+  },
+  "tiers": [
+    "splitter",
+    "fast_splitter",
+    "express_splitter"
+  ],
+  "checks": {
+    "matchingRedBlueModels": true,
+    "sharedFastMenuEdits": "Input left, output right, raw iron filter persisted after new JVM.",
+    "nativeJeiRecipes": "Fast dry assembler recipe and express mixed assembler-2 recipe, ingredient counts, FE/t, Logistics 2/3 labels visible.",
+    "greenCenteredPreview": "Fast 2x1 structure at anchor (814,111,114), schema 3, saved same identity after restart.",
+    "tooltipAfterRecompile": "Russian text, 60 items/s, no FE, plain-item upgrade requirement; no untranslated key.",
+    "savedWorldNewClientJvmReload": true,
+    "sameAssemblyIdentity": "Identity: [I; -1277124009, -1935978717, -1902370107, -600638104]"
+  },
+  "screenshots": [
+    "docs/screenshots/fast-splitter-menu-0.14.0.png",
+    "docs/screenshots/fast-splitter-preview-0.14.0.png",
+    "docs/screenshots/fast-splitter-tooltip-0.14.0.png",
+    "docs/screenshots/jei-express-splitter-0.14.0.png",
+    "docs/screenshots/jei-fast-splitter-0.14.0.png",
+    "docs/screenshots/tiered-sorters-0.14.0.png"
+  ],
+  "limits": [
+    "Graphical JEI checked; EMI uses the existing adapter and server/wire compatibility tests, no separate graphical EMI run.",
+    "No new two-client/WAN or large splitter-network TPS/FPS claim.",
+    "Admin preview items were given to the player separately; no sorting outputs or intermediate materials were injected."
+  ]
+}

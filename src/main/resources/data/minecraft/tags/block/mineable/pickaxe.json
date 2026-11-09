@@ -25,6 +25,8 @@
     "factorycraft:fast_underground_belt",
     "factorycraft:express_conveyor_lift",
     "factorycraft:express_underground_belt",
-    "factorycraft:transport_part"
+    "factorycraft:transport_part",
+    "factorycraft:fast_splitter",
+    "factorycraft:express_splitter"
   ]
 }

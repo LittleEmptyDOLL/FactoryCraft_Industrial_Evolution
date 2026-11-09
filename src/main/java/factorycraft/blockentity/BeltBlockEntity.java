@@ -34,10 +34,8 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   }
 
   public boolean configureSplitter(factorycraft.logistics.SplitterSettings settings) {
-    if (kind() != FactoryKind.SPLITTER
-        || !loaded()
-        || !structureReady()
-        || !FluidConnections.canonical(this)) return false;
+    if (!kind().splitter() || !loaded() || !structureReady() || !FluidConnections.canonical(this))
+      return false;
     splitterSettings = Objects.requireNonNull(settings);
     applySplitterSettings();
     sync();
@@ -45,7 +43,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   }
 
   private void applySplitterSettings() {
-    if (transport == null || kind() != FactoryKind.SPLITTER) return;
+    if (transport == null || !kind().splitter()) return;
     var settings = splitterSettings;
     var policy =
         settings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)
@@ -320,7 +318,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
   public BeltBlockEntity(BlockPos p, BlockState s) {
     super(Content.BELT.get(), p, s);
-    boolean split = ((FactoryBlock) s.getBlock()).kind == FactoryKind.SPLITTER;
+    boolean split = ((FactoryBlock) s.getBlock()).kind.splitter();
     assembly = split ? new factorycraft.multiblock.IndustrialAssembly(this) : null;
     lanes = new ArrayList<>(split ? 4 : 2);
     for (int i = 0; i < (split ? 4 : 2); i++) lanes.add(new BeltLane<>());
@@ -708,7 +706,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     }
     if (special()) tag.putUUID("TransportIdentity", transportIdentity);
     if (undergroundOutput) tag.putBoolean("UndergroundOutput", true);
-    if (kind() == FactoryKind.SPLITTER
+    if (kind().splitter()
         && !splitterSettings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)) {
       var settings = splitterSettings.save();
       int[] outputs = committedOutputs.clone();
@@ -737,7 +735,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     super.loadAdditional(tag, r);
     if (assembly != null) assembly.load(tag);
     snapshotTick = tag.getLong("SnapshotTick");
-    if (kind() == FactoryKind.SPLITTER) {
+    if (kind().splitter()) {
       splitterSettings = factorycraft.logistics.SplitterSettings.load(tag.getCompound("Splitter"));
       var outputs = tag.getCompound("Splitter").getIntArray("CommittedOutputs");
       for (int i = 0; i < committedOutputs.length; i++)

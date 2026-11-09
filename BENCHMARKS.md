@@ -160,3 +160,7 @@ JFR identified reservation/approach decisions and wrapped lane-list access as ho
 | Kernel CPU over window | 28376.732 ms | 20261.826 ms |
 
 Mean tick work fell 21.7%, kernel CPU 28.6%, with identical measured transfer/work/production counts. The observed optimized wall-window rate was 20.65 TPS (target 20; scheduling can catch up); this is not a claim that the server sustains more than 20 simulation ticks per second or that arbitrary machines guarantee 20 TPS. p95 still exceeds 50 ms. There are no benchmark clients or large chemistry networks, so client FPS, packet throughput and those factories are not established by this run. See `v0130-mixed-before-optimization.json`, `v0130-mixed-measure.json`, `v0130-mixed-verify.json`. Separate actual two-client QA is in NETWORK_QA.md.
+
+## 0.14.0 — saved-world compatibility
+
+The preserved legacy FULL and optimized MIXED checkpoints both pass exact pre-tick hash verification and resumed material/FE/identity audits on 0.14.0. See `docs/benchmarks/v0140-compat-verify.json` and `v0140-mixed-verify.json`. No existing world was reset/refilled. These runs establish compatibility; they do not measure a giant network of the new splitters or a new speed improvement. All-tier splitter throughput and mixed-tier headway/conservation are independently exercised, and a finite native three-tier sorting line delivers 32 iron/32 copper per tier. CI continues fresh FULL/MIXED measurements, unload/reload and separate-JVM checks.

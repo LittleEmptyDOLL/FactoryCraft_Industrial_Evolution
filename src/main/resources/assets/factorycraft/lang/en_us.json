@@ -270,5 +270,14 @@
   "gui.factorycraft.splitter_filter": "Filter",
   "gui.factorycraft.splitter_clear": "Clear",
   "gui.factorycraft.splitter_hint": "Sides follow travel. Filtered exit is strict.",
-  "gui.factorycraft.splitter_filter_tip": "Click with a carried item to set its type; right-click to clear. No item is consumed. Components are ignored."
+  "gui.factorycraft.splitter_filter_tip": "Click with a carried item to set its type; right-click to clear. No item is consumed. Components are ignored.",
+  "block.factorycraft.fast_splitter": "Fast Splitter",
+  "recipe.factorycraft.fast_splitter": "Fast Splitter",
+  "block.factorycraft.express_splitter": "Express Splitter",
+  "recipe.factorycraft.express_splitter": "Express Splitter",
+  "technology.factorycraft.logistics_2": "Logistics 2",
+  "technology.factorycraft.logistics_3": "Logistics 3",
+  "tooltip.factorycraft.splitter_upgrade": "Upgrade recipe: plain, unused splitter only.",
+  "tooltip.factorycraft.splitter_rate": "Two input belts: %s items/s total. No FE required.",
+  "command.factorycraft.tiered_sorting": "Three finite sorting lines built at %s; outputs: 32 iron + 32 copper per tier."
 }

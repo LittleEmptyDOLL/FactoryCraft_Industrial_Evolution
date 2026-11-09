@@ -1,7 +1,6 @@
 package factorycraft.logistics;
 
 import factorycraft.blockentity.BeltBlockEntity;
-import factorycraft.blocks.FactoryKind;
 import factorycraft.fluids.FluidConnections;
 import factorycraft.registry.Content;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -79,7 +78,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
     return player.level().isClientSide
         || owner != null
             && player.level() == owner.getLevel()
-            && owner.kind() == FactoryKind.SPLITTER
+            && owner.kind().splitter()
             && owner.loaded()
             && owner.structureReady()
             && FluidConnections.canonical(owner)
@@ -152,7 +151,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
   public static boolean open(BeltBlockEntity belt, Player player) {
     if (player.level().isClientSide
         || player.isSpectator()
-        || belt.kind() != FactoryKind.SPLITTER
+        || !belt.kind().splitter()
         || !belt.loaded()
         || !belt.structureReady()
         || !FluidConnections.canonical(belt)
