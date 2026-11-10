@@ -41,8 +41,11 @@ base {
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+// Named diagnostic runs preserve previous failed worlds instead of resetting their evidence.
+def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0210')
+if (!(gameTestFixture ==~ /v0210(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.21 GameTest fixture name.')
 def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
-def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0200')
+def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0210')
 if (!(benchmarkProfile in ['full', 'smoke', 'mixed']) || !(benchmarkFixtureName ==~ /${benchmarkProfile}(?:-[a-z0-9]+)*/)) throw new GradleException('Fixture must be a simple profile[-name] child of run-benchmark.')
 def benchmarkDir = layout.projectDirectory.dir('run-benchmark/' + benchmarkFixtureName).asFile
 def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
@@ -84,7 +87,7 @@ neoForge {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             type = "gameTestServer"
-            gameDirectory = project.file('run-gametest/v0200')
+            gameDirectory = project.file("run-gametest/${gameTestFixture}")
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 

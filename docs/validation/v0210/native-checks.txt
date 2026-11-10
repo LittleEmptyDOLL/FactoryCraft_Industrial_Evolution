@@ -1,0 +1,31 @@
+FINAL BUILD / NATIVE
+FACTORYCRAFT_PETROCHEMISTRY_LINE: VERIFIED delivered=8, ledger={petroleum_gas=80, sulfuric_acid=640, heavy_oil=950, coal=4, sulfur=54, light_oil=1710, battery=8, crude_oil=60200, water=51841}
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED stack_inserter
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 2
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 3
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 4
+[14:40:50] [Server thread/INFO] [minecraft/GameTestServer]: ========= 336 GAME TESTS COMPLETE IN 1.410 min ======================
+[14:40:50] [Server thread/INFO] [minecraft/GameTestServer]: All 336 required tests passed :)
+[14:40:52] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+BUILD SUCCESSFUL in 2m 17s
+PREVIOUS CLEAN JVM
+FACTORYCRAFT_PETROCHEMISTRY_LINE: VERIFIED delivered=8, ledger={petroleum_gas=80, sulfuric_acid=640, heavy_oil=950, coal=4, sulfur=54, light_oil=1710, battery=8, crude_oil=60200, water=51841}
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED stack_inserter
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 2
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 3
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 4
+[14:38:19] [Server thread/INFO] [minecraft/GameTestServer]: ========= 335 GAME TESTS COMPLETE IN 1.150 min ======================
+[14:38:19] [Server thread/INFO] [minecraft/GameTestServer]: All 335 required tests passed :)
+[14:38:22] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+BUILD SUCCESSFUL in 2m 15s
+JUnit: {'tests': 160, 'failures': 0, 'errors': 0, 'skipped': 0}

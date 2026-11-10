@@ -357,7 +357,7 @@ public final class CircuitSimulation {
 
   private static FactoryBlockEntity target(CircuitNodeBlockEntity n) {
     var b = FluidConnections.endpoint(n.getLevel(), n.targetPosition());
-    return b instanceof InserterBlockEntity a && a.electric()
+    return b instanceof InserterBlockEntity a
             || b instanceof FluidBlockEntity f && f.kind() == FluidKind.PUMP
             || b instanceof BeltBlockEntity belt && belt.kind().splitter()
         ? b

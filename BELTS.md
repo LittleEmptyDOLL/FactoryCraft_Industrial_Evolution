@@ -1,4 +1,4 @@
-# Conveyor logistics — 0.12.0
+# Conveyor logistics — 0.21.0
 
 Minecraft 1.21.1 / NeoForge 21.1.252. Factorio 2.0 remains the rate/lane model; slopes and lifts adapt it to Minecraft's three dimensions. No proprietary assets are used.
 
@@ -45,3 +45,9 @@ JUnit covers metric paths, all speed tiers, packed nonuniform rings, throughput/
 Basic splitters now support input/output priority and strict item-type filtering in the original reservation kernel; see SPLITTERS.md. The MIXED benchmark contains 10,000 transport controllers, including 100 ascending slopes, 100 descending slopes, 100 up lifts, 100 down lifts and 200 virtual pairs. Output terminals own no carriers, so all 9,800 moving owners must demonstrate liveness. See BENCHMARKS.md for measured limits.
 
 Limits: fast/express splitters, belt dragging, custom lift dimensions above the configured limit and final decorative artwork remain future work. Two-client loopback QA is not WAN/packet-load or large-factory client-FPS validation.
+
+## Counted physical stacks (0.21.0)
+
+A carrier's existing native ItemStack now contains 1–4 component-identical items. Only Stack Inserter uses explicit `insertStack`; ordinary inventory insertion and Bulk still put one item per carrier. No change to two-lane topology, geometry lengths, speeds, 24-unit physical headway, reservations or sleeping solver. Existing ordinary payloads remain count=1. One count=4 carrier is **one physical position and four items**, including circuit reading, extraction, saving, drops and benchmark ledgers. Partial extraction preserves exact position/components; only extracting its last item removes the carrier. Ordinary/speed curves, inclines, lifts, virtual underground and four-lane splitters carry the same payload without unpack/repack. Rendering draws up to four layers from server state; no extra entities or per-contained-item simulation.
+
+The maximum inserted height starts at 2, becomes 3/4 through explicitly sandbox-only Space Age belt-capacity definitions; no artificial early survival research is exposed. See INSERTERS.md for research/manual rounding and partial-hand rules. Native tests cover physical heights 2/3/4, partial extraction, all three splitter speeds with circuit stop/resume, and a finite stack-inserter route through mixed speeds/curves/incline/underground/lift. Pure kernel tests count both identity-unique carriers and weighted quantities in saturated rings and mixed-speed blocked routes.

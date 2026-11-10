@@ -15,21 +15,21 @@
     },
     {
       "ingredient": {
-        "item": "factorycraft:iron_gear"
+        "item": "factorycraft:iron_plate"
       },
-      "count": 5
+      "count": 1
     },
     {
       "ingredient": {
-        "item": "factorycraft:electronic_circuit"
+        "item": "factorycraft:iron_gear"
       },
-      "count": 2
+      "count": 1
     }
   ],
   "result": {
     "id": "factorycraft:long_inserter",
     "count": 1
   },
-  "ticks": 40,
-  "energy": 16
+  "ticks": 10,
+  "energy": 12
 }

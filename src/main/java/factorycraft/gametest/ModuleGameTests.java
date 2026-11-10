@@ -189,12 +189,12 @@ public final class ModuleGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 100)
+  @GameTest(template = "empty", timeoutTicks = 100)
   public static void beaconEffectsRespectDistanceAndTwoBeaconAttenuation(GameTestHelper h) {
-    var m = machine(h, 4);
-    var a = beacon(h, 4, 8);
-    var b = beacon(h, 0, 4);
-    var far = beacon(h, 18, 18);
+    var m = machine(h, 8);
+    var a = beacon(h, 8, 8);
+    var b = beacon(h, 4, 4);
+    var far = beacon(h, 22, 18);
     h.runAfterDelay(
         5,
         () -> {
@@ -428,7 +428,7 @@ public final class ModuleGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 2400)
+  @GameTest(template = "empty", timeoutTicks = 2400)
   public static void finitePoweredModuleFactoryDeliversExactProductiveAndBeaconResults(
       GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(1, 2, 1));

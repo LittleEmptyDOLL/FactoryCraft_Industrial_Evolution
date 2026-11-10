@@ -276,7 +276,7 @@ public final class CircuitGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 120)
+  @GameTest(template = "empty", timeoutTicks = 120)
   public static void pumpGateStopsBillingAndResumesFiniteFluidWithoutLoss(GameTestHelper h) {
     var pp = h.absolutePos(new BlockPos(8, 3, 5));
     StructurePlacement.place(
@@ -288,7 +288,7 @@ public final class CircuitGameTests {
             .defaultBlockState()
             .setValue(FluidDeviceBlock.FACING, Direction.EAST));
     var pump = (FluidBlockEntity) h.getLevel().getBlockEntity(pp);
-    var tp = pp.east();
+    var tp = pp.east(2).south();
     StructurePlacement.place(
         h.getLevel(),
         tp,
@@ -306,7 +306,11 @@ public final class CircuitGameTests {
     h.runAfterDelay(
         15,
         () -> {
-          pump.port(Direction.WEST)
+          h.getLevel()
+              .getCapability(
+                  net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
+                  pump.inputNozzle(),
+                  Direction.WEST)
               .fill(
                   new net.neoforged.neoforge.fluids.FluidStack(
                       net.minecraft.world.level.material.Fluids.WATER, 500),
@@ -336,7 +340,11 @@ public final class CircuitGameTests {
     h.runAfterDelay(
         70,
         () -> {
-          pump.port(Direction.WEST)
+          h.getLevel()
+              .getCapability(
+                  net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
+                  pump.inputNozzle(),
+                  Direction.WEST)
               .fill(
                   new net.neoforged.neoforge.fluids.FluidStack(
                       net.minecraft.world.level.material.Fluids.WATER, 400),
@@ -562,7 +570,7 @@ public final class CircuitGameTests {
       var arm = (InserterBlockEntity) level.getBlockEntity(p);
       var node = (CircuitNodeBlockEntity) level.getBlockEntity(c);
       var tag = arm.saveWithoutMetadata(level.registryAccess());
-      tag.getCompound("Actuator").putBoolean("Enabled", false);
+      tag.putBoolean("Enabled", false);
       arm.loadWithComponents(tag, level.registryAccess());
       arm.hand.setStackInSlot(0, new ItemStack(Items.DIAMOND));
       arm.power.restore(731);

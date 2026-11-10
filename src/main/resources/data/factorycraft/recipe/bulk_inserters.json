@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:electric_inserters",
+    "factorycraft:logistics_2",
+    "factorycraft:electronics"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 150,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:bulk_inserter"
+  ],
+  "x": 4,
+  "y": 5
+}

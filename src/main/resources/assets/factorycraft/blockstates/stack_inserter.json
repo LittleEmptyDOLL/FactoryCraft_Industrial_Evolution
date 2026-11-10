@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "factorycraft:block/stack_inserter",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "factorycraft:block/stack_inserter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "factorycraft:block/stack_inserter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "factorycraft:block/stack_inserter",
+      "y": 270
+    }
+  }
+}

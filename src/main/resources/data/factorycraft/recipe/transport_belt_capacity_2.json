@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "sandbox_only": true,
+  "prerequisites": [
+    "factorycraft:transport_belt_capacity_1"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 3000,
+  "ticks": 1200,
+  "unlocks": [],
+  "x": 14,
+  "y": 5
+}

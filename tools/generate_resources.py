@@ -152,6 +152,7 @@ def utf(s):
 def named(t,n,p):return bytes([t])+utf(n)+p
 nbt=b'\x0a\x00\x00'+named(3,'DataVersion',struct.pack('>i',3955))+named(9,'size',b'\x03'+struct.pack('>i',3)+struct.pack('>iii',32,12,24))+named(9,'palette',b'\x0a'+struct.pack('>i',1)+named(8,'Name',utf('minecraft:air'))+b'\x00')+named(9,'blocks',b'\x0a'+struct.pack('>i',0))+named(9,'entities',b'\x0a'+struct.pack('>i',0))+b'\x00'
 p=ROOT/'data/factorycraft/structure/empty.nbt';p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(gzip.compress(nbt,mtime=0))
+large=nbt.replace(struct.pack('>iii',32,12,24),struct.pack('>iii',32,16,24),1);write_path=ROOT/'data/factorycraft/structure/industrial.nbt';write_path.write_bytes(gzip.compress(large,mtime=0))
 
 # Original fluid-logistics assets, recipes and translations.
 texture('block/fluid_pipe',(103,143,157),'machine')
@@ -590,23 +591,49 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  data['command.factorycraft.tiered_sorting']=('Three finite sorting lines built at %s; outputs: 32 iron + 32 copper per tier.','Три конечные сортировочные линии построены: %s; на каждом уровне 32 железа + 32 меди.')[index]
  write(f'assets/factorycraft/lang/{lang}.json',data)
 
-# 0.15: original actuator bases; animated arms share the client renderer, no item entities.
-arm_types=[('fast_inserter',(57,126,194),1,8,4,'Fast Inserter','Быстрый манипулятор'),('long_inserter',(186,64,49),2,16,3,'Long Inserter','Длинный манипулятор'),('filter_inserter',(149,82,185),1,8,4,'Filter Inserter','Фильтрующий манипулятор')]
-for name,color,reach,cycle,fe,en,ru in arm_types:
- texture('block/'+name,color,'machine')
- tex='factorycraft:block/'+name
- write(f'assets/factorycraft/models/block/{name}.json',{'parent':'minecraft:block/block','textures':{'all':tex,'particle':tex},'elements':[{'from':[5,0,5],'to':[11,7,11],'faces':{f:{'texture':'#all'} for f in ['up','down','north','south','east','west']}}]})
+# 0.21: final six types, original colored bases and shared articulated renderer.
+arm_types=[('burner_inserter',(105,76,46),1,76,700,'Burner Inserter','Топливный манипулятор'),('inserter',(211,170,52),1,70,70,'Inserter','Манипулятор'),('long_inserter',(186,64,49),2,48,70,'Long-handed Inserter','Длинный манипулятор'),('fast_inserter',(57,126,194),1,24,98,'Fast Inserter','Быстрый манипулятор'),('bulk_inserter',(72,172,82),1,24,280,'Bulk Inserter','Пакетный манипулятор'),('stack_inserter',(217,225,212),1,24,560,'Stack Inserter','Стопочный манипулятор')]
+for name,color,reach,units,fe,en,ru in arm_types:
+ texture('block/'+name,color,'machine');tex='factorycraft:block/'+name
+ boxes=[([4,0,4],[12,3,12]),([5,3,5],[11,6,11]),([6,6,6],[10,8,10])]
+ if name=='burner_inserter':boxes.append(([4,3,9],[12,7,12]))
+ if name in ['bulk_inserter','stack_inserter']:boxes.extend([([3,1,5],[5,5,11]),([11,1,5],[13,5,11])])
+ write(f'assets/factorycraft/models/block/{name}.json',{'parent':'minecraft:block/block','textures':{'all':tex,'particle':tex},'elements':[{'from':lo,'to':hi,'faces':{f:{'texture':'#all'} for f in ['up','down','north','south','east','west']}} for lo,hi in boxes]})
  write(f'assets/factorycraft/models/item/{name}.json',{'parent':'factorycraft:block/'+name})
  write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'facing='+d:{'model':'factorycraft:block/'+name,'y':rot} for d,rot in [('north',0),('east',90),('south',180),('west',270)]}})
  write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[]})
- tag=json.loads((ROOT/'data/minecraft/tags/block/mineable/pickaxe.json').read_text());tag['values'].append('factorycraft:'+name);write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
- process(name,'assembling_machine',[('factorycraft:inserter',1),('factorycraft:iron_gear',5),('factorycraft:electronic_circuit',2 if name!='filter_inserter' else 5)],name,1,40,16)
- # Like splitter upgrades, never consume another owner's portable payload.
- path=ROOT/f'data/factorycraft/recipe/{name}.json';recipe=json.loads(path.read_text());recipe['inputs'][0]['ingredient']={'type':'neoforge:components','items':['factorycraft:inserter'],'components':{},'strict':True};write(str(path.relative_to(ROOT)),recipe)
+ tag=json.loads((ROOT/'data/minecraft/tags/block/mineable/pickaxe.json').read_text());tag['values'].append('factorycraft:'+name);tag['values']=list(dict.fromkeys(tag['values']));write('data/minecraft/tags/block/mineable/pickaxe.json',tag)
  for locale,index in [('en_us',0),('ru_ru',1)]:
   path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings['block.factorycraft.'+name]=(en,ru)[index];strings['recipe.factorycraft.'+name]=(en,ru)[index]
-  strings['tooltip.factorycraft.'+name]=(f'Reach {reach}; {cycle} ticks/cycle; {fe} FE per moving tick. Right-click to configure.',f'Дальность {reach}; {cycle} тиков/цикл; {fe} FE за тик движения. ПКМ: настройка.')[index];write(str(path.relative_to(ROOT)),strings)
-write('data/factorycraft/recipe/electric_inserters.json',{'type':'factorycraft:research','prerequisites':['factorycraft:logistics','factorycraft:electronics'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':25,'ticks':60,'unlocks':['factorycraft:'+x[0] for x in arm_types],'x':2,'y':5})
+  strings['tooltip.factorycraft.'+name]=(f'Reach {reach}; {units}/3 ticks per nominal cycle; five filters. '+('Solid fuel.' if name=='burner_inserter' else f'{fe} FE per nominal cycle.'),f'Дальность {reach}; {units}/3 тика на цикл; пять фильтров. '+('Твёрдое топливо.' if name=='burner_inserter' else f'{fe} FE на номинальный цикл.'))[index];write(str(path.relative_to(ROOT)),strings)
+# Use original recipe counts; strict native components reject resource-owning upgrade inputs.
+arm_inputs={
+ 'burner_inserter':[('factorycraft:iron_plate',1),('factorycraft:iron_gear',1)],
+ 'inserter':[('factorycraft:iron_plate',1),('factorycraft:iron_gear',1),('factorycraft:electronic_circuit',1)],
+ 'long_inserter':[('factorycraft:inserter',1),('factorycraft:iron_plate',1),('factorycraft:iron_gear',1)],
+ 'fast_inserter':[('factorycraft:inserter',1),('factorycraft:iron_plate',2),('factorycraft:electronic_circuit',2)],
+ 'bulk_inserter':[('factorycraft:fast_inserter',1),('factorycraft:iron_gear',15),('factorycraft:electronic_circuit',15),('factorycraft:advanced_circuit',1)]}
+for name,inputs in arm_inputs.items():
+ process(name,'assembling_machine',inputs,name,1,10 if name!='bulk_inserter' else 10,12)
+ path=ROOT/f'data/factorycraft/recipe/{name}.json';recipe=json.loads(path.read_text())
+ for part in recipe['inputs']:
+  item=part['ingredient'].get('item','')
+  if item in ['factorycraft:inserter','factorycraft:fast_inserter']:part['ingredient']={'type':'neoforge:components','items':[item],'components':{},'strict':True}
+ write(str(path.relative_to(ROOT)),recipe)
+write('data/factorycraft/recipe/craft_burner_inserter.json',{'type':'minecraft:crafting_shapeless','ingredients':[{'item':'minecraft:iron_ingot'},{'item':'factorycraft:iron_gear'}],'result':{'id':'factorycraft:burner_inserter','count':1}})
+# Standard is needed before the first green-science assembler: handcrafting uses existing components.
+write('data/factorycraft/recipe/craft_inserter.json',{'type':'minecraft:crafting_shapeless','ingredients':[{'item':'factorycraft:iron_plate'},{'item':'factorycraft:iron_gear'},{'item':'factorycraft:electronic_circuit'}],'result':{'id':'factorycraft:inserter','count':1}})
+write('data/factorycraft/recipe/electric_inserters.json',{'type':'factorycraft:research','prerequisites':['factorycraft:automation'],'packs':{'factorycraft:automation_science_pack':1},'units':30,'ticks':300,'unlocks':['factorycraft:long_inserter','factorycraft:fast_inserter'],'x':2,'y':5})
+write('data/factorycraft/recipe/bulk_inserters.json',{'type':'factorycraft:research','prerequisites':['factorycraft:electric_inserters','factorycraft:logistics_2','factorycraft:electronics'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':150,'ticks':600,'unlocks':['factorycraft:bulk_inserter'],'x':4,'y':5})
+for n,count in enumerate([200,250,250,250,300,400,600],1):
+ parents=['factorycraft:bulk_inserters' if n==1 else 'factorycraft:inserter_capacity_bonus_'+str(n-1)]
+ if n==3:parents.append('factorycraft:chemical_science')
+ packs={'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1}
+ if n>=3:packs['factorycraft:chemical_science_pack']=1
+ write(f'data/factorycraft/recipe/inserter_capacity_bonus_{n}.json',{'type':'factorycraft:research','prerequisites':parents,'packs':packs,'units':count,'ticks':600,'unlocks':[],'x':5+n,'y':5})
+# Space Age access is explicitly sandbox-only until its real materials/science exist; no Stack recipe.
+for n,count in [(1,2000),(2,3000)]:
+ write(f'data/factorycraft/recipe/transport_belt_capacity_{n}.json',{'type':'factorycraft:research','sandbox_only':True,'prerequisites':['factorycraft:inserter_capacity_bonus_7' if n==1 else 'factorycraft:transport_belt_capacity_1'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1,'factorycraft:chemical_science_pack':1},'units':count,'ticks':1200,'unlocks':[],'x':12+n,'y':5})
 arm_ui={'inserter':('Electric Inserter','Электроманипулятор'),'inserter_enabled.0':('Disabled','Выключен'),'inserter_enabled.1':('Enabled','Включён'),'inserter_mode.0':('Allow type','Принимать'),'inserter_mode.1':('Deny type','Исключать'),'inserter_hand':('Hand','Рука'),'inserter_power':('%s / 2000 FE','%s / 2000 FE')}
 for locale,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings.update({'gui.factorycraft.'+k:v[index] for k,v in arm_ui.items()});strings['technology.factorycraft.electric_inserters']=('Electric inserters','Электрические манипуляторы')[index];write(str(path.relative_to(ROOT)),strings)
@@ -705,4 +732,21 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
 write('data/factorycraft/recipe/electric_pole.json',{'type':'factorycraft:processing','machine':'assembling_machine','inputs':[{'ingredient':{'tag':'minecraft:planks'},'count':1},{'ingredient':{'item':'factorycraft:copper_wire'},'count':2}],'result':{'id':'factorycraft:electric_pole','count':2},'ticks':10,'energy':12})
 for locale,index in [('en_us',0),('ru_ru',1)]:
  p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text());data['tooltip.factorycraft.pole_properties']=('Supply %s × %s; wire reach %s blocks','Зона питания %s × %s; дальность провода %s блоков')[index];write(f'assets/factorycraft/lang/{locale}.json',data)
+p=ROOT/'data/factorycraft/advancement/recipes/factory_basics.json';data=json.loads(p.read_text());data['rewards']['recipes']=['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))];write(str(p.relative_to(ROOT)),data)
+
+# Retired Filter Inserter resources/progression must never survive a repeat generation.
+for group,ext in [('assets/factorycraft/blockstates','json'),('assets/factorycraft/models/block','json'),('assets/factorycraft/models/item','json'),('assets/factorycraft/textures/block','png'),('data/factorycraft/loot_table/blocks','json'),('data/factorycraft/recipe','json')]:
+ (ROOT/group/('filter_inserter.'+ext)).unlink(missing_ok=True)
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text())
+ for key in list(data):
+  if 'filter_inserter' in key:del data[key]
+ for n in range(1,8):data[f'technology.factorycraft.inserter_capacity_bonus_{n}']=(f'Inserter Capacity Bonus {n}',f'Вместимость манипуляторов {n}')[index]
+ data['technology.factorycraft.bulk_inserters']=('Bulk Inserters','Пакетные манипуляторы')[index]
+ for n in [1,2]:data[f'technology.factorycraft.transport_belt_capacity_{n}']=(f'Space Age Belt Capacity {n} (sandbox)',f'Вместимость лент Space Age {n} (стенд)')[index]
+ ui={'inserter_auto':('Auto','Авто'),'inserter_capacity':('%s / %s','%s / %s'),'inserter_fuel':('%s fuel units','%s ед. топлива'),'inserter_speed':('%s ticks/cycle; reach %s','%s тика/цикл; дальность %s'),'inserter_mode.0':('Whitelist','Белый список'),'inserter_mode.1':('Blacklist','Чёрный список')}
+ states=[('Disabled / circuit stop','Выключен / сигнал'),('Waiting for power / fuel','Нет энергии / топлива'),('Waiting for items','Нет подходящих предметов'),('Collecting full hand','Набор полной руки'),('Moving to output','Поворот к выходу'),('Output blocked / partial','Выход занят / остаток'),('Returning','Возврат'),('Endpoint unavailable','Точка недоступна')]
+ ui.update({'inserter_status.'+str(i):pair for i,pair in enumerate(states)})
+ data.update({'gui.factorycraft.'+key:value[index] for key,value in ui.items()});write(f'assets/factorycraft/lang/{locale}.json',data)
+# Include late-added crafts and exclude retired recipes in the bootstrap recipe book.
 p=ROOT/'data/factorycraft/advancement/recipes/factory_basics.json';data=json.loads(p.read_text());data['rewards']['recipes']=['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))];write(str(p.relative_to(ROOT)),data)

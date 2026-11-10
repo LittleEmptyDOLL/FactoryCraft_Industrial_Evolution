@@ -1,0 +1,15 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:bulk_inserters"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 200,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 6,
+  "y": 5
+}

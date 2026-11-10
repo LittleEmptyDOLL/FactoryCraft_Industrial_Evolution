@@ -4,7 +4,6 @@ import factorycraft.blockentity.*;
 import factorycraft.blocks.*;
 import factorycraft.core.FactoryCommands;
 import net.minecraft.core.*;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
@@ -15,7 +14,7 @@ public final class InserterFactory {
   public static void build(ServerLevel level, BlockPos o) {
     var kinds =
         new FactoryKind[] {
-          FactoryKind.FAST_INSERTER, FactoryKind.LONG_INSERTER, FactoryKind.FILTER_INSERTER
+          FactoryKind.FAST_INSERTER, FactoryKind.LONG_INSERTER, FactoryKind.BULK_INSERTER
         };
     for (int i = 0; i < kinds.length; i++) {
       var p = o.offset(3 + 7 * i, 0, 5);
@@ -28,11 +27,11 @@ public final class InserterFactory {
       source.setItem(1, new ItemStack(Items.RAW_COPPER, 32));
       if (i == 2) {
         var tag = a.saveWithoutMetadata(level.registryAccess());
-        var settings = new CompoundTag();
-        settings.putBoolean("Enabled", true);
-        settings.putString("Filter", "minecraft:raw_iron");
-        settings.putInt("Schema", 1);
-        tag.put("Actuator", settings);
+        tag.putBoolean("Enabled", true);
+        var filters = new net.minecraft.nbt.ListTag();
+        filters.add(net.minecraft.nbt.StringTag.valueOf("minecraft:raw_iron"));
+        for (int n = 1; n < 5; n++) filters.add(net.minecraft.nbt.StringTag.valueOf(""));
+        tag.put("Filters", filters);
         a.loadWithComponents(tag, level.registryAccess());
       }
     }

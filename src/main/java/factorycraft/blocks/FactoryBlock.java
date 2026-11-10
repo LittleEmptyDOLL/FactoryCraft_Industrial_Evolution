@@ -162,7 +162,7 @@ public final class FactoryBlock extends BaseEntityBlock {
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
       factorycraft.multiblock.MachineInteraction.open(machine, player, p);
-    } else if (l.getBlockEntity(p) instanceof InserterBlockEntity arm && arm.electric()) {
+    } else if (l.getBlockEntity(p) instanceof InserterBlockEntity arm) {
       factorycraft.inserters.InserterMenu.open(arm, player);
     } else if (l.getBlockEntity(p) instanceof factorycraft.circuits.CircuitNodeBlockEntity node) {
       factorycraft.multiblock.MachineInteraction.open(node, player, p);
@@ -200,6 +200,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     var scope = factorycraft.research.ResearchTeams.resolve(player).orElse("unavailable");
     var be = level.getBlockEntity(pos);
     if (be instanceof PoleBlockEntity pole) pole.requestAutoConnections();
+    if (be instanceof InserterBlockEntity arm && arm.scope().isEmpty()) arm.bindResearch(scope);
     if (be instanceof LabBlockEntity lab && lab.scope().isEmpty()) lab.bind(scope);
     if (be instanceof MachineBlockEntity machine
         && !stack.has(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA))
@@ -211,7 +212,7 @@ public final class FactoryBlock extends BaseEntityBlock {
       return factorycraft.multiblock.StructureSupport.wrench(level, pos, player);
     var target = level.getBlockEntity(pos);
     if (target instanceof TransportPartBlockEntity part) target = part.ownerForRemoval();
-    if (target instanceof InserterBlockEntity arm && arm.electric() && player.isShiftKeyDown()) {
+    if (target instanceof InserterBlockEntity arm && player.isShiftKeyDown()) {
       if (!level.isClientSide) level.removeBlock(pos, false);
       return InteractionResult.sidedSuccess(level.isClientSide);
     }

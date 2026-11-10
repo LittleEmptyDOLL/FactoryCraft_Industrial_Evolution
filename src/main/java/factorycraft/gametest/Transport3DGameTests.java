@@ -543,12 +543,16 @@ public final class Transport3DGameTests {
           .setBlockAndUpdate(
               h.absolutePos(port.east()),
               Content.FACTORY
-                  .get(FactoryKind.INSERTER)
+                  .get(FactoryKind.BURNER_INSERTER)
                   .get()
                   .defaultBlockState()
                   .setValue(FactoryBlock.FACING, Direction.EAST));
       h.setBlock(port.east(2), Blocks.CHEST);
     }
+    for (var port : ports)
+      ((factorycraft.blockentity.InserterBlockEntity)
+              h.getLevel().getBlockEntity(h.absolutePos(port.east())))
+          .fuel.setStackInSlot(0, new ItemStack(Items.COAL));
     h.runAfterDelay(
         390,
         () -> {

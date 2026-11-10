@@ -110,7 +110,7 @@ public final class BenchmarkPlan {
       machine(cells, x + 2, z + 6, Role.FURNACE);
       machine(cells, x + 6, z + 6, Role.INDUSTRIAL_FURNACE);
       machine(cells, x + 10, z, Role.GENERATOR);
-      add(cells, x + 5, 0, z + 4, Role.POLE, Heading.NORTH);
+      add(cells, x + 4, 0, z + 4, Role.POLE, Heading.NORTH);
       add(cells, x + 11, 0, z + 4, Role.POLE, Heading.NORTH);
       if (i + 1 < profile.cells && i % 25 < 24)
         add(cells, x + 17, 0, z + 4, Role.POLE, Heading.NORTH);
@@ -136,7 +136,8 @@ public final class BenchmarkPlan {
 
   private static void add(List<Cell> cells, int x, int y, int z, Role role, Heading heading) {
     cells.add(new Cell(x, y, z, role, heading));
-    if (role == Role.POLE) cells.add(new Cell(x, y + 1, z, Role.CASING, Heading.NORTH));
+    if (role == Role.POLE)
+      for (int dy = 1; dy < 3; dy++) cells.add(new Cell(x, y + dy, z, Role.CASING, Heading.NORTH));
   }
 
   public List<Cell> blocks() {

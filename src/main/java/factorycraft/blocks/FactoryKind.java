@@ -34,7 +34,9 @@ public enum FactoryKind {
   EXPRESS_SPLITTER("express_splitter", 3),
   FAST_INSERTER("fast_inserter", 0),
   LONG_INSERTER("long_inserter", 0),
-  FILTER_INSERTER("filter_inserter", 0),
+  BULK_INSERTER("bulk_inserter", 0),
+  STACK_INSERTER("stack_inserter", 0),
+  BURNER_INSERTER("burner_inserter", 0),
   CONSTANT("constant_combinator", 0),
   ARITHMETIC("arithmetic_combinator", 0),
   DECIDER("decider_combinator", 0),
@@ -69,18 +71,25 @@ public enum FactoryKind {
   }
 
   public boolean inserter() {
-    return this == INSERTER || electricInserter();
+    return this == BURNER_INSERTER || electricInserter();
   }
 
   public boolean electricInserter() {
-    return this == FAST_INSERTER || this == LONG_INSERTER || this == FILTER_INSERTER;
+    return this == INSERTER
+        || this == FAST_INSERTER
+        || this == LONG_INSERTER
+        || this == BULK_INSERTER
+        || this == STACK_INSERTER;
   }
 
   public factorycraft.simulation.inserters.ArmCycle.Spec armSpec() {
     return switch (this) {
-      case FAST_INSERTER, FILTER_INSERTER -> factorycraft.simulation.inserters.ArmCycle.FAST;
+      case BURNER_INSERTER -> factorycraft.simulation.inserters.ArmCycle.BURNER;
       case LONG_INSERTER -> factorycraft.simulation.inserters.ArmCycle.LONG;
-      default -> factorycraft.simulation.inserters.ArmCycle.MECHANICAL;
+      case FAST_INSERTER -> factorycraft.simulation.inserters.ArmCycle.FAST;
+      case BULK_INSERTER -> factorycraft.simulation.inserters.ArmCycle.BULK;
+      case STACK_INSERTER -> factorycraft.simulation.inserters.ArmCycle.STACK;
+      default -> factorycraft.simulation.inserters.ArmCycle.STANDARD;
     };
   }
 

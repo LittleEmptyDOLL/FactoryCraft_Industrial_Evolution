@@ -25,11 +25,25 @@ public final class TransportFactory {
   }
 
   public static ChestBlockEntity build(ServerLevel level, BlockPos o) {
+    return build(level, o, false, ItemStack.EMPTY);
+  }
+
+  public static ChestBlockEntity buildStacked(ServerLevel level, BlockPos o, ItemStack cargo) {
+    return build(level, o, true, cargo);
+  }
+
+  private static ChestBlockEntity build(
+      ServerLevel level, BlockPos o, boolean stacked, ItemStack cargo) {
     level.setBlockAndUpdate(o.offset(1, 0, 0), Blocks.CHEST.defaultBlockState());
     var source = (ChestBlockEntity) level.getBlockEntity(o.offset(1, 0, 0));
-    source.setItem(0, new ItemStack(Items.RAW_IRON, 32));
-    source.setItem(1, new ItemStack(Items.RAW_COPPER, 32));
-    FactoryCommands.machine(level, o.offset(2, 0, 0), FactoryKind.INSERTER, Direction.EAST);
+    if (stacked) {
+      source.setItem(0, cargo.copy());
+      FactoryCommands.machine(level, o.offset(2, 0, 0), FactoryKind.STACK_INSERTER, Direction.EAST);
+    } else {
+      source.setItem(0, new ItemStack(Items.RAW_IRON, 32));
+      source.setItem(1, new ItemStack(Items.RAW_COPPER, 32));
+      fueledArm(level, o.offset(2, 0, 0), Direction.EAST);
+    }
     belt(level, o.offset(3, 0, 0), FactoryKind.BELT, Direction.EAST);
     belt(level, o.offset(4, 0, 0), FactoryKind.BELT, Direction.SOUTH);
     var ramp = belt(level, o.offset(4, 0, 1), FactoryKind.FAST_BELT, Direction.SOUTH);
@@ -46,10 +60,16 @@ public final class TransportFactory {
     lift.initializeRoute(new BeltRoute(BeltRoute.Shape.LIFT, 4, 1));
     TransportPlan.buildParts(lift);
     belt(level, o.offset(13, 5, 4), FactoryKind.BELT, Direction.SOUTH);
-    FactoryCommands.machine(level, o.offset(13, 5, 5), FactoryKind.INSERTER, Direction.SOUTH);
+    fueledArm(level, o.offset(13, 5, 5), Direction.SOUTH);
     level.setBlockAndUpdate(o.offset(13, 5, 6), Blocks.CHEST.defaultBlockState());
     for (var b : java.util.List.of(ramp, entry, exit, lift)) BeltSimulation.topologyChanged(b);
     return (ChestBlockEntity) level.getBlockEntity(o.offset(13, 5, 6));
+  }
+
+  private static void fueledArm(ServerLevel level, BlockPos position, Direction facing) {
+    FactoryCommands.machine(level, position, FactoryKind.BURNER_INSERTER, facing);
+    ((factorycraft.blockentity.InserterBlockEntity) level.getBlockEntity(position))
+        .fuel.setStackInSlot(0, new ItemStack(Items.COAL));
   }
 
   private TransportFactory() {}

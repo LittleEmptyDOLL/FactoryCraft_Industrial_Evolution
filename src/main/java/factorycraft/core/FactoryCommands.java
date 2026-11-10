@@ -39,6 +39,7 @@ public final class FactoryCommands {
           "sortingworks",
           "tieredsortingworks",
           "inserterworks",
+          "inserterlab",
           "circuitworks",
           "fluidcircuitworks",
           "circuitsortingworks"
@@ -98,6 +99,24 @@ public final class FactoryCommands {
                           false);
                   return 1;
                 }));
+    root.then(
+        Commands.literal("inserterresearch")
+            .then(
+                Commands.argument(
+                        "capacity",
+                        com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 7))
+                    .then(
+                        Commands.argument(
+                                "belt",
+                                com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 2))
+                            .executes(
+                                c ->
+                                    factorycraft.inserters.InserterResearch.grant(
+                                        c.getSource().getPlayerOrException(),
+                                        com.mojang.brigadier.arguments.IntegerArgumentType
+                                            .getInteger(c, "capacity"),
+                                        com.mojang.brigadier.arguments.IntegerArgumentType
+                                            .getInteger(c, "belt"))))));
     event.getDispatcher().register(root);
   }
 
@@ -116,7 +135,9 @@ public final class FactoryCommands {
       source.sendFailure(Component.translatable("command.factorycraft.research_team_unavailable"));
       return 0;
     }
-    for (var pos : BlockPos.betweenClosed(origin, origin.offset(29, 7, depth - 1)))
+    for (var pos :
+        BlockPos.betweenClosed(
+            origin, origin.offset(29, name.equals("petrochemistry") ? 12 : 7, depth - 1)))
       if (!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) {
         source.sendFailure(
             Component.translatable(
@@ -148,6 +169,13 @@ public final class FactoryCommands {
       case "circuitworks" -> factorycraft.diagnostics.CircuitFactory.build(level, origin.above());
       case "fluidcircuitworks" ->
           factorycraft.diagnostics.FluidCircuitFactory.build(level, origin.above());
+      case "inserterlab" ->
+          factorycraft.diagnostics.InserterShowcase.build(
+              level,
+              origin.above(),
+              source.getPlayer() == null
+                  ? ""
+                  : factorycraft.research.ResearchTeams.resolve(source.getPlayer()).orElse(""));
       case "inserterworks" -> factorycraft.diagnostics.InserterFactory.build(level, origin.above());
       case "tieredsortingworks" ->
           factorycraft.diagnostics.SortingFactory.buildTiered(level, origin.above());
@@ -187,7 +215,7 @@ public final class FactoryCommands {
   }
 
   private static void pole(ServerLevel level, BlockPos origin, int x, int z) {
-    machine(level, origin.offset(x, 0, z), FactoryKind.POLE, Direction.NORTH);
+    machine(level, origin.offset(x, 0, z), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 
   private static void arm(ServerLevel level, BlockPos origin, int x, int z, Direction direction) {
@@ -233,41 +261,55 @@ public final class FactoryCommands {
   }
 
   private static void waterLine(ServerLevel level, BlockPos o, boolean thermal) {
-    var water = o.offset(1, 0, 2);
-    for (var d : Direction.Plane.HORIZONTAL)
-      if (d != Direction.EAST)
-        level.setBlockAndUpdate(water.relative(d), Blocks.STONE.defaultBlockState());
+    int pumpX = thermal ? 4 : 3;
+    var water = o.offset(pumpX - 2, 0, 2);
+    level.setBlockAndUpdate(water.below(), Blocks.STONE.defaultBlockState());
+    for (var side : Direction.Plane.HORIZONTAL)
+      if (side != Direction.EAST)
+        level.setBlockAndUpdate(water.relative(side), Blocks.STONE.defaultBlockState());
     level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
-    fluid(level, o, 3, 2, FluidKind.PUMP);
-    for (int x = 4; x <= (thermal ? 5 : 7); x++) fluid(level, o, x, 2, FluidKind.PIPE);
+    fluid(level, o, pumpX, 2, FluidKind.PUMP);
     if (thermal) {
       StructurePlacement.place(
           level,
-          o.offset(7, 0, 1),
+          o.offset(8, 0, 2),
           Content.THERMAL_BLOCKS
               .get(ThermalKind.BOILER)
               .get()
               .defaultBlockState()
               .setValue(ThermalBlock.FACING, Direction.EAST));
-      ((ThermalBlockEntity) level.getBlockEntity(o.offset(7, 0, 1)))
+      ((ThermalBlockEntity) level.getBlockEntity(o.offset(8, 0, 2)))
           .items.setStackInSlot(0, new ItemStack(Items.COAL, 8));
-      fluid(level, o, 8, 2, FluidKind.PIPE);
-      fluid(level, o, 9, 2, FluidKind.PIPE);
       StructurePlacement.place(
           level,
-          o.offset(14, 0, 1),
+          o.offset(15, 0, 2),
           Content.THERMAL_BLOCKS
               .get(ThermalKind.ENGINE)
               .get()
               .defaultBlockState()
               .setValue(ThermalBlock.FACING, Direction.EAST));
-      machine(level, o.offset(17, 0, 1), FactoryKind.FURNACE, Direction.NORTH)
-          .items
-          .setStackInSlot(0, new ItemStack(Items.RAW_IRON, 8));
-      for (int x : new int[] {4, 9, 14, 18}) pole(level, o, x, 5);
+      for (var p :
+          java.util.List.of(
+              new BlockPos(5, 0, 2),
+              new BlockPos(5, 0, 3),
+              new BlockPos(5, 0, 4),
+              new BlockPos(6, 0, 4),
+              new BlockPos(7, 0, 4),
+              new BlockPos(9, 0, 2),
+              new BlockPos(10, 0, 2),
+              new BlockPos(11, 0, 2),
+              new BlockPos(12, 0, 2))) fluid(level, o, p.getX(), p.getZ(), FluidKind.PIPE);
+      StructurePlacement.place(
+          level,
+          o.offset(22, 0, 2),
+          Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
+      ((MachineBlockEntity) level.getBlockEntity(o.offset(22, 0, 2)))
+          .items.setStackInSlot(0, new ItemStack(Items.RAW_IRON, 8));
+      for (int x : new int[] {4, 10, 16, 22}) pole(level, o, x, 5);
     } else {
-      fluid(level, o, 8, 1, FluidKind.TANK);
-      for (int x : new int[] {4, 9}) pole(level, o, x, 5);
+      for (int x = 4; x <= 6; x++) fluid(level, o, x, 2, FluidKind.PIPE);
+      fluid(level, o, 8, 3, FluidKind.TANK);
+      pole(level, o, 3, 5);
     }
     generator(level, o, 0, 7);
   }
@@ -275,10 +317,11 @@ public final class FactoryCommands {
   public static void oilLine(ServerLevel level, BlockPos o) {
     level.setBlockAndUpdate(o.offset(2, -1, 3), Content.OIL_DEPOSIT.get().defaultBlockState());
     machine(level, o.offset(3, 0, 2), FactoryKind.PUMPJACK, Direction.EAST);
-    for (int x = 4; x <= 6; x++) fluid(level, o, x, 3, FluidKind.PIPE);
+    for (int x = 4; x <= 6; x++) fluid(level, o, x, 2, FluidKind.PIPE);
     machine(level, o.offset(11, 0, 1), FactoryKind.REFINERY, Direction.EAST);
-    for (int x = 12; x <= 14; x++) fluid(level, o, x, 3, FluidKind.PIPE);
-    machine(level, o.offset(17, 0, 2), FactoryKind.CHEMICAL_PLANT, Direction.EAST);
+    for (int x = 12; x <= 14; x++) fluid(level, o, x, 5, FluidKind.PIPE);
+    fluid(level, o, 14, 4, FluidKind.PIPE);
+    machine(level, o.offset(15, 0, 4), FactoryKind.CHEMICAL_PLANT, Direction.WEST);
     level.setBlockAndUpdate(o.offset(16, 0, 0), Blocks.CHEST.defaultBlockState());
     ((ChestBlockEntity) level.getBlockEntity(o.offset(16, 0, 0)))
         .setItem(0, new ItemStack(Items.COAL, 32));
@@ -287,6 +330,7 @@ public final class FactoryCommands {
     level.setBlockAndUpdate(o.offset(19, 0, 3), Blocks.CHEST.defaultBlockState());
     generator(level, o, 4, 8);
     for (int x : new int[] {3, 8, 13, 17}) pole(level, o, x, 6);
+    pole(level, o, 18, 0);
   }
 
   private FactoryCommands() {}

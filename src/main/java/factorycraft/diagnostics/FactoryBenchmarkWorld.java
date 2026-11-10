@@ -32,6 +32,7 @@ final class FactoryBenchmarkWorld {
 
   record Audit(
       long beltItems,
+      long beltCarriers,
       long ironUnits,
       long storedFE,
       int producers,
@@ -146,7 +147,7 @@ final class FactoryBenchmarkWorld {
           case INDUSTRIAL_FURNACE -> FactoryKind.INDUSTRIAL_FURNACE;
           case CASING -> FactoryKind.CASING;
           case GENERATOR -> FactoryKind.GENERATOR;
-          case POLE -> FactoryKind.POLE;
+          case POLE -> FactoryKind.MEDIUM_POLE;
           case INSERTER -> FactoryKind.INSERTER;
           case SOURCE -> throw new IllegalStateException();
         };
@@ -216,7 +217,7 @@ final class FactoryBenchmarkWorld {
   }
 
   Audit audit() {
-    long copper = 0, iron = 0, energy = 0;
+    long copper = 0, physicalCarriers = 0, iron = 0, energy = 0;
     int producers = 0, inserters = 0, casings = 0, active = 0;
     MessageDigest digest;
     try {
@@ -253,15 +254,18 @@ final class FactoryBenchmarkWorld {
             int previous = Integer.MAX_VALUE;
             for (var carrier : belt.lane(lane).carriers()) {
               require(
-                  carrier.value.is(Items.COPPER_INGOT) && carrier.value.getCount() == 1,
-                  "Unexpected/stacked belt carrier");
+                  carrier.value.is(Items.COPPER_INGOT)
+                      && carrier.value.getCount() >= 1
+                      && carrier.value.getCount() <= 4,
+                  "Unexpected belt payload");
               require(
                   carrier.positionUnits() >= 0
                       && carrier.positionUnits() <= belt.lane(lane).length()
                       && previous - carrier.positionUnits() >= BeltLane.SPACING,
                   "Invalid belt spacing/position");
               previous = carrier.positionUnits();
-              copper++;
+              copper += carrier.value.getCount();
+              physicalCarriers++;
             }
           }
         }
@@ -287,6 +291,7 @@ final class FactoryBenchmarkWorld {
           }
         }
         case INSERTER -> {
+          energy += ((InserterBlockEntity) be).power.getEnergyStored();
           inserters++;
           iron += units(((InserterBlockEntity) be).held());
         }
@@ -323,13 +328,14 @@ final class FactoryBenchmarkWorld {
     require(
         producers == profile.cells * 4
             && inserters == profile.cells * 2
-            && casings == profile.cells * 130 + BenchmarkPlan.poleCount(profile),
+            && casings == profile.cells * 130 + 2 * BenchmarkPlan.poleCount(profile),
         "Workload counts changed");
     require(
         BeltSimulation.snapshot(level).loaded() == profile.loops * 100,
         "Not every belt registered");
     return new Audit(
         copper,
+        physicalCarriers,
         iron,
         energy,
         producers,
@@ -393,7 +399,7 @@ final class FactoryBenchmarkWorld {
   }
 
   BlockPos probePole() {
-    return ORIGIN.offset(5, 0, 4);
+    return ORIGIN.offset(4, 0, 4);
   }
 
   void removeProbe() {
@@ -404,7 +410,7 @@ final class FactoryBenchmarkWorld {
 
   void restoreProbe() {
     factorycraft.multiblock.StructurePlacement.place(
-        level, probePole(), Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
+        level, probePole(), Content.FACTORY.get(FactoryKind.MEDIUM_POLE).get().defaultBlockState());
   }
 
   static void require(boolean valid, String message) {

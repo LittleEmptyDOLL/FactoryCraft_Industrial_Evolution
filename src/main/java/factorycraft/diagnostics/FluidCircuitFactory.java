@@ -30,17 +30,19 @@ public final class FluidCircuitFactory {
   }
 
   public static void build(ServerLevel level, BlockPos o) {
-    var source = fluid(level, o.offset(2, 0, 5), FluidKind.TANK);
+    var source = fluid(level, o.offset(3, 0, 5), FluidKind.TANK);
     source.cell().fill(new FluidKey(new FluidStack(Fluids.WATER, 1)), 4000, false);
     source.setChanged();
     for (int x = 5; x <= 6; x++)
       level.setBlockAndUpdate(
-          o.offset(x, 0, 5), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-    fluid(level, o.offset(8, 0, 5), FluidKind.PUMP);
-    fluid(level, o.offset(9, 0, 5), FluidKind.TANK);
+          o.offset(x, 0, 6), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
+    fluid(level, o.offset(8, 0, 6), FluidKind.PUMP);
+    fluid(level, o.offset(11, 0, 7), FluidKind.TANK);
+    level.setBlockAndUpdate(
+        o.offset(9, 0, 6), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
     StructurePlacement.place(
         level,
-        o.offset(12, 0, 6),
+        o.offset(13, 0, 8),
         Content.FACTORY
             .get(FactoryKind.CIRCUIT_READER)
             .get()
@@ -48,14 +50,14 @@ public final class FluidCircuitFactory {
             .setValue(FactoryBlock.FACING, Direction.WEST));
     StructurePlacement.place(
         level,
-        o.offset(8, 0, 4),
+        o.offset(8, 0, 5),
         Content.FACTORY
             .get(FactoryKind.CIRCUIT_CONTROLLER)
             .get()
             .defaultBlockState()
             .setValue(FactoryBlock.FACING, Direction.SOUTH));
-    var reader = (CircuitNodeBlockEntity) level.getBlockEntity(o.offset(12, 0, 6));
-    var controller = (CircuitNodeBlockEntity) level.getBlockEntity(o.offset(8, 0, 4));
+    var reader = (CircuitNodeBlockEntity) level.getBlockEntity(o.offset(13, 0, 8));
+    var controller = (CircuitNodeBlockEntity) level.getBlockEntity(o.offset(8, 0, 5));
     var r = reader.saveWithoutMetadata(level.registryAccess());
     r.getCompound("Circuit")
         .put(
@@ -77,8 +79,7 @@ public final class FluidCircuitFactory {
     var generator =
         FactoryCommands.machine(level, o.offset(2, 0, 0), FactoryKind.GENERATOR, Direction.NORTH);
     generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
-    FactoryCommands.machine(level, o.offset(6, 0, 1), FactoryKind.POLE, Direction.NORTH);
-    FactoryCommands.machine(level, o.offset(9, 0, 1), FactoryKind.POLE, Direction.NORTH);
+    FactoryCommands.machine(level, o.offset(5, 0, 3), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 
   private FluidCircuitFactory() {}

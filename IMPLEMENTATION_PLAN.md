@@ -216,3 +216,21 @@ Four poles now form full schema-4 structures from one item, with exact independe
 Do not begin the next roadmap item automatically. Full/mixed benchmark/reload and combined FTB Teams + EMI + JEI + Jade remain CI work; no full-CI wait is required for this publication. Existing thirty schema-3-coordinate showcase diagnostics remain explicitly archived, not newly passed. On a later authorized maintenance task, migrate those physical port routes and restore their end-to-end ledgers. Later powered equipment, richer electrical production charts, quality-scaled poles and broader mod interoperability remain separate work. Intermediate one-block/proximity pole saves are not migrated or deleted; new diagnostic paths and failure evidence are retained.
 
 Local validation for 0.20.0: **157 JUnit / 278 required native tests**, repeated with Jade 15.10.6 in another JVM; exact reciprocal wire/731-FE/3-diamond checkpoint verified. Bounded smoke measure and separate-process reload pass in `smoke-v0200-probe`; failed harness/arena evidence preserved. Real clients with/without Jade, controller/part full inspection, live wire toggle/clear, coverage/MISS, saved wire restore and nonresurrection after manual removal checked. Resource generation is byte-idempotent. No full/mixed local rerun or complete CI wait. All implementation and current limits are documented in VALIDATION.md.
+
+
+## Active 0.21.0 — unified Factorio 2.0 inserters and restored integration
+
+1. Audit original 2.0.77 prototype numbers, old single-filter/single-item assumptions and all thirty archived physical scenarios.
+2. Replace ArmCycle with paid 60-Hz phase units at 20 TPS, one counted component-exact hand, fuel/FE adapters, universal five filters, team capacity effects/manual limits and partial delivery. Standard becomes electric; Burner replaces free mechanical bootstrap; remove Filter type.
+3. Extend the existing ItemStack carrier adapter (not transport solver) for bounded 2–4-item stacks, partial extraction, stack-only deposition, real vertical render layers and item/carrier accounting. Integrate all route forms/splitters/circuit gates.
+4. Update unified menu/animations/original models, recipes and capacity research; keep Space Age Stack unavailable through an invented early survival recipe.
+5. Restore archived finite input → production/research/thermal/chemical/circuit/module scenarios at actual schema-4 physical ports; track each original guarantee explicitly.
+6. Run build, targeted JUnit/native tests, separate-JVM state, bounded benchmark and real clients; update evidence/limits, publish to main, stop.
+
+Implemented: six shared paid-phase devices, solid self-fueling, five filters, component-exact counted/partial hands, team/manual capacity, native physical stacks and partial extraction, all-route integration, unified guarded menus and original animated models, recipes and explicitly gated Space Age diagnostics. The thirty archived scenarios are required again with real schema-4 ports, explicit power and finite chain ledgers. The old separate filter device/recipe and unused archive annotation are removed.
+
+Validated: 160 JUnit; 336/336 required native tests and new-process exact six-hand/three-stack fixtures (details in VALIDATION.md); bounded SMOKE/verify with weighted carrier/item and arm FE ledgers; real EN/RU clients and saved stack restore. Old diagnostic failures/worlds are retained. Full/MIXED and optional-mod combination profiles stay CI.
+
+### Handoff — finish only this requested scope
+
+Publish 0.21.0 normally to main after final checks; report the workflow once and do not wait for all CI jobs. No next roadmap item has been started. A later **explicitly authorized** task can replace the documented late-science mapping and creative-only Stack/height definitions when actual Space Age progression exists. Direct machine circuit wires, Selector Combinator, recipe-selection GUI, ore/oil generation, robots/trains and unrelated power/machine work remain separate tasks. Preserve all new resource invariants and restored required tests in future work.

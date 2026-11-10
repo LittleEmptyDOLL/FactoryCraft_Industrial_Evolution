@@ -22,7 +22,7 @@ class BenchmarkPlanTest {
     }
     assertEquals(10000, counts.get(Role.BELT));
     assertEquals(500, counts.get(Role.INSERTER));
-    assertEquals(33249, counts.get(Role.CASING));
+    assertEquals(33998, counts.get(Role.CASING));
     assertEquals(
         1000,
         counts.get(Role.FURNACE)
@@ -30,7 +30,7 @@ class BenchmarkPlanTest {
             + counts.get(Role.INDUSTRIAL_FURNACE));
     assertEquals(250, counts.get(Role.GENERATOR));
     assertEquals(749, counts.get(Role.POLE));
-    assertEquals(45998, points.size());
+    assertEquals(46747, points.size());
   }
 
   @Test
@@ -103,7 +103,7 @@ class BenchmarkPlanTest {
             Role.INSERTER,
             Role.SOURCE),
         roles);
-    assertEquals(818, blocks.size());
+    assertEquals(832, blocks.size());
     assertEquals(Profile.FULL, Profile.parse("full"));
     assertThrows(IllegalArgumentException.class, () -> Profile.parse("arbitrary"));
   }
@@ -117,19 +117,24 @@ class BenchmarkPlanTest {
           switch (c.role()) {
             case POLE -> factorycraft.simulation.power.PowerTopology.Kind.POLE;
             case GENERATOR -> factorycraft.simulation.power.PowerTopology.Kind.SOURCE;
-            case FURNACE, ASSEMBLER, INDUSTRIAL_FURNACE ->
+            case FURNACE, ASSEMBLER, INDUSTRIAL_FURNACE, INSERTER ->
                 factorycraft.simulation.power.PowerTopology.Kind.CONSUMER;
             default -> null;
           };
-      if (kind != null)
+      if (kind != null) {
+        var point = new factorycraft.simulation.power.PowerPoint(c.x(), c.y(), c.z());
+        var bounds =
+            c.role() == Role.POLE || c.role() == Role.INSERTER
+                ? factorycraft.simulation.power.PowerFootprint.cell(point)
+                : new factorycraft.simulation.power.PowerFootprint(
+                    c.x() - 1, c.x() + 1, c.y(), c.z(), c.z() + 2);
         graph.add(
             c,
-            new factorycraft.simulation.power.PowerPoint(
-                c.x() + (c.role() == Role.POLE ? 0 : 1),
-                c.y(),
-                c.z() + (c.role() == Role.POLE ? 0 : 1)),
+            bounds,
+            c.role() == Role.POLE ? factorycraft.simulation.power.PoleSpec.MEDIUM : null,
             kind,
             (n, simulate) -> n);
+      }
     }
     var poles = plan.blocks().stream().filter(c -> c.role() == Role.POLE).toList();
     for (int i = 0; i < poles.size(); i++)
@@ -137,11 +142,13 @@ class BenchmarkPlanTest {
         if (new factorycraft.simulation.power.PowerPoint(poles.get(i).x(), 0, poles.get(i).z())
             .within(
                 new factorycraft.simulation.power.PowerPoint(poles.get(k).x(), 0, poles.get(k).z()),
-                7)) graph.link(graph.find(poles.get(i)), graph.find(poles.get(k)));
+                9)) graph.link(graph.find(poles.get(i)), graph.find(poles.get(k)));
     int rounds = 0;
     while (graph.pending() && rounds++ < 1000) graph.advance(4096);
     assertFalse(graph.pending());
-    assertEquals(1999, graph.size());
+    assertEquals(2499, graph.size());
     assertEquals(1, graph.networks());
+    assertEquals(1500, graph.info(graph.find(poles.getFirst())).consumers());
+    assertEquals(250, graph.info(graph.find(poles.getFirst())).sources());
   }
 }

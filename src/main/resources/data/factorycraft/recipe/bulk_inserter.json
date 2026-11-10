@@ -1,0 +1,41 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fast_inserter"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 15
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 15
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:bulk_inserter",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 12
+}

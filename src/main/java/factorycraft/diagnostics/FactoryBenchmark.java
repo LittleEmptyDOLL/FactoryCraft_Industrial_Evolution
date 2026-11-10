@@ -344,7 +344,7 @@ public final class FactoryBenchmark {
       var after = world.audit();
       var belts = BeltSimulation.snapshot(world.level);
       var power = PowerGrid.snapshot(world.level);
-      long work = 0, production = 0, transferred = 0, beltChangedTicks = 0, spent = 0;
+      long work = 0, production = 0, transferred = 0, beltChangedTicks = 0, spent = 0, armSpent = 0;
       int working = 0, producing = 0, arms = 0, changedBelts = 0;
       for (var entry : telemetry.entities.entrySet()) {
         var c = entry.getValue();
@@ -355,6 +355,8 @@ public final class FactoryBenchmark {
           production += c.produced;
           spent += c.energySpent;
         } else if (entry.getKey() instanceof InserterBlockEntity) {
+          armSpent += c.energySpent;
+          spent += c.energySpent;
           if (c.transferred > 0) arms++;
           transferred += c.transferred;
         } else if (entry.getKey() instanceof BeltBlockEntity) {
@@ -401,7 +403,8 @@ public final class FactoryBenchmark {
       result.addProperty(
           "powerRebuildCpuMs", (power.rebuildNanos() - powerBefore.rebuildNanos()) / 1e6);
       result.addProperty("powerDeliveredFE", power.delivered() - powerBefore.delivered());
-      result.addProperty("productionEnergySpentFE", spent);
+      result.addProperty("productionEnergySpentFE", spent - armSpent);
+      result.addProperty("inserterEnergySpentFE", armSpent);
       result.addProperty("powerGraphWorkBudget", FactoryConfig.POWER_GRAPH_WORK.get());
       result.addProperty("generatorFePerTick", FactoryConfig.GENERATOR_FE.get());
       result.addProperty("powerVerticalReach", FactoryConfig.POWER_VERTICAL_REACH.get());
@@ -423,7 +426,7 @@ public final class FactoryBenchmark {
           "Belt workload stopped moving");
       require(
           !power.pending()
-              && power.nodes() == profile.cells * 5 + BenchmarkPlan.poleCount(profile)
+              && power.nodes() == profile.cells * 7 + BenchmarkPlan.poleCount(profile)
               && power.networks() == 1
               && power.rebuilds() - powerBefore.rebuilds() >= 2,
           "Power split/rejoin did not complete");
@@ -452,6 +455,7 @@ public final class FactoryBenchmark {
       var actual = world.audit();
       require(
           saved.beltItems() == actual.beltItems()
+              && saved.beltCarriers() == actual.beltCarriers()
               && saved.ironUnits() == actual.ironUnits()
               && saved.identityHash().equals(actual.identityHash()),
           "Saved factory failed resource/identity verification");

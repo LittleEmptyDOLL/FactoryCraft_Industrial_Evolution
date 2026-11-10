@@ -1,4 +1,4 @@
-# Architecture decisions — 0.20.0 (assembly/parts schema 4; native resource schema 1)
+# Architecture decisions — 0.21.0 (assembly/parts schema 4; native resource schema 1)
 
 ## Authority and persistence
 
@@ -6,7 +6,7 @@ All authoritative world access is on the server thread. Client renderers only ex
 
 An unloaded chunk pauses its machines. The power cache unregisters unloaded nodes. Belt scheduling discards unloaded references and reactivates loaded carriers. Neighbor lookups use `hasChunkAt`; production never force-loads a neighbor. The deliberate fixed-position persistence GameTest loads its fixture chunk, outside runtime simulation code.
 
-Saving uses vanilla chunk persistence. Extraction into an inserter moves ownership from the source to the serialized hand. If a target disappears or fills, the hand keeps the item. Breaking a belt iterates until every carrier has been removed, avoiding index-shift loss. Breaking an inserter drops the held stack. Whole-machine demolition preserves resources in one portable controller item; parts never hold inventory copies.
+Saving uses vanilla chunk persistence. Extraction into an inserter moves ownership from the source to the serialized hand. If a target disappears or fills, the hand keeps the item. Breaking a belt iterates until every carrier has been removed, avoiding index-shift loss. Breaking any inserter returns one portable device owning the held stack, fuel, energy and phase. Whole-machine demolition preserves resources in one portable controller item; parts never hold inventory copies.
 
 ## Transactions
 
@@ -18,7 +18,7 @@ This provides conservation during ordinary server ticks, saves and chunk unloads
 
 ## Belts
 
-An ordinary belt has two bounded lanes of four individual carriers; a splitter controller owns four lanes, addressed by two physical track positions. A segment has 96 integral coordinate units; spacing is 24 units. Nine server microsteps run inside each Minecraft tick (180 Hz); basic/fast/express carriers move 1/2/3 units per microstep. This preserves the existing 0.09375 / 0.1875 / 0.28125 blocks/tick speeds and gives exactly 15/30/45 items/s for two continuously supplied lanes in the independent kernel tests. Minecraft inventories and inserters operate at their own tick cadence; these kernel rates do not certify an entire in-game production line.
+An ordinary belt has two bounded lanes of four physical carriers (each with a counted component-exact ItemStack); a splitter controller owns four lanes, addressed by two physical track positions. A segment has 96 integral coordinate units; spacing is 24 units. Nine server microsteps run inside each Minecraft tick (180 Hz); basic/fast/express carriers move 1/2/3 units per microstep. This preserves the existing 0.09375 / 0.1875 / 0.28125 blocks/tick speeds and gives exactly 15/30/45 items/s for two continuously supplied lanes in the independent kernel tests. Minecraft inventories and inserters operate at their own tick cadence; these kernel rates do not certify an entire in-game production line.
 
 `BeltTransport` first projects all active lanes, then resolves cross-segment headway and destination reservations with an iterative worklist. Integral projections only decrease, bounding ordinary movement corrections to three units per carrier per microstep. It removes every outgoing carrier before inserting any incoming carrier, so a completely packed ring can move without requiring an artificial empty slot. Carriers retain their residual distance on transfer and are reused rather than allocated on each segment. At a speed transition the new speed applies on the next microstep (at most 1/180 s later); remaining spatial travel is retained.
 
@@ -170,3 +170,11 @@ New processing/chemistry recipes use the verified NeoForge 21.1.252 DataComponen
 FactoryKind.inserter() registers four models through the existing BE/renderer. ArmCycle holds only paid phase math; InserterBlockEntity owns the single native ItemStack hand. FE is committed per movement/action quantum, with no idle/blocked billing. Cached source/target positions invalidate on facing changes; capabilities are queried at transfer opportunities, not on each paid swing tick. Filter changes affect only future pickups. A reentry guard prevents synchronous handler callbacks from running a second transfer.
 
 Electric arms alone register as grid consumers and write Actuator schema 1. Mechanical serialized keys/timing remain unchanged. Native loaded/canonical/block-ticking/freeze guards protect tick and cached FE receivers; early ChunkEvent.Unload detaches before serialization. Electric block loot is empty because onRemove emits a single packed owner holding native hand components, FE, phase and configuration; the old owner is cleared/quarantined. Native menus use standard bounded buttons/data/ghost-slot packets and validate ordinary inventory clicks too. Arbitrary foreign handler callbacks and JVM crash journaling are not claimed atomic across files.
+
+## Unified inserter adapter (0.21.0)
+
+Six FactoryKind specs share ArmCycle's persisted 60-Hz paid units, ItemFilters' five type IDs and InserterCapacity's team/manual/item limits. InserterBlockEntity alone owns counted Hand, fuel/recovery and electrical/combustion buffers. Pickup/gather, outbound, partial drop and return stages preserve paid fractions; endpoint identity/canonical/ticking checks precede real capability operations, and reentrant packing waits until transfer ownership is resolved. GUIs never expose a mutable hand slot. Burner self-fuel bypasses cargo filters but transfers into its own saved fuel slot. Component-exact actual extraction results are retained; simulated counts are advisory, not a destructive promise. Arbitrary external handler crash-atomicity is outside this single-owner model.
+
+BeltTransport and topology remain generic and unchanged: counted stacks extend only the world adapter and renderer. Native ItemStack NBT already preserves count/components; partial extraction shrinks a payload in place. Standard/Bulk deposit one item/carrier, Stack explicitly deposits up to the researched height. Telemetry distinguishes carrier count and weighted item totals, includes arm FE in the energy ledger, and does not add hot-loop work unless the benchmark is active. All electrical arms are real GridConsumers; finite examples now include fuel/connected poles or explicit finite test-only power where power generation is not the invariant under test.
+
+Current hand schema is 3; old Actuator/filter-device data are not migrated. Assembly schema 4 and explicit electric-wire schema remain unchanged. The thirty archived integration methods have been adapted to current controllers/physical ports, finite power and actual hand timing and re-enter the mandatory GameTest set; archive provenance is retained in validation/assembly-v4-archive.md.

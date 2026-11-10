@@ -44,7 +44,9 @@ public final class ModuleFactory {
         .items
         .setStackInSlot(8, new ItemStack(Items.COAL, 8));
     for (int x : new int[] {3, 8, 11, 16})
-      FactoryCommands.machine(level, o.offset(x, 0, 5), FactoryKind.POLE, Direction.NORTH);
+      FactoryCommands.machine(level, o.offset(x, 0, 5), FactoryKind.MEDIUM_POLE, Direction.NORTH);
+    for (int x : new int[] {7, 16})
+      FactoryCommands.machine(level, o.offset(x, 0, 0), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 
   private ModuleFactory() {}

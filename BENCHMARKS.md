@@ -178,3 +178,11 @@ The preserved legacy FULL and optimized MIXED checkpoints both pass exact pre-ti
 ## 0.15.0 — mechanical adapter compatibility
 
 The preserved FULL checkpoint passes exact old pre-tick NBT and resumed material/FE/identity checks with the common inserter adapter extended for electric models (`docs/benchmarks/v0150-compat-verify.json`). Mechanical swing-12 timing and grid membership remain unchanged. This is a targeted saved-world regression, not a new giant electric-arm timing claim. Fresh FULL/MIXED measurements and optional profiles remain independent GitHub Actions jobs; they are not duplicated locally for this release.
+
+## 0.21.0 workload adaptation
+
+The main inserter ID is now electric. The actual workload therefore includes 500 additional grid consumers: FULL has 2499 graph nodes (749 Medium poles, 250 sources, 1500 consumers), 46747 physical cells and 33998 generated parts. Medium foundations/head heights are included; first supply poles moved one block to cover the actual input arms. The buffer ledger includes all arm FE, and measured arm work is debited separately as `inserterEnergySpentFE`. This changes the workload; historic timing reports are not a controlled comparison.
+
+Audit JSON now reports both `beltItems` (weighted ItemStack counts) and `beltCarriers` (physical positions). Counted payloads 1–4 are valid; the standard CI seed remains one item/carrier, so full-profile totals remain 20000 carriers/items and 128000 iron equivalents. New pure/native stacked-payload tests cover the multiplied quantity separately. No additional hot-loop scan is introduced.
+
+The bounded SMOKE measure and a separate-process verify passed in the separately marked `run-benchmark/smoke-v0210` world on 10 November 2026. It has 100 belt segments, 20 producers, 10 electric arms, 14 Medium poles/49 graph nodes, 832 physical cells/678 parts. Both quantity/FE ledgers and exact pre-tick restart hash passed. Another diagnostic process was active during measurement, so its 1.767-ms mean is evidence of this bounded run only, not an inserter performance comparison or a full-factory TPS claim. Full/MIXED measure/reload remain GitHub Actions work; old worlds/reports remain intact.

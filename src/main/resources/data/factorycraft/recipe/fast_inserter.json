@@ -15,9 +15,9 @@
     },
     {
       "ingredient": {
-        "item": "factorycraft:iron_gear"
+        "item": "factorycraft:iron_plate"
       },
-      "count": 5
+      "count": 2
     },
     {
       "ingredient": {
@@ -30,6 +30,6 @@
     "id": "factorycraft:fast_inserter",
     "count": 1
   },
-  "ticks": 40,
-  "energy": 16
+  "ticks": 10,
+  "energy": 12
 }

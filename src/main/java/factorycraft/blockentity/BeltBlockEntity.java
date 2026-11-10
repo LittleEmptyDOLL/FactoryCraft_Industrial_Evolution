@@ -431,7 +431,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
       }
 
       public int getSlotLimit(int s) {
-        return 1;
+        return 4;
       }
 
       public boolean isItemValid(int s, ItemStack v) {
@@ -461,6 +461,31 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   public boolean isScheduled() {
     for (var n : nodes) if (n.isActive()) return true;
     return false;
+  }
+
+  /** Explicit stack-inserter entry. Ordinary capability insertion deliberately stays one item. */
+  public ItemStack insertStack(
+      BlockPos physical, int slot, ItemStack stack, int maxHeight, boolean simulate) {
+    int track = trackAt(physical);
+    if (track < 0
+        || slot < 0
+        || slot >= 8
+        || !available()
+        || transport == null
+        || undergroundOutput
+        || (kind().lift() || kind().underground() || route.heightDelta() != 0)
+            && !physical.equals(worldPosition)) return stack;
+    int index = track * 2 + slot / 4;
+    if (stack.isEmpty() || !transport.canInsert(node(index))) return stack;
+    int count =
+        Math.min(stack.getCount(), Math.min(stack.getMaxStackSize(), Math.clamp(maxHeight, 1, 4)));
+    if (!simulate) {
+      if (!transport.insert(node(index), stack.copyWithCount(count))) return stack;
+      sync();
+    }
+    return stack.getCount() == count
+        ? ItemStack.EMPTY
+        : stack.copyWithCount(stack.getCount() - count);
   }
 
   private final class TrackHandler implements IItemHandler {
@@ -500,9 +525,12 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
       var lane = lane(index(slot));
       if (!available() || amount <= 0 || slot % 4 >= lane.carriers().size()) return ItemStack.EMPTY;
-      var result = lane.carriers().get(slot % 4).value.copy();
+      var stored = lane.carriers().get(slot % 4).value;
+      int count = Math.min(amount, stored.getCount());
+      var result = stored.copyWithCount(count);
       if (!simulate) {
-        lane.remove(slot % 4);
+        if (count == stored.getCount()) lane.remove(slot % 4);
+        else stored.shrink(count);
         sync();
         wakeTransport();
       }
@@ -511,7 +539,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
     public int getSlotLimit(int slot) {
       index(slot);
-      return 1;
+      return 4;
     }
 
     public boolean isItemValid(int slot, ItemStack stack) {

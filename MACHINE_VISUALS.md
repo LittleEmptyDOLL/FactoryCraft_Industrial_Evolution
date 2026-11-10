@@ -23,3 +23,7 @@
 Синий квадрат показывает настоящее coverage; зелёные линии — предполагаемые соединения при установке (включая проекцию на основание для читаемости сверху), оранжевые — действительные провода. Превью не рисуется при MISS/воздухе/дальней цели. Кандидаты обновляются локально при смене цели либо раз в десять тиков, без покадрового сканирования площади.
 
 FactoryCraft использует единое имя владельца для контроллера и частей. Необязательный Jade заменяет имя/иконку и стандартные строки хранилищ единым снимком владельца; FE, предметы и жидкости показываются без дублирования. Снимок не расширяет реальные возможности доступа через корпуса. Скриншоты и фактические клиентские проверки — VALIDATION.md.
+
+## 0.21.0 inserters
+
+Six original generated bases distinguish Burner (fuel housing), yellow Standard, red Long, blue Fast, green Bulk and white Stack (reinforced bases). One client renderer animates two links by the server's paid phase; Long extends both links to reach two. A held stack stays component-exact in the server hand and renders a quantity label. Interrupted power/gates stop authoritative movement; the client interpolates bounded snapshots only. Belt rendering draws one to four vertically offset item layers per physical carrier. These are original functional assets, not extracted Factorio art or a claim of final animated artwork.

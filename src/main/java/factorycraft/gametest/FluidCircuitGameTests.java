@@ -39,7 +39,7 @@ public final class FluidCircuitGameTests {
   }
 
   private static FluidBlockEntity tank(GameTestHelper h, BlockPos p) {
-    return FluidCircuitFactory.fluid(h.getLevel(), p, FluidKind.TANK);
+    return FluidCircuitFactory.fluid(h.getLevel(), p.east().south(), FluidKind.TANK);
   }
 
   private static void fill(FluidBlockEntity t, FluidStack f) {
@@ -47,7 +47,7 @@ public final class FluidCircuitGameTests {
     t.setChanged();
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 110)
+  @GameTest(template = "empty", timeoutTicks = 110)
   public static void fluidReaderMatchesComponentsWithoutMutatingSampleOrTank(GameTestHelper h) {
     var n = reader(h);
     var tank = tank(h, n.targetPosition());
@@ -149,7 +149,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 100)
+  @GameTest(template = "empty", timeoutTicks = 100)
   public static void missingFluidHandlerClosesEqualityButRealEmptyTankEnablesIt(GameTestHelper h) {
     var n = reader(h);
     var gate = CircuitGameTests.node(h, FactoryKind.CIRCUIT_CONTROLLER, 9, 4, Direction.SOUTH);
@@ -178,7 +178,7 @@ public final class FluidCircuitGameTests {
           h.assertTrue(
               n.readerReady && gate.gate && CircuitBinding.allowed(arm),
               "real empty tank not valid zero");
-          var t = (FluidBlockEntity) h.getLevel().getBlockEntity(n.targetPosition());
+          var t = (FluidBlockEntity) FluidConnections.endpoint(h.getLevel(), n.targetPosition());
           fill(t, water(20, 7));
         });
     h.runAfterDelay(
@@ -191,7 +191,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", batch = "circuit_sensor_lifecycle", timeoutTicks = 90)
+  @GameTest(template = "empty", batch = "circuit_sensor_lifecycle", timeoutTicks = 90)
   public static void adjacentTankChunkLossImmediatelyQuarantinesPhysicalSensor(GameTestHelper h) {
     var origin = h.absolutePos(new BlockPos(2, 3, 5));
     var target = new BlockPos((origin.getX() & ~15) + 15, origin.getY(), origin.getZ());
@@ -247,7 +247,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 100)
+  @GameTest(template = "empty", timeoutTicks = 100)
   public static void malformedFluidSampleIsUnknownAndLegacyDefaultsOmitReaderNbt(GameTestHelper h) {
     var n = reader(h);
     tank(h, n.targetPosition());
@@ -278,7 +278,7 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 500)
+  @GameTest(template = "empty", timeoutTicks = 500)
   public static void finiteCoalPoweredTankFeedbackStopsPumpAndConservesEveryMillibucket(
       GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(1, 3, 1));
@@ -286,15 +286,15 @@ public final class FluidCircuitGameTests {
     h.runAfterDelay(
         280,
         () -> {
-          var source = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(2, 0, 5));
-          var target = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(9, 0, 5));
-          var pump = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(8, 0, 5));
-          var reader = (CircuitNodeBlockEntity) h.getLevel().getBlockEntity(o.offset(12, 0, 6));
-          var gate = (CircuitNodeBlockEntity) h.getLevel().getBlockEntity(o.offset(8, 0, 4));
+          var source = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(3, 0, 5));
+          var target = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(11, 0, 7));
+          var pump = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(8, 0, 6));
+          var reader = (CircuitNodeBlockEntity) h.getLevel().getBlockEntity(o.offset(13, 0, 8));
+          var gate = (CircuitNodeBlockEntity) h.getLevel().getBlockEntity(o.offset(8, 0, 5));
           int total = source.cell().amount() + target.cell().amount() + pump.cell().amount();
           for (int x = 5; x <= 6; x++)
             total +=
-                ((FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(x, 0, 5))).cell().amount();
+                ((FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(x, 0, 6))).cell().amount();
           h.assertTrue(
               target.cell().amount() >= 1000
                   && target.cell().amount() < 1100
@@ -303,7 +303,12 @@ public final class FluidCircuitGameTests {
                   && !CircuitBinding.allowed(pump),
               "feedback failed: target=" + target.cell().amount() + " read=" + reader.lastOutput);
           h.assertTrue(
-              total == 4000 && pump.power.getEnergyStored() > 0,
+              total
+                          + ((FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(9, 0, 6)))
+                              .cell()
+                              .amount()
+                      == 4000
+                  && pump.power.getEnergyStored() > 0,
               "finite volume lost or no real grid power");
           System.out.println(
               "FACTORYCRAFT_FLUID_CIRCUIT_FACTORY: VERIFIED target="
@@ -392,18 +397,18 @@ public final class FluidCircuitGameTests {
         });
   }
 
-  @LegacyAssemblyFixture(template = "empty", timeoutTicks = 80)
+  @GameTest(template = "empty", timeoutTicks = 80)
   public static void nativeFluidSampleAndCrossChunkTankRetainExactDiskState(GameTestHelper h) {
     var level = h.getLevel();
-    var p = new BlockPos(16015, 70, 16015);
-    var r = p.west();
+    var p = new BlockPos(16016, 70, 16016);
+    var r = p.offset(-2, 0, -1);
     var profile = factorycraft.multiblock.MachineProfile.TANK;
     var cells = new ArrayList<>(profile.cells(p, Direction.NORTH));
     cells.add(r);
     for (var cell : cells) level.getChunkAt(cell);
     boolean fresh = cells.stream().allMatch(c -> level.getBlockState(c).isAir());
     if (fresh) {
-      var tank = tank(h, p);
+      var tank = FluidCircuitFactory.fluid(level, p, FluidKind.TANK);
       fill(tank, water(1237, 7));
       StructurePlacement.place(
           level,

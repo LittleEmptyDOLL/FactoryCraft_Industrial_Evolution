@@ -27,7 +27,7 @@ import net.neoforged.neoforge.gametest.*;
 @PrefixGameTestTemplate(false)
 public final class ElectricInserterGameTests {
   private static final FactoryKind[] KINDS = {
-    FactoryKind.FAST_INSERTER, FactoryKind.LONG_INSERTER, FactoryKind.FILTER_INSERTER
+    FactoryKind.FAST_INSERTER, FactoryKind.LONG_INSERTER, FactoryKind.BULK_INSERTER
   };
 
   private static ResourceLocation id(String name) {
@@ -108,7 +108,7 @@ public final class ElectricInserterGameTests {
           h.assertTrue(
               count(source) == 0
                   && a.held().is(Items.EMERALD)
-                  && a.phase() == 3
+                  && a.phase() == 11
                   && a.power.getEnergyStored() == 0,
               "pickup ownership/cost failed");
         });
@@ -116,9 +116,9 @@ public final class ElectricInserterGameTests {
         30,
         () -> {
           h.assertTrue(
-              a.phase() == 3 && a.held().is(Items.EMERALD) && count(target) == 0,
+              a.phase() == 11 && a.held().is(Items.EMERALD) && count(target) == 0,
               "starved hand moved or delivered");
-          a.power.receiveEnergy(28, false);
+          a.power.receiveEnergy(94, false);
         });
     h.runAfterDelay(
         75,
@@ -132,7 +132,7 @@ public final class ElectricInserterGameTests {
 
   @GameTest(template = "empty", timeoutTicks = 150)
   public static void outputBackpressureAndDisableKeepHandAndStopBilling(GameTestHelper h) {
-    var a = arm(h, FactoryKind.FILTER_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
+    var a = arm(h, FactoryKind.BULK_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
     var source = chest(h, a.sourcePosition());
     var target = chest(h, a.targetPosition());
     source.setItem(0, new ItemStack(Items.DIAMOND));
@@ -148,7 +148,7 @@ public final class ElectricInserterGameTests {
         30,
         () -> {
           h.assertTrue(
-              a.held().is(Items.DIAMOND) && a.phase() == 0 && a.power.getEnergyStored() == 984,
+              a.held().is(Items.DIAMOND) && a.phase() == 0 && a.power.getEnergyStored() == 860,
               "blocked arm lost hand or billed idle ticks");
           a.configure(false, false, null);
           target.clearContent();
@@ -157,7 +157,7 @@ public final class ElectricInserterGameTests {
         55,
         () -> {
           h.assertTrue(
-              a.held().is(Items.DIAMOND) && count(target) == 0 && a.power.getEnergyStored() == 984,
+              a.held().is(Items.DIAMOND) && count(target) == 0 && a.power.getEnergyStored() == 860,
               "disabled hand moved");
           a.configure(true, false, null);
         });
@@ -165,7 +165,7 @@ public final class ElectricInserterGameTests {
         100,
         () -> {
           h.assertTrue(
-              a.held().isEmpty() && count(target) == 1 && a.power.getEnergyStored() == 968,
+              a.held().isEmpty() && count(target) == 1 && a.power.getEnergyStored() == 720,
               "unblocked final cycle cost changed");
           h.succeed();
         });
@@ -174,7 +174,7 @@ public final class ElectricInserterGameTests {
   @GameTest(template = "empty", timeoutTicks = 160)
   public static void allowDenyFiltersSkipNonmatchingSourceSlotsWithoutConsumingSamples(
       GameTestHelper h) {
-    var a = arm(h, FactoryKind.FILTER_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
+    var a = arm(h, FactoryKind.BULK_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
     var source = chest(h, a.sourcePosition());
     var target = chest(h, a.targetPosition());
     source.setItem(0, new ItemStack(Items.RAW_COPPER, 2));
@@ -200,7 +200,7 @@ public final class ElectricInserterGameTests {
         100,
         () -> {
           h.assertTrue(
-              source.isEmpty() && count(target) == 4 && a.power.getEnergyStored() == 872,
+              source.isEmpty() && count(target) == 4 && a.power.getEnergyStored() == 440,
               "deny-list material/FE ledger failed");
           h.succeed();
         });
@@ -208,7 +208,7 @@ public final class ElectricInserterGameTests {
 
   @GameTest(template = "empty", timeoutTicks = 90)
   public static void ghostMenusValidateTwoViewersAndNeverDispenseHand(GameTestHelper h) {
-    var a = arm(h, FactoryKind.FILTER_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
+    var a = arm(h, FactoryKind.BULK_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
     h.runAfterDelay(
         5,
         () -> {
@@ -231,7 +231,7 @@ public final class ElectricInserterGameTests {
                   && first.getCarried().getCount() == 3
                   && second.getCarried().getCount() == 4,
               "shared filter consumed real samples");
-          for (var mode : ClickType.values()) second.clicked(1, 0, mode, q);
+          for (var mode : ClickType.values()) second.clicked(5, 0, mode, q);
           h.assertTrue(
               a.held().is(Items.EMERALD) && second.getCarried().is(Items.REDSTONE),
               "hand preview leaked owned cargo");
@@ -284,7 +284,7 @@ public final class ElectricInserterGameTests {
 
   @GameTest(template = "empty", timeoutTicks = 100)
   public static void portableDemolitionReturnsOneDeviceWithHandFeAndSettings(GameTestHelper h) {
-    var a = arm(h, FactoryKind.FILTER_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
+    var a = arm(h, FactoryKind.BULK_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
     h.runAfterDelay(
         5,
         () -> {
@@ -303,7 +303,7 @@ public final class ElectricInserterGameTests {
                   && drops
                       .getFirst()
                       .getItem()
-                      .is(Content.FACTORY.get(FactoryKind.FILTER_INSERTER).get().asItem()),
+                      .is(Content.FACTORY.get(FactoryKind.BULK_INSERTER).get().asItem()),
               "demolition returned copied cargo or extra device");
           var stack = drops.getFirst().getItem().copy();
           drops.getFirst().discard();
@@ -429,12 +429,12 @@ public final class ElectricInserterGameTests {
         5,
         () -> {
           m.items.setStackInSlot(0, new ItemStack(Content.FACTORY.get(FactoryKind.INSERTER).get()));
-          m.items.setStackInSlot(1, new ItemStack(BuiltInRegistries.ITEM.get(id("iron_gear")), 5));
+          m.items.setStackInSlot(1, new ItemStack(BuiltInRegistries.ITEM.get(id("iron_plate")), 2));
           m.items.setStackInSlot(
-              2, new ItemStack(BuiltInRegistries.ITEM.get(id("electronic_circuit")), 5));
+              2, new ItemStack(BuiltInRegistries.ITEM.get(id("electronic_circuit")), 2));
           m.power.restore(2000);
           var selected = m.saveWithoutMetadata(h.getLevel().registryAccess());
-          selected.putString("Selected", id("filter_inserter").toString());
+          selected.putString("Selected", id("fast_inserter").toString());
           m.loadWithComponents(selected, h.getLevel().registryAccess());
         });
     h.runAfterDelay(
@@ -460,12 +460,12 @@ public final class ElectricInserterGameTests {
           h.assertTrue(
               m.items
                       .getStackInSlot(4)
-                      .is(Content.FACTORY.get(FactoryKind.FILTER_INSERTER).get().asItem())
+                      .is(Content.FACTORY.get(FactoryKind.FAST_INSERTER).get().asItem())
                   && m.items.getStackInSlot(4).getCount() == 1
                   && m.items.getStackInSlot(0).isEmpty()
                   && m.items.getStackInSlot(1).isEmpty()
                   && m.items.getStackInSlot(2).isEmpty()
-                  && m.power.getEnergyStored() == 1360,
+                  && m.power.getEnergyStored() == 1880,
               "actuator manufacture material/FE ledger failed");
           h.succeed();
         });
@@ -473,7 +473,7 @@ public final class ElectricInserterGameTests {
 
   @GameTest(template = "empty", timeoutTicks = 90)
   public static void frozenServerAndUnknownFiltersCannotPerformWork(GameTestHelper h) {
-    var a = arm(h, FactoryKind.FILTER_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
+    var a = arm(h, FactoryKind.BULK_INSERTER, new BlockPos(5, 3, 5), Direction.NORTH);
     var source = chest(h, a.sourcePosition());
     chest(h, a.targetPosition());
     source.setItem(0, new ItemStack(Items.DIAMOND));
@@ -517,15 +517,16 @@ public final class ElectricInserterGameTests {
         h.getLevel().setBlockAndUpdate(p, Content.FACTORY.get(KINDS[i]).get().defaultBlockState());
         var a = (InserterBlockEntity) h.getLevel().getBlockEntity(p);
         var t = a.saveWithoutMetadata(h.getLevel().registryAccess());
-        var settings = new CompoundTag();
-        settings.putInt("Schema", 1);
-        settings.putInt("Energy", 731);
-        settings.putBoolean("Enabled", false);
+        t.putInt("Energy", 731);
+        t.putBoolean("Enabled", false);
+        t.putInt("Stage", 1);
         if (i == 2) {
-          settings.putBoolean("Blacklist", true);
-          settings.putString("Filter", "minecraft:raw_iron");
+          t.putBoolean("Blacklist", true);
+          var filters = new net.minecraft.nbt.ListTag();
+          filters.add(net.minecraft.nbt.StringTag.valueOf("minecraft:raw_iron"));
+          for (int n = 1; n < 5; n++) filters.add(net.minecraft.nbt.StringTag.valueOf(""));
+          t.put("Filters", filters);
         }
-        t.put("Actuator", settings);
         t.putInt("Phase", 2);
         a.loadWithComponents(t, h.getLevel().registryAccess());
         var item = new ItemStack(Items.DIAMOND);

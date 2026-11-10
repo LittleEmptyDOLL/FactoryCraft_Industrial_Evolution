@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "sandbox_only": true,
+  "prerequisites": [
+    "factorycraft:inserter_capacity_bonus_7"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 2000,
+  "ticks": 1200,
+  "unlocks": [],
+  "x": 13,
+  "y": 5
+}

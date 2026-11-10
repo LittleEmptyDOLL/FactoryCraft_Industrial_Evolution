@@ -1,25 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " I ",
-    "GSR",
-    " I "
-  ],
-  "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "factorycraft:iron_plate"
     },
-    "G": {
+    {
       "item": "factorycraft:iron_gear"
     },
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "R": {
-      "item": "minecraft:redstone"
+    {
+      "item": "factorycraft:electronic_circuit"
     }
-  },
+  ],
   "result": {
     "id": "factorycraft:inserter",
     "count": 1

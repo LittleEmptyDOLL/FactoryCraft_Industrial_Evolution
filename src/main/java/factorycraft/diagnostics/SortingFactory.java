@@ -43,17 +43,23 @@ public final class SortingFactory {
     b.loadWithComponents(tag, level.registryAccess());
     for (int x : new int[] {8, 9}) {
       FactoryCommands.machine(level, o.offset(x, 0, 6), belt, Direction.NORTH);
-      FactoryCommands.machine(level, o.offset(x, 0, 7), FactoryKind.INSERTER, Direction.NORTH);
+      fueledArm(level, o.offset(x, 0, 7), Direction.NORTH);
       level.setBlockAndUpdate(o.offset(x, 0, 8), Blocks.CHEST.defaultBlockState());
       var source = (ChestBlockEntity) level.getBlockEntity(o.offset(x, 0, 8));
       source.setItem(0, new ItemStack(Items.RAW_IRON, 16));
       source.setItem(1, new ItemStack(Items.RAW_COPPER, 16));
       FactoryCommands.machine(level, o.offset(x, 0, 4), belt, Direction.NORTH);
     }
-    FactoryCommands.machine(level, o.offset(7, 0, 4), FactoryKind.INSERTER, Direction.WEST);
-    FactoryCommands.machine(level, o.offset(10, 0, 4), FactoryKind.INSERTER, Direction.EAST);
+    fueledArm(level, o.offset(7, 0, 4), Direction.WEST);
+    fueledArm(level, o.offset(10, 0, 4), Direction.EAST);
     level.setBlockAndUpdate(o.offset(6, 0, 4), Blocks.CHEST.defaultBlockState());
     level.setBlockAndUpdate(o.offset(11, 0, 4), Blocks.CHEST.defaultBlockState());
+  }
+
+  private static void fueledArm(ServerLevel level, BlockPos position, Direction facing) {
+    FactoryCommands.machine(level, position, FactoryKind.BURNER_INSERTER, facing);
+    ((factorycraft.blockentity.InserterBlockEntity) level.getBlockEntity(position))
+        .fuel.setStackInSlot(0, new ItemStack(Items.COAL));
   }
 
   private SortingFactory() {}
