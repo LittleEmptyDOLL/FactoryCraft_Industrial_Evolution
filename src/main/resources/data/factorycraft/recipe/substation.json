@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_wire"
+      },
+      "count": 6
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:substation",
+    "count": 1
+  },
+  "ticks": 20,
+  "energy": 12
+}

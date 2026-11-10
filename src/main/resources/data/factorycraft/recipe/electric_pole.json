@@ -1,0 +1,24 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "tag": "minecraft:planks"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_wire"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:electric_pole",
+    "count": 2
+  },
+  "ticks": 10,
+  "energy": 12
+}

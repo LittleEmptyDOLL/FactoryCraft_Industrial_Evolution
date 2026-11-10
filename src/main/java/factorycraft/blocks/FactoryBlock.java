@@ -86,7 +86,9 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (kind.circuit() || kind.casing() && s.getValue(PROFILE).circuit())
       return box(0, 0, 0, 16, 8, 16);
     if (kind.inserter()) return box(5, 0, 5, 11, 8, 11);
-    if (kind == FactoryKind.POLE) return box(6, 0, 6, 10, 16, 10);
+    if (kind.pole() || kind.casing() && s.getValue(PROFILE).poleType() != null)
+      return factorycraft.energy.PoleGeometry.shape(s, l, p);
+
     return Shapes.block();
   }
 
@@ -98,7 +100,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (kind == FactoryKind.LAB) return new LabBlockEntity(p, s);
     if (kind.belt()) return new BeltBlockEntity(p, s);
     if (kind.inserter()) return new InserterBlockEntity(p, s);
-    if (kind == FactoryKind.POLE) return new PoleBlockEntity(p, s);
+    if (kind.pole()) return new PoleBlockEntity(p, s);
     if (kind.casing()) return new CasingBlockEntity(p, s);
     return new MachineBlockEntity(p, s);
   }
@@ -143,10 +145,15 @@ public final class FactoryBlock extends BaseEntityBlock {
       BlockState s, Level l, BlockPos p, Player player, BlockHitResult hit) {
     if (l.isClientSide) return InteractionResult.SUCCESS;
     if (player.getMainHandItem().is(Content.WRENCH.get())) return useWrench(l, p, player);
+    if (l.getBlockEntity(p) instanceof PoleBlockEntity pole) {
+      pole.showInfo(player);
+      return InteractionResult.SUCCESS;
+    }
     if (l.getBlockEntity(p) instanceof factorycraft.blockentity.BeaconBlockEntity beacon)
-      factorycraft.multiblock.MachineInteraction.open(beacon,player,p);
+      factorycraft.multiblock.MachineInteraction.open(beacon, player, p);
     else if (l.getBlockEntity(p) instanceof LabBlockEntity lab) {
-      if (factorycraft.research.ResearchTeams.member(player, lab.scope())) factorycraft.multiblock.MachineInteraction.open(lab,player,p);
+      if (factorycraft.research.ResearchTeams.member(player, lab.scope()))
+        factorycraft.multiblock.MachineInteraction.open(lab, player, p);
       else
         player.displayClientMessage(
             Component.translatable("message.factorycraft.research_team_required"), true);
@@ -154,21 +161,23 @@ public final class FactoryBlock extends BaseEntityBlock {
       if (machine.assembly() != null && !machine.assembly().formed() && !machine.assembly().form())
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
-      factorycraft.multiblock.MachineInteraction.open(machine,player,p);
+      factorycraft.multiblock.MachineInteraction.open(machine, player, p);
     } else if (l.getBlockEntity(p) instanceof InserterBlockEntity arm && arm.electric()) {
       factorycraft.inserters.InserterMenu.open(arm, player);
     } else if (l.getBlockEntity(p) instanceof factorycraft.circuits.CircuitNodeBlockEntity node) {
-      factorycraft.multiblock.MachineInteraction.open(node,player,p);
+      factorycraft.multiblock.MachineInteraction.open(node, player, p);
     } else if (l.getBlockEntity(p) instanceof CasingBlockEntity part) {
       var owner = part.genericForRemoval();
-      if (owner instanceof BeltBlockEntity belt && belt.kind().splitter())
-        factorycraft.logistics.SplitterMenu.open(belt, player,p);
-      else if (owner != null) factorycraft.multiblock.MachineInteraction.open(owner.factoryEntity(),player,p);
+      if (owner instanceof PoleBlockEntity pole) pole.showInfo(player, p);
+      else if (owner instanceof BeltBlockEntity belt && belt.kind().splitter())
+        factorycraft.logistics.SplitterMenu.open(belt, player, p);
+      else if (owner != null)
+        factorycraft.multiblock.MachineInteraction.open(owner.factoryEntity(), player, p);
       else
         player.displayClientMessage(
             Component.translatable("message.factorycraft.assembly_missing"), true);
     } else if (l.getBlockEntity(p) instanceof BeltBlockEntity belt) {
-      if (belt.kind().splitter()) factorycraft.logistics.SplitterMenu.open(belt, player,p);
+      if (belt.kind().splitter()) factorycraft.logistics.SplitterMenu.open(belt, player, p);
       else showTransport(belt, player);
     } else if (l.getBlockEntity(p) instanceof TransportPartBlockEntity part
         && part.ownerForRemoval() != null) showTransport(part.ownerForRemoval(), player);
@@ -190,6 +199,7 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (level.isClientSide || !(placer instanceof Player player)) return;
     var scope = factorycraft.research.ResearchTeams.resolve(player).orElse("unavailable");
     var be = level.getBlockEntity(pos);
+    if (be instanceof PoleBlockEntity pole) pole.requestAutoConnections();
     if (be instanceof LabBlockEntity lab && lab.scope().isEmpty()) lab.bind(scope);
     if (be instanceof MachineBlockEntity machine
         && !stack.has(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA))

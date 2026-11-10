@@ -16,7 +16,16 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active architecture override — 0.19.0 (explicit user instruction, 9 November 2026)
+## Active task — 0.20.0 electricity and multiblock information (10 November 2026)
+
+* Current user scope supersedes the previous ban on poles: implement four Factorio 2.0 pole types, one-item multiblocks, persistent reciprocal UUID-bound copper links, explicit budgeted power topology, footprint-intersection square coverage, wire/coverage visuals, a wire tool, pole information and optional Jade parity. Preserve all four circuit colors, existing fluid ports, production/fuel/speed balance and resource ownership.
+* Pole supply area, maximum wire distance and vertical base reach are separate parameters. No implicit poleRadius adjacency, no fixed five-wire limit, no auto-repair of deliberately removed wires on load. Quarantine cut/unavailable components immediately; preserve independent networks and all work budgets.
+* New electric fixtures must use separate v0200 paths. Existing v0190/older diagnostic worlds are archives, never reset/refilled. Intermediate electrical data migration is optional; no user world is automatically deleted. Parts own no network/resource copies.
+* Validate native wires/lifecycle and separate-JVM persistence, both Jade-present/absent, and real-client wire/coverage/Jade behavior. Full/mixed benchmarks remain CI unless needed locally. Publish to main by normal fast-forward, preserving parallel work; report once without waiting for complete CI. Do not start unrelated roadmap work.
+
+* New native transient arenas use a saved monotonic diagnostic allocator, not game time (GameTest resets it). Keep the fixed power disk fixture unchanged; never reuse/reset occupied arenas to hide failures. Named benchmark preparation and runtime must share one validated `profile[-name]` path.
+
+## Previous architecture override — 0.19.0 (explicit user instruction, 9 November 2026)
 
 * The user explicitly permits breaking old intermediate world/assembly coordinates and NBT. The current assembly/part schema is 4; new payloads must preserve mirror settings without importing old assembly UUIDs. Requirements below about exact old schema-3/corner coordinates, old fixture hashes, old port positions or mandatory 0.6.0+ compatibility are **historical**, not constraints on this overhaul. Do not migrate/reset/delete old worlds to make tests pass. Retain old diagnostic files as archives and use separately named schema-4 worlds/checkpoints.
 * Schema-3 hardcoded diagnostic scenarios explicitly archived in `validation/assembly-v4-archive.md` are compiled reference source, not passing tests. Re-enable only after adapting their physical endpoints; never reset an archived checkpoint to do so. Current GameTests and new schema-4 fixtures remain required.

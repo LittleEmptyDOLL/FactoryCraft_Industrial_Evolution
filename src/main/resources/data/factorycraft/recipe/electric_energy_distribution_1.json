@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:steel_processing",
+    "factorycraft:automation"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 120,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:medium_electric_pole",
+    "factorycraft:big_electric_pole"
+  ],
+  "x": 4,
+  "y": 6
+}

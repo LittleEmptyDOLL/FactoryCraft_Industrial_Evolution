@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_wire"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:medium_electric_pole",
+    "count": 1
+  },
+  "ticks": 20,
+  "energy": 12
+}

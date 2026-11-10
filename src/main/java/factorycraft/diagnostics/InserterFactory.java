@@ -40,8 +40,8 @@ public final class InserterFactory {
         FactoryCommands.machine(level, o.offset(24, 0, 2), FactoryKind.GENERATOR, Direction.NORTH);
     generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 4));
     for (int x = 2; x <= 22; x += 5)
-      FactoryCommands.machine(level, o.offset(x, 0, 9), FactoryKind.POLE, Direction.NORTH);
-    FactoryCommands.machine(level, o.offset(25, 0, 8), FactoryKind.POLE, Direction.NORTH);
+      FactoryCommands.machine(level, o.offset(x, 0, 8), FactoryKind.MEDIUM_POLE, Direction.NORTH);
+    FactoryCommands.machine(level, o.offset(25, 0, 6), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 
   private InserterFactory() {}

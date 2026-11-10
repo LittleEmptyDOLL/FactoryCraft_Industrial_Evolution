@@ -1,6 +1,5 @@
 package factorycraft.simulation.benchmark;
 
-import factorycraft.simulation.multiblock.CuboidLayout;
 import java.util.*;
 
 /**
@@ -124,8 +123,11 @@ public final class BenchmarkPlan {
   private static void machine(List<Cell> cells, int x, int z, Role role) {
     // Schema 4: body origin remains fixed; controller is the front-center base cell.
     add(cells, x + 1, 0, z, role, Heading.NORTH);
-    for(int y=0;y<3;y++)for(int dz=0;dz<3;dz++)for(int dx=0;dx<3;dx++)
-      if(dx!=1 || y!=0 || dz!=0)add(cells,x+dx,y,z+dz,Role.CASING,Heading.NORTH);
+    for (int y = 0; y < 3; y++)
+      for (int dz = 0; dz < 3; dz++)
+        for (int dx = 0; dx < 3; dx++)
+          if (dx != 1 || y != 0 || dz != 0)
+            add(cells, x + dx, y, z + dz, Role.CASING, Heading.NORTH);
   }
 
   public static int poleCount(Profile p) {
@@ -134,6 +136,7 @@ public final class BenchmarkPlan {
 
   private static void add(List<Cell> cells, int x, int y, int z, Role role, Heading heading) {
     cells.add(new Cell(x, y, z, role, heading));
+    if (role == Role.POLE) cells.add(new Cell(x, y + 1, z, Role.CASING, Heading.NORTH));
   }
 
   public List<Cell> blocks() {

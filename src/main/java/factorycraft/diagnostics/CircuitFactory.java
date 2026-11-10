@@ -58,7 +58,7 @@ public final class CircuitFactory {
         FactoryCommands.machine(level, o.offset(2, 0, 9), FactoryKind.GENERATOR, Direction.NORTH);
     generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
     FactoryCommands.machine(level, o.offset(6, 0, 9), FactoryKind.POLE, Direction.NORTH);
-    FactoryCommands.machine(level, o.offset(9, 0, 8), FactoryKind.POLE, Direction.NORTH);
+    FactoryCommands.machine(level, o.offset(9, 0, 8), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 
   private CircuitFactory() {}

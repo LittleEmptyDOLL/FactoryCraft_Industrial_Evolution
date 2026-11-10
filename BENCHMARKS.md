@@ -1,3 +1,13 @@
+# Current 0.20.0 fixture notes (10 November 2026, Europe/Moscow)
+
+Normal poles now have complete two-block structures and persisted explicit edges. The existing full plan remains 10000 belts / 1000 producers / 500 inserters / 250 generators; it adds 749 pole parts to the previous physical count: **45998 cells / 33249 parts / 1999 electrical nodes**. Full and mixed execution/reload are left to CI for this task; older timings below are historical and are not measurements of the new topology.
+
+Each profile now has its own marked directory: `run-benchmark/full-v0200`, `smoke-v0200`, `mixed-v0200`. `-PbenchmarkFixture=smoke-v0200-probe` (or another validated `profile[-name]`) selects an independent fixture for *both* preparation and runtime. Marker, symlink, nonempty-world and existing-checkpoint guards remain. Do not reset old evidence to rerun a measurement.
+
+The first smoke measurement caught a harness regression: the intentional pole-removal probe restored only the old one-block base, so the new upper cell was missing. The old failed world/log remain at `smoke-v0200` / `/workspace/work/v0200-smoke-measure.log`; a subsequent attempted named run still pointed runtime at that old world and correctly refused occupied cells. Both problems were fixed in the harness: explicit no-drop whole-pole removal, ordinary complete StructurePlacement restoration, and one shared validated directory configuration. No failed world was reset/refilled. The corrected measurement uses fresh **smoke-v0200-probe**, with **100 belts, 20 producers, 5 generators, 10 inserters, 14 two-block poles / 664 parts, 818 total cells, 7 harness-pinned chunks**. All moving segments/producers/inserters must work, and exact material/FE ledgers and reload hashes remain mandatory. Current results/evidence are in [VALIDATION.md](VALIDATION.md).
+
+---
+
 # Нагрузочный стенд FactoryCraft 0.13.0
 
 Стенд запускает **настоящий выделенный Minecraft 1.21.1 / NeoForge 21.1.252**, размещает обычные блоки мода и использует штатный серверный цикл с целевой частотой 20 TPS. Это отдельная проверка мира, не замена GameTest или независимый тест математического ядра.

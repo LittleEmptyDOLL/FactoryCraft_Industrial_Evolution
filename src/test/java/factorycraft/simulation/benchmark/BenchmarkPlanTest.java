@@ -22,7 +22,7 @@ class BenchmarkPlanTest {
     }
     assertEquals(10000, counts.get(Role.BELT));
     assertEquals(500, counts.get(Role.INSERTER));
-    assertEquals(32500, counts.get(Role.CASING));
+    assertEquals(33249, counts.get(Role.CASING));
     assertEquals(
         1000,
         counts.get(Role.FURNACE)
@@ -30,7 +30,7 @@ class BenchmarkPlanTest {
             + counts.get(Role.INDUSTRIAL_FURNACE));
     assertEquals(250, counts.get(Role.GENERATOR));
     assertEquals(749, counts.get(Role.POLE));
-    assertEquals(45249, points.size());
+    assertEquals(45998, points.size());
   }
 
   @Test
@@ -74,12 +74,14 @@ class BenchmarkPlanTest {
                 || target.role() == Role.CASING);
       }
       if (c.role() == Role.INDUSTRIAL_FURNACE) {
-        for(int y=0;y<3;y++)for(int z=0;z<3;z++)for(int x=0;x<3;x++) {
-          if(x==1 && y==0 && z==0)continue;
-          var part=map.get(new Point(c.x()+x-1,c.y()+y,c.z()+z));
-          assertNotNull(part);
-          assertEquals(Role.CASING,part.role());
-        }
+        for (int y = 0; y < 3; y++)
+          for (int z = 0; z < 3; z++)
+            for (int x = 0; x < 3; x++) {
+              if (x == 1 && y == 0 && z == 0) continue;
+              var part = map.get(new Point(c.x() + x - 1, c.y() + y, c.z() + z));
+              assertNotNull(part);
+              assertEquals(Role.CASING, part.role());
+            }
       }
     }
   }
@@ -101,7 +103,7 @@ class BenchmarkPlanTest {
             Role.INSERTER,
             Role.SOURCE),
         roles);
-    assertEquals(804, blocks.size());
+    assertEquals(818, blocks.size());
     assertEquals(Profile.FULL, Profile.parse("full"));
     assertThrows(IllegalArgumentException.class, () -> Profile.parse("arbitrary"));
   }
@@ -109,7 +111,8 @@ class BenchmarkPlanTest {
   @Test
   void fullFactoryUsesOneSharedPowerNetworkRatherThanCheapIsolatedCells() {
     var graph = new factorycraft.simulation.power.PowerTopology<Cell>(6);
-    for (var c : new BenchmarkPlan(Profile.FULL).blocks()) {
+    var plan = new BenchmarkPlan(Profile.FULL);
+    for (var c : plan.blocks()) {
       var kind =
           switch (c.role()) {
             case POLE -> factorycraft.simulation.power.PowerTopology.Kind.POLE;
@@ -128,6 +131,13 @@ class BenchmarkPlanTest {
             kind,
             (n, simulate) -> n);
     }
+    var poles = plan.blocks().stream().filter(c -> c.role() == Role.POLE).toList();
+    for (int i = 0; i < poles.size(); i++)
+      for (int k = 0; k < i; k++)
+        if (new factorycraft.simulation.power.PowerPoint(poles.get(i).x(), 0, poles.get(i).z())
+            .within(
+                new factorycraft.simulation.power.PowerPoint(poles.get(k).x(), 0, poles.get(k).z()),
+                7)) graph.link(graph.find(poles.get(i)), graph.find(poles.get(k)));
     int rounds = 0;
     while (graph.pending() && rounds++ < 1000) graph.advance(4096);
     assertFalse(graph.pending());

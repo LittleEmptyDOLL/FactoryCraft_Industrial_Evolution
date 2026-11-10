@@ -40,10 +40,8 @@ public final class FactoryBenchmark {
     var root = server.getServerDirectory().toAbsolutePath().normalize();
     require(
         server.isDedicatedServer()
-            && (root.getFileName().toString().equals(profile+"-v0190") && root.getParent().getFileName().toString().equals("run-benchmark")
-                || profile.equals("mixed")
-                    && root.getFileName().toString().matches("mixed(?:-[a-z0-9]+)*")
-                    && root.getParent().getFileName().toString().equals("run-benchmark"))
+            && root.getFileName().toString().matches(profile + "(?:-[a-z0-9]+)*")
+            && root.getParent().getFileName().toString().equals("run-benchmark")
             && Files.readString(root.resolve("factorycraft-benchmark.marker")).equals(MARKER),
         "Not an isolated FactoryCraft benchmark directory");
     session =
@@ -406,7 +404,7 @@ public final class FactoryBenchmark {
       result.addProperty("productionEnergySpentFE", spent);
       result.addProperty("powerGraphWorkBudget", FactoryConfig.POWER_GRAPH_WORK.get());
       result.addProperty("generatorFePerTick", FactoryConfig.GENERATOR_FE.get());
-      result.addProperty("poleRadius", FactoryConfig.POLE_RADIUS.get());
+      result.addProperty("powerVerticalReach", FactoryConfig.POWER_VERTICAL_REACH.get());
       result.addProperty("beSyncRequests", telemetry.syncRequests);
       result.add("network", JSON.toJsonTree(packetSummary));
       require(before.identityHash().equals(after.identityHash()), "Structure identities changed");

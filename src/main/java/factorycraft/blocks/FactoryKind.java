@@ -21,6 +21,9 @@ public enum FactoryKind {
   LAB("lab", 0),
   BEACON("beacon", 0),
   POLE("electric_pole", 0),
+  MEDIUM_POLE("medium_electric_pole", 0),
+  BIG_POLE("big_electric_pole", 0),
+  SUBSTATION("substation", 0),
   INDUSTRIAL_FURNACE("industrial_furnace", 0),
   CASING("machine_casing", 0),
   PUMPJACK("pumpjack", 0),
@@ -43,6 +46,14 @@ public enum FactoryKind {
   FactoryKind(String id, int beltTier) {
     this.id = id;
     this.beltTier = beltTier;
+  }
+
+  public factorycraft.simulation.power.PoleSpec poleType() {
+    return factorycraft.simulation.power.PoleSpec.byId(id);
+  }
+
+  public boolean pole() {
+    return poleType() != null;
   }
 
   public boolean circuit() {

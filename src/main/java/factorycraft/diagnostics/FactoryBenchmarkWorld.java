@@ -169,9 +169,12 @@ final class FactoryBenchmarkWorld {
 
   void seed() {
     for (var cell : plan.blocks())
-      if (level.getBlockEntity(position(cell)) instanceof MachineBlockEntity machine
-          && machine.assembly() != null)
-        require(machine.assembly().formAutomatic(), "Full-size benchmark structure failed to form");
+      if (level.getBlockEntity(position(cell))
+              instanceof factorycraft.multiblock.AssemblyOwner owner
+          && owner.assembly() != null) {
+        require(owner.assembly().formAutomatic(), "Full-size benchmark structure failed to form");
+        if (owner instanceof PoleBlockEntity pole) pole.requestAutoConnections();
+      }
     for (var cell : plan.blocks()) {
       var be = level.getBlockEntity(position(cell));
       switch (cell.role()) {
@@ -320,7 +323,7 @@ final class FactoryBenchmarkWorld {
     require(
         producers == profile.cells * 4
             && inserters == profile.cells * 2
-            && casings == profile.cells * 130,
+            && casings == profile.cells * 130 + BenchmarkPlan.poleCount(profile),
         "Workload counts changed");
     require(
         BeltSimulation.snapshot(level).loaded() == profile.loops * 100,
@@ -394,12 +397,14 @@ final class FactoryBenchmarkWorld {
   }
 
   void removeProbe() {
-    level.removeBlock(probePole(), false);
+    var pole = (PoleBlockEntity) level.getBlockEntity(probePole());
+    factorycraft.energy.PowerWires.clear(pole);
+    pole.assembly().removeWhole(false); // Administrative probe, deliberately no item drop.
   }
 
   void restoreProbe() {
-    level.setBlockAndUpdate(
-        probePole(), Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
+    factorycraft.multiblock.StructurePlacement.place(
+        level, probePole(), Content.FACTORY.get(FactoryKind.POLE).get().defaultBlockState());
   }
 
   static void require(boolean valid, String message) {

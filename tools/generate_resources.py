@@ -677,3 +677,32 @@ for locale,ru in [('en_us',False),('ru_ru',True)]:
  data['message.factorycraft.ports_mirrored']='Порты отражены слева направо. Shift + ключ: безопасная разборка.' if ru else 'Ports mirrored left/right. Sneak + wrench: safe dismantling.'
  data['tooltip.factorycraft.fluid_nozzles']+=' Ключ: отразить порты.' if ru else ' Wrench: mirror ports.'
  write(f'assets/factorycraft/lang/{locale}.json',data)
+
+# 0.20: explicit normal-quality electric poles; no existing production/fuel/speed recipes changed.
+write('data/factorycraft/recipe/craft_electric_pole.json',{'type':'minecraft:crafting_shapeless','ingredients':[{'tag':'minecraft:planks'},{'item':'minecraft:copper_ingot'}],'result':{'id':'factorycraft:electric_pole','count':2}})
+write('data/factorycraft/recipe/craft_copper_wire_tool.json',{'type':'minecraft:crafting_shapeless','ingredients':[{'item':'minecraft:copper_ingot'},{'item':'minecraft:iron_ingot'}],'result':{'id':'factorycraft:copper_wire_tool','count':1}})
+for name,plates,steel,wire in [('medium_electric_pole',2,2,2),('big_electric_pole',4,5,4),('substation',0,10,6)]:
+ inputs=[{'ingredient':{'item':'factorycraft:steel_plate'},'count':steel},{'ingredient':{'item':'factorycraft:copper_wire'},'count':wire},{'ingredient':{'item':'factorycraft:iron_plate' if plates else 'factorycraft:advanced_circuit'},'count':plates or 5}]
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:processing','machine':'assembling_machine','inputs':inputs,'result':{'id':'factorycraft:'+name,'count':1},'ticks':20,'energy':12})
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
+write('data/factorycraft/recipe/electric_energy_distribution_1.json',{'type':'factorycraft:research','prerequisites':['factorycraft:steel_processing','factorycraft:automation'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':120,'ticks':600,'unlocks':['factorycraft:medium_electric_pole','factorycraft:big_electric_pole'],'x':4,'y':6})
+write('data/factorycraft/recipe/electric_energy_distribution_2.json',{'type':'factorycraft:research','prerequisites':['factorycraft:electric_energy_distribution_1','factorycraft:chemical_science'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1,'factorycraft:chemical_science_pack':1},'units':100,'ticks':900,'unlocks':['factorycraft:substation'],'x':5,'y':6})
+texture('item/copper_wire_tool',(184,105,43),'item')
+write('assets/factorycraft/models/item/copper_wire_tool.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/copper_wire_tool'}})
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text())
+ for name,en,ru in [('electric_pole','Small Electric Pole','Малый электрический столб'),('medium_electric_pole','Medium Electric Pole','Средний электрический столб'),('big_electric_pole','Big Electric Pole','Большая электрическая опора'),('substation','Substation','Подстанция')]:
+  data['block.factorycraft.'+name]=(en,ru)[index];data['recipe.factorycraft.'+name]=(en,ru)[index];data['tooltip.factorycraft.'+name]=('Saved copper connections; separate square supply area. Copper wire tool: connect/disconnect; sneak: clear.','Сохранённые медные связи и отдельная квадратная зона снабжения. Инструмент: соединить/разорвать; Shift: отключить все.')[index]
+ for name,en,ru in [('electric_energy_distribution_1','Electric Energy Distribution 1','Распределение электроэнергии 1'),('electric_energy_distribution_2','Electric Energy Distribution 2','Распределение электроэнергии 2')]:data['technology.factorycraft.'+name]=(en,ru)[index]
+ data['item.factorycraft.copper_wire_tool']=('Copper Power Wire Tool','Инструмент медных силовых проводов')[index]
+ messages={'selected':('First pole selected','Первый столб выбран'),'connected':('Copper wire connected','Силовой провод подключён'),'removed':('Copper wire removed','Силовой провод снят'),'cleared':('All copper wires removed','Все силовые провода сняты'),'too_far':('Beyond the wire reach of one endpoint','Превышена дальность проводов одного из столбов'),'unavailable':('First pole unavailable or changed','Первый столб недоступен или изменился'),'cancelled':('Wire selection cancelled','Выбор столба отменён')}
+ for key,value in messages.items():data['message.factorycraft.power_wire_'+key]=value[index]
+ texts={'supply':('Supply: %s × %s','Зона питания: %s × %s'),'wire':('Wire reach: %s blocks','Дальность провода: %s блоков'),'connections':('Wires loaded / saved: %s / %s','Провода: загружено / всего %s / %s'),'network':('Network poles: %s','Столбов в сети: %s'),'sources':('Generators: %s','Генераторов: %s'),'consumers':('Consumers: %s','Потребителей: %s'),'pending':('unavailable / rebuilding','недоступна / перестраивается'),'controls':('Copper tool: link; sneak: clear','Медный инструмент: связь; Shift: сброс')}
+ for key,value in texts.items():data['gui.factorycraft.pole_'+key]=value[index]
+ data['gui.factorycraft.inspection_energy']=('Stored: %s FE','Запас: %s FE')[index];data['gui.factorycraft.inspection_progress']=('Progress: %s / %s ticks','Прогресс: %s / %s тактов')[index]
+ write(f'assets/factorycraft/lang/{locale}.json',data)
+
+write('data/factorycraft/recipe/electric_pole.json',{'type':'factorycraft:processing','machine':'assembling_machine','inputs':[{'ingredient':{'tag':'minecraft:planks'},'count':1},{'ingredient':{'item':'factorycraft:copper_wire'},'count':2}],'result':{'id':'factorycraft:electric_pole','count':2},'ticks':10,'energy':12})
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text());data['tooltip.factorycraft.pole_properties']=('Supply %s × %s; wire reach %s blocks','Зона питания %s × %s; дальность провода %s блоков')[index];write(f'assets/factorycraft/lang/{locale}.json',data)
+p=ROOT/'data/factorycraft/advancement/recipes/factory_basics.json';data=json.loads(p.read_text());data['rewards']['recipes']=['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))];write(str(p.relative_to(ROOT)),data)

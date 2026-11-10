@@ -31,7 +31,11 @@ public enum MachineProfile implements StringRepresentable {
   ARITHMETIC("arithmetic_combinator", 1, 1, 2),
   DECIDER("decider_combinator", 1, 1, 2),
   CIRCUIT_READER("circuit_reader", 1, 1, 1),
-  CIRCUIT_CONTROLLER("circuit_controller", 1, 1, 1);
+  CIRCUIT_CONTROLLER("circuit_controller", 1, 1, 1),
+  SMALL_POLE("electric_pole", 1, 2, 1),
+  MEDIUM_POLE("medium_electric_pole", 1, 3, 1),
+  BIG_POLE("big_electric_pole", 2, 5, 2),
+  SUBSTATION("substation", 2, 4, 2);
   public final String id;
   public final CuboidLayout layout;
 
@@ -117,6 +121,10 @@ public enum MachineProfile implements StringRepresentable {
         d.getX() * r.getStepX() + d.getZ() * r.getStepZ(),
         d.getY(),
         -d.getX() * facing.getStepX() - d.getZ() * facing.getStepZ());
+  }
+
+  public factorycraft.simulation.power.PoleSpec poleType() {
+    return factorycraft.simulation.power.PoleSpec.byId(id);
   }
 
   public boolean circuit() {

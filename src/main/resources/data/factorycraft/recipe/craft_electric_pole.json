@@ -1,21 +1,15 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    " C ",
-    " S ",
-    " S "
-  ],
-  "key": {
-    "C": {
-      "item": "minecraft:copper_ingot"
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "minecraft:planks"
     },
-    "S": {
-      "item": "minecraft:stick"
+    {
+      "item": "minecraft:copper_ingot"
     }
-  },
+  ],
   "result": {
     "id": "factorycraft:electric_pole",
-    "count": 4
+    "count": 2
   }
 }

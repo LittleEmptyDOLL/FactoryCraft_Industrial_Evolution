@@ -31,7 +31,8 @@ public final class FactoryClient {
       if (p != factorycraft.multiblock.MachineProfile.TANK
           && p != factorycraft.multiblock.MachineProfile.PUMP
           && !p.splitter()
-          && !p.circuit())
+          && !p.circuit()
+          && p.poleType() == null)
         event.register(
             net.minecraft.client.resources.model.ModelResourceLocation.standalone(
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
@@ -45,6 +46,7 @@ public final class FactoryClient {
     e.register(Content.SPLITTER_MENU.get(), factorycraft.client.screens.SplitterScreen::new);
     e.register(Content.MODULE_MENU.get(), factorycraft.client.screens.ModuleScreen::new);
     e.register(Content.RESEARCH_MENU.get(), factorycraft.client.screens.ResearchScreen::new);
+    e.register(Content.POLE_MENU.get(), factorycraft.client.screens.PoleScreen::new);
     e.register(Content.PETROLEUM_MENU.get(), factorycraft.client.screens.PetroleumScreen::new);
     e.register(Content.THERMAL_MENU.get(), factorycraft.client.screens.ThermalScreen::new);
     e.register(Content.MENU.get(), FactoryScreen::new);
@@ -96,6 +98,7 @@ public final class FactoryClient {
 
   @SubscribeEvent
   public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
+    e.registerBlockEntityRenderer(Content.POLE.get(), PowerWireRenderer::new);
     e.registerBlockEntityRenderer(Content.BEACON.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.LAB.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.MACHINE.get(), MachineAnimationRenderer::new);

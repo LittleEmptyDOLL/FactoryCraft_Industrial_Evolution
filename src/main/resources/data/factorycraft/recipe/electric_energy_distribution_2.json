@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:electric_energy_distribution_1",
+    "factorycraft:chemical_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 900,
+  "unlocks": [
+    "factorycraft:substation"
+  ],
+  "x": 5,
+  "y": 6
+}

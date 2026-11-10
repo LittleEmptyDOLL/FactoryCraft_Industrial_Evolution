@@ -112,3 +112,10 @@ Server-authoritative industrial automation: belts, inserters, mining and product
     versionRange="[1.1.24,2)"
     ordering="AFTER"
     side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="jade"
+    type="optional"
+    versionRange="[15.10.6,)"
+    ordering="AFTER"
+    side="BOTH"

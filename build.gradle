@@ -28,6 +28,7 @@ sourceSets.main.resources {
 
 repositories {
     mavenCentral()
+    maven { url 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
     maven { url 'https://maven.blamejared.com' }
     maven { url 'https://maven.terraformersmc.com/releases'; content { includeGroup 'dev.emi' } }
     // Add here additional repositories if required by some of the dependencies below.
@@ -39,6 +40,13 @@ base {
 
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
+def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0200')
+if (!(benchmarkProfile in ['full', 'smoke', 'mixed']) || !(benchmarkFixtureName ==~ /${benchmarkProfile}(?:-[a-z0-9]+)*/)) throw new GradleException('Fixture must be a simple profile[-name] child of run-benchmark.')
+def benchmarkDir = layout.projectDirectory.dir('run-benchmark/' + benchmarkFixtureName).asFile
+def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
+def benchmarkMode = providers.gradleProperty('benchmarkMode').getOrElse('measure')
 
 neoForge {
     // Specify the version of NeoForge to use.
@@ -76,13 +84,13 @@ neoForge {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             type = "gameTestServer"
-            gameDirectory = project.file('run-gametest/v0190')
+            gameDirectory = project.file('run-gametest/v0200')
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         benchmarkServer {
             server()
-            gameDirectory = project.file(providers.gradleProperty('benchmarkProfile').getOrElse('full') == 'mixed' ? 'run-benchmark/' + providers.gradleProperty('benchmarkFixture').getOrElse('mixed-v0190') : 'run-benchmark/' + providers.gradleProperty('benchmarkProfile').getOrElse('full') + '-v0190')
+            gameDirectory = benchmarkDir
             programArgument '--nogui'
             systemProperty 'factorycraft.benchmark.profile', providers.gradleProperty('benchmarkProfile').getOrElse('full')
             systemProperty 'factorycraft.benchmark.mode', providers.gradleProperty('benchmarkMode').getOrElse('measure')
@@ -133,6 +141,10 @@ configurations {
 }
 
 dependencies {
+    compileOnly("maven.modrinth:jade:15.10.6+neoforge") { transitive = false }
+    if(providers.gradleProperty('withJade').getOrElse('false') == 'true') {
+        localRuntime("maven.modrinth:jade:15.10.6+neoforge") { transitive = false }
+    }
     compileOnly "mezz.jei:jei-1.21.1-common-api:19.21.1.248"
     compileOnly("dev.emi:emi-neoforge:1.1.24+1.21.1") { transitive = false }
     if (providers.gradleProperty('recipeViewer').getOrElse(providers.gradleProperty('withViewers').getOrElse('false') == 'true' ? 'both' : 'none') in ['both', 'jei']) {
@@ -224,12 +236,6 @@ test { useJUnitPlatform() }
 
 tasks.named("jar") { from("LICENSE") }
 
-def mixedFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse('mixed-v0190')
-if (!(mixedFixtureName ==~ /mixed(?:-[a-z0-9]+)*/)) throw new GradleException('Mixed fixture must be a simple mixed[-name] child of run-benchmark.')
-def benchmarkDir = layout.projectDirectory.dir(providers.gradleProperty('benchmarkProfile').getOrElse('full') == 'mixed' ? 'run-benchmark/' + mixedFixtureName : 'run-benchmark/' + providers.gradleProperty('benchmarkProfile').getOrElse('full') + '-v0190').asFile
-def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
-def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
-def benchmarkMode = providers.gradleProperty('benchmarkMode').getOrElse('measure')
 def prepareBenchmark = tasks.register('prepareBenchmarkWorld') {
     group = 'verification'
     description = 'Prepare only the explicitly isolated benchmark server directory.'

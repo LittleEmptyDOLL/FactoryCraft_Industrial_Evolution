@@ -25,6 +25,7 @@ public final class FactoryCommands {
     var root = Commands.literal("factorycraft").requires(s -> s.hasPermission(2));
     for (String name :
         new String[] {
+          "powerworks",
           "demo",
           "smelter",
           "waterworks",
@@ -128,6 +129,14 @@ public final class FactoryCommands {
       for (int z = 0; z < depth; z++)
         level.setBlockAndUpdate(origin.offset(x, 0, z), Blocks.STONE_BRICKS.defaultBlockState());
     switch (name) {
+      case "powerworks" ->
+          factorycraft.diagnostics.PowerShowcase.build(
+              level,
+              origin.above(),
+              source.getPlayer() == null
+                  ? "unavailable"
+                  : factorycraft.research.ResearchTeams.resolve(source.getPlayer())
+                      .orElse("unavailable"));
       case "demo", "smelter" -> ironLine(level, origin.above(), name.equals("smelter"));
       case "waterworks" -> waterLine(level, origin.above(), false);
       case "steamworks" -> waterLine(level, origin.above(), true);
@@ -171,9 +180,10 @@ public final class FactoryCommands {
 
   public static MachineBlockEntity machine(
       ServerLevel level, BlockPos pos, FactoryKind kind, Direction facing) {
-    var state=Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING,facing);
-    var controller=StructurePlacement.fromOrigin(level,pos,state);
-    return level.getBlockEntity(controller) instanceof MachineBlockEntity m?m:null;
+    var state =
+        Content.FACTORY.get(kind).get().defaultBlockState().setValue(FactoryBlock.FACING, facing);
+    var controller = StructurePlacement.fromOrigin(level, pos, state);
+    return level.getBlockEntity(controller) instanceof MachineBlockEntity m ? m : null;
   }
 
   private static void pole(ServerLevel level, BlockPos origin, int x, int z) {

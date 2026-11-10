@@ -275,6 +275,7 @@ public final class CasingBlockEntity extends FactoryBlockEntity {
             : null;
     identity = tag.hasUUID("AssemblyIdentity") ? tag.getUUID("AssemblyIdentity") : null;
     if (level != null && level.isClientSide) {
+      if (genericForRemoval() instanceof PoleBlockEntity pole) pole.invalidateVisual();
       requestModelDataUpdate();
       level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }

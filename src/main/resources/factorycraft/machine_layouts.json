@@ -407,6 +407,38 @@
         0
       ],
       "ports": []
+    },
+    "electric_pole": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "medium_electric_pole": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "big_electric_pole": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "substation": {
+      "controller": [
+        0,
+        0,
+        0
+      ],
+      "ports": []
     }
   }
 }

@@ -22,18 +22,24 @@ public final class MachineItem extends BlockItem {
     var state = getBlock().getStateForPlacement(context);
     if (state == null) return null;
     var profile = MachineProfile.of(state);
-    return new CenteredPlacementContext(
-        context, PlacementPlan.controllerFor(context,state));
+    return new CenteredPlacementContext(context, PlacementPlan.controllerFor(context, state));
   }
 
-  @Override protected boolean updateCustomBlockEntityTag(net.minecraft.core.BlockPos pos,net.minecraft.world.level.Level level,net.minecraft.world.entity.player.Player player,ItemStack stack,BlockState state) {
-    boolean updated=super.updateCustomBlockEntityTag(pos,level,player,stack,state);
-    if(!level.isClientSide) {
-      var owner=AssemblyAccess.owner(level.getBlockEntity(pos));
-      if(owner!=null && owner.assembly().mirrored())owner.assembly().refreshParts();
+  @Override
+  protected boolean updateCustomBlockEntityTag(
+      net.minecraft.core.BlockPos pos,
+      net.minecraft.world.level.Level level,
+      net.minecraft.world.entity.player.Player player,
+      ItemStack stack,
+      BlockState state) {
+    boolean updated = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
+    if (!level.isClientSide) {
+      var owner = AssemblyAccess.owner(level.getBlockEntity(pos));
+      if (owner != null && owner.assembly().mirrored()) owner.assembly().refreshParts();
     }
     return updated;
   }
+
   protected boolean canPlace(BlockPlaceContext context, BlockState state) {
     if (!super.canPlace(context, state)) return false;
     boolean valid = PlacementPlan.inspect(context, state).valid();
@@ -100,6 +106,12 @@ public final class MachineItem extends BlockItem {
       int tier = ((FactoryBlock) getBlock()).kind.beltTier;
       lines.add(Component.translatable("tooltip.factorycraft.splitter_rate", tier * 30));
       if (tier > 1) lines.add(Component.translatable("tooltip.factorycraft.splitter_upgrade"));
+    }
+    if (profile.poleType() != null) {
+      var pole = profile.poleType();
+      lines.add(
+          Component.translatable(
+              "tooltip.factorycraft.pole_properties", pole.supply, pole.supply, pole.wire));
     }
     switch (profile) {
       case ADVANCED_ASSEMBLER, PUMPJACK, REFINERY, CHEMICAL, BOILER, ENGINE, TANK, PUMP ->

@@ -312,7 +312,13 @@ public final class Content {
       ENTITIES.register(
           "pole",
           () ->
-              BlockEntityType.Builder.of(PoleBlockEntity::new, blocks(FactoryKind.POLE))
+              BlockEntityType.Builder.of(
+                      PoleBlockEntity::new,
+                      blocks(
+                          FactoryKind.POLE,
+                          FactoryKind.MEDIUM_POLE,
+                          FactoryKind.BIG_POLE,
+                          FactoryKind.SUBSTATION))
                   .build(null));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CasingBlockEntity>>
       CASING =
@@ -546,6 +552,15 @@ public final class Content {
         FLUID.get(),
         (be, side) -> be.kind() == factorycraft.fluids.FluidKind.PUMP ? be.energyPort : null);
   }
+
+  public static final DeferredItem<factorycraft.energy.PowerWireTool> POWER_WIRE_TOOL =
+      ITEMS.register(
+          "copper_wire_tool",
+          () -> new factorycraft.energy.PowerWireTool(new Item.Properties().stacksTo(1)));
+  public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.energy.PoleMenu>>
+      POLE_MENU =
+          MENUS.register(
+              "pole", () -> IMenuTypeExtension.create(factorycraft.energy.PoleMenu::new));
 
   private Content() {}
 }

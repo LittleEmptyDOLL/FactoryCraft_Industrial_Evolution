@@ -1,0 +1,15 @@
+FactoryCraft 0.20.0 — local native validation, 10 November 2026 Europe/Moscow
+Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252
+JUnit: {'tests': 157, 'failures': 0, 'errors': 0, 'skipped': 0}
+
+without Jade
+FACTORYCRAFT_POWER_V20_DISK: VERIFIED reciprocal UUID wire, 731 FE / 3 diamonds
+[22:52:28] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK_DISK: VERIFIED 100 belts, 20 producers, 10 inserters, 664 casings
+[22:52:28] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-verify.json
+[22:52:37] [Server thread/INFO] [minecraft/GameTestServer]: All 278 required tests passed :)
+BUILD SUCCESSFUL in 1m 21s
+
+with Jade 15.10.6+neoforge
+FACTORYCRAFT_POWER_V20_DISK: VERIFIED reciprocal UUID wire, 731 FE / 3 diamonds
+[22:54:09] [Server thread/INFO] [minecraft/GameTestServer]: All 278 required tests passed :)
+BUILD SUCCESSFUL in 50s
