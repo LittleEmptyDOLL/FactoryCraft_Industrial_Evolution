@@ -18,7 +18,7 @@
   "fluids": [
     {
       "fluid": "factorycraft:sulfuric_acid",
-      "amount": 5
+      "amount": 50
     }
   ],
   "results": [

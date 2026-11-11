@@ -4,13 +4,13 @@
   "fluids": [
     {
       "fluid": "factorycraft:heavy_oil",
-      "amount": 10
+      "amount": 100
     }
   ],
   "fluid_results": [
     {
       "id": "factorycraft:lubricant",
-      "amount": 10
+      "amount": 100
     }
   ],
   "ticks": 20,

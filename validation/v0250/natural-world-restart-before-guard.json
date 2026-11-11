@@ -1,0 +1,18 @@
+{
+  "priorSnapshotHashesVerified": 218,
+  "currentSnapshots": 556,
+  "blockEntityCounts": {
+    "minecraft:chest": 57,
+    "minecraft:mob_spawner": 38,
+    "minecraft:brushable_block": 53,
+    "minecraft:dispenser": 57,
+    "minecraft:vault": 18,
+    "minecraft:trial_spawner": 14,
+    "minecraft:barrel": 12,
+    "minecraft:decorated_pot": 49,
+    "minecraft:bed": 10,
+    "factorycraft:resource_deposit": 5129,
+    "factorycraft:oil_deposit": 3
+  },
+  "note": "Independent client JVM preserved all saved original surfaces. No old chunks regenerated. Empty structure-reference guard bug then found; original no-resource coast/plains chunks kept."
+}

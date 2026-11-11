@@ -296,9 +296,10 @@ public final class TieredSplitterGameTests {
         () -> {
           inputs(m, true);
           m.power.restore(5000);
-          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 80);
+          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 800);
           h.assertTrue(
-              m.petroleum().selectRecipe(id("express_splitter")), "missing express recipe");
+              !m.petroleum().selectRecipe(id("express_splitter")),
+              "locked recipe selection accepted");
         });
     h.runAfterDelay(
         35,
@@ -306,10 +307,10 @@ public final class TieredSplitterGameTests {
           h.assertTrue(
               m.items.getStackInSlot(4).isEmpty()
                   && m.power.getEnergyStored() == 5000
-                  && m.petroleum().cells.get(0).amount() == 80,
+                  && m.petroleum().cells.get(0).amount() == 800,
               "locked express manufacture spent resources");
           unlock(h, scope, "logistics_3");
-          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 79);
+          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 790);
         });
     h.runAfterDelay(
         75,
@@ -317,9 +318,9 @@ public final class TieredSplitterGameTests {
           h.assertTrue(
               m.items.getStackInSlot(4).isEmpty()
                   && m.power.getEnergyStored() == 5000
-                  && m.petroleum().cells.get(0).amount() == 79,
+                  && m.petroleum().cells.get(0).amount() == 790,
               "short lubricant was consumed");
-          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 80);
+          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 800);
         });
     h.runAfterDelay(
         145,

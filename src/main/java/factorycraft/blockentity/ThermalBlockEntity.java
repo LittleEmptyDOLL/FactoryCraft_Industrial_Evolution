@@ -26,7 +26,8 @@ import net.neoforged.neoforge.items.*;
 /** Canonical fuel, progress, water, steam and FE. All ports recheck loaded chunk ownership. */
 public final class ThermalBlockEntity extends FactoryBlockEntity
     implements factorycraft.multiblock.AssemblyOwner, MenuProvider, GridGenerator {
-  public static final int FLUID_CAPACITY = 4000,
+  public static final int
+      FLUID_CAPACITY = factorycraft.simulation.fluids.FluidUnits.MACHINE_CAPACITY,
       PORT_RATE = factorycraft.simulation.fluids.FluidUnits.boundaryRate(FLUID_CAPACITY);
   private final factorycraft.multiblock.IndustrialAssembly assembly;
 
@@ -206,6 +207,7 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     return water.amount() > 0
         || steam.amount() > 0
         || engine.energy() > 0
+        || engine.residue() > 0
         || boiler.fuel() > 0
         || boiler.progress() > 0
         || !items.getStackInSlot(0).isEmpty();
@@ -457,6 +459,7 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     tag.put("Steam", contents(steam).saveOptional(r));
     tag.put("Items", items.serializeNBT(r));
     tag.putInt("Energy", engine.energy());
+    tag.putInt("EnergyResidue", engine.residue());
     tag.putInt("Fuel", boiler.fuel());
     tag.putInt("Progress", boiler.progress());
     tag.putString("BoilingRecipe", boiler.recipe());
@@ -472,7 +475,7 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     water.restore(input.isEmpty() ? null : new FluidKey(input), input.getAmount());
     steam.restore(output.isEmpty() ? null : new FluidKey(output), output.getAmount());
     items.deserializeNBT(r, tag.getCompound("Items"));
-    engine.restore(Math.max(0, tag.getInt("Energy")));
+    engine.restore(Math.max(0, tag.getInt("Energy")), tag.getInt("EnergyResidue"));
     boiler.restore(
         Math.max(0, tag.getInt("Fuel")),
         Math.max(0, tag.getInt("Progress")),

@@ -1,0 +1,14 @@
+Retained failed diagnostic shutdown; client later stopped with SIGTERM, exit 143.
+"Server thread" #47 [31456] prio=5 os_prio=0 cpu=57365.72ms elapsed=144.08s tid=0x00007f4428d2f580 nid=31456 runnable  [0x00007f4401a3f000]
+   java.lang.Thread.State: RUNNABLE
+	at java.util.concurrent.ConcurrentLinkedQueue.poll(java.base@21.0.13/ConcurrentLinkedQueue.java:385)
+	at net.minecraft.server.level.ChunkMap.processUnloads(minecraft@1.21.1/ChunkMap.java:517)
+	at net.minecraft.server.level.ChunkMap.tick(minecraft@1.21.1/ChunkMap.java:475)
+	at net.minecraft.server.level.ServerChunkCache.tick(minecraft@1.21.1/ServerChunkCache.java:329)
+	at net.minecraft.server.MinecraftServer.stopServer(minecraft@1.21.1/MinecraftServer.java:619)
+	at net.minecraft.client.server.IntegratedServer.stopServer(minecraft@1.21.1/IntegratedServer.java:227)
+	at net.minecraft.server.MinecraftServer.runServer(minecraft@1.21.1/MinecraftServer.java:748)
+	at net.minecraft.server.MinecraftServer.lambda$spin$2(minecraft@1.21.1/MinecraftServer.java:267)
+	at net.minecraft.server.MinecraftServer$$Lambda/0x00007f43b51c86a0.run(minecraft@1.21.1/Unknown Source)
+	at java.lang.Thread.runWith(java.base@21.0.13/Thread.java:1596)
+	at java.lang.Thread.run(java.base@21.0.13/Thread.java:1583)

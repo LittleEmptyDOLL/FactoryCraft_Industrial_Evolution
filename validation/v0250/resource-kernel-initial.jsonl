@@ -1,0 +1,4 @@
+{"version":"0.24.1","radius":20,"depth":12,"cells":976,"checksum":1736052,"meanNs":300429.3,"medianNs":297960,"p95Ns":428563,"p99Ns":428563,"maxNs":428563,"allocationMeanBytes":179156.0}
+{"version":"0.24.1","radius":48,"depth":64,"cells":5634,"checksum":9996691,"meanNs":548899.4,"medianNs":510494,"p95Ns":725411,"p99Ns":725411,"maxNs":725411,"allocationMeanBytes":602176.0}
+{"version":"0.25.0","radius":20,"depth":12,"cells":7867,"checksum":10640392,"meanNs":384248.9,"medianNs":289487,"p95Ns":814803,"p99Ns":814803,"maxNs":814803,"allocationMeanBytes":170053.3}
+{"version":"0.25.0","radius":48,"depth":64,"cells":228447,"checksum":297195248,"meanNs":2086493.3,"medianNs":2351631,"p95Ns":2809988,"p99Ns":2809988,"maxNs":2809988,"allocationMeanBytes":962752.0}

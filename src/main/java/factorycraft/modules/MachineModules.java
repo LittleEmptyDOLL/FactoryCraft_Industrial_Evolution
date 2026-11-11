@@ -53,7 +53,7 @@ public final class MachineModules {
     this.machine = machine;
     items =
         new ItemStackHandler(
-            machine.kind().processing()
+            (machine.kind().processing() || machine.kind() == FactoryKind.PUMPJACK)
                 ? (machine.kind() == FactoryKind.REFINERY
                         || machine.kind() == FactoryKind.CHEMICAL_PLANT
                     ? 3
@@ -64,7 +64,8 @@ public final class MachineModules {
           }
 
           public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.getItem() instanceof ModuleItem;
+            return stack.getItem() instanceof ModuleItem m
+                && (machine.kind() != FactoryKind.PUMPJACK || m.kind.productivity == 0);
           }
 
           protected void onContentsChanged(int slot) {

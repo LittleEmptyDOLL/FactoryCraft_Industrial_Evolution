@@ -28,7 +28,8 @@ public final class BeaconIndex {
   }
 
   public static void add(MachineBlockEntity machine) {
-    if (!machine.kind().processing()) return;
+    if (!machine.kind().processing() && machine.kind() != factorycraft.blocks.FactoryKind.PUMPJACK)
+      return;
     var s = STATES.computeIfAbsent(machine.getLevel(), l -> new State());
     s.machines.computeIfAbsent(bucket(machine.getBlockPos()), k -> new HashSet<>()).add(machine);
     machine.modules.dirty = true;

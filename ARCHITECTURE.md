@@ -1,4 +1,14 @@
-# Architecture decisions — 0.24.1 (assembly/parts schema 4; fluid schema 2)
+# Architecture decisions — 0.25.0 (assembly/parts schema 4; fluid schema 2)
+
+## 0.25 resource / recipe boundary
+
+Native mB is the only fluid transaction unit; source Factorio values convert once at 1:10. Pipeline ownership/pressure algorithms remain 0.24.1. OilYield is exact geological percentage/cycle state, not an inventory; a ready canonical pumpjack commits paid, output-reserved crude creation and depletion together, retaining fractional work/output and source UUID. Generated-crude counters are explicit source terms in production ledgers.
+
+3D solid patches use deterministic per-column geometry and depth richness, chunk-local region writes and smoothed WG terrain. Existing finite resource owners remain non-ticking. No cross-chunk writes, artificial terrain, async server access or forced runtime chunks are added. Conservative structure-reference exclusion is documented.
+
+Recipe selection uses a menu-scoped ResourceLocation protocol and readonly synced recipe metadata/research snapshots. Furnaces project actual RecipeManager smelting after FactoryCraft definitions; execution checks real matches/assemble, reserves the component-exact result and consumes one actual matching slot. Cache epochs and canonical definitions prevent changed recipes reusing old work. Processing/chemistry schemas permit up to sixteen counted ingredients; existing machines still have four physical input slots, so unsupported distinct-input recipes safely fail their full reservation. Labs still have four pack slots; future six-pack science must extend lab storage/menu/technology validation together. No new tiers are registered.
+
+Pre-0.25 FactoryCraft data is intentionally unsupported. Current-version physical ownership, exact partial work, guarded ports and separate-JVM checkpoints remain strict.
 
 ## Authority and persistence
 
@@ -209,3 +219,5 @@ The pool/checkpoint ownership model and schema-2 NBT are unchanged. `Node.raw` i
 The deterministic pending index is an allocation-free indexed heap; bounded-degree neighbor arrays remain sorted, and per-build stamps replace visited identity maps. Only touches to the current build's discovered boundary cancel it. Already monotonic membership needs no sort; otherwise stable bottom-up merge moves use the work budget. Exact freeze remains eager at unload/structural ownership boundaries, with one prefix projection per member.
 
 Known true leaves and redundant in-component edges have conservative local paths. Ambiguous multi-neighbor insertions retain the old canonical conflict choice. Local prefix/bounds updates remain atomic O(N), while incompatible/filter/overflow/overlong cases retain general rebuild quarantine. Cache preparation/detachment updates counted physical chunk references; pool changes dirty cached chunks and wake adjacent pumps without per-member sync fanout. See FLUIDS.md for invariants and BENCHMARKS.md for measured improvements and regressions.
+
+Terrain ordering: new overworld decorating chunks retain a serialized 16×16 original-surface attachment (1024 bytes of height values before NBT compression, plus array/attachment overhead), even when no patch intersects that chunk. Sampling uses this frozen WG surface across FULL conversion/reload; it never substitutes decorated tree-top height for a completed neighbor. Not-yet-decorated supplied neighbors use their original WG map. Only the decorating chunk writes its snapshot. Pre-0.25 chunks without original terrain data are unsupported; custom biomes must include the resource features to participate. Prepared server diagnostics explicitly use their own primed test heightmaps.

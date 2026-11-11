@@ -4,11 +4,11 @@
   "fluids": [
     {
       "fluid": "factorycraft:petroleum_gas",
-      "amount": 30
+      "amount": 300
     },
     {
       "fluid": "minecraft:water",
-      "amount": 30
+      "amount": 300
     }
   ],
   "results": [

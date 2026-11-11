@@ -54,6 +54,17 @@ public final class MachineInspection {
     tag.putString(
         "Block", BuiltInRegistries.BLOCK.getKey(be.getBlockState().getBlock()).toString());
     tag.putString("Name", be.getBlockState().getBlock().getDescriptionId());
+    factorycraft.simulation.petroleum.OilYield oilYield =
+        be instanceof OilDepositBlockEntity oil && oil.available()
+            ? oil.yield()
+            : be instanceof MachineBlockEntity m && m.petroleum() != null
+                ? m.petroleum().oilYield()
+                : null;
+    if (oilYield != null) {
+      tag.putLong("InitialYield", oilYield.initial());
+      tag.putLong("CurrentYield", oilYield.current());
+      tag.putDouble("OilRate", Math.min(10000, oilYield.current() / 1500.0));
+    }
     var items = be.inventory();
     var list = new ListTag();
     for (int slot = 0; slot < Math.min(64, items.getSlots()); slot++) {

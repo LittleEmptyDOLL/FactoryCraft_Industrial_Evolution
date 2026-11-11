@@ -1,0 +1,38 @@
+
+BUILD — /workspace/work/v0250-build-clientfix.log
+BUILD SUCCESSFUL in 22s
+
+NATIVE / RESTORED EXISTING CHECKPOINTS — /workspace/work/v0250-native-clientfix.log
+[19:57:52] [Server thread/INFO] [minecraft/GameTestServer]: 391 tests are now running at position -507764, -59, -7965447!
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[0bb87d35-e862-45d7-8db5-a35d5b6860e3, 4310e761-fc8d-4844-8802-641d61f5a725, 4873dad5-e911-4f71-9921-b1640d346a98, e34a08c5-c156-437a-b7cf-da61242f93ac]
+FACTORYCRAFT_SMELTING_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_OIL_YIELD_DISK: VERIFYING existing checkpoint
+[19:58:43] [Server thread/INFO] [minecraft/GameTestServer]: All 391 required tests passed :)
+BUILD SUCCESSFUL in 1m 10s
+
+FLUID SERVER — /workspace/work/v0250-fluid-measure.log
+BUILD SUCCESSFUL in 1m 19s
+
+FLUID RESTART — /workspace/work/v0250-fluid-verify.log
+BUILD SUCCESSFUL in 18s
+JUnit XML summary: tests=218 failures=0 errors=0 skipped=0
+Resource generation idempotent SHA256: 7eeed0e8f998e89a84f9f0795628d022d6072c915980f6ec95b596bbd23010f6
+Baseline: dd7c81596e9db216fb10d75748ed9479ced1ea07
+References: wube/factorio-data tag 2.1.24 base/prototypes/entity/resources.lua and base/prototypes/recipe.lua; https://wiki.factorio.com/Pumpjack ; https://wiki.factorio.com/Fluid_system
+NeoForge APIs checked against the 21.1.252 dependency sources.
+
+FINAL COMMON CODE / BUILD AND NATIVE RESTART — /workspace/work/v0250-final-validation.log
+[20:13:48] [Server thread/INFO] [minecraft/GameTestServer]: 393 tests are now running at position 13204253, -59, -5010686!
+FACTORYCRAFT_OIL_YIELD_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_SMELTING_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_TERRAIN_SNAPSHOT_DISK: VERIFIED existing chunk attachment
+[20:14:39] [Server thread/INFO] [minecraft/GameTestServer]: All 393 required tests passed :)
+BUILD SUCCESSFUL in 1m 21s
+
+FINAL STRUCTURE PROTECTION / NATIVE — /workspace/work/v0250-protection-validation.log
+FACTORYCRAFT_TERRAIN_SNAPSHOT_DISK: VERIFIED existing chunk attachment
+[20:29:17] [Server thread/INFO] [minecraft/GameTestServer]: All 393 required tests passed :)
+BUILD SUCCESSFUL in 1m 30s
+Final actual fluid profile and separate JVM: /workspace/work/v0250-fluid-release.log and /workspace/work/v0250-fluid-release-verify.log, both BUILD SUCCESSFUL.
+Client recovery and original QA save: /workspace/work/v0250-client-recovery.log, normal all-dimensions save and BUILD SUCCESSFUL. Failed original client-publish.log exit 143 retained with thread excerpt.
+Final generated resources idempotent SHA256: c02826b5b1c6cc154936f208c03e472a9c807e5b34c49e60c0782e64d11ea218

@@ -12,6 +12,11 @@ import net.neoforged.neoforge.client.event.*;
 @EventBusSubscriber(modid = FactoryCraft.ID, value = Dist.CLIENT)
 public final class FactoryClient {
   @SubscribeEvent
+  public static void recipeReload(RecipesUpdatedEvent event) {
+    factorycraft.recipes.RecipeSelectionNetwork.generation++;
+  }
+
+  @SubscribeEvent
   public static void geometry(ModelEvent.RegisterGeometryLoaders event) {
     event.register(
         net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, "machine"),

@@ -54,12 +54,12 @@ public final class AdvancedPetroleumGameTests {
   }
 
   private static void advancedInput(MachineBlockEntity r) {
-    r.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 100);
+    r.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 1000);
     r.petroleum()
         .cells
         .get(1)
         .restore(
-            new FluidKey(new FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1)), 50);
+            new FluidKey(new FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1)), 500);
   }
 
   private static void assertProducts(GameTestHelper h, MachineBlockEntity r) {
@@ -68,9 +68,9 @@ public final class AdvancedPetroleumGameTests {
         p.cells.size() == 5
             && p.cells.get(0).amount() == 0
             && p.cells.get(1).amount() == 0
-            && p.cells.get(2).amount() == 55
-            && p.cells.get(3).amount() == 45
-            && p.cells.get(4).amount() == 25,
+            && p.cells.get(2).amount() == 550
+            && p.cells.get(3).amount() == 450
+            && p.cells.get(4).amount() == 250,
         "advanced refining volume ledger incorrect");
   }
 
@@ -101,25 +101,25 @@ public final class AdvancedPetroleumGameTests {
         () -> {
           advancedInput(r);
           r.power.restore(4000);
-          r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.HEAVY.stack(1)), 3990);
+          r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.HEAVY.stack(1)), 39900);
         });
     h.runAfterDelay(
         35,
         () -> {
           h.assertTrue(
               r.power.getEnergyStored() == 4000
-                  && r.petroleum().cells.get(0).amount() == 100
+                  && r.petroleum().cells.get(0).amount() == 1000
                   && r.petroleum().data.get(0) == 0,
               "third-output backpressure spent resources");
-          r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.LIGHT.stack(1)), 1);
+          r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.LIGHT.stack(1)), 10);
         });
     h.runAfterDelay(
         60,
         () -> {
           h.assertTrue(
-              r.power.getEnergyStored() == 4000 && r.petroleum().cells.get(1).amount() == 50,
+              r.power.getEnergyStored() == 4000 && r.petroleum().cells.get(1).amount() == 500,
               "wrong third-output fluid spent resources");
-          r.petroleum().cells.get(4).drain(4000, false);
+          r.petroleum().cells.get(4).drain(40000, false);
         });
     h.runAfterDelay(
         185,
@@ -144,7 +144,7 @@ public final class AdvancedPetroleumGameTests {
         () -> {
           h.assertTrue(
               r.petroleum().data.get(0) == 10
-                  && r.petroleum().cells.get(0).amount() == 100
+                  && r.petroleum().cells.get(0).amount() == 1000
                   && r.petroleum().cells.get(4).amount() == 0
                   && r.power.getEnergyStored() == 0,
               "partial refining spent inputs or lost progress");
@@ -176,7 +176,7 @@ public final class AdvancedPetroleumGameTests {
         () -> {
           var pipe = (FluidBlockEntity) h.getLevel().getBlockEntity(pos);
           h.assertTrue(
-              pipe.cell().amount() == 25
+              pipe.cell().amount() == 250
                   && pipe.cell().key().equals(new FluidKey(PetroleumFluids.HEAVY.stack(1))),
               "third physical outlet failed to feed pipe");
           var port =
@@ -186,15 +186,15 @@ public final class AdvancedPetroleumGameTests {
                       r.petroleum().nozzle(4),
                       r.petroleum().direction(4));
           h.assertTrue(port != null, "missing controller third nozzle capability");
-          r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.HEAVY.stack(1)), 41);
+          r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.HEAVY.stack(1)), 410);
           var part =
               (CasingBlockEntity) h.getLevel().getBlockEntity(r.assembly().positions().getLast());
           part.onChunkUnloaded();
           h.assertTrue(
-              port.drain(100, EXEC).isEmpty(),
+              port.drain(1000, EXEC).isEmpty(),
               "cached third-output capability escaped assembly suspension");
           part.onLoad();
-          h.assertTrue(port.drain(100, EXEC).getAmount() == 41, "cached nozzle did not resume");
+          h.assertTrue(port.drain(1000, EXEC).getAmount() == 410, "cached nozzle did not resume");
           h.succeed();
         });
   }
@@ -270,7 +270,7 @@ public final class AdvancedPetroleumGameTests {
     var json = ChemicalRecipe.CODEC.codec().encodeStart(ops, r).getOrThrow();
     var decoded = ChemicalRecipe.CODEC.codec().parse(ops, json).getOrThrow();
     h.assertTrue(
-        decoded.fluidResults().size() == 3 && decoded.fluidResults().get(2).getAmount() == 25,
+        decoded.fluidResults().size() == 3 && decoded.fluidResults().get(2).getAmount() == 250,
         "JSON lost third result");
     var b =
         new net.minecraft.network.RegistryFriendlyByteBuf(
@@ -374,7 +374,7 @@ public final class AdvancedPetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.ACID.stack(1)), 20);
+          m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.ACID.stack(1)), 200);
           m.items.setStackInSlot(0, new ItemStack(item("iron_plate")));
           m.items.setStackInSlot(1, new ItemStack(item("copper_plate")));
           for (int i = 4; i < 8; i++)
@@ -386,7 +386,7 @@ public final class AdvancedPetroleumGameTests {
         () -> {
           h.assertTrue(
               m.power.getEnergyStored() == 4000
-                  && m.petroleum().cells.get(0).amount() == 20
+                  && m.petroleum().cells.get(0).amount() == 200
                   && m.items.getStackInSlot(0).getCount() == 1
                   && m.items.getStackInSlot(1).getCount() == 1,
               "blocked battery spent ingredients");
@@ -470,7 +470,7 @@ public final class AdvancedPetroleumGameTests {
           advancedInput(r);
           r.petroleum().cells.get(2).restore(new FluidKey(PetroleumFluids.GAS.stack(1)), 389);
           r.petroleum().cells.get(3).restore(new FluidKey(PetroleumFluids.LIGHT.stack(1)), 211);
-          r.petroleum().cells.get(4).restore(new FluidKey(componentHeavy(1)), 5001);
+          r.petroleum().cells.get(4).restore(new FluidKey(componentHeavy(1)), 40001);
           r.power.restore(7312);
           select(r, "advanced_oil_processing");
           var old = r.assembly().identity();
@@ -497,11 +497,11 @@ public final class AdvancedPetroleumGameTests {
           var p = restored.petroleum();
           h.assertTrue(
               p.cells.size() == 5
-                  && p.cells.get(0).amount() == 100
-                  && p.cells.get(1).amount() == 50
+                  && p.cells.get(0).amount() == 1000
+                  && p.cells.get(1).amount() == 500
                   && p.cells.get(2).amount() == 389
                   && p.cells.get(3).amount() == 211
-                  && p.cells.get(4).amount() == 5001
+                  && p.cells.get(4).amount() == 40001
                   && p.cells.get(4).key().equals(new FluidKey(componentHeavy(1)))
                   && restored.power.getEnergyStored() == 7312,
               "portable five-cell state changed");
@@ -535,7 +535,7 @@ public final class AdvancedPetroleumGameTests {
               new FluidKey(new FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1)), 83);
       r.petroleum().cells.get(2).restore(new FluidKey(PetroleumFluids.GAS.stack(1)), 389);
       r.petroleum().cells.get(3).restore(new FluidKey(PetroleumFluids.LIGHT.stack(1)), 211);
-      r.petroleum().cells.get(4).restore(new FluidKey(componentHeavy(1)), 5001);
+      r.petroleum().cells.get(4).restore(new FluidKey(componentHeavy(1)), 40001);
       r.power.restore(7312);
       select(r, "advanced_oil_processing");
       var tag = r.saveWithFullMetadata(level.registryAccess());
@@ -549,7 +549,7 @@ public final class AdvancedPetroleumGameTests {
           level.getBlockEntity(pos) instanceof MachineBlockEntity,
           "partial advanced oil fixture; refusing to reseed");
       var r = (MachineBlockEntity) level.getBlockEntity(pos);
-      int[] amounts = {731, 83, 389, 211, 5001};
+      int[] amounts = {731, 83, 389, 211, 40001};
       for (int i = 0; i < 5; i++)
         h.assertTrue(
             r.petroleum().cells.get(i).amount() == amounts[i], "disk fifth-cell volume changed");
@@ -639,7 +639,7 @@ public final class AdvancedPetroleumGameTests {
                   BuiltInRegistries.FLUID.getKey(fluid.cell().key().stack(1).getFluid()).getPath(),
                   fluid.cell().amount());
             else if (be instanceof OilDepositBlockEntity oil)
-              add(counts, "crude_oil", oil.remaining());
+              add(counts, "generated_oil", oil.yield().generated());
             else if (be instanceof InserterBlockEntity arm) countItem(counts, arm.held());
             else if (be instanceof ChestBlockEntity container)
               for (int i = 0; i < container.getContainerSize(); i++)
@@ -650,19 +650,19 @@ public final class AdvancedPetroleumGameTests {
               sulfur = counts.getOrDefault("sulfur", 0L),
               acid = counts.getOrDefault("sulfuric_acid", 0L),
               battery = counts.getOrDefault("battery", 0L),
-              initial = factorycraft.config.FactoryConfig.OIL_RICHNESS.get();
+              initial = counts.getOrDefault("generated_oil", 0L);
           h.assertTrue(
               110 * initial
-                  == 110 * crude + 200 * gas + 3000 * sulfur + 300 * acid + 6000 * battery,
+                  == 110 * crude + 200 * gas + 30000 * sulfur + 300 * acid + 60000 * battery,
               "crude/gas/sulfur/acid/battery ledger failed: " + counts);
           h.assertTrue(
-              (initial - crude) % 100 == 0
-                  && counts.getOrDefault("heavy_oil", 0L) == (initial - crude) / 100 * 25
-                  && counts.getOrDefault("light_oil", 0L) == (initial - crude) / 100 * 45,
+              (initial - crude) % 1000 == 0
+                  && counts.getOrDefault("heavy_oil", 0L) == (initial - crude) / 1000 * 250
+                  && counts.getOrDefault("light_oil", 0L) == (initial - crude) / 1000 * 450,
               "refinery byproducts lost or mixed: " + counts);
-          long acidBatches = (acid + 20 * battery) / 50;
+          long acidBatches = (acid + 200 * battery) / 500;
           h.assertTrue(
-              (acid + 20 * battery) % 50 == 0
+              (acid + 200 * battery) % 500 == 0
                   && counts.getOrDefault("iron_plate", 0L) + battery + acidBatches == 24
                   && counts.getOrDefault("copper_plate", 0L) + battery == 8,
               "plate/battery ledger failed: " + counts);

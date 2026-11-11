@@ -76,6 +76,7 @@ public final class AssemblyV4GameTests {
     supply.onLoad();
     steam.onLoad();
     supply.cell().restore(new FluidKey(new FluidStack(Fluids.WATER, 1)), 1000);
+    boiler.water.restore(new FluidKey(new FluidStack(Fluids.WATER, 1)), 1500);
     boiler.items.setStackInSlot(0, new ItemStack(Items.COAL));
     h.runAfterDelay(
         350,
@@ -87,9 +88,10 @@ public final class AssemblyV4GameTests {
                   + boiler.water.amount()
                   + boiler.steam.amount()
                   + engine.steam.amount();
-          h.assertTrue(fe > 0 && fe % 12 == 0, "BOTH intake stalled live steam production");
+          h.assertTrue(fe > 0, "BOTH intake stalled live steam production");
           h.assertTrue(
-              fluids + fe / 12 == 1000, "physical boiler/engine line lost or duplicated fluid/FE");
+              6 * fluids + 5L * fe + engine.engine.residue() == 15000,
+              "physical boiler/engine line lost or duplicated fluid/FE");
           h.succeed();
         });
   }

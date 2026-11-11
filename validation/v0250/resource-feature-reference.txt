@@ -1,0 +1,8 @@
+FACTORYCRAFT_TERRAIN_PROFILE: mode=0 legacySurface=true owners=355 deep=0 chunks=16 nanos=6315670 allocated=978048
+FACTORYCRAFT_TERRAIN_PROFILE: mode=0 legacySurface=false owners=1594 deep=841 chunks=16 nanos=10256832 allocated=1776848
+FACTORYCRAFT_TERRAIN_PROFILE: mode=1 legacySurface=true owners=337 deep=0 chunks=16 nanos=1628828 allocated=928464
+FACTORYCRAFT_TERRAIN_PROFILE: mode=1 legacySurface=false owners=1642 deep=881 chunks=16 nanos=7988761 allocated=1487144
+FACTORYCRAFT_TERRAIN_PROFILE: mode=2 legacySurface=true owners=399 deep=0 chunks=16 nanos=1913113 allocated=785136
+FACTORYCRAFT_TERRAIN_PROFILE: mode=2 legacySurface=false owners=1304 deep=812 chunks=16 nanos=3745557 allocated=1419688
+FACTORYCRAFT_TERRAIN_PROFILE: mode=3 legacySurface=true owners=162 deep=0 chunks=16 nanos=1882418 allocated=696480
+FACTORYCRAFT_TERRAIN_PROFILE: mode=3 legacySurface=false owners=751 deep=463 chunks=16 nanos=2415136 allocated=1029576

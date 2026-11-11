@@ -1,10 +1,7 @@
 {
   "variants": {
-    "depleted=false": {
+    "": {
       "model": "factorycraft:block/oil_deposit"
-    },
-    "depleted=true": {
-      "model": "factorycraft:block/oil_deposit_depleted"
     }
   }
 }

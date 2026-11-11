@@ -16,7 +16,15 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.24.1 fluid performance (11 November 2026)
+## Active task — 0.25.0, GitHub issue #3
+
+* Implement the complete agreed release: native mB throughout with 1 Factorio unit = 10 mB; percentage-yield oil points and powered transactional pumpjack cycles; deterministic terrain-conforming 3D finite solid fields; guarded stable-ID recipe browser and actual vanilla smelting for furnaces only.
+* This release intentionally breaks old FactoryCraft data/recipe/checkpoint schemas. Do not migrate, reset, regenerate or overwrite previous diagnostic worlds. Use v0250, fluids-v0250 and new client worlds. Retain all 381 native scenarios and thirty production chains; replace obsolete finite-oil equations with stricter generated/debited/stored ledgers.
+* Preserve component identity, single ownership, exact integer residues, SIMULATE, canonical/UUID/circuit/loaded port guards and atomic output reservation before charge/depletion. No runtime forced chunks or world access from workers. Worldgen writes only decorating chunks and never fills air/water/structures.
+* New chunk terrain snapshots retain pre-decoration WG heights across FULL remapping/reload; write only the decorating chunk, never sample decorated tree heights as the original terrain. Native prepared-terrain fixtures deliberately use their primed diagnostic heightmaps.
+* Run build/JUnit, required native cases and separate-JVM new checkpoints, bounded old/new profiling, real GUI and terrain visual checks. Full/MIXED/optional jobs remain independent CI. Publish checked main normally without force, query CI once, report limitations and stop.
+
+## Previous task — 0.24.1 fluid performance (11 November 2026)
 
 * Profile the unchanged 0.24.0 core and a new opt-in real server fixture before optimizing. Compare identical warm workloads and report tails/allocation/work separately from Minecraft ticks. Preserve every pressure/FE/recipe/component/ownership rule and all 380 required cases plus thirty restored chains.
 * Attached raw cells are inert when a pool is published: save/inspect through owned(), never count raw + pool. Staging keeps raw checkpoints authoritative until one publication flag; abort cleanup must preserve this. Conservative local paths require a true unfiltered compatible leaf or an already shared pool; multi-neighbor conflict choice must remain deterministic.

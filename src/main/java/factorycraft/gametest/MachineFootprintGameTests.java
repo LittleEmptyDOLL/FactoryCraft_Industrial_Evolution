@@ -22,6 +22,10 @@ public final class MachineFootprintGameTests {
     var anchor = h.absolutePos(new BlockPos(10, 2, 10));
     var block =
         BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, id));
+    if (profile == MachineProfile.PUMPJACK)
+      h.getLevel()
+          .setBlockAndUpdate(
+              anchor.below(), factorycraft.registry.Content.OIL_DEPOSIT.get().defaultBlockState());
     for (var direction : Direction.Plane.HORIZONTAL) {
       var player = h.makeMockPlayer(GameType.SURVIVAL);
       player.getAbilities().instabuild = false;
@@ -59,8 +63,8 @@ public final class MachineFootprintGameTests {
       for (var cell : preview.cells())
         if (!cell.equals(controller)) {
           var data = h.getLevel().getBlockEntity(cell).getModelData().get(MachineModelData.CELL);
-          var local=profile.local(controller,direction,cell);
-          int r=local.getX(),back=local.getZ();
+          var local = profile.local(controller, direction, cell);
+          int r = local.getX(), back = local.getZ();
           h.assertTrue(
               data != null
                   && data.profile() == profile
@@ -192,7 +196,17 @@ public final class MachineFootprintGameTests {
     h.getLevel().addFreshEntity(body);
     var hit = new BlockHitResult(Vec3.atCenterOf(anchor), Direction.UP, anchor, false);
     var context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
-    var controller = PlacementPlan.controllerFor(new BlockPlaceContext(context),((net.minecraft.world.item.BlockItem)factorycraft.registry.Content.FACTORY.get(factorycraft.blocks.FactoryKind.REFINERY).get().asItem()).getBlock().defaultBlockState().setValue(factorycraft.blocks.FactoryBlock.FACING,Direction.NORTH));
+    var controller =
+        PlacementPlan.controllerFor(
+            new BlockPlaceContext(context),
+            ((net.minecraft.world.item.BlockItem)
+                    factorycraft.registry.Content.FACTORY
+                        .get(factorycraft.blocks.FactoryKind.REFINERY)
+                        .get()
+                        .asItem())
+                .getBlock()
+                .defaultBlockState()
+                .setValue(factorycraft.blocks.FactoryBlock.FACING, Direction.NORTH));
     h.assertTrue(
         player.getMainHandItem().useOn(context).consumesAction()
             && player.getMainHandItem().isEmpty(),

@@ -301,3 +301,25 @@ Implemented content-only notifications; conservative local leaf/in-component-edg
 Evidence: **204 JUnit / 381 required native cases**, including all old 380 and thirty finite production chains. Warm kernel profiles cover 100/1000/5000/10000 and thirty-creation followups. Two real 10000-pipe baseline worlds and two final worlds run three event cycles, sixteen real pumps, finite chemistry and separate-process full-NBT/ledger verification; an unchanged 0.24.0 checkpoint also verifies with 0.24.1. Raw measurements and honest regressions are in BENCHMARKS.md, VALIDATION.md and validation/fluid-v0241. Full/MIXED/optional CI stays independent.
 
 **Next only on a new user request:** attribute the observed 60–75-ms stable/construction tails with timestamped slow-tick/JFR correlation; reduce total general split/merge CPU and atomic O(N) freeze/prefix costs without weakening independent chunk ownership. Stable mean and some tails regressed, so do not claim an unconditional TPS improvement. No building tool, lift art, progression, new machines, robots/trains or Space Age work starts automatically.
+
+
+## Active 0.25.0 — issue #3 (deliberately breaking)
+
+1. Audit FluidUnits/FluidKind, chemical/boiling codecs and generated JSON, SteamEngine and physical buffers. Centralize mB constants; all recipes, consumers, tests/examples scale consistently exactly once. External mB and buckets remain native.
+2. Replace OilDepositBlockEntity finite FluidCell with exact percentage/cycle state. Pumpjack directly above center point, sole claimant, paid/reserved cycles, saved work and fractional output. Replace underground scatter with deterministic configurable surface OilFields.
+3. Extend ResourceVeins/config/feature to irregular half ellipsoids, depth-weighted finite stock, safe chunk-local height smoothing and replaceability. Test geometry/order/terrain exclusions and bounded max-radius work.
+4. Stable-ID selection packet shared by normal and chemical menus; separate searchable/category/research-aware client browser. Project real smelting via RecipeManager only into furnaces, preserving definition identity/progress and exact components. Explicitly audit four-slot machine/lab constraints; no unrelated tiers.
+5. Adapt all active 381 native tests/thirty chains and diagnostic builders to new units/yields with exact resource ledgers; add new pure/native/disk cases. Fresh v0250 worlds only; old evidence retained.
+6. Build/JUnit, required native + separate-JVM restart, real client GUI/terrain smoke, bounded before/after worldgen/fluid profiles. Update current docs and publish only coherent validated release. Full factory/MIXED/optional profiles remain CI.
+
+No migration of pre-0.25 FactoryCraft formats is required. Existing single-pool pressure/transport/copper/circuit cores remain; no drag tools, lift artwork, new machines or Space Age features.
+
+### 0.25.0 delivery / handoff
+
+Implemented the coherent 1:10 release: central native-mB capacities and scaled recipes/consumers, exact fractional steam; schema-2 percentage oil points with unique identities and paid/reserved fractional pump cycles; deterministic configurable surface oil fields; terrain-smoothed irregular volumetric finite solid fields with saved pre-decoration chunk surfaces; guarded stable-ID EN/RU recipe browser and genuine RecipeManager smelting restricted to furnace tiers. All old 381 native scenarios and thirty real chains remain active with stronger oil generated/debit ledgers.
+
+Local build: 218 JUnit pass; required native suite: 393 pass, including independent-JVM existing oil/smelting and prior checkpoints. Real 10000-pipe server/restart hash passes; bounded resource sampling/Feature and client QA recorded in VALIDATION.md and validation/v0250. Full/MIXED/optional-mod jobs remain CI. Increased resource-BE counts and unstable timing are reported, not presented as a TPS improvement.
+
+Known scoped gaps: no pumpjack productivity, physical machines/labs still have four input/science slots, no old-world migration, no full natural terrain-noise throughput or retained ore-heap measurement. No new tiers or construction tools were added.
+
+**Next task:** stop after this release. On the next explicit request, inspect the published CI findings and agreed issue scope first; do not start routing tools, lift artwork or future machines automatically.

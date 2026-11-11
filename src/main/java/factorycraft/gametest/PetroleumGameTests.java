@@ -55,9 +55,12 @@ public final class PetroleumGameTests {
   }
 
   private static OilDepositBlockEntity deposit(GameTestHelper h, int x, int z) {
-    var pos = new BlockPos(x, 1, z);
-    h.setBlock(pos, Content.OIL_DEPOSIT.get().defaultBlockState());
-    return (OilDepositBlockEntity) h.getBlockEntity(pos);
+    var pos =
+        factorycraft.multiblock.MachineProfile.PUMPJACK
+            .center(h.absolutePos(new BlockPos(x, 2, z)), Direction.EAST)
+            .below();
+    h.getLevel().setBlockAndUpdate(pos, Content.OIL_DEPOSIT.get().defaultBlockState());
+    return (OilDepositBlockEntity) h.getLevel().getBlockEntity(pos);
   }
 
   private static int count(MachineBlockEntity machine, Item item) {
@@ -113,23 +116,25 @@ public final class PetroleumGameTests {
   }
 
   @GameTest(template = "empty", timeoutTicks = 180)
-  public static void pumpjackRequiresEnergyAndMovesOnlyFiniteReserve(GameTestHelper h) {
+  public static void pumpjackRequiresEnergyAndGeneratesOnePaidYieldCycle(GameTestHelper h) {
     var oil = deposit(h, 4, 4);
     var pump = machine(h, FactoryKind.PUMPJACK, 4, 4);
     h.runAfterDelay(
         30,
         () -> {
           h.assertTrue(pump.petroleum().cells.get(2).amount() == 0, "unpowered pump extracted");
-          pump.power.receiveEnergy(150, false);
+          pump.power.receiveEnergy(300, false);
         });
     h.runAfterDelay(
         80,
         () -> {
           h.assertTrue(
               pump.petroleum().cells.get(2).amount() == 100
-                  && oil.remaining() == factorycraft.config.FactoryConfig.OIL_RICHNESS.get() - 100
+                  && oil.yield().cycles() == 1
+                  && oil.yield().generated() == 100
+                  && oil.yield().current() == 150000 - 5
                   && pump.power.getEnergyStored() == 0,
-              "finite oil/FE ledger incorrect");
+              "generated oil/yield/FE ledger incorrect");
           h.succeed();
         });
   }
@@ -144,14 +149,15 @@ public final class PetroleumGameTests {
           pump.petroleum()
               .cells
               .get(2)
-              .fill(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 4000, false);
+              .fill(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 10000, false);
           pump.power.receiveEnergy(1000, false);
         });
     h.runAfterDelay(
         70,
         () -> {
           h.assertTrue(
-              oil.remaining() == factorycraft.config.FactoryConfig.OIL_RICHNESS.get()
+              oil.yield().cycles() == 0
+                  && oil.yield().generated() == 0
                   && pump.power.getEnergyStored() == 1000,
               "blocked pump spent resources");
           pump.petroleum().port(pump.petroleum().nozzle(2), Direction.EAST).drain(100, EXEC);
@@ -160,20 +166,22 @@ public final class PetroleumGameTests {
         100,
         () -> {
           h.assertTrue(
-              pump.petroleum().cells.get(2).amount() == 4000 && pump.power.getEnergyStored() == 850,
+              pump.petroleum().cells.get(2).amount() == 10000
+                  && pump.power.getEnergyStored() == 700,
               "pump failed to resume");
           h.succeed();
         });
   }
 
   @GameTest(template = "empty", timeoutTicks = 200)
-  public static void exhaustedDepositsDoNotRefillOnReload(GameTestHelper h) {
+  public static void minimumYieldPointResumesAfterReloadWithoutReset(GameTestHelper h) {
     var oil = deposit(h, 4, 4);
     var pump = machine(h, FactoryKind.PUMPJACK, 4, 4);
     h.runAfterDelay(
         5,
         () -> {
-          oil.reserve().drain(Integer.MAX_VALUE, false);
+          oil.yield().restore(150000, 30000, 24000, 0, 0);
+          oil.changed();
           pump.power.receiveEnergy(500, false);
           oil.onChunkUnloaded();
           oil.onLoad();
@@ -182,9 +190,12 @@ public final class PetroleumGameTests {
         60,
         () -> {
           h.assertTrue(
-              oil.remaining() == 0
-                  && oil.getBlockState().getValue(OilDepositBlock.DEPLETED)
-                  && pump.power.getEnergyStored() == 500,
+              oil.yield().initial() == 150000
+                  && oil.yield().current() == 30000
+                  && oil.yield().cycles() == 24001
+                  && oil.yield().generated() == 20
+                  && pump.petroleum().cells.get(2).amount() == 20
+                  && pump.power.getEnergyStored() == 200,
               "exhausted deposit refilled or spent FE");
           h.succeed();
         });
@@ -225,24 +236,27 @@ public final class PetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          r.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 100, false);
-          r.petroleum().cells.get(2).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 3990, false);
+          r.petroleum()
+              .cells
+              .get(0)
+              .fill(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 1000, false);
+          r.petroleum().cells.get(2).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 39900, false);
           r.power.receiveEnergy(5000, false);
         });
     h.runAfterDelay(
         40,
         () -> {
           h.assertTrue(
-              r.power.getEnergyStored() == 5000 && r.petroleum().cells.get(0).amount() == 100,
+              r.power.getEnergyStored() == 5000 && r.petroleum().cells.get(0).amount() == 1000,
               "blocked refinery spent input or FE");
-          r.petroleum().cells.get(2).drain(100, false);
+          r.petroleum().cells.get(2).drain(1000, false);
         });
     h.runAfterDelay(
         180,
         () -> {
           h.assertTrue(
               r.petroleum().cells.get(0).amount() == 0
-                  && r.petroleum().cells.get(2).amount() == 3935
+                  && r.petroleum().cells.get(2).amount() == 39350
                   && r.power.getEnergyStored() == 2000,
               "basic oil recipe incorrect");
           h.succeed();
@@ -255,14 +269,14 @@ public final class PetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 20, false);
+          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 200, false);
           c.items.setStackInSlot(0, new ItemStack(Items.COAL));
         });
     h.runAfterDelay(
         40,
         () -> {
           h.assertTrue(
-              c.petroleum().cells.get(0).amount() == 20
+              c.petroleum().cells.get(0).amount() == 200
                   && count(c, Items.COAL) == 1
                   && count(c, plastic()) == 0,
               "unpowered chemistry consumed inputs");
@@ -287,7 +301,7 @@ public final class PetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 20, false);
+          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 200, false);
           c.items.setStackInSlot(0, new ItemStack(Items.COAL));
           for (int i = 4; i < 8; i++) c.items.setStackInSlot(i, new ItemStack(plastic(), 64));
           c.power.receiveEnergy(1000, false);
@@ -296,7 +310,7 @@ public final class PetroleumGameTests {
         50,
         () -> {
           h.assertTrue(
-              c.petroleum().cells.get(0).amount() == 20
+              c.petroleum().cells.get(0).amount() == 200
                   && count(c, Items.COAL) == 1
                   && c.power.getEnergyStored() == 1000,
               "blocked item output spent resources");
@@ -320,13 +334,13 @@ public final class PetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 30, false);
+          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 300, false);
           c.petroleum()
               .cells
               .get(1)
               .fill(
                   new FluidKey(new FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1)),
-                  30,
+                  300,
                   false);
           c.power.receiveEnergy(1000, false);
         });
@@ -422,7 +436,7 @@ public final class PetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 20, false);
+          c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 200, false);
           c.items.setStackInSlot(0, new ItemStack(Items.COAL));
           c.power.receiveEnergy(1000, false);
         });
@@ -471,7 +485,8 @@ public final class PetroleumGameTests {
     h.assertTrue(
         !recipe.matches(new ChemicalInput(inventory, List.of()), h.getLevel())
             && recipe.matches(
-                new ChemicalInput(inventory, List.of(PetroleumFluids.GAS.stack(20))), h.getLevel()),
+                new ChemicalInput(inventory, List.of(PetroleumFluids.GAS.stack(200))),
+                h.getLevel()),
         "recipe API ignored fluids");
     var buffer =
         new net.minecraft.network.RegistryFriendlyByteBuf(
@@ -481,7 +496,7 @@ public final class PetroleumGameTests {
       codec.encode(buffer, recipe);
       var decoded = codec.decode(buffer);
       h.assertTrue(
-          decoded.fluids().getFirst().amount() == 20
+          decoded.fluids().getFirst().amount() == 200
               && decoded.results().getFirst().getCount() == 2
               && decoded.energy() == 20,
           "mixed recipe wire changed");
@@ -503,33 +518,62 @@ public final class PetroleumGameTests {
   @GameTest(template = "empty", timeoutTicks = 100)
   public static void configuredWorldgenReallyPlacesFiniteOilBlocks(GameTestHelper h) {
     var level = h.getLevel();
-    var origin = h.absolutePos(new BlockPos(8, 4, 8));
-    for (var p : BlockPos.betweenClosed(origin.offset(-3, -3, -3), origin.offset(3, 2, 3)))
-      level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+    factorycraft.simulation.resources.OilFields.Point point = null;
+    int span = factorycraft.config.ResourceWorldgenConfig.OIL_SPACING.get(),
+        radius = factorycraft.config.ResourceWorldgenConfig.OIL_RADIUS.get();
+    search:
+    for (int cx = 700 * span - 4; cx < 701 * span + 4; cx++)
+      for (int cz = 700 * span - 4; cz < 701 * span + 4; cz++) {
+        var points =
+            factorycraft.simulation.resources.OilFields.inChunk(
+                level.getSeed(),
+                cx,
+                cz,
+                span,
+                radius,
+                factorycraft.config.ResourceWorldgenConfig.OIL_POINTS_MIN.get(),
+                factorycraft.config.ResourceWorldgenConfig.OIL_POINTS_MAX.get(),
+                factorycraft.config.ResourceWorldgenConfig.OIL_MIN_YIELD.get(),
+                factorycraft.config.ResourceWorldgenConfig.OIL_MAX_YIELD.get());
+        if (!points.isEmpty()) {
+          point = points.getFirst();
+          break search;
+        }
+      }
+    h.assertTrue(point != null, "no deterministic oil field");
+    var pos = new BlockPos(point.x(), 70, point.z());
+    level.getChunkAt(pos);
+    var previous = level.getBlockEntity(pos);
+    if (previous == null) level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState());
+    net.minecraft.world.level.levelgen.Heightmap.primeHeightmaps(
+        level.getChunkAt(pos),
+        java.util.EnumSet.of(net.minecraft.world.level.levelgen.Heightmap.Types.OCEAN_FLOOR_WG));
     var feature =
         level
             .registryAccess()
             .registryOrThrow(Registries.CONFIGURED_FEATURE)
             .get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, "oil_deposit"));
-    boolean placed =
-        feature.place(
-            level,
-            level.getChunkSource().getGenerator(),
-            net.minecraft.util.RandomSource.create(12),
-            origin);
-    h.assertTrue(placed, "oil worldgen failed to place");
-    h.runAfterDelay(
-        5,
-        () -> {
-          int count = 0;
-          for (var p : BlockPos.betweenClosed(origin.offset(-3, -3, -3), origin.offset(3, 2, 3)))
-            if (level.getBlockEntity(p) instanceof OilDepositBlockEntity oil) {
-              count++;
-              h.assertTrue(oil.remaining() > 0, "generated oil never initialized");
-            }
-          h.assertTrue(count > 0, "worldgen did not create reservoirs");
-          h.succeed();
-        });
+    feature.place(
+        level,
+        level.getChunkSource().getGenerator(),
+        net.minecraft.util.RandomSource.create(12),
+        pos);
+    h.assertTrue(
+        level.getBlockEntity(pos) instanceof OilDepositBlockEntity,
+        "surface field failed to create owner");
+    var oil = (OilDepositBlockEntity) level.getBlockEntity(pos);
+    h.assertTrue(
+        oil.yield().initial() == point.yieldHundredths() * 15L, "generated percentage mismatch");
+    long before = oil.yield().current();
+    feature.place(
+        level,
+        level.getChunkSource().getGenerator(),
+        net.minecraft.util.RandomSource.create(15),
+        pos);
+    h.assertTrue(
+        oil == level.getBlockEntity(pos) && oil.yield().current() == before,
+        "repeat decoration regenerated oil yield");
+    h.succeed();
   }
 
   @GameTest(template = "empty", timeoutTicks = 100)
@@ -600,8 +644,8 @@ public final class PetroleumGameTests {
       plant.loadWithComponents(tag, level.registryAccess());
       level.setBlockAndUpdate(resource, Content.OIL_DEPOSIT.get().defaultBlockState());
       level.setBlockAndUpdate(exhausted, Content.OIL_DEPOSIT.get().defaultBlockState());
-      ((OilDepositBlockEntity) level.getBlockEntity(resource)).initializeReserve(7117);
-      ((OilDepositBlockEntity) level.getBlockEntity(exhausted)).initializeReserve(0);
+      ((OilDepositBlockEntity) level.getBlockEntity(resource)).initializeYield(11550);
+      ((OilDepositBlockEntity) level.getBlockEntity(exhausted)).initializeYield(2000);
       refinery.onLoad();
       plant.onLoad();
       ((OilDepositBlockEntity) level.getBlockEntity(resource)).onLoad();
@@ -636,8 +680,9 @@ public final class PetroleumGameTests {
               && plant.petroleum().data.get(0) == 7,
           "mixed recipe state changed on disk");
       h.assertTrue(
-          ((OilDepositBlockEntity) level.getBlockEntity(resource)).remaining() == 7117
-              && ((OilDepositBlockEntity) level.getBlockEntity(exhausted)).remaining() == 0,
+          ((OilDepositBlockEntity) level.getBlockEntity(resource)).yield().initial() == 11550 * 15L
+              && ((OilDepositBlockEntity) level.getBlockEntity(exhausted)).yield().current()
+                  == 30000,
           "oil reserve refilled/lost on disk");
       System.out.println(
           "FACTORYCRAFT_PETROLEUM_DISK: VERIFIED exact resources, depleted reserve and four-chunk"
@@ -677,11 +722,7 @@ public final class PetroleumGameTests {
           plastic += count(c, plastic());
           var held = ((InserterBlockEntity) h.getLevel().getBlockEntity(o.offset(18, 0, 3))).held();
           if (held.is(plastic())) plastic += held.getCount();
-          long
-              crude =
-                  oil.remaining()
-                      + pump.petroleum().cells.get(2).amount()
-                      + r.petroleum().cells.get(0).amount(),
+          long crude = pump.petroleum().cells.get(2).amount() + r.petroleum().cells.get(0).amount(),
               gas = r.petroleum().cells.get(2).amount() + c.petroleum().cells.get(0).amount();
           for (int x : new int[] {4, 5, 6})
             crude +=
@@ -692,8 +733,7 @@ public final class PetroleumGameTests {
           gas +=
               ((FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(14, 0, 4))).cell().amount();
           h.assertTrue(
-              crude * 9 + gas * 20 + plastic * 200
-                  == 9L * factorycraft.config.FactoryConfig.OIL_RICHNESS.get(),
+              crude * 9 + gas * 20 + plastic * 2000 == 9L * oil.yield().generated(),
               "oil/gas/plastic ledger lost resources");
           h.succeed();
         });

@@ -29,7 +29,7 @@
   "fluids": [
     {
       "fluid": "factorycraft:lubricant",
-      "amount": 80
+      "amount": 800
     }
   ],
   "results": [

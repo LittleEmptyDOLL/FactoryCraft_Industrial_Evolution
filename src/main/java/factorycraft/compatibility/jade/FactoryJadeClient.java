@@ -30,6 +30,7 @@ final class FactoryJadeClient {
 
   static void register(IWailaClientRegistration r) {
     r.registerBlockComponent(REQUEST, FactoryBlock.class);
+    r.registerBlockComponent(REQUEST, OilDepositBlock.class);
     r.registerBlockComponent(REQUEST, FluidDeviceBlock.class);
     r.registerBlockComponent(REQUEST, ThermalBlock.class);
     r.addTooltipCollectedCallback(
@@ -51,6 +52,15 @@ final class FactoryJadeClient {
           var block =
               BuiltInRegistries.BLOCK.get(ResourceLocation.parse(snapshot.getString("Block")));
           box.setIcon(IElementHelper.get().item(new ItemStack(block)));
+          if (snapshot.contains("InitialYield"))
+            tooltip.add(
+                Component.translatable(
+                    "message.factorycraft.oil_yield",
+                    String.format(
+                        java.util.Locale.ROOT, "%.2f", snapshot.getLong("InitialYield") / 1500.0),
+                    String.format(
+                        java.util.Locale.ROOT, "%.3f", snapshot.getLong("CurrentYield") / 1500.0),
+                    String.format(java.util.Locale.ROOT, "%.3f", snapshot.getDouble("OilRate"))));
           var row = new ArrayList<IElement>();
           for (var raw : snapshot.getList("Items", Tag.TAG_COMPOUND)) {
             var item =

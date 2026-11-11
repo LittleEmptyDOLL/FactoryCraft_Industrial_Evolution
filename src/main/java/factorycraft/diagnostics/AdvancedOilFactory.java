@@ -15,7 +15,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 
 /**
- * Opt-in full-size finite oil → sulfur → acid → battery factory. No intermediate fluid injection.
+ * Opt-in full-size declared-yield oil → sulfur → acid → battery factory. No intermediate fluid
+ * injection.
  */
 public final class AdvancedOilFactory {
   public static boolean available(ServerLevel level) {
@@ -31,6 +32,7 @@ public final class AdvancedOilFactory {
 
   public static void build(ServerLevel level, BlockPos o) {
     level.setBlockAndUpdate(o.offset(2, -1, 3), Content.OIL_DEPOSIT.get().defaultBlockState());
+    ((OilDepositBlockEntity) level.getBlockEntity(o.offset(2, -1, 3))).initializeYield(200000);
     machine(level, o, 3, 2, FactoryKind.PUMPJACK);
     for (int x = 4; x <= 6; x++) pipe(level, o, x, 0, 2);
     var refinery = machine(level, o, 11, 1, FactoryKind.REFINERY);

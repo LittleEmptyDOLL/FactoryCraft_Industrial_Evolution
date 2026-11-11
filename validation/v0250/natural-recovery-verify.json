@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "sourceWorldRetained": "FactoryCraft0250-Natural-QA",
+  "recoveryCopy": "FactoryCraft0250-Natural-Recovery-QA",
+  "sourceResourceOwners": 5129,
+  "sourceOilPoints": 3,
+  "exactOwnerRecordsPreserved": 5132,
+  "exactSurfaceSnapshotsPreserved": 556,
+  "recoveryTotalOwners": 78626,
+  "recoveryTotalSnapshots": 845,
+  "shutdown": "Normal save-and-quit; all dimensions saved in client-recovery.log"
+}

@@ -21,14 +21,16 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
  * Composition for pumpjack and mixed processors. The controller remains the sole persistent owner.
  */
 public final class PetroleumProduction {
-  public static final int CAPACITY = 4000,
+  public static final int CAPACITY = factorycraft.simulation.fluids.FluidUnits.MACHINE_CAPACITY,
       TRANSFER = factorycraft.simulation.fluids.FluidUnits.boundaryRate(CAPACITY);
   private final MachineBlockEntity machine;
   public final List<FluidCell<FluidKey>> cells;
   private BlockPos deposit;
+  private int pumpWork, pumpCost;
+  private java.util.UUID pumpPoint;
   private int progress, duration = 1, selected, status, preview;
   private String active = "", selectedId = "";
-  private long recipesAt = Long.MIN_VALUE;
+  private long recipesAt = Long.MIN_VALUE, recipeEpoch = -1;
   private boolean syncPending;
 
   private record Cached(
@@ -45,7 +47,10 @@ public final class PetroleumProduction {
     this.machine = machine;
     var storage = new ArrayList<FluidCell<FluidKey>>(5);
     for (int i = 0; i < (machine.kind() == FactoryKind.REFINERY ? 5 : 4); i++)
-      storage.add(new FluidCell<>(CAPACITY, this::changed));
+      storage.add(
+          new FluidCell<>(
+              pump() ? factorycraft.simulation.fluids.FluidUnits.PUMPJACK_CAPACITY : CAPACITY,
+              this::changed));
     cells = List.copyOf(storage);
   }
 
@@ -59,7 +64,8 @@ public final class PetroleumProduction {
   }
 
   public boolean hasPortableState() {
-    return progress > 0
+    return pumpWork > 0
+        || progress > 0
         || !selectedId.isEmpty()
         || machine.power.getEnergyStored() > 0
         || cells.stream().anyMatch(c -> c.amount() > 0)
@@ -169,59 +175,69 @@ public final class PetroleumProduction {
     return worked;
   }
 
+  public BlockPos oilPoint() {
+    return machine
+        .assembly()
+        .profile()
+        .center(machine.getBlockPos(), machine.assembly().profile().facing(machine.getBlockState()))
+        .below();
+  }
+
   private boolean extract() {
-    duration = 1;
-    var target = deposit == null ? null : FluidConnections.at(machine.getLevel(), deposit);
-    if (!(target instanceof OilDepositBlockEntity oil)
-        || !oil.available()
-        || oil.remaining() == 0) {
-      deposit = null;
-      if (machine.getLevel().getGameTime() % 20 != 0) {
-        status = 1;
-        return false;
-      }
-      search:
-      for (int y = 1; y <= 8; y++)
-        for (int x = -1; x <= 1; x++)
-          for (int z = -1; z <= 1; z++) {
-            var profile = factorycraft.multiblock.MachineProfile.PUMPJACK;
-            var pos =
-                profile
-                    .center(
-                        machine.getBlockPos(),
-                        machine.getBlockState().getValue(FactoryBlock.FACING))
-                    .offset(x, -y, z);
-            var be = FluidConnections.at(machine.getLevel(), pos);
-            if (be instanceof OilDepositBlockEntity oil && oil.available() && oil.remaining() > 0) {
-              deposit = pos.immutable();
-              break search;
-            }
-          }
-      target = deposit == null ? null : FluidConnections.at(machine.getLevel(), deposit);
-    }
+    duration = 20;
+    var target = FluidConnections.at(machine.getLevel(), oilPoint());
     if (!(target instanceof OilDepositBlockEntity oil) || !oil.available()) {
       status = 1;
       return false;
     }
-    int n = oil.reserve().transferTo(cells.get(2), 10, true);
-    if (n == 0) {
+    if (!oil.identity().equals(pumpPoint)) {
+      pumpPoint = oil.identity();
+      pumpWork = pumpCost = progress = 0;
+      changed();
+    }
+    var key = new FluidKey(PetroleumFluids.CRUDE.stack(1));
+    int amount = oil.yield().nextAmount();
+    var out = cells.get(2);
+    if (!out.accepts(key) || out.space() < amount) {
       status = 2;
       return false;
     }
-    if (!machine.power.spend(15)) {
+    var effects = machine.modules.effects();
+    int stepCost = (int) Math.ceilDiv(15L * effects.energy(), 10000);
+    if (machine.power.getEnergyStored() < pumpCost + stepCost) {
       status = 3;
       return false;
     }
-    oil.reserve().transferTo(cells.get(2), n, false);
+    pumpCost += stepCost;
+    pumpWork += effects.speed();
+    progress = pumpWork / 10000;
     status = 4;
     changed();
+    if (pumpWork < 200000) return true;
+    // Everything is reserved on the authoritative server thread before payment/depletion.
+    if (!machine.power.spend(pumpCost))
+      throw new IllegalStateException("Reserved pump energy changed");
+    if (!FluidCell.commitBatch(
+        List.of(new FluidCell.Mutation<>(out, key, out.amount() + amount)),
+        () -> {
+          if (oil.yield().commit() != amount)
+            throw new IllegalStateException("Oil reservation changed");
+          pumpWork -= 200000;
+          pumpCost = 0;
+          progress = pumpWork / 10000;
+          oil.changed();
+        },
+        false)) throw new IllegalStateException("Reserved oil output changed");
     return true;
   }
 
   public void refreshRecipes() {
     if (pump() || machine.getLevel() == null) return;
     long now = machine.getLevel().getGameTime();
-    if (recipesAt != Long.MIN_VALUE && now - recipesAt < 20) return;
+    if (recipesAt != Long.MIN_VALUE
+        && now - recipesAt < 20
+        && recipeEpoch == RecipeSelectionNetwork.generation) return;
+    recipeEpoch = RecipeSelectionNetwork.generation;
     var manager = machine.getLevel().getRecipeManager();
     var candidates = new ArrayList<RecipeHolder<ChemicalRecipe>>();
     for (var holder : manager.getAllRecipesFor(Content.CHEMISTRY.get()))
@@ -342,12 +358,23 @@ public final class PetroleumProduction {
   public boolean selectRecipe(net.minecraft.resources.ResourceLocation id) {
     if (machine.getLevel() == null || machine.getLevel().isClientSide) return false;
     refreshRecipes();
+    if (id == null) {
+      if (selectedId.isEmpty()) return true;
+      chooseRecipe(0);
+      return true;
+    }
+    if (!machine.recipeAllowed(id)) return false;
     for (int i = 0; i < recipes.size(); i++)
       if (recipes.get(i).holder.id().equals(id)) {
+        if (selectedId.equals(id.toString())) return true;
         chooseRecipe(i + 1);
         return true;
       }
     return false;
+  }
+
+  public String selectedRecipeId() {
+    return selectedId;
   }
 
   public List<RecipeHolder<ChemicalRecipe>> recipes() {
@@ -500,6 +527,12 @@ public final class PetroleumProduction {
     return true;
   }
 
+  public factorycraft.simulation.petroleum.OilYield oilYield() {
+    if (!pump() || !ready()) return null;
+    var point = FluidConnections.at(machine.getLevel(), oilPoint());
+    return point instanceof OilDepositBlockEntity oil && oil.available() ? oil.yield() : null;
+  }
+
   public final ContainerData data =
       new ContainerData() {
         public int get(int i) {
@@ -513,6 +546,11 @@ public final class PetroleumProduction {
             case 6 -> selected;
             case 7 -> machine.assembly() == null ? 2 : machine.assembly().status();
             case 8 -> preview;
+            case 9 -> oilYield() == null ? 0 : (int) (oilYield().initial() & 65535);
+            case 10 -> oilYield() == null ? 0 : (int) (oilYield().initial() >>> 16);
+            case 11 -> oilYield() == null ? 0 : (int) (oilYield().current() & 65535);
+            case 12 -> oilYield() == null ? 0 : (int) (oilYield().current() >>> 16);
+            case 13 -> oilYield() == null ? 0 : oilYield().nextAmount();
             default -> 0;
           };
         }
@@ -520,7 +558,7 @@ public final class PetroleumProduction {
         public void set(int i, int v) {}
 
         public int getCount() {
-          return 9;
+          return 14;
         }
       };
 
@@ -529,6 +567,9 @@ public final class PetroleumProduction {
     tag.putInt("Schema", cells.size() == 5 ? 2 : 1);
     for (int i = 0; i < cells.size(); i++) tag.put("Fluid" + i, stored(i).saveOptional(r));
     tag.putInt("Progress", progress);
+    if (pumpPoint != null) tag.putUUID("PumpPoint", pumpPoint);
+    tag.putInt("PumpWork", pumpWork);
+    tag.putInt("PumpCost", pumpCost);
     tag.putInt("Duration", duration);
     tag.putString("SelectedRecipe", selectedId);
     tag.putString("Active", active);
@@ -542,6 +583,11 @@ public final class PetroleumProduction {
       cells.get(i).restore(f.isEmpty() ? null : new FluidKey(f), f.getAmount());
     }
     progress = Math.max(0, tag.getInt("Progress"));
+    pumpPoint = tag.hasUUID("PumpPoint") ? tag.getUUID("PumpPoint") : null;
+    pumpWork = tag.getInt("PumpWork");
+    pumpCost = tag.getInt("PumpCost");
+    if (pumpWork < 0 || pumpWork >= 200000 || pumpCost < 0 || pumpCost > 16000)
+      throw new IllegalArgumentException("Invalid pump work");
     duration = Math.max(1, tag.getInt("Duration"));
     selectedId = tag.getString("SelectedRecipe");
     selected = 0;

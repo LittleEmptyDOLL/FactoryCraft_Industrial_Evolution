@@ -1,3 +1,15 @@
+# Release 0.25.0 — bounded resource and fluid observations
+
+[Comparison, ranges and limitations](validation/v0250/comparison.md), [pure geometry driver](tools/profile_resources.py). Baseline is 0.24.1 `dd7c815`; resource geometry and fluid gameplay deliberately change, so this is not an optimization claim.
+
+Three warmed isolated-JVM comparisons measure radius 20/depth 12 and radius 48/depth 64. Potential ore owners grow **976 → 7867** and **5634 → 228447**; sampling allocates about 58–60% more and timing varies substantially. Real native feature fixtures create deep resource BEs on flat/slope/cliff/river terrain and report CPU/allocation separately. Full natural-world chunk throughput and retained ore memory are unmeasured.
+
+A real dedicated **10000-pipe** profile and independent-JVM hash reload pass with new 1:10 units and yield oil. Stable/construction/split mean ticks: **2.698 / 3.285 / 2.777 ms** in the final-code run; published 0.24.1 medians: **3.043 / 3.694 / 3.577 ms**. The earlier development run was 3.257 / 3.975 / 4.150 ms and is retained separately. Final stable maximum is 65.410 ms, above the 0.24.1 published median maximum 60.310 ms. Gameplay/rates differ and samples are limited; no faster TPS claim follows. Full/MIXED/optional jobs remain GitHub Actions work.
+
+Historical 0.24.1 measurements below describe that earlier optimization and its unchanged hydraulics.
+
+---
+
 # Fluid performance 0.24.1 — 11 November 2026 (Europe/Moscow)
 
 This compares the **0.24.0 segment runtime at e15bacd**, not the older 0.23 local-pressure model, against the optimized segment runtime. The hydraulic rates, 1000/16000/1000-mB capacities, 20-FE pump cost, pressure quotas, recipe amounts, filters, components, four circuit colors and schema-2 save format are unchanged.

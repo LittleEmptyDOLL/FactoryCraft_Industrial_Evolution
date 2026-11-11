@@ -83,6 +83,11 @@ public record PlacementPlan(
                   || !player.mayUseItemAt(pos, context.getClickedFace(), context.getItemInHand())))
         blocked.add(pos);
     }
+    if (profile == MachineProfile.PUMPJACK) {
+      var point = profile.center(anchor, profile.facing(state)).below();
+      if (!level.hasChunkAt(point) || !level.getBlockState(point).is(Content.OIL_DEPOSIT.get()))
+        blocked.add(point);
+    }
     return new PlacementPlan(
         profile,
         anchor.immutable(),

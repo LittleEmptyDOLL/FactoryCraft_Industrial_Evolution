@@ -247,18 +247,113 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     return fuelTicks;
   }
 
+  private final Map<ResourceLocation, RecipeHolder<SmeltingRecipe>> smelting = new HashMap<>();
+  private final Map<ResourceLocation, String> definitions = new HashMap<>();
+  private long recipeEpoch = -1;
+  private List<RecipeHolder<FactoryRecipe>> sourceProcessing = List.of();
+  private List<RecipeHolder<SmeltingRecipe>> sourceSmelting = List.of();
+  private String activeDefinition = "", resolvedBase = "", resolvedDefinition = "";
+  private ItemStack resolvedResult = ItemStack.EMPTY;
+
+  public String selectedRecipeId() {
+    return petroleum == null ? selected : petroleum.selectedRecipeId();
+  }
+
+  public boolean selectRecipe(ResourceLocation id) {
+    if (level == null
+        || level.isClientSide
+        || !loaded()
+        || !factorycraft.multiblock.AssemblyAccess.ready(this)
+        || !kind().processing()) return false;
+    if (petroleum != null) return petroleum.selectRecipe(id);
+    if (id != null && (!recipeAllowed(id) || recipes().stream().noneMatch(r -> r.id().equals(id))))
+      return false;
+    String next = id == null ? "" : id.toString();
+    if (next.equals(selected)) return true;
+    selected = next;
+    progress = 0;
+    activeRecipe = "";
+    activeDefinition = "";
+    sync();
+    return true;
+  }
+
   public List<RecipeHolder<FactoryRecipe>> recipes() {
     if (level == null) return List.of();
     long now = level.getGameTime();
-    if (recipeCacheTick == Long.MIN_VALUE || now - recipeCacheTick >= 20) {
-      recipeCache =
-          level.getRecipeManager().getAllRecipesFor(Content.PROCESSING.get()).stream()
-              .filter(h -> h.value().machine().equals(kind().recipeGroup()))
-              .sorted(Comparator.comparing(h -> h.id().toString()))
-              .toList();
+    if (recipeCacheTick == Long.MIN_VALUE
+        || now - recipeCacheTick >= 20
+        || recipeEpoch != RecipeSelectionNetwork.generation) {
+      var processingSource = level.getRecipeManager().getAllRecipesFor(Content.PROCESSING.get());
+      var smeltingSource =
+          SmeltingInterop.furnace(kind())
+              ? level.getRecipeManager().getAllRecipesFor(RecipeType.SMELTING)
+              : List.<RecipeHolder<SmeltingRecipe>>of();
+      if (recipeCacheTick != Long.MIN_VALUE
+          && recipeEpoch == RecipeSelectionNetwork.generation
+          && sourceProcessing.equals(processingSource)
+          && sourceSmelting.equals(smeltingSource)) {
+        recipeCacheTick = now;
+        return recipeCache;
+      }
+      sourceProcessing = processingSource;
+      sourceSmelting = smeltingSource;
+      var result = new ArrayList<RecipeHolder<FactoryRecipe>>();
+      smelting.clear();
+      definitions.clear();
+      processingSource.stream()
+          .filter(h -> h.value().machine().equals(kind().recipeGroup()))
+          .sorted(Comparator.comparing(h -> h.id().toString()))
+          .forEach(result::add);
+      if (SmeltingInterop.furnace(kind()))
+        for (var h :
+            smeltingSource.stream().sorted(Comparator.comparing(h -> h.id().toString())).toList()) {
+          if (result.stream().anyMatch(r -> r.id().equals(h.id()))) continue;
+          var projected = SmeltingInterop.project(h, level);
+          if (projected.result().isEmpty()) continue;
+          smelting.put(h.id(), h);
+          result.add(new RecipeHolder<>(h.id(), projected));
+        }
+      var ops =
+          net.minecraft.resources.RegistryOps.create(
+              com.mojang.serialization.JsonOps.INSTANCE, level.registryAccess());
+      for (var r : result)
+        definitions.put(
+            r.id(),
+            FactoryRecipe.CODEC.codec().encodeStart(ops, r.value()).getOrThrow().toString());
+      recipeCache = List.copyOf(result);
       recipeCacheTick = now;
+      recipeEpoch = RecipeSelectionNetwork.generation;
     }
     return recipeCache;
+  }
+
+  private int[] consumption(RecipeHolder<FactoryRecipe> r, FactoryInput input) {
+    var nativeRecipe = smelting.get(r.id());
+    if (nativeRecipe == null) return r.value().consumptionPlan(input);
+    int slot = SmeltingInterop.slot(nativeRecipe, input, level);
+    if (slot < 0) return null;
+    int[] plan = new int[input.size()];
+    plan[slot] = 1;
+    return plan;
+  }
+
+  private RecipeHolder<FactoryRecipe> resolve(RecipeHolder<FactoryRecipe> r, FactoryInput input) {
+    var n = smelting.get(r.id());
+    if (n == null) return r;
+    int slot = SmeltingInterop.slot(n, input, level);
+    if (slot < 0) return null;
+    var v = r.value();
+    var out = SmeltingInterop.result(n, input.getItem(slot), level);
+    return out.isEmpty()
+        ? null
+        : new RecipeHolder<>(
+            r.id(), new FactoryRecipe(v.machine(), v.inputs(), out, v.ticks(), v.energy()));
+  }
+
+  public boolean nativeSmelting(ResourceLocation id) {
+    recipes();
+    return smelting.containsKey(id);
   }
 
   public int selectedIndex() {
@@ -388,12 +483,29 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       if (!selected.isEmpty() && !selected.equals(r.id().toString())) continue;
       if (!activeRecipe.isEmpty() && progress > 0 && !activeRecipe.equals(r.id().toString()))
         continue;
-      if (recipeAllowed(r.id()) && r.value().matches(input, level)) {
-        chosen = r;
-        break;
+      if (recipeAllowed(r.id()) && consumption(r, input) != null) {
+        chosen = resolve(r, input);
+        if (chosen != null) break;
       }
     }
     if (chosen == null) return false;
+    String definition = definitions.get(chosen.id());
+    if (smelting.containsKey(chosen.id())) {
+      var result = chosen.value().result();
+      if (!definition.equals(resolvedBase)
+          || result.getCount() != resolvedResult.getCount()
+          || !ItemStack.isSameItemSameComponents(result, resolvedResult)) {
+        resolvedBase = definition;
+        resolvedResult = result.copy();
+        resolvedDefinition = definition + "|" + result.save(level.registryAccess());
+      }
+      definition = resolvedDefinition;
+    }
+    if (!activeDefinition.equals(definition)) {
+      progress = 0;
+      activeRecipe = "";
+      activeDefinition = definition;
+    }
     if (modules.enabled()) return produceWithModules(chosen, input);
     var recipe = chosen.value();
     if (!output(recipe.result(), true).isEmpty()) return false;
@@ -406,14 +518,20 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     markPersistentState();
     factorycraft.diagnostics.FactoryTelemetry.worked(this, recipe.energy() * advancing);
     if (progress >= duration) {
-      int[] plan = recipe.consumptionPlan(input);
+      int[] plan = consumption(chosen, input);
       // Single server-thread commit, after every output slot and input count has been checked.
       if (plan != null && output(recipe.result(), true).isEmpty()) {
-        for (int s = 0; s < plan.length; s++) if (plan[s] > 0) items.extractItem(s, plan[s], false);
-        output(recipe.result().copy(), false);
+        beginPetroleumInventoryTransaction();
+        try {
+          for (int s = 0; s < plan.length; s++)
+            if (plan[s] > 0) items.extractItem(s, plan[s], false);
+          output(recipe.result(), false);
+          progress = 0;
+          activeRecipe = "";
+        } finally {
+          endPetroleumInventoryTransaction();
+        }
         factorycraft.diagnostics.FactoryTelemetry.produced(this);
-        progress = 0;
-        activeRecipe = "";
         sync();
       }
     }
@@ -447,7 +565,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     activeRecipe = chosen.id().toString();
     modules.advance(key, step.remainder(), step.work(), duration, rate);
     if (progress >= duration) {
-      var plan = recipe.consumptionPlan(input);
+      var plan = consumption(chosen, input);
       if (plan == null) throw new IllegalStateException("Reserved module ingredients changed");
       beginPetroleumInventoryTransaction();
       try {
@@ -607,7 +725,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     super.saveAdditional(t, r);
     modules.save(t, r);
     if (!researchScope.isEmpty()) t.putString("ResearchScope", researchScope);
-    t.putInt("Schema", 1);
+    t.putInt("Schema", 2);
+    t.putString("ActiveDefinition", activeDefinition);
     t.put("Items", items.serializeNBT(r));
     t.putInt("Energy", power.getEnergyStored());
     t.putInt("Progress", progress);
@@ -630,6 +749,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     duration = Math.max(1, t.getInt("Duration"));
     fuelTicks = Math.max(0, t.getInt("Fuel"));
     selected = t.getString("Selected");
+    activeDefinition = t.getString("ActiveDefinition");
     activeRecipe = t.getString("ActiveRecipe");
     recipeCacheTick = Long.MIN_VALUE;
     if (assembly != null) assembly.load(t);

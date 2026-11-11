@@ -4,17 +4,17 @@
   "fluids": [
     {
       "fluid": "factorycraft:light_oil",
-      "amount": 30
+      "amount": 300
     },
     {
       "fluid": "minecraft:water",
-      "amount": 30
+      "amount": 300
     }
   ],
   "fluid_results": [
     {
       "id": "factorycraft:petroleum_gas",
-      "amount": 20
+      "amount": 200
     }
   ],
   "ticks": 40,

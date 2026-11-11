@@ -2,11 +2,11 @@
   "type": "factorycraft:boiling",
   "input": {
     "fluid": "minecraft:water",
-    "amount": 200
+    "amount": 2000
   },
   "result": {
     "id": "factorycraft:steam",
-    "amount": 200
+    "amount": 2000
   },
   "ticks": 20
 }

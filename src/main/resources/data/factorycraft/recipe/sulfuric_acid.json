@@ -18,13 +18,13 @@
   "fluids": [
     {
       "fluid": "minecraft:water",
-      "amount": 100
+      "amount": 1000
     }
   ],
   "fluid_results": [
     {
       "id": "factorycraft:sulfuric_acid",
-      "amount": 50
+      "amount": 500
     }
   ],
   "ticks": 20,

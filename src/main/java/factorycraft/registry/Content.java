@@ -494,6 +494,7 @@ public final class Content {
     factorycraft.thermal.SteamFluids.register(bus);
     factorycraft.petroleum.PetroleumFluids.register(bus);
     COMPONENTS.register(bus);
+    factorycraft.worldgen.ResourceTerrain.register(bus);
     FEATURES.register(bus);
     BLOCKS.register(bus);
     ITEMS.register(bus);

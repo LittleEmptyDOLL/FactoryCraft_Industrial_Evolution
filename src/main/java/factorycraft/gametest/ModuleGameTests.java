@@ -348,7 +348,7 @@ public final class ModuleGameTests {
               .restore(
                   new factorycraft.fluids.FluidKey(
                       factorycraft.petroleum.PetroleumFluids.ACID.stack(1)),
-                  5);
+                  50);
           m.petroleum()
               .selectRecipe(
                   ResourceLocation.fromNamespaceAndPath("factorycraft", "processing_unit"));

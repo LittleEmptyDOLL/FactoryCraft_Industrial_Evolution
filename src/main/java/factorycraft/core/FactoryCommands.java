@@ -46,6 +46,9 @@ public final class FactoryCommands {
           "circuitsortingworks"
         }) root.then(Commands.literal(name).executes(c -> build(c.getSource(), name)));
     root.then(
+        Commands.literal("resourceview")
+            .executes(c -> factorycraft.diagnostics.ResourceShowcase.build(c.getSource())));
+    root.then(
         Commands.literal("showroom")
             .executes(c -> factorycraft.diagnostics.MachineShowcase.build(c.getSource())));
     root.then(
@@ -323,6 +326,7 @@ public final class FactoryCommands {
 
   public static void oilLine(ServerLevel level, BlockPos o) {
     level.setBlockAndUpdate(o.offset(2, -1, 3), Content.OIL_DEPOSIT.get().defaultBlockState());
+    ((OilDepositBlockEntity) level.getBlockEntity(o.offset(2, -1, 3))).initializeYield(200000);
     machine(level, o.offset(3, 0, 2), FactoryKind.PUMPJACK, Direction.EAST);
     for (int x = 4; x <= 6; x++) fluid(level, o, x, 2, FluidKind.PIPE);
     machine(level, o.offset(11, 0, 1), FactoryKind.REFINERY, Direction.EAST);

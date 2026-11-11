@@ -12,7 +12,7 @@
   "fluids": [
     {
       "fluid": "factorycraft:petroleum_gas",
-      "amount": 20
+      "amount": 200
     }
   ],
   "results": [

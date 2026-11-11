@@ -1,5 +1,8 @@
 # Командные исследования — 0.11.0
 
+0.25.0 recipe menus display server-supplied research availability and select by stable recipe ID, with current menu/reach/permission checks. Auto still respects the machine's fixed team scope. Vanilla smelting entries are available only in furnaces and follow existing FactoryCraft recipe locks where applicable. No new technologies/science tiers are added. Existing labs/technology definitions remain four-pack bounded; a future six-plus-pack extension must change inventory, menu and validation together. Processing/chemistry codecs accept up to sixteen counted ingredients, but current physical machines still expose four input slots and atomically reject unsatisfied plans. Pre-0.25 FactoryCraft data is not migrated.
+
+
 Лаборатория занимает **3×3×3**, строится одним предметом от центра основания и питается от существующей электросети/NeoForge FE. Контроллер хранит четыре входных слота науки, FE и незавершённую работу; части содержат только привязку. Красный пакет можно изготовить вручную или сборщиком из шестерни и медной пластины; зелёный — сборщиком из конвейера и манипулятора после «Автоматизации».
 
 Синяя наука 0.10.0 производится из продвинутых схем, двигателей и серы; лаборатории принимают все три пакета. Шесть дополнительных технологий и точные цепочки описаны в [PROGRESSION.md](PROGRESSION.md). Прежние шесть определений и накопленная работа сохранены.

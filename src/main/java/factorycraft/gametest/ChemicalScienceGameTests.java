@@ -58,8 +58,9 @@ public final class ChemicalScienceGameTests {
   private static void processorInput(MachineBlockEntity machine) {
     machine.items.setStackInSlot(0, new ItemStack(item("electronic_circuit"), 20));
     machine.items.setStackInSlot(1, new ItemStack(item("advanced_circuit"), 2));
-    machine.petroleum().cells.get(0).restore(new FluidKey(acid(1)), 5);
-    if (!machine.petroleum().selectRecipe(id("processing_unit")))
+    machine.petroleum().cells.get(0).restore(new FluidKey(acid(1)), 50);
+    if (!machine.petroleum().selectRecipe(id("processing_unit"))
+        && machine.recipeAllowed(id("processing_unit")))
       throw new IllegalStateException("Missing processor recipe");
   }
 
@@ -161,7 +162,7 @@ public final class ChemicalScienceGameTests {
               .petroleum()
               .cells
               .get(0)
-              .restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 15);
+              .restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 150);
           engines.petroleum().selectRecipe(id("electric_engine_unit"));
           engines.power.restore(7000);
           processorInput(processors);
@@ -194,7 +195,7 @@ public final class ChemicalScienceGameTests {
         25,
         () -> {
           h.assertTrue(
-              m.petroleum().data.get(0) == 0 && m.petroleum().cells.get(0).amount() == 5,
+              m.petroleum().data.get(0) == 0 && m.petroleum().cells.get(0).amount() == 50,
               "unpowered assembly consumed resources");
           for (int s = 4; s < 8; s++)
             m.items.setStackInSlot(s, new ItemStack(Items.COBBLESTONE, 64));
@@ -222,7 +223,7 @@ public final class ChemicalScienceGameTests {
           part.onChunkUnloaded();
           int work = m.petroleum().data.get(0), energy = m.power.getEnergyStored();
           h.assertTrue(
-              fluid.fill(PetroleumFluids.ACID.stack(30), FluidAction.EXECUTE) == 0
+              fluid.fill(PetroleumFluids.ACID.stack(300), FluidAction.EXECUTE) == 0
                   && m.automation(null).extractItem(4, 1, false).isEmpty(),
               "cached unloaded capability escaped guard");
           h.runAfterDelay(
@@ -262,7 +263,7 @@ public final class ChemicalScienceGameTests {
           h.assertTrue(
               m.power.getEnergyStored() == 8000
                   && m.items.getStackInSlot(0).getCount() == 20
-                  && m.petroleum().cells.get(0).amount() == 5,
+                  && m.petroleum().cells.get(0).amount() == 50,
               "locked processor spent resources");
           var ledger = ResearchData.get(h.getLevel().getServer()).team(scope);
           var tech = ResearchCatalog.get(h.getLevel()).entry(id("advanced_electronics_2")).logic();
@@ -379,10 +380,10 @@ public final class ChemicalScienceGameTests {
     h.assertTrue(
         !menu.clickMenuButton(p, 1) && source.amount() == 32, "mismatched canister mixed fluids");
     menu.setCarried(new ItemStack(Content.FLUID_CANISTER.get()));
-    source.restore(new FluidKey(acid(1)), 5001);
+    source.restore(new FluidKey(acid(1)), 40001);
     h.assertTrue(
         menu.clickMenuButton(p, 1)
-            && source.amount() == 1001
+            && source.amount() == 36001
             && FluidStack.matches(
                 FluidCanisterItem.handler(menu.getCarried()).getFluid(), acid(4000)),
         "restored overflow truncated");
@@ -529,7 +530,7 @@ public final class ChemicalScienceGameTests {
         () -> {
           ((FluidBlockEntity) h.getLevel().getBlockEntity(pos))
               .cell()
-              .fill(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 52, false);
+              .fill(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 520, false);
           m.items.setStackInSlot(0, new ItemStack(Content.ENGINE_UNIT.get()));
           m.items.setStackInSlot(1, new ItemStack(item("electronic_circuit"), 2));
           m.power.restore(6000);
@@ -541,7 +542,7 @@ public final class ChemicalScienceGameTests {
           h.assertTrue(
               m.items.getStackInSlot(4).is(Content.ELECTRIC_ENGINE_UNIT.get())
                   && m.power.getEnergyStored() == 0
-                  && m.petroleum().cells.get(0).amount() + pipe.cell().amount() == 37,
+                  && m.petroleum().cells.get(0).amount() + pipe.cell().amount() == 370,
               "physical fluid assembly lost unused lubricant");
           h.succeed();
         });
@@ -631,7 +632,7 @@ public final class ChemicalScienceGameTests {
   @GameTest(template = "empty", timeoutTicks = 100)
   public static void canisterComponentsAndNewMachineRecipeRoundTripOnNativeWire(GameTestHelper h) {
     var stack = new ItemStack(Content.FLUID_CANISTER.get());
-    FluidCanisterItem.handler(stack).fill(acid(37), FluidAction.EXECUTE);
+    FluidCanisterItem.handler(stack).fill(acid(370), FluidAction.EXECUTE);
     var recipe =
         h.getLevel().getRecipeManager().getAllRecipesFor(Content.CHEMISTRY.get()).stream()
             .filter(r -> r.id().equals(id("processing_unit")))
@@ -658,14 +659,14 @@ public final class ChemicalScienceGameTests {
       ItemStack.STREAM_CODEC.encode(buffer, stack);
       var copy = ItemStack.STREAM_CODEC.decode(buffer);
       h.assertTrue(
-          FluidStack.matches(FluidCanisterItem.handler(copy).getFluid(), acid(37)),
+          FluidStack.matches(FluidCanisterItem.handler(copy).getFluid(), acid(370)),
           "native item wire lost component fluid");
       var codec = Content.CHEMISTRY_SERIALIZER.get().streamCodec();
       codec.encode(buffer, recipe);
       var restored = codec.decode(buffer);
       h.assertTrue(
           restored.machine().equals("assembling_machine_2")
-              && restored.fluids().getFirst().amount() == 5
+              && restored.fluids().getFirst().amount() == 50
               && restored.items().getFirst().count() == 20,
           "new mixed recipe wire changed");
     } finally {

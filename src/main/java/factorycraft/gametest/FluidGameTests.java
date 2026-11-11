@@ -212,15 +212,15 @@ public final class FluidGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          FluidSimulation.manual(() -> physical(pump, 0).fill(water(1000), EXEC));
-          physical(tank, 0).fill(water(16000), EXEC);
+          FluidSimulation.manual(() -> physical(pump, 0).fill(water(4000), EXEC));
+          physical(tank, 0).fill(water(250000), EXEC);
           pump.energyPort.receiveEnergy(2000, false);
         });
     h.runAfterDelay(
         70,
         () -> {
           h.assertTrue(
-              pump.power.getEnergyStored() == 2000 && volume(pump, tank) == 17000,
+              pump.power.getEnergyStored() == 2000 && volume(pump, tank) == 254000,
               "blocked pump consumed energy or fluid");
           physical(tank, 0).drain(1000, EXEC);
         });
@@ -228,7 +228,7 @@ public final class FluidGameTests {
         140,
         () -> {
           h.assertTrue(
-              tank.cell().amount() > 15000 && pump.power.getEnergyStored() < 2000,
+              tank.cell().amount() > 249000 && pump.power.getEnergyStored() < 2000,
               "draining did not wake the sleeping pump");
           h.succeed();
         });

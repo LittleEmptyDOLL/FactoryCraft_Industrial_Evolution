@@ -11,7 +11,9 @@
       "max_radius": 20,
       "min_stock": 500,
       "max_stock": 5000,
-      "spacing_chunks": 6
+      "spacing_chunks": 16,
+      "depth": 12,
+      "noise": 0.12
     }
   }
 }

@@ -302,10 +302,10 @@ for name,color in [('plastic_bar',(222,223,213)),('sulfur',(221,209,51)),('advan
  texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
 texture('block/oil_deposit',(53,55,47),'ore');texture('block/oil_deposit_depleted',(112,116,110),'ore')
 for suffix in ['','_depleted']:write(f'assets/factorycraft/models/block/oil_deposit{suffix}.json',{'parent':'minecraft:block/cube_all','textures':{'all':'factorycraft:block/oil_deposit'+suffix}})
-write('assets/factorycraft/blockstates/oil_deposit.json',{'variants':{'depleted=false':{'model':'factorycraft:block/oil_deposit'},'depleted=true':{'model':'factorycraft:block/oil_deposit_depleted'}}})
+write('assets/factorycraft/blockstates/oil_deposit.json',{'variants':{'':{'model':'factorycraft:block/oil_deposit'}}})
 write('data/factorycraft/loot_table/blocks/oil_deposit.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'minecraft:cobblestone'}],'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
-write('data/factorycraft/worldgen/configured_feature/oil_deposit.json',{'type':'factorycraft:oil_deposit','config':{'size':4,'discard_chance_on_air_exposure':0.0,'targets':[{'target':{'predicate_type':'minecraft:tag_match','tag':tag},'state':{'Name':'factorycraft:oil_deposit','Properties':{'depleted':'false'}}} for tag in ['minecraft:stone_ore_replaceables','minecraft:deepslate_ore_replaceables']]}})
-write('data/factorycraft/worldgen/placed_feature/oil_deposit.json',{'feature':'factorycraft:oil_deposit','placement':[{'type':'minecraft:rarity_filter','chance':8},{'type':'minecraft:in_square'},{'type':'minecraft:height_range','height':{'type':'minecraft:uniform','min_inclusive':{'absolute':16},'max_inclusive':{'absolute':80}}},{'type':'minecraft:biome'}]})
+write('data/factorycraft/worldgen/configured_feature/oil_deposit.json',{'type':'factorycraft:oil_deposit','config':{}})
+write('data/factorycraft/worldgen/placed_feature/oil_deposit.json',{'feature':'factorycraft:oil_deposit','placement':[{'type':'minecraft:biome'}]})
 write('data/factorycraft/neoforge/biome_modifier/oil_deposit.json',{'type':'neoforge:add_features','biomes':'#minecraft:is_overworld','features':['factorycraft:oil_deposit'],'step':'underground_ores'})
 craft('pumpjack',['PGP','CDC','PPP'],{'P':'factorycraft:iron_plate','G':'factorycraft:iron_gear','C':'factorycraft:electronic_circuit','D':'factorycraft:electric_drill'})
 craft('oil_refinery',['PBP','CFC','PBP'],{'P':'factorycraft:iron_plate','B':'factorycraft:fluid_pipe','C':'factorycraft:electronic_circuit','F':'factorycraft:electric_furnace'})
@@ -386,7 +386,7 @@ for lang in ['en_us','ru_ru']:
 
 # 0.6.1: one deterministic large surface-field sampler per resource and chunk.
 for index,name in enumerate(['iron_ore','copper_ore','coal_deposit','stone_deposit']):
- write(f'data/factorycraft/worldgen/configured_feature/{name}.json',{'type':'factorycraft:resource_patch','config':{'state':{'Name':'factorycraft:'+name},'salt':920174+(index*812791),'use_world_settings':True,'vein':{'min_radius':8,'max_radius':20,'min_stock':500,'max_stock':5000,'spacing_chunks':6}}})
+ write(f'data/factorycraft/worldgen/configured_feature/{name}.json',{'type':'factorycraft:resource_patch','config':{'state':{'Name':'factorycraft:'+name},'salt':920174+(index*812791),'use_world_settings':True,'vein':{'min_radius':8,'max_radius':20,'min_stock':500,'max_stock':5000,'spacing_chunks':16,'depth':12,'noise':0.12}}})
  write(f'data/factorycraft/worldgen/placed_feature/{name}.json',{'feature':'factorycraft:'+name,'placement':[{'type':'minecraft:biome'}]})
 for lang in ['en_us','ru_ru']:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
@@ -844,3 +844,39 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
  p=ROOT/f'assets/factorycraft/lang/{locale}.json';d=json.loads(p.read_text())
  values={'pipeline_preview':('Show nearby members (10 s)','Показать соседние части (10 с)'),'pipeline_amount':('Amount: %s mB','Объём: %s мБ'),'pipeline_capacity':('Capacity: %s mB','Вместимость: %s мБ'),'pipeline_members':('Members: %s','Участников: %s'),'pipeline_conflicts':('Blocked boundaries: %s','Конфликтных границ: %s'),'pipeline_extent':('X×Z: %s×%s; height %s','X×Z: %s×%s; высота %s'),'pipeline_status.0':('Rebuilding / unavailable','Пересчёт / недоступно'),'pipeline_status.1':('Pipeline ready','Сегмент готов'),'pipeline_status.2':('Too long: maximum 320×320','Превышен охват 320×320'),'pipeline_status.3':('Conflicting fluid filter','Конфликт фильтра жидкости'),'pipeline_status.4':('Overfull: drain to recover','Переполнение: требуется отбор'),'pipeline_status.5':('Incompatible boundary is blocked','Несовместимая граница закрыта')}
  d.update({'gui.factorycraft.'+k:v[index] for k,v in values.items()});write(f'assets/factorycraft/lang/{locale}.json',d)
+
+# 0.25 source definitions above use Factorio units; generated datapacks store native mB once.
+for path in (ROOT/'data/factorycraft/recipe').glob('*.json'):
+ data=json.loads(path.read_text())
+ if data.get('type')=='factorycraft:chemistry':
+  for fluid in data.get('fluids',[])+data.get('fluid_results',[]):fluid['amount']*=10
+ elif data.get('type')=='factorycraft:boiling':
+  data['input']['amount']*=10;data['result']['amount']*=10
+ else:continue
+ write(str(path.relative_to(ROOT)),data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
+ entries={'block.factorycraft.oil_deposit':('Oil Point','Нефтяная скважина'),'message.factorycraft.oil_yield':('Initial %s%%; current %s%%; %s mB/s at normal speed','Начальная %s%%; текущая %s%%; %s мБ/с при обычной скорости'),'gui.factorycraft.recipe_browser':('Select production recipe','Выбор производственного рецепта'),'gui.factorycraft.search':('Search recipes','Поиск рецептов'),'gui.factorycraft.group':('Change category','Сменить категорию'),'gui.factorycraft.recipe_group.0':('All recipes','Все рецепты'),'gui.factorycraft.recipe_group.1':('Factory processing','Промышленная обработка'),'gui.factorycraft.recipe_group.2':('Fluid processing','Жидкостное производство'),'gui.factorycraft.recipe_group.3':('Vanilla smelting','Плавка Minecraft'),'gui.factorycraft.recipe_unlocked':('Research: available','Исследование: доступно'),'gui.factorycraft.recipe_wait':('Waiting for server…','Ожидание сервера…')}
+ data.update({k:v[index] for k,v in entries.items()});write(str(path.relative_to(ROOT)),data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());data['gui.factorycraft.recipe_chosen']=('Selected','Выбрано')[index];write(str(path.relative_to(ROOT)),data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());data.pop('message.factorycraft.oil_remaining',None)
+ data['tooltip.factorycraft.pumpjack']=('Center directly above an oil point. 20 ticks/cycle; 100% yield = 100 mB/s, 300 FE/cycle. Speed/efficiency modules supported.','Центром строго над нефтяной точкой. 20 тактов/цикл; 100% = 100 мБ/с, 300 FE/цикл. Модули скорости и эффективности.')[index]
+ data['gui.factorycraft.pumpjack_rate']=('Yield-based cycles; minimum yield keeps producing.','Добыча по отдаче; минимальная отдача не истощается.')[index]
+ write(str(path.relative_to(ROOT)),data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());data['gui.factorycraft.select']=('Choose recipe','Выбрать рецепт')[index];write(str(path.relative_to(ROOT)),data)
+
+# Compact labels fit the standalone recipe browser at the smallest supported GUI width.
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());data['gui.factorycraft.recipe_auto']=('Auto','Авто')[index];data['gui.factorycraft.recipe_choose']=('Select','Выбрать')[index];write(str(path.relative_to(ROOT)),data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
+ for row,pair in enumerate([('Initial yield: %s%%','Начальная отдача: %s%%'),('Current yield: %s%%','Текущая отдача: %s%%'),('Normal speed: %s mB/s','Номинально: %s мБ/с')]):data[f'gui.factorycraft.oil_stat_{row}']=pair[index]
+ write(str(path.relative_to(ROOT)),data)

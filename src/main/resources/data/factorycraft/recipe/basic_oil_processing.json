@@ -4,13 +4,13 @@
   "fluids": [
     {
       "fluid": "factorycraft:crude_oil",
-      "amount": 100
+      "amount": 1000
     }
   ],
   "fluid_results": [
     {
       "id": "factorycraft:petroleum_gas",
-      "amount": 45
+      "amount": 450
     }
   ],
   "ticks": 100,
