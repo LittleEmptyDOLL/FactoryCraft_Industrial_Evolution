@@ -1,3 +1,82 @@
+# Fluid performance 0.24.1 — 11 November 2026 (Europe/Moscow)
+
+This compares the **0.24.0 segment runtime at e15bacd**, not the older 0.23 local-pressure model, against the optimized segment runtime. The hydraulic rates, 1000/16000/1000-mB capacities, 20-FE pump cost, pressure quotas, recipe amounts, filters, components, four circuit colors and schema-2 save format are unchanged.
+
+[Complete tables and run ranges](validation/fluid-v0241/comparison.md), [kernel driver](tools/FluidTopologyProfile.java), [table generator](tools/analyze_fluid_performance.py). Raw JSON/JSONL and JFR hotspot extracts are in validation/fluid-v0241. JFR recordings remain with their isolated worlds under run-benchmark; neither failed worlds nor old checkpoints were reset.
+
+## What profiling found
+
+Before optimization, JFR attributes about **56.7% of sampled kernel allocation pressure to TreeMap entries**, 23.0% to visited-map resize and 11.2% to copied arrays. CPU samples include comparator calls, tree balancing/first-entry/deletion and visited-map lookup/resize. The world adapter additionally fanned out member dirty/sync notifications at every full freeze/publish. Stable port fill/drain already avoided rebuilds; `externalChanged` was an unconditional structural path for local-buffer/registration notifications, not proof that every ordinary flow rebuilt the graph.
+
+The implementation now uses an indexed pending heap, sorted small neighbor arrays, build stamps, affected-build cancellation, an exact one-projection-per-member freeze, budgeted ordering/staging/cache preparation and one publication flag. Ordered traversal skips sorting. Compatible unfiltered true leaves and redundant in-pool edges update locally; ambiguous multi-neighbor placement retains the original conflict-boundary choice. Pump-boundary changes during staging cancel only affected prepared metadata; they do not expose partial pools. Counted chunk memberships and queued notifications avoid stale cache references and member-wide sync. Local prefix/bounds updates and unavoidable ownership freeze remain O(N); no hard CPU deadline is promised.
+
+## Independent kernel results
+
+Same Java 21, `-Xms256m -Xmx512m`, identical logical chain/reservoir layout, finite 8000-mB stock, three 1000-member warmups and three measured rounds at **100/1000/5000/10000**. Each round contains 10000 fill/drain pairs and 24 split/merge, leaf/tank add/remove and 16-member availability cycles. Operations include full settlement with a 256-unit advance budget; ledgers are checked after each lifecycle cycle. These are pure Java operations, **not Minecraft TPS**.
+
+Selected 10000-member results (median of per-round means):
+
+| Operation | 0.24.0 | 0.24.1 | Allocation old → new |
+|---|---:|---:|---:|
+| Add one terminal pipe | 2.197 ms | 0.0085 ms | 814.05 → 0.41 KiB |
+| Remove terminal pipe | 2.117 ms | 0.0871 ms | 813.71 → 0.06 KiB |
+| Add a leaf tank | 2.203 ms | 0.0028 ms | 814.05 → 0.41 KiB |
+| Complete split | 2.056 ms | 2.689 ms | 797.32 → 148.34 KiB |
+| Complete merge | 2.110 ms | 2.694 ms | 813.62 → 165.72 KiB |
+| Availability cycle | 4.413 ms | 5.360 ms | 1610.82 → 314.02 KiB |
+
+The tradeoff is explicit: complete split/merge work is about **28–31% slower** in this workload, although per-tick work is bounded and allocation is lower. Ten thousand content pairs cause **zero** connectivity rebuilds/freezes in regression tests; their measured CPU time is not claimed universally faster.
+
+Three single-trial creation samples were unstable (old median 7.279 ms, new 17.938 ms). A separate followup uses eight size-matched warmups and **30 creations per size**, retaining both data sets. At 10000 members its mean is **9.109 → 7.374 ms**, median **8.864 → 2.457 ms**, but p95 worsens **13.653 → 20.907 ms** and maximum **14.451 → 21.591 ms**. Do not interpret the best creation trial as a guaranteed improvement.
+
+## Actual dedicated Minecraft server
+
+New `runFluidBenchmarkServer` profile uses **10000 main pipes, eight attached main tanks, forty branch pipes, sixteen independent powered/circuit-controlled pump systems and a real finite oil → refinery → chemical plant → plastic line**. In total there are **10151 fluid owners: 10095 pipes, 40 tanks, 16 pumps**, plus real generator/pole/circuit/machine/part/container blocks. Zero clients are connected; world/block/capability work runs on the normal server thread at the Minecraft scheduler's 20-TPS target.
+
+The same marked, flat isolated layout and finite stocks run three cycles per world: A stable far-end source/consumer access; B sequential construction/demolition; C filled central split/replacement; D simultaneous independent systems/chemistry; E genuine probe-chunk unload/reload. An actual center chunk unload requires releasing its surrounding 5×5 forced-ticket neighborhood; surrounding chunks can be demoted too. Pinning belongs exclusively to this opt-in harness. The runtime does not acquire chunk tickets.
+
+Two independent baseline worlds/JVMs (`before-e`, `before-f`) and two final worlds/JVMs (`after-f`, `after-g`) are compared. Each has 360 stable ticks plus construction, split/merge, natural unload and reload windows. Times are server-tick work, including scripted block operations and real simulation; scheduler sleep, initial chunk pin/generation, explicit warmup GC, checkpoint save and JSON/JFR writing are separated. Thread allocation is sampled at tick boundaries; warmed whole-server heap is measured after GC. Independent phase samples are not pooled into invented percentiles.
+
+| Server metric (median per-run summary) | 0.24.0 | 0.24.1 | Change |
+|---|---:|---:|---:|
+| Stable mean | 2.784 ms | 3.043 ms | +9.3% |
+| Stable p95 | 5.236 ms | 6.139 ms | +17.3% |
+| Stable p99 | 13.982 ms | 13.337 ms | -4.6% |
+| Stable maximum | 43.673 ms | 60.310 ms | +38.1% |
+| Construction mean | 12.229 ms | 3.694 ms | -69.8% |
+| Construction p95 | 25.794 ms | 10.166 ms | -60.6% |
+| Construction p99 | 33.112 ms | 16.936 ms | -48.9% |
+| Construction maximum | 40.705 ms | 49.344 ms | +21.2% |
+| Split/merge-window mean | 5.908 ms | 3.577 ms | -39.4% |
+| Split/merge-window p99 | 26.703 ms | 15.070 ms | -43.6% |
+| Split/merge-window maximum | 31.054 ms | 27.301 ms | -12.1% |
+| Unload-window mean | 10.504 ms | 10.850 ms | +3.3% |
+| Reload-window mean | 9.283 ms | 4.166 ms | -55.1% |
+Observed construction means range **11.722–12.736 / 3.442–3.946 ms**; stable means **2.654–2.913 / 2.989–3.097 ms**. One final construction run peaks at **74.983 ms**. Unload-window means also worsen **10.504 → 10.850 ms**, with few unload samples and a 50.418-ms observed maximum. The previous final-source development pair (`after-d/e`, retained as `server-after-pre-boundary*.json`) had construction mean 3.399 ms but a 67.043-ms split-window maximum. Earlier stable means varied 2.456–2.968 ms. None is substituted for the newest final pair; averages and tails remain variable. Improved topology averages do **not** establish better stable TPS or uniformly improved tails; precise slow-frame attribution remains followup work.
+
+Whole-run rebuilds drop **923–929 → 69**, vertex visits **2.555–2.560 million → 404189–404228**, and BE sync requests **1110579–1110581 → 15081**. New finalization moves (about 4.48 million) are counted separately; they are not free or old-equivalent vertex visits. Segment-wide setUnsaved(true) requests drop **69949–69976 → 472–478** because already-dirty chunks and bulk member notifications are deduplicated; these are not disk writes or all chunk mutations. Actual JFR sent packets are **zero with zero clients**, so no multiplayer packet-reduction percentage is claimed.
+
+Construction thread allocation is **1605–1611 → 830–837 KiB/tick**; split windows **662–726 → 481–489 KiB/tick**; reload **722–993 → 215–285 KiB/tick**. Warmed whole-server heaps are about **270.2–270.6 / 269.2–269.3 MiB**: a small contextual difference, not a standalone retained-graph measurement.
+
+Each final main pool retains 500000 mB, the saved finite external source bank 964000 mB and collected consumer output 36000 mB: **1500000 mB exactly**. Auxiliary systems retain their **64000-mB** initial balance including collected output. Native machine recipes really consume finite inputs and produce plastic; saved baseline output chests contain 30 bars, final profiles assert actual positive output (31 bars in the final runs). Chemistry has recipe-specific volume conversions rather than a false cross-fluid mass invariant.
+
+Every successful fixture is verified in a **separate server JVM** against a SHA-256 of all canonical authoritative BE NBT, plus saved main ledger counters. The unchanged 0.24.0 `before-f` checkpoint also passes under the 0.24.1 runtime. Verification never refills, resets or regenerates a mismatched checkpoint.
+
+## Run and repeat
+
+```sh
+./gradlew build
+./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0241-local-a
+./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0241-local-a -PfluidMode=verify
+python tools/analyze_fluid_performance.py
+```
+
+Use a **new** validated fixture name for another measurement. The marked directory/loopback guards reject existing measure worlds or arbitrary directories; no reset task is invoked. Reports/JFR/checkpoint remain under that fixture. CI runs this separate profile and restart; existing full/MIXED/optional jobs remain independent. Regression criteria are exact ownership, nonstarving unrelated rebuild progress, bounded advance work and zero connectivity work for stable content operations, not processor-specific millisecond thresholds.
+
+Known failures are preserved: `before-a` was a Gradle configuration-cache closure problem; `before-b` placed a stem in the tank's physical footprint; `before-c` released only a center ticket that neighboring forced chunks still retained; `before-d` originally checkpointed in Pre before the final legitimate world tick. The corrected harness checkpoints in Post, and **new** `before-e/f` worlds pass. The first optimization changed which side claimed an empty conflicting bridge; multi-neighbor deferral restores the original policy and the unchanged existing GameTest passes. None of these worlds/checkpoints was reset to hide a failure.
+
+---
+
 # Current 0.20.0 fixture notes (10 November 2026, Europe/Moscow)
 
 Normal poles now have complete two-block structures and persisted explicit edges. The existing full plan remains 10000 belts / 1000 producers / 500 inserters / 250 generators; it adds 749 pole parts to the previous physical count: **45998 cells / 33249 parts / 1999 electrical nodes**. Full and mixed execution/reload are left to CI for this task; older timings below are historical and are not measurements of the new topology.

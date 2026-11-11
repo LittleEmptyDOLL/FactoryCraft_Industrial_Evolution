@@ -1,0 +1,132 @@
+{
+  "status": "PASS",
+  "nodes": 10000,
+  "clients": 0,
+  "plasticBars": 31,
+  "heapAfterWarmGc": 282340408,
+  "mainBalance": 500000,
+  "bank": 964000,
+  "delivered": 36000,
+  "auxConsumed": 57600,
+  "metrics": {
+    "visits": 404228,
+    "rebuilds": 69,
+    "chunkMarks": 478,
+    "rawChanges": 20021,
+    "pending": 0,
+    "finalizeWork": 4478306,
+    "aborts": 51,
+    "frozenMembers": 175180,
+    "localEdits": 10056
+  },
+  "syncRequests": 15081,
+  "stages": {
+    "build": {
+      "count": 157,
+      "meanMs": 23.724455242038218,
+      "p50Ms": 8.279329,
+      "p95Ms": 67.123721,
+      "p99Ms": 186.7095,
+      "maxMs": 378.861795,
+      "over50Ms": 23,
+      "allocatedBytes": 377169696
+    },
+    "warm": {
+      "count": 121,
+      "meanMs": 7.697460826446281,
+      "p50Ms": 3.064083,
+      "p95Ms": 14.670123,
+      "p99Ms": 39.210085,
+      "maxMs": 305.035276,
+      "over50Ms": 1,
+      "allocatedBytes": 156926856
+    },
+    "stable": {
+      "count": 360,
+      "meanMs": 3.097343533333333,
+      "p50Ms": 2.401783,
+      "p95Ms": 6.031096,
+      "p99Ms": 12.337864,
+      "maxMs": 69.332786,
+      "over50Ms": 1,
+      "allocatedBytes": 190521296
+    },
+    "construction": {
+      "count": 240,
+      "meanMs": 3.9459384083333333,
+      "p50Ms": 2.464892,
+      "p95Ms": 10.314526,
+      "p99Ms": 19.475729,
+      "maxMs": 74.982747,
+      "over50Ms": 1,
+      "allocatedBytes": 205805240
+    },
+    "settle-cut": {
+      "count": 3,
+      "meanMs": 10.978021333333334,
+      "p50Ms": 12.145668,
+      "p95Ms": 12.260927,
+      "p99Ms": 12.260927,
+      "maxMs": 12.260927,
+      "over50Ms": 0,
+      "allocatedBytes": 675144
+    },
+    "split-merge": {
+      "count": 216,
+      "meanMs": 3.687264152777778,
+      "p50Ms": 2.54933,
+      "p95Ms": 8.676185,
+      "p99Ms": 15.822649,
+      "maxMs": 36.362352,
+      "over50Ms": 0,
+      "allocatedBytes": 108051008
+    },
+    "settle-unload": {
+      "count": 15,
+      "meanMs": 11.342188466666666,
+      "p50Ms": 8.817504,
+      "p95Ms": 37.136518,
+      "p99Ms": 37.136518,
+      "maxMs": 37.136518,
+      "over50Ms": 0,
+      "allocatedBytes": 19287176
+    },
+    "unload": {
+      "count": 6,
+      "meanMs": 13.4737995,
+      "p50Ms": 6.508381,
+      "p95Ms": 50.418395,
+      "p99Ms": 50.418395,
+      "maxMs": 50.418395,
+      "over50Ms": 1,
+      "allocatedBytes": 4358680
+    },
+    "reload": {
+      "count": 57,
+      "meanMs": 4.42433452631579,
+      "p50Ms": 3.471526,
+      "p95Ms": 10.423049,
+      "p99Ms": 13.192201,
+      "maxMs": 13.192201,
+      "over50Ms": 0,
+      "allocatedBytes": 16634232
+    },
+    "finish": {
+      "count": 1,
+      "meanMs": 3.332344,
+      "p50Ms": 3.332344,
+      "p95Ms": 3.332344,
+      "p99Ms": 3.332344,
+      "maxMs": 3.332344,
+      "over50Ms": 0,
+      "allocatedBytes": 105400
+    }
+  },
+  "saveMs": 306.334481,
+  "packets": {
+    "sentPackets": 0,
+    "sentEncodedBytes": 0,
+    "receivedPackets": 0,
+    "receivedEncodedBytes": 0
+  }
+}

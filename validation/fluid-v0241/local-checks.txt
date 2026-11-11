@@ -1,0 +1,71 @@
+FactoryCraft 0.24.1 — local checks, 11 November 2026 (Europe/Moscow)
+Base e15bacd92ea464be2d6a69aee32031040b385ff3; Java 21.0.13 / MC 1.21.1 / NeoForge 21.1.252
+
+PipelineNetwork baseline SHA256 96af7fc209d8f1c595c7b3b325a8b0e2a7059ef6f5a06fbd328131f08784d63d
+FluidCell baseline SHA256 e9e391307f318b5e79c90f845ab456aacdce46117c4d8e788f0ea2be84d4bf47
+FluidUnits baseline SHA256 a13efcda809031c6f576da6e18016b47b94892751fe4ab150b6938dc5dcfba22
+
+
+v0241-boundary-build.log
+BUILD SUCCESSFUL in 20s
+
+v0241-guard-native.log
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[072adc0b-93a3-4c22-a617-fd44b11cd636, 1a003c12-e6d8-4547-9cbd-898bd02aed7b, 27852018-0286-43c0-8f7e-090dbd380c64, e13bf034-bd36-4e98-9a8a-9693789f0365]
+[14:10:02] [Server thread/INFO] [minecraft/GameTestServer]: ========= 381 GAME TESTS COMPLETE IN 43.76 s ======================
+[14:10:02] [Server thread/INFO] [minecraft/GameTestServer]: All 381 required tests passed :)
+BUILD SUCCESSFUL in 1m 1s
+
+v0241-guard-restart.log
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[072adc0b-93a3-4c22-a617-fd44b11cd636, 1a003c12-e6d8-4547-9cbd-898bd02aed7b, 27852018-0286-43c0-8f7e-090dbd380c64, e13bf034-bd36-4e98-9a8a-9693789f0365]
+[14:11:07] [Server thread/INFO] [minecraft/GameTestServer]: ========= 381 GAME TESTS COMPLETE IN 46.14 s ======================
+[14:11:07] [Server thread/INFO] [minecraft/GameTestServer]: All 381 required tests passed :)
+BUILD SUCCESSFUL in 1m 5s
+
+v0241-release-native.log
+FACTORYCRAFT_FLUID_DISK: SEEDED 8000 mB with components across four chunks
+FACTORYCRAFT_SEGMENT_DISK: SEEDED 3943 mB grade=24 owners=[07c737a0-7d44-4f5c-8a9e-cee93d98fd3a, 42c845f8-66ea-4247-8896-0062ff6d1e9b, 9461664e-971c-479e-83c6-82683831eee8, fa482040-b6a0-4429-83af-c7a1ae267916]
+[14:22:22] [Server thread/INFO] [minecraft/GameTestServer]: ========= 381 GAME TESTS COMPLETE IN 56.75 s ======================
+[14:22:22] [Server thread/INFO] [minecraft/GameTestServer]: All 381 required tests passed :)
+BUILD SUCCESSFUL in 1m 16s
+
+v0241-boundary-native.log
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[07c737a0-7d44-4f5c-8a9e-cee93d98fd3a, 42c845f8-66ea-4247-8896-0062ff6d1e9b, 9461664e-971c-479e-83c6-82683831eee8, fa482040-b6a0-4429-83af-c7a1ae267916]
+[14:55:09] [Server thread/INFO] [minecraft/GameTestServer]: ========= 381 GAME TESTS COMPLETE IN 47.97 s ======================
+[14:55:09] [Server thread/INFO] [minecraft/GameTestServer]: All 381 required tests passed :)
+BUILD SUCCESSFUL in 1m 8s
+
+JUnit XML {"tests": 204, "failures": 0, "errors": 0, "skipped": 0}
+
+fluids-v0241-before-e
+status=PASS; separate-JVM checkpoint=2d45cf1cfea5bcc361d0e04bbd00dfd5442656f6917e25a502b33f72b2d47f87
+main bank/storage/collected=(966940, 497060, 36000)
+clients=0; actual sent packets=0
+
+fluids-v0241-before-f
+status=PASS; separate-JVM checkpoint=a8a8a25eab876f5ef95b13bda4e3301c2da578536e5dd7e09724246080b952b0
+main bank/storage/collected=(966940, 497060, 36000)
+clients=0; actual sent packets=0
+
+fluids-v0241-after-f
+status=PASS; separate-JVM checkpoint=2405d71530da79c0641c7861c88195f0915c250ca4dddacf8c681aafbf664f6c
+main bank/storage/collected=(964000, 500000, 36000)
+clients=0; actual sent packets=0
+
+fluids-v0241-after-g
+status=PASS; separate-JVM checkpoint=828424d5e3ae8709798a74c1cb05a08d2cd8bfe46280be6093eb8205ce940c9e
+main bank/storage/collected=(964000, 500000, 36000)
+clients=0; actual sent packets=0
+
+v0241-upgrade-verify.log PASS: unchanged 0.24.0 before-f checkpoint under 0.24.1.
+Native cases: all old 380 remain required, plus 1 stable-native-content regression. All thirty finite production chains remain.
+Kernel: 100/1000/5000/10000, 3 measured rounds; 30-creation followup per size, no timing pass threshold.
+Raw JSON tables preserve regressions: stable mean and some construction/unload/create tails worsen. Previous after-d/e pair is retained as pre-boundary evidence. No unconditional TPS claim.
+Full factory/MIXED/optional CI unrun locally. Real fluid profile added independently to CI. No new client visual/multiplayer test claimed.
+
+Final source SHA256
+410e6613cbb2bd4d9fde2fee2bc6f226a51c541d8fae697a0fc9229b1eed96c0  src/main/java/factorycraft/simulation/fluids/PipelineNetwork.java
+4b30213abf33a94c9482dc9eb284ef0105c4065e16d5cc5ddbb62f6125fb1096  src/main/java/factorycraft/fluids/FluidSimulation.java
+c69dbd70839a92d40cc852fb0e36fa7d773d6e2cb9b3e44fe4511d8228b9f238  src/main/java/factorycraft/diagnostics/FluidPerformanceBenchmark.java

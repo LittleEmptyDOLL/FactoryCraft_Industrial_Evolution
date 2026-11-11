@@ -42,10 +42,10 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 // Named diagnostic runs preserve previous failed worlds instead of resetting their evidence.
-def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0240')
-if (!(gameTestFixture ==~ /v0240(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.24 GameTest fixture name.')
+def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0241')
+if (!(gameTestFixture ==~ /v0241(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.24.1 GameTest fixture name.')
 def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
-def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0240')
+def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0241')
 if (!(benchmarkProfile in ['full', 'smoke', 'mixed']) || !(benchmarkFixtureName ==~ /${benchmarkProfile}(?:-[a-z0-9]+)*/)) throw new GradleException('Fixture must be a simple profile[-name] child of run-benchmark.')
 def benchmarkDir = layout.projectDirectory.dir('run-benchmark/' + benchmarkFixtureName).asFile
 def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
@@ -97,6 +97,17 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'factorycraft.benchmark.profile', providers.gradleProperty('benchmarkProfile').getOrElse('full')
             systemProperty 'factorycraft.benchmark.mode', providers.gradleProperty('benchmarkMode').getOrElse('measure')
+            jvmArgument '-Xmx2G'
+        }
+
+        fluidBenchmarkServer {
+            server()
+            gameDirectory = project.file('run-benchmark/' + providers.gradleProperty('fluidFixture').getOrElse('fluids-v0241-local'))
+            programArgument '--nogui'
+            systemProperty 'factorycraft.fluidBenchmark.fixture', providers.gradleProperty('fluidFixture').getOrElse('fluids-v0241-local')
+            systemProperty 'factorycraft.fluidBenchmark.mode', providers.gradleProperty('fluidMode').getOrElse('measure')
+            systemProperty 'factorycraft.fluidBenchmark.size', providers.gradleProperty('fluidSize').getOrElse('10000')
+            jvmArgument '-Xms512m'
             jvmArgument '-Xmx2G'
         }
 
@@ -298,4 +309,28 @@ tasks.register('resetBenchmarkWorld', Delete) {
         }
     }
     delete benchmarkDir
+}
+
+def fluidFixture = providers.gradleProperty('fluidFixture').getOrElse('fluids-v0241-local')
+if (!(fluidFixture ==~ /fluids-v0241-[a-z0-9-]+/)) throw new GradleException('Invalid isolated fluid fixture.')
+def fluidDir = project.file('run-benchmark/' + fluidFixture)
+def fluidMode = providers.gradleProperty('fluidMode').getOrElse('measure')
+tasks.register('prepareFluidBenchmark') {
+    doLast {
+        def marker = new File(fluidDir, 'fluid-benchmark.marker')
+        if (java.nio.file.Files.isSymbolicLink(fluidDir.toPath()) || fluidDir.exists() && fluidDir.list().length > 0 && (!marker.isFile() || marker.text != 'FactoryCraft fluid performance v1\n')) throw new GradleException('Not an isolated fluid benchmark.')
+        fluidDir.mkdirs()
+        marker.text = 'FactoryCraft fluid performance v1\n'
+        new File(fluidDir, 'eula.txt').text = 'eula=true\n'
+        def properties = new File(fluidDir, 'server.properties')
+        if (!properties.exists()) properties.text = 'level-name=world\nlevel-type=minecraft:flat\ngenerator-settings={"layers":[{"block":"minecraft:bedrock","height":1}],"biome":"minecraft:the_void"}\ngenerate-structures=false\nonline-mode=false\nserver-ip=127.0.0.1\nserver-port=25576\nspawn-protection=0\nspawn-monsters=false\nspawn-animals=false\nview-distance=2\nsimulation-distance=2\nmax-tick-time=120000\n'
+        if (fluidMode == 'measure' && new File(fluidDir,'world/level.dat').exists()) throw new GradleException('Existing fluid world must not be reset/reseeded; choose a new fixture or verify.')
+    }
+}
+tasks.named('runFluidBenchmarkServer') {
+    dependsOn 'prepareFluidBenchmark'
+    doLast {
+        def report = new File(fluidDir,'reports/' + fluidMode + '.json')
+        if (!report.isFile() || new groovy.json.JsonSlurper().parse(report).status != 'PASS') throw new GradleException('Fluid workload failed; preserve evidence and inspect report.')
+    }
 }

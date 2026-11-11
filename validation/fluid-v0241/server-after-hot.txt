@@ -1,0 +1,30 @@
+
+                                          Java Methods that Executes the Most
+
+Method                                                                                                  Samples Percent
+------------------------------------------------------------------------------------------------------- ------- -------
+net.minecraft.server.level.ChunkHolder.getTickingChunk()                                                     13   8.61%
+net.minecraft.server.level.ChunkMap.processUnloads(BooleanSupplier)                                          13   8.61%
+net.minecraft.world.level.chunk.PalettedContainer.swapPalette(int[], IntUnaryOperator)                        9   5.96%
+factorycraft.simulation.fluids.PipelineNetwork.attachLeaf(PipelineNetwork$Node, PipelineNetwork$Node)         6   3.97%
+java.util.HashMap$HashIterator.<init>(HashMap)                                                                6   3.97%
+net.minecraft.server.level.ServerChunkCache.tickChunks()                                                      5   3.31%
+java.util.HashMap$HashIterator.nextNode()                                                                     4   2.65%
+factorycraft.simulation.fluids.PipelineNetwork$Build.sortStep()                                               4   2.65%
+net.minecraft.server.level.ChunkMap.saveChunkIfNeeded(ChunkHolder)                                            4   2.65%
+net.minecraft.core.component.PatchedDataComponentMap.equals(Object)                                           3   1.99%
+java.util.concurrent.CompletableFuture.getNow(Object)                                                         3   1.99%
+net.minecraft.server.MinecraftServer.runServer()                                                              3   1.99%
+java.util.HashMap.getNode(Object)                                                                             3   1.99%
+factorycraft.simulation.fluids.PipelineNetwork.removeLeaf(PipelineNetwork$Node)                               3   1.99%
+java.lang.Math.toIntExact(long)                                                                               2   1.32%
+net.minecraft.server.level.GenerationChunkHolder.getChunkIfPresentUnchecked(ChunkStatus)                      2   1.32%
+it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap.get(long)                                                  2   1.32%
+it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap.get(Object)                                            2   1.32%
+java.util.IdentityHashMap.get(Object)                                                                         2   1.32%
+net.minecraft.server.level.ServerChunkCache.getChunkNow(int, int)                                             2   1.32%
+java.util.stream.ReferencePipeline.collect(Collector)                                                         1   0.66%
+net.minecraft.core.MappedRegistry.getKey(Object)                                                              1   0.66%
+factorycraft.fluids.FluidSimulation$State.markChunks(FluidSimulation$GroupInfo)                               1   0.66%
+net.minecraft.core.UUIDUtil.uuidToIntArray(UUID)                                                              1   0.66%
+net.neoforged.neoforge.common.CommonHooks.validateComponent(Object)                                           1   0.66%

@@ -286,3 +286,18 @@ Implemented the single passive pipe/tank pool, stable checkpoint shares, guarded
 Final evidence: build with **196 JUnit**, **380 required native cases twice in separate JVMs** at `v0240-finalguard`; all thirty restored finite production chains remain active. Four-chunk **3943-mB grade-24** shares/UUIDs restore exactly. Actual client waterworks, survival bucket/vertical branch, conflict warning, pump/menu/highlight and separate-client-JVM reload were checked. Offline client ledger is **22400 mB across fifteen unchanged owners**. Resource regeneration is byte-identical; raw bounded old/new results and limitations are in VALIDATION.md / validation/fluid-segments-v0240-kernel.txt. Full/MIXED/optional CI remains a publication check, not a locally claimed pass.
 
 Next work **only after a new user request**: profile very large in-world pipe/pump topologies and bound atomic freeze/final-commit spikes without weakening independent chunk ownership; investigate conservative unfinished-build restarts under unrelated construction churn. The researched two-point construction design and separate lift-model followup are recorded in docs/design/construction-followup.md, with no implementation in this release. Do not automatically move to machines, progression, trains, robots or Space Age.
+
+## Active 0.24.1 — fluid performance
+
+1. Baseline unchanged 0.24.0 kernel at 100/1000/5000/10000 and opt-in dedicated pipe/tank/pump/recipe/copper/circuit workload; preserve raw samples/JFR and independently saved fixture.
+2. Use profiles to target needless invalidation/allocation and unbounded finalization; keep exact physical checkpoint projections and unavailable rebuild state.
+3. Regression-test work bounds/no rebuild on 10000 content operations, component conflicts, unrelated topology churn, partial finalize/save/unload, and all existing required native chains/restart.
+4. Repeat comparable kernel/server workloads, document all tails/tradeoffs, update architecture/benchmark/validation, publish main. No following roadmap task starts automatically.
+
+### 0.24.1 delivery / handoff
+
+Implemented content-only notifications; conservative local leaf/in-component-edge edits; indexed pending heap and small sorted edge arrays; build stamps and affected-only cancellation (including staged boundary metadata); one-division-per-member exact freeze; ordered-traversal sort skip, budgeted merge moves/staging/cache preparation and one publication flag; counted chunk membership, dirty-flag and pump/sync deduplication. Fluid rates, FE, recipes, components, physical ports and schema-2 NBT remain unchanged. Attached raw cells are inert; owned() is the sole save view.
+
+Evidence: **204 JUnit / 381 required native cases**, including all old 380 and thirty finite production chains. Warm kernel profiles cover 100/1000/5000/10000 and thirty-creation followups. Two real 10000-pipe baseline worlds and two final worlds run three event cycles, sixteen real pumps, finite chemistry and separate-process full-NBT/ledger verification; an unchanged 0.24.0 checkpoint also verifies with 0.24.1. Raw measurements and honest regressions are in BENCHMARKS.md, VALIDATION.md and validation/fluid-v0241. Full/MIXED/optional CI stays independent.
+
+**Next only on a new user request:** attribute the observed 60–75-ms stable/construction tails with timestamped slow-tick/JFR correlation; reduce total general split/merge CPU and atomic O(N) freeze/prefix costs without weakening independent chunk ownership. Stable mean and some tails regressed, so do not claim an unconditional TPS improvement. No building tool, lift art, progression, new machines, robots/trains or Space Age work starts automatically.

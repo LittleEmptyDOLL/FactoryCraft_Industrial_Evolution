@@ -1,0 +1,30 @@
+
+                                                   Allocation by Site
+
+Method                                                                                              Allocation Pressure
+--------------------------------------------------------------------------------------------------- -------------------
+java.util.TreeMap.addEntry(Object, Object, TreeMap$Entry, boolean)                                               56.68%
+java.util.IdentityHashMap.resize(int)                                                                            22.95%
+java.util.Arrays.copyOf(Object[], int)                                                                           11.20%
+java.util.concurrent.ConcurrentHashMap.initTable()                                                                2.39%
+java.util.TreeMap.keyIterator()                                                                                   2.15%
+java.util.Arrays.copyOf(Object[], int, Class)                                                                     0.85%
+factorycraft.simulation.fluids.PipelineNetwork$Node.<init>(...)                                                   0.41%
+java.util.TreeMap.addEntryToEmptyMap(Object, Object)                                                              0.39%
+java.lang.reflect.Array.newArray(Class, int)                                                                      0.36%
+factorycraft.simulation.fluids.PipelineNetwork.add(PipelineNetwork$Site, FluidCell)                               0.35%
+java.lang.Long.valueOf(long)                                                                                      0.35%
+FluidTopologyProfile$Fixture.<init>(int)                                                                          0.30%
+java.util.IdentityHashMap.init(int)                                                                               0.29%
+java.util.TreeSet.<init>(Comparator)                                                                              0.28%
+java.lang.invoke.DirectMethodHandle.allocateInstance(Object)                                                      0.17%
+factorycraft.simulation.fluids.PipelineNetwork$Segment.<init>(PipelineNetwork)                                    0.13%
+java.util.stream.ReferencePipeline.mapToLong(ToLongFunction)                                                      0.12%
+java.util.Formatter.parse(String)                                                                                 0.09%
+java.util.Arrays.copyOfRangeByte(byte[], int, int)                                                                0.08%
+java.lang.Long.toString(long)                                                                                     0.08%
+java.util.TimSort.<init>(Object[], Comparator, Object[], int, int)                                                0.07%
+java.util.stream.StreamSupport.stream(Spliterator, boolean)                                                       0.06%
+factorycraft.simulation.fluids.PipelineNetwork$Build.<init>(PipelineNetwork, PipelineNetwork$Node)                0.06%
+jdk.internal.org.objectweb.asm.SymbolTable.<init>(ClassWriter)                                                    0.06%
+java.util.TimSort.sort(Object[], int, int, Comparator, Object[], int, int)                                        0.05%

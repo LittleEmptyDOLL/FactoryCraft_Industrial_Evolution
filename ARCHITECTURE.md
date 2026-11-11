@@ -1,4 +1,4 @@
-# Architecture decisions — 0.24.0 (assembly/parts schema 4; fluid schema 2)
+# Architecture decisions — 0.24.1 (assembly/parts schema 4; fluid schema 2)
 
 ## Authority and persistence
 
@@ -201,3 +201,11 @@ Current hand schema is 3; old Actuator/filter-device data are not migrated. Asse
 `PipelineNetwork` owns one component-sensitive long pool per compatible loaded pipe/tank component. Passive edges are topology only. `FluidSimulation` adapts canonical loaded physical ports, chunk-indexed availability, pump work and persisted UUIDs. Each member serializes only a lazy capacity-prefix share; materialize before retiring/splitting/unloading/packing a pool. Chunk save arithmetic and independent-JVM restoration must conserve the exact sum. Ordinary intake/debit never walks members or recalculates connectivity; cached affected chunks are dirtied once per tick.
 
 `BoundaryFluidCell` provides nonowning physical pressure quotas with separate input/output fractional credit, simulation and shared pump paid-tick guards. Canonical pool aliases cannot transfer to themselves. Machine recipe cells remain independent; assembly-4 BOTH/sided channels and finite stoichiometric commits remain intact. Segment extent is inclusive X/Z≤320; Y follows world limits. Pending reconstruction closes transfer and reports unknown circuits. Known overlong contents remain inspectable, not transferable. See FLUIDS.md for formulas, capacities, manual container adaptation and orderly-save versus crash-journal limits.
+
+## Fluid performance invariants (0.24.1)
+
+The pool/checkpoint ownership model and schema-2 NBT are unchanged. `Node.raw` is authoritative only without a published segment; attached raw bytes are inert, and every serialization path uses `owned()`. Budgeted traversal/sorting/staging may assign unpublished group references, but those references expose no pool capability. One valid flag publishes all prepared members together. Aborted staging retains exact raw owners and cleans references incrementally before retry. This avoids an unbounded member-publication loop without pretending staged totals are a second owner.
+
+The deterministic pending index is an allocation-free indexed heap; bounded-degree neighbor arrays remain sorted, and per-build stamps replace visited identity maps. Only touches to the current build's discovered boundary cancel it. Already monotonic membership needs no sort; otherwise stable bottom-up merge moves use the work budget. Exact freeze remains eager at unload/structural ownership boundaries, with one prefix projection per member.
+
+Known true leaves and redundant in-component edges have conservative local paths. Ambiguous multi-neighbor insertions retain the old canonical conflict choice. Local prefix/bounds updates remain atomic O(N), while incompatible/filter/overflow/overlong cases retain general rebuild quarantine. Cache preparation/detachment updates counted physical chunk references; pool changes dirty cached chunks and wake adjacent pumps without per-member sync fanout. See FLUIDS.md for invariants and BENCHMARKS.md for measured improvements and regressions.

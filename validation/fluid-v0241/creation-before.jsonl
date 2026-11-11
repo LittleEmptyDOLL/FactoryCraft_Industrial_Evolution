@@ -1,0 +1,4 @@
+{"label":"0.24.0","nodes":100,"op":"create_repeated","samples":30,"mean_ns":549834.1,"median_ns":504963,"p95_ns":846113,"p99_ns":897530,"max_ns":897530,"allocation_mean_bytes":65514.4,"rebuilds":30,"visits":3000}
+{"label":"0.24.0","nodes":1000,"op":"create_repeated","samples":30,"mean_ns":2202498.2,"median_ns":1499348,"p95_ns":4226539,"p99_ns":7068550,"max_ns":7068550,"allocation_mean_bytes":618637.1,"rebuilds":30,"visits":30000}
+{"label":"0.24.0","nodes":5000,"op":"create_repeated","samples":30,"mean_ns":15082335.7,"median_ns":14006015,"p95_ns":19626213,"p99_ns":19794735,"max_ns":19794735,"allocation_mean_bytes":2992168.5,"rebuilds":30,"visits":150000}
+{"label":"0.24.0","nodes":10000,"op":"create_repeated","samples":30,"mean_ns":9109315.2,"median_ns":8864110,"p95_ns":13652908,"p99_ns":14451269,"max_ns":14451269,"allocation_mean_bytes":5876029.1,"rebuilds":30,"visits":300000}

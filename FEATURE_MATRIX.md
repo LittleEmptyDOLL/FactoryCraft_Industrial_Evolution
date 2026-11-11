@@ -1,4 +1,6 @@
-# Feature matrix — 0.24.0
+# Feature matrix — 0.24.1
+
+0.24.1 optimizes existing fluids: no connectivity rebuild on content notifications, local true-leaf edits, indexed pending work, touched-build cancellation, budgeted ordering/publication preparation and cached chunk/update deduplication. Rates/recipes/schema stay 0.24.0. A real 10000-pipe server profile/restart and 100/1000/5000/10000 kernel profiles are included; improvements and tail regressions are separated in BENCHMARKS.md.
 
 0.24.0 replaces runtime passive equalization with shared component-sensitive pipe/tank segments, exact checkpoint-share splits, 320×320 extent, physical pressure quotas, powered directional pumps and segment UI/circuit reads. Recipes/FE/assembly-4 ports and required finite chains remain. See FLUIDS.md and VALIDATION.md.
 

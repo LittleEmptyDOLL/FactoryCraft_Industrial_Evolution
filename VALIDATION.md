@@ -1,3 +1,41 @@
+# Validation — 0.24.1 fluid performance (11 November 2026, Europe/Moscow)
+
+Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252. Baseline is the unchanged **0.24.0 segment kernel at e15bacd**, instrumented only for measurements; this is not a new hydraulic or recipe model. Complete results/ranges: [BENCHMARKS.md](BENCHMARKS.md), [generated comparison](validation/fluid-v0241/comparison.md), [local-check extract](validation/fluid-v0241/local-checks.txt).
+
+* `./gradlew build`: **204 JUnit**, zero failures/errors/skips. Eight optimization regressions cover 10000 stable content pairs without visits/rebuilds/freezes, bounded finalize work and no partial ports, progress during unrelated topology churn, abort and snapshot during unpublished staging, exact large integer projections, redundant edges and true-leaf resource ownership and changed consumer metadata during staging. Existing 196 tests remain.
+* `./gradlew runGameTestServer -PgameTestFixture=v0241-final`: **381 required native cases pass**, retaining all **380** 0.24.0 cases and all thirty restored production scenarios. A new real-world test performs 10000 protected fill/drain pairs plus content notifications and verifies unchanged topology counters and exact 7000-mB balance. Earlier guarded runs also pass 381 cases twice in separate JVMs; their completed/failed arenas are retained in a byte-verified archive, not reseeded.
+* Existing native guarantees remain: water/steam/FE, finite refining/plastic/acid/batteries/science, modules, physical BOTH/distinct channels/casing sides, component identities, unknown circuit readings, powered directional pumps, portable filled devices, owner UUIDs and four-chunk saved fixtures. Sorted staging preserves the original signed packed-position share order and schema-2 native FluidStacks. Four circuit colors and copper energy are unchanged.
+
+## Actual server and persistence
+
+`runFluidBenchmarkServer` is an explicit marked-directory/loopback-only profile with **10000 main pipes, eight attached tanks and 16 independent real powered/circuit-controlled pump systems**, plus finite oil/refinery/chemical production. The scene has 10151 fluid owners (10095 pipes, forty tanks, sixteen pumps) and real existing machine/pole/part/container blocks. No destination products or FE are injected. Initial water and a finite external diagnostic source bank are declared inputs; every consumer debit and carried filled-leaf share is included in the ledger.
+
+Each world runs three stable/construction/split/reload cycles and a genuine center-chunk unload after releasing the surrounding 5×5 ticket neighborhood. Runtime factory code acquires no tickets. Main source + storage + collected output is **1500000 mB exactly** at every audit, auxiliary water **64000 mB** including consumption. Final worlds store 500000 mB in the main network, 964000 in the saved diagnostic source bank and 36000 in collected output; auxiliary consumers have taken 57600 mB. The actual finite petrochemical output chests contain **31 plastic bars** in final runs; baseline saved chests contain 30. Recipe-based chemical volume changes are not confused with conservation of a single fluid identity.
+
+Two independent baseline worlds (`before-e/f`) and two final worlds (`after-f/g`) use the same script/settings/heap limits. Every one passes a separate-process restart against the **SHA-256 of all authoritative block-entity NBT**. The final verifier also validates the saved main ledger counters; the 0.24.0 `before-f` checkpoint passes unchanged under the new runtime. No failed hash is replaced by a newly computed expected value. Baseline single-chunk ticket and Pre-phase checkpoint mistakes are retained as failed experiments, not counted as successful restarts.
+
+The profile includes JFR CPU/allocation/GC/packet events, per-scenario tick quantiles/thread allocations, post-warmup-GC whole-server heap, graph counters and BE sync requests. There are **zero connected clients and zero actual sent packets**. Sync requests and segment dirty requests are reported separately from actual packet/disk counts. No new rendering/UI or multiplayer visual claim is made in this optimization task; the existing menu/inspection logic remains server-derived.
+
+## Measured result and limits
+
+Construction-window mean is **12.229 → 3.694 ms**, p95 **25.794 → 10.166 ms**, p99 **33.112 → 16.936 ms**. Whole-run rebuilds **923–929 → 69**, graph visits about **2.56 million → 0.40 million**, BE sync requests **1.11 million → 15081**. Construction allocation **1605–1611 → 830–837 KiB/tick**. New sorting/staging/cleanup work is separately counted; reduced vertex visits alone do not describe all CPU work.
+
+**Regressions are explicit:** stable mean **2.784 → 3.043 ms (+9.3%)**, stable maximum **43.673 → 60.310 ms (+38.1%)**, construction-window maximum **40.705 → 49.344 ms (+21.2%)**, with an individual final peak of **74.983 ms**. Unload-window mean also increases 3.3%; its few samples do not support a reliable tail improvement. The previous development pair had lower construction mean but worse split tails; all raw runs remain, rather than choosing the best pair. Stable p99 is slightly lower, but improved stable TPS or a universal tail improvement is not established. Complete kernel split/merge time is roughly **28–31% longer** despite lower allocation and budgeted per-tick completion. Ordered creation is variable: the additional thirty-trial run lowers mean 9.109 → 7.374 ms but worsens p95 13.653 → 20.907 ms. Original and repeated results are both retained; no best-run selection is used.
+
+Compared kernel sizes: **100/1000/5000/10000**, warmed JVMs, three rounds per size and 24 lifecycle cycles; an additional thirty-creation run per size addresses observed variance. Kernel and actual Minecraft timings are never mixed. Correctness/work-bound tests have no hardware-specific time threshold.
+
+Atomic freeze and local prefix/extent edits remain O(N); general rebuilds can take more ticks while safely unavailable. Worst-frame attribution and further total split/merge CPU optimization remain followup, not completed claims. No stronger cross-region abrupt-crash journal is introduced. Full 10000/1000/500 factory, MIXED and optional FTB/EMI/JEI/Jade jobs are left to GitHub Actions; a new independent fluid server/restart job is added. CI completion is not claimed locally.
+
+## Failure integrity
+
+All initial diagnostic failures are preserved. `before-a`: Gradle configuration-cache closure captured the script; corrected by configuration-time providers. `before-b`: temporary stem overlapped the tank's actual descriptor footprint; corrected only in a new world. `before-c`: neighboring forced tickets kept the probe chunk loaded; the new fixture releases its 5×5 ticket neighborhood. `before-d`: checkpoint was written during Pre, then the server performed its legitimate final world tick; checkpointing moved to Post in new `before-e/f` fixtures. None of those worlds or expected hashes was reset/refilled.
+
+The first optimized native run passed 380/381: an empty multi-neighbor bridge attached to its first visited neighbor, changing the old deterministic conflicting-component partition. The existing test was retained unchanged. Multi-neighbor connections now defer grouping, restoring the old choice and exact quantities; all 381 cases pass. Sorted membership only skips work after observing monotonic order, not by assuming arbitrary BFS order.
+
+Historical fixture archives remain under /workspace/work/fluid-v0241-evidence, including previous completed v0240-finalguard and the failed/successful intermediate v0241-checked arenas. They were removed from active directories only after lossless tar creation and byte comparison, for disk space. New final fixtures are separate; ordinary user worlds are untouched.
+
+---
+
 # Validation — 0.24.0 fluid segments (11 November 2026, UTC)
 
 Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252. Scope: shared passive pipe/tank segments, per-boundary pressure, directional powered pumps, exact checkpoint shares, direct circuit/physical machine-port integration and segment diagnostics. Recipes, FE/work costs and item transport are retained. Previous reports below are historical.

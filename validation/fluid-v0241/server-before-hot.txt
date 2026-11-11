@@ -1,0 +1,30 @@
+
+                                          Java Methods that Executes the Most
+
+Method                                                                                                  Samples Percent
+------------------------------------------------------------------------------------------------------- ------- -------
+net.minecraft.server.level.ServerChunkCache.getChunkNow(int, int)                                            44  13.46%
+factorycraft.fluids.FluidSimulation$State.changed(PipelineNetwork$Segment)                                   18   5.50%
+net.minecraft.server.level.ServerLevel.sendBlockUpdated(BlockPos, BlockState, BlockState, int)               14   4.28%
+java.util.HashMap$HashIterator.nextNode()                                                                    13   3.98%
+net.minecraft.server.level.ChunkHolder.getTickingChunk()                                                     12   3.67%
+factorycraft.simulation.fluids.FluidCell.restore(Object, int)                                                12   3.67%
+java.util.TreeMap.getFirstEntry()                                                                            10   3.06%
+java.util.Comparator.lambda$comparingLong$6043328a$1(ToLongFunction, Object, Object)                          9   2.75%
+factorycraft.simulation.fluids.PipelineNetwork$$Lambda.0x00007fe23cfab408.applyAsLong(Object)                 8   2.45%
+java.util.HashMap$HashIterator.<init>(HashMap)                                                                8   2.45%
+net.minecraft.world.level.chunk.PalettedContainer.swapPalette(int[], IntUnaryOperator)                        8   2.45%
+factorycraft.simulation.fluids.PipelineNetwork.invalidate(PipelineNetwork$Segment)                            7   2.14%
+java.util.TreeMap.put(Object, Object, boolean)                                                                6   1.83%
+net.minecraft.server.level.ChunkMap.processUnloads(BooleanSupplier)                                           6   1.83%
+it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap.get(long)                                            6   1.83%
+factorycraft.simulation.fluids.PipelineNetwork.advance(int)                                                   5   1.53%
+java.util.Arrays.fill(int[], int, int, int)                                                                   4   1.22%
+java.util.TreeSet.remove(Object)                                                                              4   1.22%
+java.util.HashMap.getNode(Object)                                                                             4   1.22%
+java.util.IdentityHashMap.resize(int)                                                                         4   1.22%
+net.minecraft.server.level.GenerationChunkHolder.getChunkIfPresentUnchecked(ChunkStatus)                      4   1.22%
+java.util.TreeMap.fixAfterDeletion(TreeMap$Entry)                                                             4   1.22%
+java.util.Collections$SetFromMap.contains(Object)                                                             4   1.22%
+net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase.getCollisionShape(...)                    3   0.92%
+java.util.IdentityHashMap.get(Object)                                                                         3   0.92%

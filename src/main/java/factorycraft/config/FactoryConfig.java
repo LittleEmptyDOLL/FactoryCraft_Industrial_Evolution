@@ -42,8 +42,8 @@ public final class FactoryConfig {
             .defineInRange("powerGraphWorkPerTick", 4096, 32, 1000000);
     FLUID_WORK =
         b.comment(
-                "Maximum pipeline topology visits and queued pumps processed per level tick; FIFO"
-                    + " backlog never drops fluid.")
+                "Maximum pipeline traversal/finalize units and queued pumps processed per level"
+                    + " tick; FIFO backlog never drops fluid.")
             .defineInRange("fluidWorkPerTick", 16384, 64, 1048576);
     OIL_RICHNESS =
         b.comment(

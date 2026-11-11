@@ -29,6 +29,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 @EventBusSubscriber(modid = FactoryCraft.ID)
 public final class FluidSimulation {
   public static final int PUMP_RATE = FluidUnits.PUMP_PER_TICK, PUMP_FE = 20;
+  private static final boolean PROFILE =
+      System.getProperty("factorycraft.fluidBenchmark.fixture") != null;
   private static final Map<Level, State> STATES = new IdentityHashMap<>();
 
   private static final class Link {
@@ -49,10 +51,20 @@ public final class FluidSimulation {
     }
   }
 
+  private static final class ChunkRef {
+    final LevelChunk chunk;
+    int members;
+
+    ChunkRef(LevelChunk chunk) {
+      this.chunk = chunk;
+    }
+  }
+
   private static final class GroupInfo {
-    final Set<LevelChunk> chunks = new HashSet<>();
+    final Map<Long, ChunkRef> chunks = new HashMap<>();
     final Set<Link> pumps = new HashSet<>();
     long dirtyTick = Long.MIN_VALUE;
+    boolean queued;
   }
 
   private static final class State {
@@ -61,13 +73,12 @@ public final class FluidSimulation {
     final Map<BlockPos, Link> nodes = new HashMap<>();
     final Map<PipelineNetwork<FluidKey>.Node, Link> owners = new IdentityHashMap<>();
     final Map<PipelineNetwork<FluidKey>.Segment, GroupInfo> groups = new IdentityHashMap<>();
-    final Set<PipelineNetwork<FluidKey>.Segment> changedGroups =
-        Collections.newSetFromMap(new IdentityHashMap<>());
+    final ArrayDeque<PipelineNetwork<FluidKey>.Segment> changedGroups = new ArrayDeque<>();
     final Map<Long, Set<Link>> chunks = new HashMap<>();
     final LinkedHashSet<Link> recheck = new LinkedHashSet<>();
     final ArrayDeque<Link> pumps = new ArrayDeque<>();
     final ArrayList<Link> dirty = new ArrayList<>();
-    long nanos, pumped, worldWater;
+    long nanos, pumped, worldWater, chunkMarks, rawChanges;
 
     State(Level level) {
       this.level = level;
@@ -78,38 +89,79 @@ public final class FluidSimulation {
               n -> {
                 var l = owners.get(n);
                 if (l != null) mark(this, l);
-              });
+              },
+              this::prepare,
+              this::detach);
+    }
+
+    void sizedMark() {
+      if (PROFILE) chunkMarks++;
+    }
+
+    void prepare(PipelineNetwork<FluidKey>.Segment group, PipelineNetwork<FluidKey>.Node node) {
+      var info = groups.computeIfAbsent(group, g -> new GroupInfo());
+      var l = owners.get(node);
+      if (l == null) return;
+      for (long cp : l.chunks) {
+        var chunk =
+            ((ServerLevel) level)
+                .getChunkSource()
+                .getChunkNow(ChunkPos.getX(cp), ChunkPos.getZ(cp));
+        if (chunk != null) info.chunks.computeIfAbsent(cp, k -> new ChunkRef(chunk)).members++;
+      }
+      for (var next : l.neighbors) if (next.be.kind() == FluidKind.PUMP) info.pumps.add(next);
+      info.dirtyTick = Long.MIN_VALUE;
+    }
+
+    void detach(PipelineNetwork<FluidKey>.Segment group, PipelineNetwork<FluidKey>.Node node) {
+      var info = groups.get(group);
+      var l = owners.get(node);
+      if (info == null || l == null) return;
+      for (long cp : l.chunks) {
+        var ref = info.chunks.get(cp);
+        if (ref != null && --ref.members == 0) info.chunks.remove(cp);
+      }
+      for (var pump : l.neighbors)
+        if (pump.be.kind() == FluidKind.PUMP) {
+          boolean still = false;
+          for (var other : pump.neighbors)
+            if (other != l && other.node != null && other.node.segment() == group) {
+              still = true;
+              break;
+            }
+          if (!still) info.pumps.remove(pump);
+        }
+      info.dirtyTick = Long.MIN_VALUE;
+    }
+
+    void markChunks(GroupInfo info) {
+      for (var ref : info.chunks.values())
+        if (!ref.chunk.isUnsaved()) {
+          ref.chunk.setUnsaved(true);
+          sizedMark();
+        }
     }
 
     void changed(PipelineNetwork<FluidKey>.Segment segment) {
+      var info = groups.get(segment);
       if (!segment.valid()) {
         groups.remove(segment);
-        changedGroups.remove(segment);
+        if (info != null && segment.published()) {
+          markChunks(info);
+          for (var pump : info.pumps) wake(this, pump);
+        }
         return;
       }
-      var info = groups.get(segment);
-      if (info == null) {
-        info = new GroupInfo();
-        for (var node : segment.members()) {
-          var l = owners.get(node);
-          if (l == null) continue;
-          for (long cp : l.chunks) {
-            var chunk =
-                ((ServerLevel) level)
-                    .getChunkSource()
-                    .getChunkNow(ChunkPos.getX(cp), ChunkPos.getZ(cp));
-            if (chunk != null) info.chunks.add(chunk);
-          }
-          for (var next : l.neighbors) if (next.be.kind() == FluidKind.PUMP) info.pumps.add(next);
-          mark(this, l);
-        }
-        groups.put(segment, info);
+      if (info == null) throw new IllegalStateException("Unprepared published pipeline");
+      long tick = level.getServer().getTickCount();
+      if (info.dirtyTick != tick) {
+        info.dirtyTick = tick;
+        markChunks(info);
       }
-      if (info.dirtyTick != level.getGameTime()) {
-        info.dirtyTick = level.getGameTime();
-        for (var chunk : info.chunks) chunk.setUnsaved(true);
+      if (!info.queued) {
+        info.queued = true;
+        changedGroups.addLast(segment);
       }
-      changedGroups.add(segment);
     }
   }
 
@@ -414,7 +466,10 @@ public final class FluidSimulation {
       var next = s.nodes.get(other.getBlockPos());
       if (next != null && !next.removed) expected.add(next);
     }
-    if (link.node != null) s.network.filter(link.node, required);
+    if (link.node != null) {
+      if (!expected.equals(link.neighbors)) s.network.boundaryChanged(link.node);
+      s.network.filter(link.node, required);
+    }
     for (var previous : List.copyOf(link.neighbors))
       if (!expected.contains(previous)) {
         if (!previous.removed
@@ -430,7 +485,7 @@ public final class FluidSimulation {
       if (link.neighbors.add(next)) {
         next.neighbors.add(link);
         if (link.be.kind() != FluidKind.PUMP && next.be.kind() != FluidKind.PUMP) {
-          s.network.connect(link.node, next.node);
+          s.network.connect(link.node, next.node, expected.size() == 1);
         }
         wake(s, next);
       }
@@ -495,7 +550,8 @@ public final class FluidSimulation {
     var s = STATES.get(be.getLevel());
     var l = s == null ? null : s.nodes.get(be.getBlockPos());
     if (l == null || l.be != be) return;
-    if (l.node != null) s.network.externalChanged(l.node);
+    if (PROFILE) s.rawChanges++;
+    if (l.node != null) s.network.contentChanged(l.node);
     mark(s, l);
     for (var neighbor : l.neighbors) wake(s, neighbor);
   }
@@ -559,10 +615,13 @@ public final class FluidSimulation {
       else if (ready) wake(s, link);
     }
     s.network.advance(FactoryConfig.FLUID_WORK.get());
-    for (var group : List.copyOf(s.changedGroups)) {
+    for (int remaining = s.changedGroups.size(); remaining > 0; remaining--) {
+      var group = s.changedGroups.removeFirst();
       var info = s.groups.get(group);
-      if (info != null) for (var pump : info.pumps) wake(s, pump);
-      s.changedGroups.remove(group);
+      if (info != null) {
+        info.queued = false;
+        for (var pump : info.pumps) wake(s, pump);
+      }
     }
 
     for (int i = 0; i < s.dirty.size(); ) {
@@ -644,6 +703,33 @@ public final class FluidSimulation {
     return moved > 0;
   }
 
+  public record Metrics(
+      long visits,
+      long rebuilds,
+      long chunkMarks,
+      long rawChanges,
+      int pending,
+      long finalizeWork,
+      long aborts,
+      long frozenMembers,
+      long localEdits) {}
+
+  public static Metrics metrics(Level level) {
+    var s = STATES.get(level);
+    return s == null
+        ? new Metrics(0, 0, 0, 0, 0, 0, 0, 0, 0)
+        : new Metrics(
+            s.network.visits(),
+            s.network.rebuilds(),
+            s.chunkMarks,
+            s.rawChanges,
+            s.network.pending(),
+            s.network.finalizeWork(),
+            s.network.aborts(),
+            s.network.frozenMembers(),
+            s.network.localEdits());
+  }
+
   public static String statistics(Level level) {
     var s = STATES.get(level);
     if (s == null) return "Pipeline segments: 0";
@@ -693,6 +779,14 @@ public final class FluidSimulation {
         + capacity
         + " mB, queued rebuild owners: "
         + s.network.pending()
+        + ", rebuilds: "
+        + s.network.rebuilds()
+        + ", local edits: "
+        + s.network.localEdits()
+        + ", finalize units: "
+        + s.network.finalizeWork()
+        + ", aborted builds: "
+        + s.network.aborts()
         + ", topology visits: "
         + s.network.visits()
         + ", queued pumps: "

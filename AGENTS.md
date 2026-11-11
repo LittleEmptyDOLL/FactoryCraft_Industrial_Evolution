@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.24.0 Factorio 2.1 fluid segments (11 November 2026)
+## Active task — 0.24.1 fluid performance (11 November 2026)
+
+* Profile the unchanged 0.24.0 core and a new opt-in real server fixture before optimizing. Compare identical warm workloads and report tails/allocation/work separately from Minecraft ticks. Preserve every pressure/FE/recipe/component/ownership rule and all 380 required cases plus thirty restored chains.
+* Attached raw cells are inert when a pool is published: save/inspect through owned(), never count raw + pool. Staging keeps raw checkpoints authoritative until one publication flag; abort cleanup must preserve this. Conservative local paths require a true unfiltered compatible leaf or an already shared pool; multi-neighbor conflict choice must remain deterministic.
+* Optimize invalidation, event distinction, bounded finalize work, independent rebuild progress and chunk/notification deduplication only where measured. Never publish partial pools or delay chunk ownership freezing beyond a safe unload/save boundary. No approximate rounding, forced runtime chunks, new mechanics/art/tools or weakened tests.
+* Use new v0241 and fluids-v0241 diagnostic directories; old worlds/evidence remain intact. Run servers and common-output compilation sequentially. Full/MIXED/optional CI remains separate. Publish checked main normally, preserving parallel work; query CI once and stop.
+
+## Previous task — 0.24.0 Factorio 2.1 fluid segments (11 November 2026)
 
 * Current user authorizes replacing runtime passive edge equalization with one pooled segment model. Preserve 1000/16000/1000 mB physical capacities, recipes/FE, assembly-4 physical ports, all four circuit colors, all thirty restored production chains and 0.23 item transport. Do not implement new machines, temperature, construction tools or lift art.
 * One runtime pool owns active volume. Per-member deterministic capacity-prefix shares are the independent chunk/portable records; never write the complete segment amount to every pipe. Freeze/materialize affected pools before topology/unload/packing; quarantine incomplete rebuilds. No forced chunks, per-edge per-tick flow or full member scan on ordinary consumption.

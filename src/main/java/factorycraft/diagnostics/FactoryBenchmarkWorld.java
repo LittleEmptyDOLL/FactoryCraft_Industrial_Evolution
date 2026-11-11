@@ -384,7 +384,7 @@ final class FactoryBenchmarkWorld {
     return HexFormat.of().formatHex(digest.digest());
   }
 
-  private static void hashTag(MessageDigest digest, Tag tag) {
+  static void hashTag(MessageDigest digest, Tag tag) {
     digest.update(tag.getId());
     if (tag instanceof CompoundTag compound) {
       for (String key : new TreeSet<>(compound.getAllKeys())) {
