@@ -33,6 +33,7 @@ public final class BeltTransport<T> {
     private final int speed;
     private final ChangeListener listener;
     private final Consumer<T> sink;
+    private Consumer<T> arrival;
     private final ArrayList<Node<T>> inputs = new ArrayList<>(4);
     private int[] projected;
     private Node<T> primary, secondary, target, winner;
@@ -267,9 +268,14 @@ public final class BeltTransport<T> {
     return true;
   }
 
+  public void arrivalListener(Node<T> n, Consumer<T> listener) {
+    n.arrival = listener;
+  }
+
   public boolean insert(Node<T> n, T value) {
     if (!canInsert(n)) return false;
     n.lane.insert(value);
+    if (n.arrival != null) n.arrival.accept(value);
     n.listener.changed(true);
     changedExternally(n);
     return true;
@@ -413,6 +419,7 @@ public final class BeltTransport<T> {
         if (target.sink != null) target.sink.accept(n.outgoing.value);
         else {
           target.lane.accept(n.outgoing, n.projected[0] - n.lane.length());
+          if (target.arrival != null) target.arrival.accept(n.outgoing.value);
           mark(target, true);
           activate(target);
         }

@@ -4,27 +4,21 @@
   "inputs": [
     {
       "ingredient": {
-        "item": "factorycraft:electronic_circuit"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
-        "item": "factorycraft:iron_plate"
-      },
-      "count": 2
-    },
-    {
-      "ingredient": {
         "item": "factorycraft:copper_wire"
       },
       "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 2
     }
   ],
   "result": {
     "id": "factorycraft:constant_combinator",
     "count": 1
   },
-  "ticks": 40,
+  "ticks": 10,
   "energy": 12
 }

@@ -61,8 +61,8 @@ def generate(root,write,png):
     box((xx[0],.3,z-.195),(xx[1],.7,z+.195),mat)
   if name in json.loads((root/'factorycraft/pole_geometry.json').read_text()):
    boxes.extend(json.loads((root/'factorycraft/pole_geometry.json').read_text())[name]['boxes'])
-  elif name in ['constant_combinator','arithmetic_combinator','decider_combinator','circuit_reader','circuit_controller']:
-   trim={'constant_combinator':'yellow','arithmetic_combinator':'teal','decider_combinator':'orange','circuit_reader':'inlet','circuit_controller':'red'}[name]
+  elif name in ['constant_combinator','arithmetic_combinator','decider_combinator','selector_combinator','circuit_reader','circuit_controller']:
+   trim={'constant_combinator':'yellow','arithmetic_combinator':'teal','decider_combinator':'orange','selector_combinator':'inlet','circuit_reader':'inlet','circuit_controller':'red'}[name]
    box((.05,0,.05),(w-.05,.15,d-.05),'dark');box((.12,.15,.12),(w-.12,.44,d-.12),trim)
    box((.22,.44,.22),(w-.22,.48,d-.22),'glass')
    for z in [.12,d-.12]:

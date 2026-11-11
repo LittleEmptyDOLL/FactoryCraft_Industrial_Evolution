@@ -12,7 +12,8 @@ public final class SignalMath {
     OR,
     XOR,
     LEFT_SHIFT,
-    RIGHT_SHIFT
+    RIGHT_SHIFT,
+    POWER
   }
 
   public enum Compare {
@@ -36,7 +37,19 @@ public final class SignalMath {
       case XOR -> a ^ b;
       case LEFT_SHIFT -> a << b;
       case RIGHT_SHIFT -> a >> b;
+      case POWER -> power(a, b);
     };
+  }
+
+  private static int power(int a, int b) {
+    if (b < 0) return a == 1 ? 1 : a == -1 ? ((b & 1) == 0 ? 1 : -1) : 0;
+    int out = 1;
+    while (b != 0) {
+      if ((b & 1) != 0) out *= a;
+      b >>>= 1;
+      if (b != 0) a *= a;
+    }
+    return out;
   }
 
   public static boolean test(Compare op, int a, int b) {

@@ -1,4 +1,4 @@
-# Architecture decisions — 0.21.0 (assembly/parts schema 4; native resource schema 1)
+# Architecture decisions — 0.22.0 (assembly/parts schema 4; native resource schema 1)
 
 ## Authority and persistence
 
@@ -7,6 +7,14 @@ All authoritative world access is on the server thread. Client renderers only ex
 An unloaded chunk pauses its machines. The power cache unregisters unloaded nodes. Belt scheduling discards unloaded references and reactivates loaded carriers. Neighbor lookups use `hasChunkAt`; production never force-loads a neighbor. The deliberate fixed-position persistence GameTest loads its fixture chunk, outside runtime simulation code.
 
 Saving uses vanilla chunk persistence. Extraction into an inserter moves ownership from the source to the serialized hand. If a target disappears or fills, the hand keeps the item. Breaking a belt iterates until every carrier has been removed, avoiding index-shift loss. Breaking any inserter returns one portable device owning the held stack, fuel, energy and phase. Whole-machine demolition preserves resources in one portable controller item; parts never hold inventory copies.
+
+## Circuit Network 2.1
+
+`CircuitAttachment` composes canonical machine state with reciprocal UUID links, independent read/write color masks, structured programs and typed sparse int32 snapshots. It owns no inventory/fluid/FE. Parts resolve the owner through `CircuitAccess`; explicitly opted-in foreign containers use FactoryCraft SavedData, never injected foreign BE NBT. Four colors remain separate instances of ports in the **existing** `CircuitGraph`; maps replace scalar contributions without replacing topology caching/limits. `CircuitSimulation` stages changed device outputs, budgets sensor/program work and quarantines missing physical ends. Graph value callbacks queue evaluations rather than merging full maps recursively; topology loss closes direct gates immediately.
+
+`SignalProgram` is registry/world-independent algebra (constant/each arithmetic/multi-condition decider with Else/selector/time). `CircuitDevices` reads real owners and issues guarded high-level commands; existing production/transfer transactions retain sole ownership. Recipe changes cannot discard paid progress; lab commands select the next available technology only for the bound team. `FluidAggregateIndex` mirrors loaded passive connections and maintains delta totals with budgeted topology rebuilds, without changing the fluid solver or mixing.
+
+`LogicMenu` accepts bounded typed configuration with menu identity/reach/protection/team checks. Initial state is included in native menu opening; later updates and acknowledgements are independent, so a live signal snapshot cannot erase an Apply acknowledgement. `CircuitVisuals` caches server-defined contact geometry and reciprocal wires; chunk unload evicts geometry. Client classes never evaluate production/circuit logic. See CIRCUITS.md for exact empty/wildcard/time, sample-hold, latency and limit semantics.
 
 ## Transactions
 
@@ -72,7 +80,7 @@ The JUnit kernel benchmark now exercises 10000 complete two-lane segments (20000
 
 ## Extension boundaries
 
-`recipes` codecs support ordinary datapack replacement and `/reload`. `registry` owns NeoForge integration; `simulation` is independently testable; `production` adapts energy and menus; `energy` owns topology; `client` is client-only. Future fluids, research, circuits, trains, robots, pollution, combat and space require new packages and tests. No nonfunctional placeholder registrations represent these systems.
+`recipes` codecs support ordinary datapack replacement and `/reload`. `registry` owns NeoForge integration; `simulation` is independently testable; `production` adapts energy and menus; `energy` owns topology; `client` is client-only. Remaining trains, robots, pollution, combat and space require new packages and tests. No nonfunctional placeholder registrations represent these systems.
 
 ## Opt-in full factory profiling (0.2.2)
 

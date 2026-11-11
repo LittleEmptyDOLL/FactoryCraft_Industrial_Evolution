@@ -373,7 +373,8 @@ public final class CircuitGameTests {
           var player = h.makeMockPlayer(GameType.SURVIVAL);
           player.setItemInHand(
               InteractionHand.MAIN_HAND, new ItemStack(Content.RED_CIRCUIT_WIRE.get()));
-          for (var p : List.of(a.getBlockPos(), b.portPosition(0)))
+          for (var p : List.of(a.getBlockPos(), b.portPosition(0))) {
+            player.setPos(p.getX() + .5, p.getY() + 1, p.getZ() + .5);
             h.assertTrue(
                 player
                     .getMainHandItem()
@@ -385,6 +386,7 @@ public final class CircuitGameTests {
                                 p.getCenter(), Direction.UP, p, false)))
                     .consumesAction(),
                 "native wire click rejected");
+          }
           h.assertTrue(
               a.links.size() == 1
                   && b.links.getFirst().localPort() == 0

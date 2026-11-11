@@ -41,7 +41,8 @@ public enum FactoryKind {
   ARITHMETIC("arithmetic_combinator", 0),
   DECIDER("decider_combinator", 0),
   CIRCUIT_READER("circuit_reader", 0),
-  CIRCUIT_CONTROLLER("circuit_controller", 0);
+  CIRCUIT_CONTROLLER("circuit_controller", 0),
+  SELECTOR("selector_combinator", 0);
   public final String id;
   public final int beltTier;
 
@@ -63,11 +64,12 @@ public enum FactoryKind {
         || this == ARITHMETIC
         || this == DECIDER
         || this == CIRCUIT_READER
-        || this == CIRCUIT_CONTROLLER;
+        || this == CIRCUIT_CONTROLLER
+        || this == SELECTOR;
   }
 
   public boolean dualCircuit() {
-    return this == ARITHMETIC || this == DECIDER;
+    return this == ARITHMETIC || this == DECIDER || this == SELECTOR;
   }
 
   public boolean inserter() {

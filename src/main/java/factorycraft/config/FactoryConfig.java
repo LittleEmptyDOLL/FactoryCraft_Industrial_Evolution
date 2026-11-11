@@ -7,7 +7,9 @@ public final class FactoryConfig {
   public static final ModConfigSpec.IntValue CIRCUIT_PORTS,
       CIRCUIT_COMPONENT_WORK,
       CIRCUIT_DEVICE_WORK,
-      CIRCUIT_SENSOR_WORK;
+      CIRCUIT_SENSOR_WORK,
+      CIRCUIT_SIGNAL_WORK,
+      CIRCUIT_FLUID_WORK;
   public static final ModConfigSpec.IntValue LIFT_HEIGHT;
   public static final ModConfigSpec.IntValue GENERATOR_FE;
   public static final ModConfigSpec.IntValue POWER_VERTICAL_REACH;
@@ -54,7 +56,8 @@ public final class FactoryConfig {
                     + " refill.")
             .defineInRange("oreTileRichness", 1000, 1, 10000000);
     CIRCUIT_PORTS =
-        b.comment("Maximum ports per individual red/green circuit component; startup setting.")
+        b.comment(
+                "Maximum ports per individual individual-color circuit component; startup setting.")
             .defineInRange("circuitPortsPerNetwork", 256, 2, 4096);
     CIRCUIT_COMPONENT_WORK =
         b.comment("Maximum bounded local circuit components rebuilt per tick.")
@@ -67,6 +70,16 @@ public final class FactoryConfig {
                 "Inventory/fluid sensor and controller polls per level tick; FIFO backlog increases"
                     + " feedback latency.")
             .defineInRange("circuitSensorWork", 32, 1, 4096);
+    CIRCUIT_SIGNAL_WORK =
+        b.comment(
+                "Approximate sparse-signal operations per tick; one indivisible program may exceed"
+                    + " this budget.")
+            .defineInRange("circuitSignalWork", 65536, 4096, 1048576);
+    CIRCUIT_FLUID_WORK =
+        b.comment(
+                "Loaded hydraulic vertices indexed for circuit totals per tick; no change to flow"
+                    + " or mixing.")
+            .defineInRange("circuitFluidWork", 1024, 32, 65536);
     SPEC = b.build();
   }
 

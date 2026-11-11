@@ -139,6 +139,11 @@ public final class LabBlockEntity extends FactoryBlockEntity
   }
 
   public void tick() {
+    if (!factorycraft.circuits.CircuitBinding.allowed(this)) {
+      if (getBlockState().getValue(FactoryBlock.ACTIVE))
+        level.setBlock(worldPosition, getBlockState().setValue(FactoryBlock.ACTIVE, false), 3);
+      return;
+    }
     boolean active = false;
     if (ready()
         && level instanceof ServerLevel server

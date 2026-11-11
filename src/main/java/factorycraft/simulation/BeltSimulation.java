@@ -177,6 +177,10 @@ public final class BeltSimulation {
       // Geometry first, then connect sources against the final lane mapping.
       for (var b : nearby) b.refreshConnections();
       for (var b : nearby) b.refreshConnections();
+      // Direct contacts follow the final route/physical footprint, including neighbor reshapes.
+      for (var b : nearby)
+        if (b.circuit(false) != null)
+          factorycraft.circuits.CircuitSimulation.changed(b.circuit(false));
     } finally {
       REFRESHING.remove(be);
     }

@@ -36,6 +36,7 @@
     "factorycraft:constant_combinator",
     "factorycraft:arithmetic_combinator",
     "factorycraft:decider_combinator",
+    "factorycraft:selector_combinator",
     "factorycraft:circuit_reader",
     "factorycraft:circuit_controller"
   ]

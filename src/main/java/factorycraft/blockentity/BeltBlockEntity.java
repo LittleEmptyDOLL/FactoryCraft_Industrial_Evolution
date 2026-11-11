@@ -36,12 +36,36 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   }
 
   public void refreshCircuitControl() {
-    if (!kind().splitter() || level == null || level.isClientSide) return;
+    if (level == null || level.isClientSide) return;
     boolean enabled = factorycraft.circuits.CircuitBinding.allowed(this);
     if (enabled == circuitRunning) return;
     circuitRunning = enabled;
     if (transport != null) for (var n : nodes) transport.setEnabled(n, enabled);
+    // Ticket callbacks can run after a holder has gone away. Persist locally, but never
+    // trigger collision/neighbour queries or block packets for a demoted physical structure.
+    if (!BeltSimulation.tickable(this) || !FluidConnections.canonical(this)) {
+      var server = (net.minecraft.server.level.ServerLevel) level;
+      var chunk =
+          server.getChunkSource().getChunkNow(worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
+      if (chunk != null) chunk.setUnsaved(true);
+      return;
+    }
     sync();
+  }
+
+  private void circuitArrival(ItemStack stack) {
+    factorycraft.circuits.CircuitSimulation.pulse(this, stack);
+  }
+
+  public void updateCircuitPulseWatch() {
+    if (transport == null) return;
+    var logic = circuit(false);
+    for (var node : nodes)
+      transport.arrivalListener(
+          node,
+          logic != null && logic.settings().pulse() && logic.settings().contents()
+              ? this::circuitArrival
+              : null);
   }
 
   public factorycraft.logistics.SplitterSettings splitterSettings() {
@@ -557,7 +581,10 @@ public final class BeltBlockEntity extends FactoryBlockEntity
       n.restorePreference(alternate[i]);
       n.restoreCommittedOutput(committedOutputs[i]);
       nodes.add(n);
-      if (kind().splitter()) transport.setEnabled(n, circuitRunning);
+      transport.setEnabled(n, circuitRunning);
+      var logic = circuit(false);
+      if (logic != null && logic.settings().pulse() && logic.settings().contents())
+        transport.arrivalListener(n, this::circuitArrival);
     }
     applySplitterSettings();
   }

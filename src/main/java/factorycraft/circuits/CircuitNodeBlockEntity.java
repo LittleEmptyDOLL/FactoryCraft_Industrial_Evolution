@@ -50,7 +50,7 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
     readerSettings = settings;
     readerReady = false;
     sync();
-    CircuitSimulation.programChanged(this);
+    circuit(true).useLegacy();
     return true;
   }
 
@@ -101,7 +101,7 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
     program = next;
     gate = false;
     sync();
-    CircuitSimulation.programChanged(this);
+    circuit(true).useLegacy();
     return true;
   }
 
@@ -179,6 +179,7 @@ public final class CircuitNodeBlockEntity extends FactoryBlockEntity
           links.add(link);
       }
     gate = false;
+    if (!t.contains("DirectCircuit")) circuit(true).useLegacy();
   }
 
   @Override

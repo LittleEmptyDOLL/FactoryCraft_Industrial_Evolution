@@ -35,7 +35,8 @@ public enum MachineProfile implements StringRepresentable {
   SMALL_POLE("electric_pole", 1, 2, 1),
   MEDIUM_POLE("medium_electric_pole", 1, 3, 1),
   BIG_POLE("big_electric_pole", 2, 5, 2),
-  SUBSTATION("substation", 2, 4, 2);
+  SUBSTATION("substation", 2, 4, 2),
+  SELECTOR("selector_combinator", 1, 1, 2);
   public final String id;
   public final CuboidLayout layout;
 
@@ -132,7 +133,8 @@ public enum MachineProfile implements StringRepresentable {
         || this == ARITHMETIC
         || this == DECIDER
         || this == CIRCUIT_READER
-        || this == CIRCUIT_CONTROLLER;
+        || this == CIRCUIT_CONTROLLER
+        || this == SELECTOR;
   }
 
   public boolean splitter() {

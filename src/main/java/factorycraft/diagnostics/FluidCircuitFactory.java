@@ -40,42 +40,26 @@ public final class FluidCircuitFactory {
     fluid(level, o.offset(11, 0, 7), FluidKind.TANK);
     level.setBlockAndUpdate(
         o.offset(9, 0, 6), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-    StructurePlacement.place(
-        level,
-        o.offset(13, 0, 8),
-        Content.FACTORY
-            .get(FactoryKind.CIRCUIT_READER)
-            .get()
-            .defaultBlockState()
-            .setValue(FactoryBlock.FACING, Direction.WEST));
-    StructurePlacement.place(
-        level,
-        o.offset(8, 0, 5),
-        Content.FACTORY
-            .get(FactoryKind.CIRCUIT_CONTROLLER)
-            .get()
-            .defaultBlockState()
-            .setValue(FactoryBlock.FACING, Direction.SOUTH));
-    var reader = (CircuitNodeBlockEntity) level.getBlockEntity(o.offset(13, 0, 8));
-    var controller = (CircuitNodeBlockEntity) level.getBlockEntity(o.offset(8, 0, 5));
-    var r = reader.saveWithoutMetadata(level.registryAccess());
-    r.getCompound("Circuit")
-        .put(
-            "Reader",
-            ReaderSettings.fluid(new FluidStack(Fluids.WATER, 1)).save(level.registryAccess()));
-    reader.loadWithComponents(r, level.registryAccess());
-    var c = controller.saveWithoutMetadata(level.registryAccess());
-    c.getCompound("Circuit")
-        .put(
-            "Program",
-            new CircuitProgram(CircuitProgram.A, CircuitProgram.A, 1, 1000, false).save());
-    controller.loadWithComponents(c, level.registryAccess());
-    reader.links.add(
-        new CircuitLink(controller.getBlockPos(), controller.assembly().identity(), 0, 0, 0));
-    controller.links.add(
-        new CircuitLink(reader.getBlockPos(), reader.assembly().identity(), 0, 0, 0));
-    reader.setChanged();
-    controller.setChanged();
+    var target = (FluidBlockEntity) level.getBlockEntity(o.offset(11, 0, 7));
+    var pump = (FluidBlockEntity) level.getBlockEntity(o.offset(8, 0, 6));
+    var sensor = target.circuit(true);
+    var gate = pump.circuit(true);
+    CircuitFactory.configure(
+        sensor, CircuitFactory.settings(true, false, java.util.List.of(), 0, 1), sensor.program());
+    CircuitFactory.configure(
+        gate,
+        CircuitFactory.settings(
+            false,
+            true,
+            java.util.List.of(
+                CircuitFactory.condition(
+                    factorycraft.simulation.circuits.SignalKey.fluid("minecraft:water"),
+                    factorycraft.simulation.circuits.SignalMath.Compare.LESS,
+                    1000)),
+            1,
+            0),
+        gate.program());
+    CircuitFactory.wire(sensor, 0, gate, 0, 0);
     var generator =
         FactoryCommands.machine(level, o.offset(2, 0, 0), FactoryKind.GENERATOR, Direction.NORTH);
     generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));

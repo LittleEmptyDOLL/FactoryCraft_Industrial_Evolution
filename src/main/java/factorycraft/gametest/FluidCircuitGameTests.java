@@ -289,19 +289,27 @@ public final class FluidCircuitGameTests {
           var source = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(3, 0, 5));
           var target = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(11, 0, 7));
           var pump = (FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(8, 0, 6));
-          var reader = (CircuitNodeBlockEntity) h.getLevel().getBlockEntity(o.offset(13, 0, 8));
-          var gate = (CircuitNodeBlockEntity) h.getLevel().getBlockEntity(o.offset(8, 0, 5));
+          var sample = FluidSimulation.circuitContents(target);
+          int observed =
+              sample
+                  .amounts()
+                  .getOrDefault(
+                      factorycraft.simulation.circuits.SignalKey.fluid("minecraft:water"), 0);
           int total = source.cell().amount() + target.cell().amount() + pump.cell().amount();
           for (int x = 5; x <= 6; x++)
             total +=
                 ((FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(x, 0, 6))).cell().amount();
           h.assertTrue(
-              target.cell().amount() >= 1000
-                  && target.cell().amount() < 1100
-                  && reader.lastOutput == target.cell().amount()
-                  && !gate.gate
+              sample.ready()
+                  && observed >= 1000
+                  && observed < 1100
+                  && target
+                          .circuit(false)
+                          .output
+                          .get(factorycraft.simulation.circuits.SignalKey.fluid("minecraft:water"))
+                      == observed
                   && !CircuitBinding.allowed(pump),
-              "feedback failed: target=" + target.cell().amount() + " read=" + reader.lastOutput);
+              "feedback failed: target=" + target.cell().amount() + " aggregate=" + observed);
           h.assertTrue(
               total
                           + ((FluidBlockEntity) h.getLevel().getBlockEntity(o.offset(9, 0, 6)))

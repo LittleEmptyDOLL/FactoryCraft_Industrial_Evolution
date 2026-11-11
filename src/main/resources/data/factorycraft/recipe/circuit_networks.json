@@ -13,9 +13,7 @@
   "unlocks": [
     "factorycraft:constant_combinator",
     "factorycraft:arithmetic_combinator",
-    "factorycraft:decider_combinator",
-    "factorycraft:circuit_reader",
-    "factorycraft:circuit_controller"
+    "factorycraft:decider_combinator"
   ],
   "x": 3,
   "y": 5

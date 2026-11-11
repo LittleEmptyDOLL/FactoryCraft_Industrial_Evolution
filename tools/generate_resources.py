@@ -639,7 +639,7 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings.update({'gui.factorycraft.'+k:v[index] for k,v in arm_ui.items()});strings['technology.factorycraft.electric_inserters']=('Electric inserters','Электрические манипуляторы')[index];write(str(path.relative_to(ROOT)),strings)
 
 # 0.16 additive bounded circuit devices and reusable red/green wiring tools.
-circuit_names=[('constant_combinator','Constant Combinator','Постоянный комбинатор'),('arithmetic_combinator','Arithmetic Combinator','Арифметический комбинатор'),('decider_combinator','Decider Combinator','Решающий комбинатор'),('circuit_reader','Inventory Reader','Считыватель инвентаря'),('circuit_controller','Circuit Controller','Логический контроллер')]
+circuit_names=[('constant_combinator','Constant Combinator','Постоянный комбинатор'),('arithmetic_combinator','Arithmetic Combinator','Арифметический комбинатор'),('decider_combinator','Decider Combinator','Решающий комбинатор'),('selector_combinator','Selector Combinator','Комбинатор выбора'),('circuit_reader','Inventory Reader','Считыватель инвентаря'),('circuit_controller','Circuit Controller','Логический контроллер')]
 for name,en,ru in circuit_names:
  process(name,'assembling_machine',[('factorycraft:electronic_circuit',5 if name in ['arithmetic_combinator','decider_combinator'] else 2),('factorycraft:iron_plate',2),('factorycraft:copper_wire',5)],name,1,40,12)
  write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
@@ -647,7 +647,7 @@ for name,en,ru in circuit_names:
 for name,color in [('red_circuit_wire',(195,52,48)),('green_circuit_wire',(47,184,91))]:
  texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
  craft(name,['WD'],{'W':'factorycraft:copper_wire','D':'minecraft:'+('red' if name.startswith('red') else 'green')+'_dye'})
-write('data/factorycraft/recipe/circuit_networks.json',{'type':'factorycraft:research','prerequisites':['factorycraft:electronics','factorycraft:logistics'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':20,'ticks':60,'unlocks':['factorycraft:'+n for n,en,ru in circuit_names],'x':3,'y':5})
+write('data/factorycraft/recipe/circuit_networks.json',{'type':'factorycraft:research','prerequisites':['factorycraft:electronics','factorycraft:logistics'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':20,'ticks':60,'unlocks':['factorycraft:'+n for n,en,ru in circuit_names if n not in ['selector_combinator','circuit_reader','circuit_controller']],'x':3,'y':5})
 circuit_ui={'circuit_live_input':('Input: %s','Вход: %s'),'circuit_live_output':('Output: %s','Выход: %s'),'circuit_enabled':('Enabled: %s','Включён: %s'),'circuit_a':('Virtual signal A','Виртуальный сигнал A'),'circuit_gate':('In: %s / enabled: %s','Вход: %s / включён: %s'),'circuit_operand':('Scalar','Число'),'circuit_input':('Input','Вход'),'circuit_output':('Output','Выход'),'circuit_values':('In: %s / out: %s','Вход: %s / выход: %s'),'circuit_count.0':('Emit one','Выдавать единицу'),'circuit_count.1':('Emit input count','Выдавать входное значение'),'circuit_signal_hint':('Click with a sample to choose an item signal; right-click or empty cursor restores virtual A. Samples are not consumed.','Нажмите образцом для выбора предметного сигнала; ПКМ или пустой курсор возвращает виртуальный A. Образец не расходуется.')}
 circuit_messages={'circuit_node_required':('Select a loaded circuit node or its input/output contact.','Выберите загруженный узел логики или его входной/выходной контакт.'),'circuit_first':('First contact %s selected; click the other end.','Выбран первый контакт %s; нажмите на второй.'),'circuit_cleared':('Connections on this contact/color cleared.','Соединения этого контакта и цвета удалены.'),'circuit_connected':('Circuit link toggled.','Логическое соединение переключено.'),'circuit_rejected':('Cannot connect: check loaded ends, distance, degree or network limit.','Соединение невозможно: проверьте загрузку, расстояние, число проводов и лимит сети.')}
 for locale,index in [('en_us',0),('ru_ru',1)]:
@@ -750,3 +750,37 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
  data.update({'gui.factorycraft.'+key:value[index] for key,value in ui.items()});write(f'assets/factorycraft/lang/{locale}.json',data)
 # Include late-added crafts and exclude retired recipes in the bootstrap recipe book.
 p=ROOT/'data/factorycraft/advancement/recipes/factory_basics.json';data=json.loads(p.read_text());data['rewards']['recipes']=['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))];write(str(p.relative_to(ROOT)),data)
+
+# 0.22: canonical direct circuit contacts replace adjacent reader/controller progression.
+for retired in ['circuit_reader','circuit_controller']:
+ (ROOT/f'data/factorycraft/recipe/{retired}.json').unlink(missing_ok=True)
+for name,circuits in [('constant_combinator',2),('arithmetic_combinator',5),('decider_combinator',5)]:
+ process(name,'assembling_machine',[('factorycraft:copper_wire',5),('factorycraft:electronic_circuit',circuits)],name,1,10,12)
+process('selector_combinator','assembling_machine',[('factorycraft:advanced_circuit',2),('factorycraft:decider_combinator',5)],'selector_combinator',1,10,12)
+write('data/factorycraft/recipe/advanced_combinators.json',{'type':'factorycraft:research','prerequisites':['factorycraft:circuit_networks','factorycraft:electronics','factorycraft:chemical_science'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1,'factorycraft:chemical_science_pack':1},'units':100,'ticks':600,'unlocks':['factorycraft:selector_combinator'],'x':6,'y':6})
+logic_ui={
+ 'research_circuit':('Next research: circuit','Следующее исследование: схема'),'research_manual':('Next research: manual','Следующее исследование: вручную'),
+ 'limited':('Signal limit','Лимит сигналов'),
+ 'title':('Circuit Network','Логическая сеть'), 'tab.0':('Device','Устройство'),'tab.1':('I/O colors','Цвета В/В'),'tab.2':('Program','Программа'),'tab.3':('Signals','Сигналы'),
+ 'save':('Apply','Применить'),'waiting':('Waiting…','Ожидание…'),'rejected':('Rejected','Отклонено'),'modified':('Modified','Изменено'),'ready':('Input ready','Вход доступен'),'unknown':('Unavailable','Недоступно'),
+ 'add':('Add row','Добавить строку'),'back':('Back','Назад'),'search':('Search / ID','Поиск / ID'),'use_id':('Use typed ID','Ввести ID'),'publish':('Enabled: %s','Включён: %s'),
+ 'input':('Input','Вход'),'output':('Output','Выход'),'input_colors':('Read colors','Цвета чтения'),'output_colors':('Write colors','Цвета записи'),
+ 'mask_hint':('Colors are independent. Reading the same source on two colors adds it twice. ∅ disables this direction.','Цвета независимы. Один источник на двух цветах суммируется дважды. ∅ выключает направление.'),
+ 'rules.0':('Conditions','Условия'),'rules.1':('Then outputs','Выходы Тогда'),'rules.2':('Else outputs','Выходы Иначе'),'gate_rules':('Enable conditions (AND / OR)','Условия включения (И / ИЛИ)'),
+ 'hand_signal':('Hand size signal','Сигнал размера руки'),'input_count':('Input count','Входное значение'),'constant':('Constant','Константа'),
+ 'highest':('Highest first','От большего'),'lowest':('Lowest first','От меньшего'),'game_tick':('Game tick','Тик мира'),'day_tick':('Day tick','Тик суток'),'day_length':('Day length','Длина суток'),'interval':('Interval','Интервал'),
+ 'quality_later':('Quality and rocket-capacity modes are unavailable until their real subsystems exist.','Качество и вместимость ракет недоступны до реализации соответствующих подсистем.'),
+ 'page':('Page %s · in %s / out %s','Стр. %s · вход %s / выход %s')}
+for field,en,ru in [('Contents','Read contents','Читать содержимое'),('State','Read state / FE','Читать состояние / FE'),('Ingredients','Read ingredients','Читать ингредиенты'),('Results','Read products','Читать продукты'),('Research','Read research','Читать исследование'),('Gate','Enable by condition','Включать по условию'),('Filters','Filters from signals','Фильтры из сигналов'),('Hand','Hand size from signal','Рука по сигналу'),('Recipe','Select recipe','Выбирать рецепт'),('SelectResearch','Select next research','Выбор технологии'),('Pulse','Belt pulse mode','Импульс ленты')]:logic_ui['option.'+field]=(en+': %s',ru+': %s')
+for key,en,ru in [('SIGNAL','Signal','Сигнал'),('CONSTANT','Number','Число'),('EACH','Each','Каждый'),('ANYTHING','Anything','Любой'),('EVERYTHING','Everything','Всё')]:logic_ui['mode.'+key]=(en,ru)
+for key,en,ru in [('SELECT','Select by index','Выбор по индексу'),('COUNT','Count signals','Число сигналов'),('RANDOM','Random signal','Случайный сигнал'),('STACK_SIZE','Item stack size','Размер стака'),('TIME','Time','Время')]:logic_ui['selector.'+key]=(en,ru)
+for key,en,ru in [('ITEM','Item','Предмет'),('FLUID','Fluid','Жидкость'),('VIRTUAL','Virtual','Виртуальный'),('RECIPE','Recipe','Рецепт'),('TECHNOLOGY','Technology','Технология')]:logic_ui['type.'+key]=(en,ru)
+for key,label in [('ADD','+'),('SUBTRACT','−'),('MULTIPLY','×'),('DIVIDE','÷'),('REMAINDER','%'),('AND','AND'),('OR','OR'),('XOR','XOR'),('LEFT_SHIFT','<<'),('RIGHT_SHIFT','>>'),('POWER','^')]:logic_ui['operation.'+key]=(label,label)
+for c,en,ru in [(0,'Red','Красный'),(1,'Green','Зелёный'),(2,'Blue','Синий'),(3,'White','Белый')]:logic_ui['color.'+str(c)]=(en,ru)
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(p.read_text());data.update({'gui.factorycraft.logic_'+k:v[index] for k,v in logic_ui.items()})
+ data['technology.factorycraft.advanced_combinators']=('Advanced Combinators','Продвинутые комбинаторы')[index]
+ for name,_,_ in circuit_names:data['tooltip.factorycraft.'+name]=('Four independent colors. Right-click: program. Shift + empty-hand click on devices: direct circuit settings.','Четыре независимых цвета. ПКМ: программа. Shift + пустая рука по устройству: прямая настройка логики.')[index]
+ for key,en,ru in [('state','Working state','Состояние работы'),('energy','Stored FE / fuel','Запас FE / топлива'),('progress','Work progress','Прогресс работы'),('game_tick','Game tick','Тик мира'),('day_tick','Day tick','Тик суток'),('day_length','Day length','Длина суток'),('signal_count','Signal count','Количество сигналов'),('hand_size','Hand size','Размер руки'),('research_cost','Research cost','Стоимость исследования'),('research_units','Completed research units','Готовые единицы исследования'),('research_level','Research level','Уровень исследования')]:data['signal.factorycraft.'+key]=(en,ru)[index]
+ for char in 'abcdefghijklmnopqrstuvwxyz0123456789':data['signal.factorycraft.signal_'+char]=('Signal '+char.upper(),'Сигнал '+char.upper())[index]
+ write(f'assets/factorycraft/lang/{locale}.json',data)

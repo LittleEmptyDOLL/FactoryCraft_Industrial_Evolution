@@ -33,12 +33,25 @@ public final class CircuitWireItem extends Item {
   }
 
   @Override
+  public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+    // Standard NeoForge tool hook runs after protection events and before chest/fluid menus.
+    return useOn(context);
+  }
+
+  @Override
   public InteractionResult useOn(UseOnContext ctx) {
     var player = ctx.getPlayer();
-    if (player == null || player.isSpectator()) return InteractionResult.FAIL;
+    if (player == null
+        || player.isSpectator()
+        || !player.getAbilities().mayBuild
+        || !player.canInteractWithBlock(ctx.getClickedPos(), 0)) return InteractionResult.FAIL;
     if (ctx.getLevel().isClientSide) return InteractionResult.SUCCESS;
-    var node = CircuitSimulation.at(ctx.getLevel(), ctx.getClickedPos());
-    if (node == null || !node.available()) {
+    var node = CircuitAccess.at(ctx.getLevel(), ctx.getClickedPos());
+    if (node == null
+        || !node.available()
+        || !ctx.getLevel().mayInteract(player, node.pos())
+        || node.owner() instanceof factorycraft.blockentity.LabBlockEntity lab
+            && !factorycraft.research.ResearchTeams.member(player, lab.scope())) {
       player.displayClientMessage(
           Component.translatable("message.factorycraft.circuit_node_required"), true);
       return InteractionResult.FAIL;
@@ -59,14 +72,14 @@ public final class CircuitWireItem extends Item {
     if (old.isEmpty()) {
       var data = new CompoundTag();
       data.putString("Dimension", ctx.getLevel().dimension().location().toString());
-      data.putLong("Anchor", node.getBlockPos().asLong());
-      data.putUUID("Identity", node.assembly().identity());
+      data.putLong("Anchor", node.pos().asLong());
+      data.putUUID("Identity", node.identity());
       data.putInt("Port", port);
       select(ctx.getItemInHand(), data);
       player.displayClientMessage(
           Component.translatable(
               "message.factorycraft.circuit_first",
-              node.kind().dualCircuit() ? (port == 0 ? "IN" : "OUT") : "I/O"),
+              node.ports() == 2 ? (port == 0 ? "IN" : "OUT") : "I/O"),
           true);
       return InteractionResult.CONSUME;
     }
@@ -74,12 +87,15 @@ public final class CircuitWireItem extends Item {
     if (!old.getString("Dimension").equals(ctx.getLevel().dimension().location().toString())
         || !old.hasUUID("Identity")) return InteractionResult.FAIL;
     var anchor = net.minecraft.core.BlockPos.of(old.getLong("Anchor"));
-    var first = CircuitSimulation.at(ctx.getLevel(), anchor);
+    var first = CircuitAccess.at(ctx.getLevel(), anchor);
     int from = old.getInt("Port");
     boolean valid =
         first != null
             && first.available()
-            && first.assembly().owns(old.getUUID("Identity"))
+            && ctx.getLevel().mayInteract(player, first.pos())
+            && (!(first.owner() instanceof factorycraft.blockentity.LabBlockEntity lab)
+                || factorycraft.research.ResearchTeams.member(player, lab.scope()))
+            && java.util.Objects.equals(first.identity(), old.getUUID("Identity"))
             && from >= 0
             && from < first.ports()
             && ctx.getLevel().mayInteract(player, first.portPosition(from))

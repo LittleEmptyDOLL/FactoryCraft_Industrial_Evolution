@@ -1,0 +1,45 @@
+FactoryCraft 0.22.0 local validation (11 November 2026, Europe/Moscow)
+Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252
+
+JAVA_HOME=/workspace/work/jdk21; GRADLE_USER_HOME=/workspace/work/gradle-home
+
+./gradlew build: PASS; JUnit {'tests': 176, 'failures': 0, 'errors': 0, 'skipped': 0}
+
+v0220-final-build.log
+BUILD SUCCESSFUL in 22s
+
+v0220-final-native.log
+FACTORYCRAFT_TYPED_FEEDBACK_DISK: VERIFIED three typed outputs including INT_MIN, reciprocal blue feedback ports; detached diagnostic state
+FACTORYCRAFT_DIRECT_CIRCUIT_DISK: VERIFIED typed INT_MIN, unknown ID, chest 23 diamonds, blue links, independent masks
+[04:14:41] [Server thread/INFO] [minecraft/GameTestServer]: All 357 required tests passed :)
+[04:14:42] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[04:14:42] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+BUILD SUCCESSFUL in 56s
+
+v0220-final-restart.log
+FACTORYCRAFT_TYPED_FEEDBACK_DISK: VERIFIED three typed outputs including INT_MIN, reciprocal blue feedback ports; detached diagnostic state
+FACTORYCRAFT_DIRECT_CIRCUIT_DISK: VERIFIED typed INT_MIN, unknown ID, chest 23 diamonds, blue links, independent masks
+[04:15:39] [Server thread/INFO] [minecraft/GameTestServer]: All 357 required tests passed :)
+[04:15:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[04:15:40] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+BUILD SUCCESSFUL in 57s
+
+FACTORYCRAFT_CIRCUIT_BENCH: 1024 ports / 64 rings / 128 static + 1 changed signal, 12800 updates in 177.775 ms; zero topology visits during value updates
+
+Native command: ./gradlew runGameTestServer -PgameTestFixture=v0220-checked
+The second native invocation is a new dedicated JVM, using the same saved fixture without reseeding.
+The typed feedback disk fixture is intentionally detached exact computational state; live staged feedback has a separate required native case.
+357 cases include all thirty restored production chains and twenty-one new direct-circuit cases.
+The output-limit case uses 4096 actual input keys, refuses partial output, and recovers after one real source row is removed.
+
+Real clients: ./gradlew runClient -PsmokeWorld=FactoryCraftCircuits022
+Xvfb/software OpenGL; EN/RU, structured programs and pickers, four wire colors, direct arm/lab controls, Selector Time; saved world reopened in a later JVM.
+Screenshots and limitations: VALIDATION.md. No new two-client or optional-mod combination claim.
+
+Resource regeneration SHA-256: 95d89247822fcbfc0e5d43d654a6c08c81b9a48997f89f9bf559b72374362781, byte-identical.
+google-java-format 1.24.0 dry-run: 52 changed/new Java files pass. git diff --check passes.
+
+The graph measurement is bounded, not a whole-world TPS guarantee. Full factory/mixed/optional-mod profiles remain GitHub Actions work.
+Intermediate failed checkpoints were not reset/refilled. Failed local diagnostics remain losslessly verified archives in /workspace/work/circuit-v0220-evidence/.
+An intermediate 354-assertion run failed shutdown in FactoryBlock.getShape -> ServerLevel.getBlockEntity during circuit ticket demotion. It is excluded from clean process evidence.
+No-load shape reads, owned-chunk-only dirty marking and demoted-belt synchronization guards fix that path; final fresh named fixture and repeated reload complete normally.

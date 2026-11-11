@@ -42,10 +42,10 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 // Named diagnostic runs preserve previous failed worlds instead of resetting their evidence.
-def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0210')
-if (!(gameTestFixture ==~ /v0210(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.21 GameTest fixture name.')
+def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0220')
+if (!(gameTestFixture ==~ /v0220(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.22 GameTest fixture name.')
 def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
-def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0210')
+def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0220')
 if (!(benchmarkProfile in ['full', 'smoke', 'mixed']) || !(benchmarkFixtureName ==~ /${benchmarkProfile}(?:-[a-z0-9]+)*/)) throw new GradleException('Fixture must be a simple profile[-name] child of run-benchmark.')
 def benchmarkDir = layout.projectDirectory.dir('run-benchmark/' + benchmarkFixtureName).asFile
 def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'

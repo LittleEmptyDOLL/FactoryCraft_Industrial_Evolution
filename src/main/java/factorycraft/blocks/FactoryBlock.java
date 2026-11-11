@@ -75,7 +75,12 @@ public final class FactoryBlock extends BaseEntityBlock {
   protected VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
     if (kind.casing() && s.getValue(PROFILE).splitter()) return box(0, 0, 0, 16, 3, 16);
     if (kind.belt() || kind == FactoryKind.TRANSPORT_PART) {
-      var be = l.getBlockEntity(p);
+      // Collision/path notifications also occur while ticket holders are being removed.
+      // A shape query must never make ServerLevel.getBlockEntity force a missing chunk.
+      var be =
+          l instanceof net.minecraft.server.level.ServerLevel server
+              ? factorycraft.fluids.FluidConnections.at(server, p)
+              : l.getBlockEntity(p);
       var cell =
           be instanceof BeltBlockEntity belt
               ? belt.modelCell(p)

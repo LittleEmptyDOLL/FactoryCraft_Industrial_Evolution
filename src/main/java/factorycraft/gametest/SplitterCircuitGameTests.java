@@ -96,7 +96,8 @@ public final class SplitterCircuitGameTests {
           for (var item :
               List.of(Content.BLUE_CIRCUIT_WIRE.get(), Content.WHITE_CIRCUIT_WIRE.get())) {
             p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
-            for (var pos : List.of(a.getBlockPos(), b.portPosition(0)))
+            for (var pos : List.of(a.getBlockPos(), b.portPosition(0))) {
+              p.setPos(pos.getX() + .5, pos.getY() + 1, pos.getZ() + .5);
               h.assertTrue(
                   p.getMainHandItem()
                       .useOn(
@@ -107,6 +108,7 @@ public final class SplitterCircuitGameTests {
                                   pos.getCenter(), Direction.UP, pos, false)))
                       .consumesAction(),
                   "wire click failed");
+            }
             h.assertTrue(p.getMainHandItem().getCount() == 1, "wire consumed");
           }
           h.assertTrue(

@@ -11,8 +11,7 @@ public final class CircuitGraph<K, S> {
     public final K key;
     private final Set<Port<K, S>> edges = new LinkedHashSet<>();
     private Bus<K, S> bus;
-    private S signal;
-    private int value;
+    private Map<S, Integer> output = Map.of();
     private boolean present = true, complete = true;
 
     private Port(K key) {
@@ -24,6 +23,7 @@ public final class CircuitGraph<K, S> {
     final Set<Port<K, S>> ports = new LinkedHashSet<>();
     final Map<S, Integer> signals = new HashMap<>();
     boolean valid = true, complete = true;
+    Map<S, Integer> snapshot;
   }
 
   private final Map<K, Port<K, S>> ports = new LinkedHashMap<>();
@@ -130,7 +130,7 @@ public final class CircuitGraph<K, S> {
 
   public boolean valid(K key) {
     var p = ports.get(key);
-    return p != null && p.present && p.bus.valid && p.bus.complete;
+    return p != null && p.present && p.bus.valid && p.bus.complete && p.bus.signals.size() <= 4096;
   }
 
   public int value(K key, S signal) {
@@ -138,16 +138,35 @@ public final class CircuitGraph<K, S> {
     return valid(key) ? p.bus.signals.getOrDefault(signal, 0) : 0;
   }
 
-  public void output(K key, S signal, int value) {
+  public Map<S, Integer> signals(K key) {
     var p = ports.get(key);
-    if (p == null || Objects.equals(p.signal, signal) && p.value == value) return;
+    if (!valid(key)) return Map.of();
+    if (p.bus.snapshot == null) p.bus.snapshot = Map.copyOf(p.bus.signals);
+    return p.bus.snapshot;
+  }
+
+  public void output(K key, S signal, int value) {
+    output(key, signal == null || value == 0 ? Map.of() : Map.of(signal, value));
+  }
+
+  public void output(K key, Map<S, Integer> values) {
+    var p = ports.get(key);
+    if (p == null || p.output.equals(values)) return;
+    var clean = new HashMap<S, Integer>();
+    values.forEach(
+        (k, v) -> {
+          Objects.requireNonNull(k);
+          if (v != 0) clean.put(k, v);
+        });
+    if (clean.size() > 4096) throw new IllegalArgumentException("Signal capacity exceeded");
+    if (p.output.equals(clean)) return;
     var b = p.bus;
     if (b.valid) {
-      if (p.signal != null) add(b.signals, p.signal, -p.value);
-      if (signal != null) add(b.signals, signal, value);
+      p.output.forEach((k, v) -> add(b.signals, k, -v));
+      clean.forEach((k, v) -> add(b.signals, k, v));
+      b.snapshot = null;
     }
-    p.signal = signal;
-    p.value = value;
+    p.output = Map.copyOf(clean);
     if (b.valid) notifyBus(b);
   }
 
@@ -183,7 +202,7 @@ public final class CircuitGraph<K, S> {
         p.bus = b;
         dirty.remove(p);
         b.complete &= p.complete;
-        if (p.signal != null) add(b.signals, p.signal, p.value);
+        p.output.forEach((k, v) -> add(b.signals, k, v));
       }
       rebuilds++;
       groups++;

@@ -46,3 +46,7 @@ Stack округляет цель захвата вниз до кратного 
 `/factorycraft inserterlab` строит шесть конечных сундук→рука→сундук линий с настоящим угольным генератором и Medium poles; Burner получает собственный уголь из источника. `/factorycraft inserterworks` сохраняет три линии Fast/Long/Bulk с фильтром последней. Ни FE, ни конечные продукты этих примеров не заполняются искусственно.
 
 Новые строгие дисковые фикстуры: шесть рук от `(21015,70,21015)` с шагом 32 по X и три ленты от X=21239 с тем же шагом. Сохраняются счётные руки, частично оплаченная фаза/остаток, топливо/FE, пять фильтров, исследования и стопки 2/3/4 с точными позициями и компонентами. При частичном/повреждённом состоянии тест падает без повторного заполнения. Старые контрольные позиции остаются на месте. Реально выполненные проверки и ограничения — VALIDATION.md.
+
+## Direct circuits — 0.22.0
+
+All six existing types use canonical four-color contacts for enable conditions, held-item/state reads, dynamic five-type filters and researched hand-size limits. Overrides are transient commands; manual filters and limits remain saved independently. Stopping preserves paid phase and the component-exact held remainder; changing filters can flush a partial Stack hand. Fuel, FE, capacity research, physical stacks and transfer transactions remain in the 0.21 core. Shift + empty-hand right-click opens the circuit panel; normal right-click retains the inserter menu. See CIRCUITS.md.

@@ -53,8 +53,8 @@ public final class AssemblyAccess {
       pole.invalidateVisual();
       factorycraft.energy.PowerGrid.refreshPole(pole);
     }
-    if (be instanceof factorycraft.circuits.CircuitNodeBlockEntity circuit)
-      factorycraft.circuits.CircuitSimulation.changed(circuit);
+    if (be.circuit(false) != null)
+      factorycraft.circuits.CircuitSimulation.changed(be.circuit(false));
     if (be instanceof BeltBlockEntity belt)
       factorycraft.simulation.BeltSimulation.topologyChanged(belt);
     if (be instanceof FluidBlockEntity fluid)

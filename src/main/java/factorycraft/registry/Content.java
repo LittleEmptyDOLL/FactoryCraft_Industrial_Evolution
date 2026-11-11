@@ -40,6 +40,10 @@ public final class Content {
       DeferredRegister.create(Registries.RECIPE_SERIALIZER, FactoryCraft.ID);
   public static final DeferredRegister<CreativeModeTab> TABS =
       DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FactoryCraft.ID);
+  public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.circuits.LogicMenu>>
+      LOGIC_MENU =
+          MENUS.register(
+              "logic", () -> IMenuTypeExtension.create(factorycraft.circuits.LogicMenu::new));
   public static final Map<FactoryKind, DeferredBlock<FactoryBlock>> FACTORY =
       new EnumMap<>(FactoryKind.class);
   public static final Map<factorycraft.fluids.FluidKind, DeferredBlock<Block>> FLUID_BLOCKS =
@@ -502,6 +506,56 @@ public final class Content {
   }
 
   private static void capabilities(RegisterCapabilitiesEvent e) {
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        MACHINE.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        INSERTER.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        BELT.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        FLUID.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        THERMAL.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        LAB.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        POLE.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        CIRCUIT.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        CASING.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        net.minecraft.world.level.block.entity.BlockEntityType.CHEST,
+        (be, ctx) -> factorycraft.circuits.CircuitContainers.attach(be));
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        net.minecraft.world.level.block.entity.BlockEntityType.TRAPPED_CHEST,
+        (be, ctx) -> factorycraft.circuits.CircuitContainers.attach(be));
+
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        TRANSPORT_PART.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
     e.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK, TRANSPORT_PART.get(), (be, side) -> be.inventory());
     e.registerBlockEntity(

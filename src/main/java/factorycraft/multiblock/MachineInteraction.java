@@ -31,6 +31,10 @@ public final class MachineInteraction {
   }
 
   public static boolean open(FactoryBlockEntity be, Player player, BlockPos cell) {
+    if (be instanceof factorycraft.circuits.CircuitNodeBlockEntity node
+        && node.kind() != factorycraft.blocks.FactoryKind.CIRCUIT_READER
+        && node.kind() != factorycraft.blocks.FactoryKind.CIRCUIT_CONTROLLER)
+      return factorycraft.circuits.LogicMenu.open(node.circuit(true), player, cell);
     return be instanceof MenuProvider menu && open(be, player, cell, menu);
   }
 

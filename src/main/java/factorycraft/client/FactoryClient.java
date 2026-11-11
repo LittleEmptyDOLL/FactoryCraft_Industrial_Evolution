@@ -41,6 +41,8 @@ public final class FactoryClient {
 
   @SubscribeEvent
   public static void menus(RegisterMenuScreensEvent e) {
+    factorycraft.circuits.CircuitNetwork.clientReceiver = CircuitVisuals::receive;
+    e.register(Content.LOGIC_MENU.get(), factorycraft.client.screens.LogicScreen::new);
     e.register(Content.CIRCUIT_MENU.get(), factorycraft.client.screens.CircuitScreen::new);
     e.register(Content.INSERTER_MENU.get(), factorycraft.client.screens.InserterScreen::new);
     e.register(Content.SPLITTER_MENU.get(), factorycraft.client.screens.SplitterScreen::new);
@@ -104,8 +106,6 @@ public final class FactoryClient {
     e.registerBlockEntityRenderer(Content.MACHINE.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.THERMAL.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.BELT.get(), BeltRenderer::new);
-    e.registerBlockEntityRenderer(
-        Content.CIRCUIT.get(), factorycraft.client.renderers.CircuitRenderer::new);
     e.registerBlockEntityRenderer(Content.INSERTER.get(), InserterRenderer::new);
   }
 }

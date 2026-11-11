@@ -234,3 +234,22 @@ Validated: 160 JUnit; 336/336 required native tests and new-process exact six-ha
 ### Handoff — finish only this requested scope
 
 Publish 0.21.0 normally to main after final checks; report the workflow once and do not wait for all CI jobs. No next roadmap item has been started. A later **explicitly authorized** task can replace the documented late-science mapping and creative-only Stack/height definitions when actual Space Age progression exists. Direct machine circuit wires, Selector Combinator, recipe-selection GUI, ore/oil generation, robots/trains and unrelated power/machine work remain separate tasks. Preserve all new resource invariants and restored required tests in future work.
+
+
+## Active 0.22.0 — Circuit Network 2.1 overhaul
+
+Reference Factorio 2.1.24, upstream tag commit acf5a342afcb66c066b9d88d202e8622112da117. Extend existing CircuitGraph (typed sparse maps, cached components, bounds) and CircuitSimulation (universal attachments, four-color masks, staged outputs/bounded sensors). Canonical machine controllers own state; external containers use FactoryCraft SavedData/capability opt-in. Preserve power/fluid/production kernels and archived finite chain guarantees.
+
+1. Typed signal algebra and structured constant/arithmetic/decider/selector programs, pure tests.
+2. Universal contacts/lifecycle/saving and explicit direct wires; existing legacy objects remain archival adapters in the same graph.
+3. Read-only device sensing and guarded enable/filter/hand/recipe/research actions; indexed finite-pipeline aggregation without hydraulic changes.
+4. Structured EN/RU settings/signal selection/diagnostic menus, server validation and client-only contact/wire rendering.
+5. Direct finite factories, required native invariants, cross-JVM fixtures, bounded circuit benchmark and real clients; publish only verified work and record limits.
+
+Implemented: typed multi-signal contributions in the existing graph; canonical direct four-color contacts and independent masks; full structured Constant/Arithmetic/Decider/Else/Selector/Time programs; guarded device/filter/hand/recipe/next-team-research controls; delta/budgeted loaded pipeline totals; EN/RU structured menus and cached camera-relative wires. Reader/Controller recipes/unlocks are retired; all three diagnostic examples now use direct contacts.
+
+Validated: build / 176 JUnit; all 357 required native cases and clean separate-JVM `v0220-checked` reload, including all thirty restored production guarantees, typed INT_MIN/unknown IDs, independent masks, SavedData-owned chest links, exact persisted feedback-port output maps and output-limit recovery without truncation. The bounded 1024-port/128-signal benchmark changes values without topology visits. Client evidence and final publication are recorded in VALIDATION.md. The intermediate shutdown crash is preserved separately and fixed by no-load shape queries and demoted-belt synchronization guards.
+
+### Handoff after this requested scope
+
+This requested development stage is complete within the documented limits. Real EN/RU client checks, separate-process world reopening, direct machine/lab controls and four-color wires are recorded in VALIDATION.md and screenshots. The final handoff reports the normally published main commit and workflow once; do not wait for all CI jobs or start another stage. Do not start the next roadmap task. A future explicitly requested stage can address **physical Factorio 2.1 hydraulic mixing/segment rules**; no such solver or new machines/progression were implemented here. Quality/rocket-weight selectors wait for actual corresponding subsystems. Preserve the twenty-one new direct-circuit cases, all old required fixtures and the final strict cross-JVM checkpoint; never reset an old failed world.

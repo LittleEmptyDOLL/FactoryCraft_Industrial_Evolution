@@ -150,8 +150,11 @@ public final class TransportPartBlockEntity extends FactoryBlockEntity {
 
   private void notifyOwner() {
     var b = anchor == null ? null : FluidConnections.at(level, anchor);
-    if (b instanceof BeltBlockEntity belt)
+    if (b instanceof BeltBlockEntity belt) {
       factorycraft.simulation.BeltSimulation.topologyChanged(belt);
+      if (belt.circuit(false) != null)
+        factorycraft.circuits.CircuitSimulation.changed(belt.circuit(false));
+    }
   }
 
   protected void saveAdditional(CompoundTag tag, HolderLookup.Provider r) {

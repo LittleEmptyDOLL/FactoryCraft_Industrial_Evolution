@@ -239,7 +239,9 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
         kind().armSpec(),
         capacityLevel,
         beltLevel,
-        manualLimit,
+        circuit(false) != null && circuit(false).settings().hand()
+            ? circuit(false).handLimit
+            : manualLimit,
         sample.getMaxStackSize(),
         beltTarget);
   }
@@ -337,7 +339,18 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
             net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
   }
 
+  public void circuitFiltersChanged() {
+    if (kind().armSpec().stack() && !held().isEmpty() && !matches(held())) {
+      forcedDrop = true;
+      markPersistentState();
+    }
+  }
+
   private boolean matches(ItemStack stack) {
+    var logic = circuit(false);
+    if (logic != null && logic.settings().filters())
+      return logic.inputReady
+          && logic.filterIds.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
     return filters.matches(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
   }
 

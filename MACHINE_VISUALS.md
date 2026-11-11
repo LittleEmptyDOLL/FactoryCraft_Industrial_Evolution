@@ -27,3 +27,7 @@ FactoryCraft использует единое имя владельца для 
 ## 0.21.0 inserters
 
 Six original generated bases distinguish Burner (fuel housing), yellow Standard, red Long, blue Fast, green Bulk and white Stack (reinforced bases). One client renderer animates two links by the server's paid phase; Long extends both links to reach two. A held stack stays component-exact in the server hand and renders a quantity label. Interrupted power/gates stop authoritative movement; the client interpolates bounded snapshots only. Belt rendering draws one to four vertically offset item layers per physical carrier. These are original functional assets, not extracted Factorio art or a claim of final animated artwork.
+
+## Circuit contacts — 0.22.0
+
+Selector uses an original 1×2 cyan industrial enclosure in the existing per-cell generator. All direct circuit contacts use server-defined, rotated attachment points and four distinct studs. `CircuitVisuals` replaces the old combinator-only renderer with reciprocal UUID-checked, incident-edge/chunk-indexed cached curves. Vertices are camera-relative to retain precision far from spawn; no neighbor discovery or resource simulation runs per frame. Copper power rendering is unchanged.

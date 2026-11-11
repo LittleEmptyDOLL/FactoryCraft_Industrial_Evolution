@@ -62,6 +62,7 @@ public record CircuitBinding(BlockPos controller, UUID identity) {
   }
 
   public static boolean allowed(FactoryBlockEntity b) {
+    if (!CircuitSimulation.permitted(b)) return false;
     var binding = get(b);
     if (binding == null) return true;
     var node = FluidConnections.at(b.getLevel(), binding.controller());

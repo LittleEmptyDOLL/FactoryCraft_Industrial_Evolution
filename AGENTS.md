@@ -16,7 +16,15 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.21.0 Factorio 2.0 inserters (10 November 2026)
+## Active task — 0.22.0 Circuit Network, Factorio 2.1.24 (10 November 2026)
+
+* Current request supersedes old bans on direct machine circuits/selectors. Extend the existing four-color incremental graph with typed sparse int32 signal maps, independent read/write masks, canonical direct contacts (including opted-in foreign containers), structured combinator programs/else/selector/time and machine/lab controls. Do not add a second simulation or mutate foreign BlockEntity NBT.
+* One owner stores settings and UUID links; parts only redirect. Preserve all inventory/fluid/FE transactions, 0.21 arms/stacks, explicit electrical wires and all thirty restored integration cases. Unknown/unloaded endpoints quarantine direct gates; never force chunks, scan the whole world per tick, or access the world from worker/diagnostic threads.
+* Use separate v0220 diagnostic/benchmark/client paths; retain old worlds and failed evidence. Quality/rocket-weight selector modes depend on future real subsystems, not substitutes. Physical fluid mixing/topology, inserter mirroring/drop-side changes and unrelated progression remain outside scope.
+* After this slice, do not automatically begin physical Factorio 2.1 hydraulic rules or any other roadmap item. Preserve all twenty-one new direct-circuit tests, including unknown-data/no-load-shape, typed feedback disk state and output-limit recovery and the original thirty required production chains.
+* Run focused pure/native/restart/client and bounded circuit performance checks. Keep required old guarantees active, adapt actual direct production examples. Publish checked main normally, preserve others, report CI once without waiting and stop.
+
+## Previous task — 0.21.0 Factorio 2.0 inserters (10 November 2026)
 
 * User scope supersedes previous bans on inserter changes. Implement Burner / electric Standard / Long / Fast / Bulk / Space Age Stack, universal five-filter lists, counted component-exact hands, fractional paid phase, fuel/self-fueling, research/manual limits and real belt carrier stacks. Remove separate Filter Inserter from current content/progression. Preserve all four circuit colors and the 0.20 power core; no unrelated machines, poles, circuits/selectors, ore or Space Age systems.
 * Every extracted item has one persisted owner, including partial hands, fuel/remainders and partial belt stacks. Preserve physical carrier positions/headway/reservations/sleeping and distinguish carriers from total items in ledgers. No free movement at zero power, no forced chunk loading, no per-item entities/ticks. Arbitrary nonconforming handlers cannot guarantee crash-atomic external writes; never silently truncate unexpected actual results.
