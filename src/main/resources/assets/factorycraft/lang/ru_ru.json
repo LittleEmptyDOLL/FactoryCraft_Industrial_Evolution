@@ -551,5 +551,17 @@
   "signal.factorycraft.signal_8": "Сигнал 8",
   "signal.factorycraft.signal_9": "Сигнал 9",
   "gui.factorycraft.inserter_reflected.0": "Отражение: нет",
-  "gui.factorycraft.inserter_reflected.1": "Отражение: да"
+  "gui.factorycraft.inserter_reflected.1": "Отражение: да",
+  "gui.factorycraft.pipeline_preview": "Показать соседние части (10 с)",
+  "gui.factorycraft.pipeline_amount": "Объём: %s мБ",
+  "gui.factorycraft.pipeline_capacity": "Вместимость: %s мБ",
+  "gui.factorycraft.pipeline_members": "Участников: %s",
+  "gui.factorycraft.pipeline_conflicts": "Конфликтных границ: %s",
+  "gui.factorycraft.pipeline_extent": "X×Z: %s×%s; высота %s",
+  "gui.factorycraft.pipeline_status.0": "Пересчёт / недоступно",
+  "gui.factorycraft.pipeline_status.1": "Сегмент готов",
+  "gui.factorycraft.pipeline_status.2": "Превышен охват 320×320",
+  "gui.factorycraft.pipeline_status.3": "Конфликт фильтра жидкости",
+  "gui.factorycraft.pipeline_status.4": "Переполнение: требуется отбор",
+  "gui.factorycraft.pipeline_status.5": "Несовместимая граница закрыта"
 }

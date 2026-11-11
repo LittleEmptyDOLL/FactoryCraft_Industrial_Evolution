@@ -21,7 +21,8 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
  * Composition for pumpjack and mixed processors. The controller remains the sole persistent owner.
  */
 public final class PetroleumProduction {
-  public static final int CAPACITY = 4000, TRANSFER = 100;
+  public static final int CAPACITY = 4000,
+      TRANSFER = factorycraft.simulation.fluids.FluidUnits.boundaryRate(CAPACITY);
   private final MachineBlockEntity machine;
   public final List<FluidCell<FluidKey>> cells;
   private BlockPos deposit;
@@ -139,7 +140,7 @@ public final class PetroleumProduction {
       var pos = site.position();
       var side = site.side();
       var from = FluidConnections.output(machine.getLevel(), site.adjacent(), side.getOpposite());
-      if (from != null)
+      if (from != null && from.key() != null && acceptsInput(p.input(), from.key()))
         from.transferTo(
             cells.get(p.input()),
             factorycraft.multiblock.MachineFluidAccess.transferLimit(
@@ -290,6 +291,16 @@ public final class PetroleumProduction {
     selected = selectedId.isEmpty() ? 0 : -1;
     for (int i = 0; i < recipes.size(); i++)
       if (recipes.get(i).holder.id().toString().equals(selectedId)) selected = i + 1;
+  }
+
+  public boolean acceptsInput(int channel, FluidKey key) {
+    if (key == null) return false;
+    refreshRecipes();
+    if (selected <= 0) return selected == 0;
+    var recipe = recipes.get(selected - 1).holder.value();
+    return channel >= 0
+        && channel < recipe.fluids().size()
+        && recipe.fluids().get(channel).test(key.stack(recipe.fluids().get(channel).amount()));
   }
 
   public RecipeHolder<ChemicalRecipe> circuitRecipe() {

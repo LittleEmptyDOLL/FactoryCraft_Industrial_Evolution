@@ -1,0 +1,6 @@
+legacy nodes=1280 edges=2488 setup_ms=2.398 mean_tick_us=411.100 max_tick_us=5180.326 edge_visits=333648 consumed=0 first_far_tick=-1 allocated_bytes=562960 ledger=64000
+segment nodes=1280 edges=2488 setup_ms=10.118 mean_tick_us=21.820 max_tick_us=2336.758 topology_visits=12296 additional_visits=9807 consumed=32000 first_far_tick=0 allocated_bytes=1820808 ledger=64000 restored=true
+legacy nodes=1280 edges=2488 setup_ms=1.417 mean_tick_us=50.778 max_tick_us=285.362 edge_visits=333648 consumed=0 first_far_tick=-1 allocated_bytes=562960 ledger=64000
+segment nodes=1280 edges=2488 setup_ms=6.336 mean_tick_us=21.264 max_tick_us=2148.511 topology_visits=12296 additional_visits=9807 consumed=32000 first_far_tick=0 allocated_bytes=1820568 ledger=64000 restored=true
+legacy nodes=1280 edges=2488 setup_ms=1.780 mean_tick_us=50.847 max_tick_us=278.020 edge_visits=333648 consumed=0 first_far_tick=-1 allocated_bytes=562960 ledger=64000
+segment nodes=1280 edges=2488 setup_ms=5.872 mean_tick_us=42.617 max_tick_us=10791.427 topology_visits=12296 additional_visits=9807 consumed=32000 first_far_tick=0 allocated_bytes=1654872 ledger=64000 restored=true

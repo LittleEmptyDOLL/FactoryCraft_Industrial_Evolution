@@ -26,7 +26,8 @@ import net.neoforged.neoforge.items.*;
 /** Canonical fuel, progress, water, steam and FE. All ports recheck loaded chunk ownership. */
 public final class ThermalBlockEntity extends FactoryBlockEntity
     implements factorycraft.multiblock.AssemblyOwner, MenuProvider, GridGenerator {
-  public static final int FLUID_CAPACITY = 4000, PORT_RATE = 100;
+  public static final int FLUID_CAPACITY = 4000,
+      PORT_RATE = factorycraft.simulation.fluids.FluidUnits.boundaryRate(FLUID_CAPACITY);
   private final factorycraft.multiblock.IndustrialAssembly assembly;
 
   public factorycraft.multiblock.IndustrialAssembly assembly() {

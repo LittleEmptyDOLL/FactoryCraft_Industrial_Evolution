@@ -79,8 +79,9 @@ public final class MachineInspection {
       fluids.add(t.contents(t.steam));
     } else if (be instanceof FluidBlockEntity f) {
       energy = f.kind() == factorycraft.fluids.FluidKind.PUMP ? f.power.getEnergyStored() : -1;
-      var c = f.cell();
-      if (c.amount() > 0) fluids.add(c.key().stack(c.amount()));
+      var c = factorycraft.fluids.FluidSimulation.view(f);
+      if (c.amount() > 0 && c.key() != null)
+        fluids.add(c.key().stack((int) Math.min(Integer.MAX_VALUE, c.amount())));
     } else if (be instanceof LabBlockEntity lab) energy = lab.power.getEnergyStored();
     else if (be instanceof BeaconBlockEntity b) energy = b.power.getEnergyStored();
     else if (be instanceof InserterBlockEntity arm && arm.electric())

@@ -1,4 +1,4 @@
-# Petroleum and mixed processing — 0.19.0
+# Petroleum and mixed processing — 0.24.0
 
 Minecraft **1.21.1 / NeoForge 21.1.252 / Java 21**. Finite extraction, basic/advanced refining, cracking, lubricant, sulfur, acid, plastic and batteries work with existing full-size machines, pole grids, pipes, inserters and vanilla chests. Research and later production chains remain incomplete.
 
@@ -30,7 +30,7 @@ The powered pumpjack searches the loaded 3×3 area below its base center, up to 
 
 ## One item / whole structure and physical ports
 
-One item forms the complete 5×4×5 refinery around the selected **horizontal base center**. Internal controllers stay front-left-bottom for 0.6.0+ compatibility; their coordinates are not the player's targeting origin. Protection, loaded-volume validation, centered previews and snapshot rollback remain. Parts contain position/UUID only. Breaking any part or removing with a wrench returns at most one portable machine with the sole inventory/fluids/FE/progress; placement binds fresh identities. See MACHINE_DIMENSIONS.md.
+One item forms the complete 5×4×5 refinery around the selected **horizontal base center**. Controller locations and placement anchors follow the independent assembly-4 descriptors; their coordinates are not the player's targeting origin. Protection, loaded-volume validation, centered previews and snapshot rollback remain. Parts contain position/UUID only. Breaking any part or removing with a wrench returns at most one portable machine with the sole inventory/fluids/FE/progress; placement binds fresh identities. See MACHINE_DIMENSIONS.md.
 
 Canonical NORTH ports below are relative to **layout origin**, independent of the base-center refinery controller. All local Y=0. Numeric definitions follow Factorio 2.0.77 (`base/prototypes/entity/entities.lua`, `mining-drill.lua`), pinned commit `ce6741a54c3199caad4ed147e9987fd8d5653fdf`; only coordinates were consulted, no code/art is distributed.
 
@@ -49,7 +49,7 @@ Pumpjack's original per-orientation offsets are not a simple rotated point: for 
 
 Heavy/light cracking takes oil at chemical input A and water at B; lubricant takes heavy oil at A. Sulfur takes gas at A/water at B; acid takes water at A plus item-fed sulfur/iron; batteries take acid at A plus iron/copper. Basic refining uses crude/Fluid0 and gas/Fluid2. Existing recipe/output indexing and stoichiometry are retained; new physical positions do not reassign stored products.
 
-Each mapped input/output transfers up to **100 mB/tick** with adjacent canonical FactoryCraft fluid endpoints. NeoForge fluid views exist only at the mapped physical cell/face, with strict INPUT/OUTPUT/BOTH behavior, UUID/canonical/loaded full-assembly guards and component-sensitive storage. Arbitrary casing, vertical and unsided maintenance access are removed. UI canister recovery remains a separately authorized menu operation. External pipes may use the exact sided capabilities. Rendering, pipe shapes, active transfer and menu coordinate tooltips share MachinePorts definitions.
+Each mapped input/output uses its 4000-mB buffer-derived nominal limit (12000 mB/Minecraft tick), additionally constrained by the adjacent segment’s fill/free pressure budget. There is no per-internal-pipe edge rate. Selected recipes validate the actual fluid input channel; automatic recipe mode retains permissive input selection. Recipe quantities, durations, modules and FE costs are unchanged. NeoForge fluid views exist only at the mapped physical cell/face, with strict INPUT/OUTPUT/BOTH behavior, UUID/canonical/loaded full-assembly guards and component-sensitive storage. Arbitrary casing, vertical and unsided maintenance access are removed. UI canister recovery remains a separately authorized menu operation. External pipes may use the exact sided capabilities. Rendering, pipe shapes, active transfer and menu coordinate tooltips share MachinePorts definitions.
 
 Crude, gas, heavy/light oil, lubricant and acid have native plain buckets and original textures. Component-bearing fluids refuse lossy bucket conversion; portable machines/tanks preserve full native components and restored overflow. Lubricant is currently produced/stored/transported; engines consuming it and accumulator recipes consuming batteries are future progression work.
 
@@ -108,3 +108,5 @@ The same mixed-transaction adapter now also serves a 3×3×3 assembling machine 
 ## Schema-4 boundary
 
 Assembly and part coordinates/NBT intentionally break intermediate schema-3 worlds. Production cells, counted recipes and chemistry codec are retained; no old world is deleted, migrated or refilled. Use a fresh world. New dedicated fixtures verify one portable filled owner, fresh identity, component isolation, reflected ports and exact four-chunk resources/progress/identity across JVMs. Old pipeline screenshots and prior results are retained for comparison, not re-certified for this layout.
+
+0.24.0 pipes/tanks share a component-sensitive segment; refinery/chemical buffers remain independent directional machine channels. Multiple outputs can feed separate or compatible segments without merging through the machine. Conflicting outputs block, preserving finite inputs and completed products. See FLUIDS.md for new ownership, throughput and persistence rules.

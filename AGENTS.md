@@ -16,7 +16,15 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.23.0 Transport 2.1 and visual overhaul (11 November 2026)
+## Active task — 0.24.0 Factorio 2.1 fluid segments (11 November 2026)
+
+* Current user authorizes replacing runtime passive edge equalization with one pooled segment model. Preserve 1000/16000/1000 mB physical capacities, recipes/FE, assembly-4 physical ports, all four circuit colors, all thirty restored production chains and 0.23 item transport. Do not implement new machines, temperature, construction tools or lift art.
+* One runtime pool owns active volume. Per-member deterministic capacity-prefix shares are the independent chunk/portable records; never write the complete segment amount to every pipe. Freeze/materialize affected pools before topology/unload/packing; quarantine incomplete rebuilds. No forced chunks, per-edge per-tick flow or full member scan on ordinary consumption.
+* Use one segment index for fluid capabilities, sensors, pumps and UI. Pressure-scaled limits are per physical boundary, not per whole segment; pumps remain directional powered boundaries. Keep exact component-sensitive identities, empty-transition reconnection, overflow safety and strict stale-owner guards.
+* New v0240 diagnostic paths only; preserve older/failed evidence, allowing verified lossless archives. Serialize builds/native runs: never compile Java while another dev client/server is running from the same output directories.
+* Validate pure invariants, required native/finite chains, independent-JVM persistence, bounded old/new fluid workload and real client. Full/MIXED/optional jobs remain CI. Publish checked main normally, preserving parallel work, report once and stop. Record actual limitations, never call unrun checks successful.
+
+## Previous task — 0.23.0 Transport 2.1 and visual overhaul (11 November 2026)
 
 * User scope now includes inserter reflection/drop-side semantics, splitter input-only insertion, Transport Belt Capacity 2 prerequisite, original belt/lift art and bounded cached geometry/animation. Preserve six arms, typed four-color circuits, copper networks, all existing required cases and exact resource/phase ownership.
 * Use Minetorio/Create only as architectural/visual references. Minetorio template MIT is not a license for all its code/art; Create assets are All Rights Reserved. Copy no third-party code/art. No mandatory Create/Flywheel dependency.
@@ -81,7 +89,7 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 
 * Fluid storage has one canonical component-sensitive cell. Simulate without mutation; reserve/drain/fill all endpoints before notifying observers. Never mix FluidStacks with different components or truncate restored volume to a smaller capacity.
 * Fluid availability must check canonical loaded chunk ownership without loading it. Freeze/detach at ChunkEvent.Unload before serialization (BE unload is later); mark the owned chunk unsaved immediately. Preserve the separate-process four-chunk finite-volume fixture without reseeding failures.
-* Keep FLUIDS.md synchronized with throughput/energy/capacity changes. The current finite local-pressure solver is an explicit approximation, not exact Factorio 2.0 segment behavior. New large fluid machines must follow the existing one-item multiblock rule.
+* Keep FLUIDS.md synchronized with throughput/energy/capacity changes. The pre-0.24 local-pressure approximation is archived; current runtime uses the single segment model documented in FLUIDS.md. New large fluid machines must follow the existing one-item multiblock rule.
 
 * Thermal recipes use their own boiling type; do not break legacy processing JSON/stream format. A canonical serialized definition is the persisted recipe identity. Update STEAM_POWER.md before changing fuel/fluid/FE ratios.
 * Boiler conversion must commit both fluid cells and fuel/progress before observers; refueling defers inventory notifications until burn ticks and container remainder are stored. Engine FE is owned before steam observers run; never consume steam for less than a complete 12-FE quantum or accept FE into a generator.

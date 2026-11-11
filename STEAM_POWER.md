@@ -8,7 +8,7 @@ Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. The thermal chain uses an automa
 |---|---|---|---|
 | Boiler | 200 mB water; 20 fueled working ticks | 200 mB steam | one 1-second batch at 20 TPS; pauses without input/fuel/full result space |
 | Steam engine | up to 10 mB steam per tick | 12 FE/mB, up to 120 FE/t | 16000 FE buffer; stops if less than 12 FE fits |
-| Thermal fluid ports | rear input/front boiler output | finite cell transfers | up to 100 mB/t per port; each cell 4000 mB |
+| Thermal fluid ports | rear input/front boiler output | finite cell transfers | 4000-mB buffer-derived nominal 12000 mB/t, bounded by segment pressure; each cell 4000 mB |
 
 A boiler uses vanilla NeoForge smelting fuel durations, burning one stored fuel tick per successful work tick. One coal (1600 fuel ticks) processes 16000 mB water into steam; an engine can convert that to **192000 gross FE**. Pump power and other consumers reduce net available energy. This balance is a documented Minecraft FE approximation, not a literal Factorio joule conversion. The old coal generator still gives up to 80 FE per working fuel tick. Ambient cooling, steam temperature-dependent power, heat pipes and nuclear turbines are not simulated. Steam's fluid type has a nominal 438 K / 165 °C label; it is not an independent temperature field.
 
@@ -55,3 +55,7 @@ Existing `factorycraft:processing` item recipe JSON and its stream format remain
 See VALIDATION.md for commands/results. Independent tests cover atomic conversion callbacks, no-fuel/no-input/backpressure, exact progress restoration, changed definitions, FE quanta/overflow and complete material/fuel/energy ledgers. Dedicated tests exercise real fluid/item/FE APIs, buckets, fuel remainders, actual portable item placement, rotation/unload guards, codec round-trips, partial reconstruction, finite pipe transport and source-water-powered production. A detached two-chunk fixture verifies exact saved fuel/progress/fluids/FE in separate JVMs; this is not natural player-distance unload coverage.
 
 The machines currently use ordinary server BE tickers with two precomputed neighbor positions, canonical chunk checks, per-boiler recipe caches and changed-state synchronization every five ticks at most. There is no global world scan or off-thread world access. Large active thermal factories, two real clients, other-mod interoperability and temperature physics are not benchmarked. Existing full-factory regression tests contain no thermal load. The basic mixed petroleum chain is delivered in 0.5.0. Next: advanced refining/cracking and further chemistry.
+
+## Fluid segment integration (0.24.0)
+
+Boiler/engine recipe quantities, fuel and 12-FE steam quanta are unchanged. Water/steam channels remain sole machine-owned buffers; physical BOTH water ports propagate water filters to adjacent passive segments, while steam has its separate channel/filter. Conflicting bidirectional fluids do not merge. Pipes and tanks use the same segment owner for active ports and circuits. Pump rate is now 60 mB/t at normal pressure (20 FE/working tick); source-water remains an explicit Minecraft feature. See FLUIDS.md and VALIDATION.md.

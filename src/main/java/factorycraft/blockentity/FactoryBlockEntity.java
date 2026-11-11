@@ -12,6 +12,11 @@ import net.neoforged.neoforge.items.IItemHandler;
 public abstract class FactoryBlockEntity extends BlockEntity {
   private factorycraft.circuits.CircuitAttachment directCircuit;
 
+  /** Nonowning pressure quotas are shared by all capability lookups at one physical boundary. */
+  public final java.util.Map<
+          String, factorycraft.simulation.fluids.FluidCell<factorycraft.fluids.FluidKey>>
+      fluidPortViews = new java.util.HashMap<>();
+
   public final factorycraft.circuits.CircuitAttachment circuit(boolean create) {
     if (!factorycraft.circuits.CircuitAccess.supported(this)) return null;
     if (directCircuit == null && create)

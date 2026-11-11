@@ -36,7 +36,59 @@ public final class MachineFluidAccess {
       return channel < m.petroleum().cells.size() ? m.petroleum().cells.get(channel) : null;
     if (be instanceof ThermalBlockEntity t)
       return channel == 0 ? t.water : channel == 1 ? t.steam : null;
-    return be instanceof FluidBlockEntity f && channel == 0 ? f.cell() : null;
+    return be instanceof FluidBlockEntity f && channel == 0
+        ? f.hydraulic(be.getBlockPos(), null)
+        : null;
+  }
+
+  private static FluidCell<FluidKey> channelCell(
+      FactoryBlockEntity be, int channel, BlockPos pos, Direction side) {
+    if (be instanceof FluidBlockEntity f && channel == 0) return f.hydraulic(pos, side);
+    return channelCell(be, channel, pos, side, () -> definition(be, pos, side));
+  }
+
+  private static FluidCell<FluidKey> channelCell(
+      FactoryBlockEntity be,
+      int channel,
+      BlockPos pos,
+      Direction side,
+      java.util.function.Supplier<MachinePorts.Port> spec) {
+    if (be instanceof FluidBlockEntity f && channel == 0) return f.hydraulic(pos, side);
+    var cell = cell(be, channel);
+    if (cell == null) return null;
+    var owner = AssemblyAccess.owner(be);
+    if (owner == null) return null;
+    var identity = owner.assembly().identity();
+    var declaration = spec.get();
+    var key =
+        pos.asLong()
+            + "/"
+            + side
+            + "/"
+            + channel
+            + "/"
+            + identity
+            + "/"
+            + declaration.input()
+            + "/"
+            + declaration.output();
+    return be.fluidPortViews.computeIfAbsent(
+        key,
+        k ->
+            new factorycraft.simulation.fluids.BoundaryFluidCell<>(
+                () -> cell,
+                () -> {
+                  var p = spec.get();
+                  return owner.assembly().owns(identity)
+                      && ready(be, pos)
+                      && p != null
+                      && (p.input() == channel || p.output() == channel);
+                },
+                () -> be.getLevel().getGameTime(),
+                factorycraft.simulation.fluids.FluidUnits.boundaryRate(cell.capacity()),
+                FluidSimulation::manual,
+                () -> true,
+                () -> {}));
   }
 
   public static boolean accepts(FactoryBlockEntity be, int channel, FluidKey key) {
@@ -47,7 +99,8 @@ public final class MachineFluidAccess {
           && channel == 0
           && key.stack(1).getFluidType() == Fluids.WATER.getFluidType();
     }
-    return true;
+    return !(be instanceof MachineBlockEntity m && m.petroleum() != null)
+        || m.petroleum().acceptsInput(channel, key);
   }
 
   /** Same-cell BOTH ports equalize rather than immediately returning each newly received batch. */
@@ -63,13 +116,15 @@ public final class MachineFluidAccess {
       FactoryBlockEntity be, BlockPos pos, Direction side, FluidKey fluid) {
     var p = definition(be, pos, side);
     return p != null && p.input() >= 0 && ready(be, pos) && accepts(be, p.input(), fluid)
-        ? cell(be, p.input())
+        ? channelCell(be, p.input(), pos, side)
         : null;
   }
 
   public static FluidCell<FluidKey> output(FactoryBlockEntity be, BlockPos pos, Direction side) {
     var p = definition(be, pos, side);
-    return p != null && p.output() >= 0 && ready(be, pos) ? cell(be, p.output()) : null;
+    return p != null && p.output() >= 0 && ready(be, pos)
+        ? channelCell(be, p.output(), pos, side)
+        : null;
   }
 
   public static IFluidHandler port(FactoryBlockEntity be, BlockPos pos, Direction side) {
@@ -84,9 +139,15 @@ public final class MachineFluidAccess {
     var owner = Objects.requireNonNull(AssemblyAccess.owner(be));
     var identity = owner.assembly().identity();
     var physical = pos.immutable();
+    var fluidIdentity = be instanceof FluidBlockEntity f ? f.fluidOwner() : null;
     return new IFluidHandler() {
       private MachinePorts.Port live() {
-        return owner.assembly().owns(identity) && ready(be, physical) ? spec.get() : null;
+        return (fluidIdentity == null
+                    || be instanceof FluidBlockEntity f && fluidIdentity.equals(f.fluidOwner()))
+                && owner.assembly().owns(identity)
+                && ready(be, physical)
+            ? spec.get()
+            : null;
       }
 
       private int tanks(MachinePorts.Port p) {
@@ -106,14 +167,26 @@ public final class MachineFluidAccess {
       public FluidStack getFluidInTank(int i) {
         var p = live();
         if (p == null) return FluidStack.EMPTY;
-        var c = cell(be, channel(p, i));
+        var c =
+            channelCell(
+                be,
+                channel(p, i),
+                physical,
+                p.side(owner.assembly().profile().facing(be.getBlockState())),
+                spec);
         return c == null || c.amount() == 0 ? FluidStack.EMPTY : c.key().stack(c.amount());
       }
 
       public int getTankCapacity(int i) {
         var p = live();
         if (p == null) return 0;
-        var c = cell(be, channel(p, i));
+        var c =
+            channelCell(
+                be,
+                channel(p, i),
+                physical,
+                p.side(owner.assembly().profile().facing(be.getBlockState())),
+                spec);
         return c == null ? 0 : Math.max(c.capacity(), c.amount());
       }
 
@@ -121,14 +194,30 @@ public final class MachineFluidAccess {
         var p = live();
         if (p == null || stack.isEmpty()) return false;
         int channel = channel(p, i);
-        return channel == p.input() && accepts(be, channel, new FluidKey(stack));
+        var c =
+            channelCell(
+                be,
+                channel,
+                physical,
+                p.side(owner.assembly().profile().facing(be.getBlockState())),
+                spec);
+        return channel == p.input()
+            && accepts(be, channel, new FluidKey(stack))
+            && c != null
+            && c.accepts(new FluidKey(stack));
       }
 
       public int fill(FluidStack stack, FluidAction action) {
         var p = live();
         if (p == null || p.input() < 0 || stack.isEmpty()) return 0;
         var key = new FluidKey(stack);
-        var c = cell(be, p.input());
+        var c =
+            channelCell(
+                be,
+                p.input(),
+                physical,
+                p.side(owner.assembly().profile().facing(be.getBlockState())),
+                spec);
         return c == null || !accepts(be, p.input(), key)
             ? 0
             : c.fill(key, stack.getAmount(), action.simulate());
@@ -147,7 +236,13 @@ public final class MachineFluidAccess {
       private FluidStack drainMatching(int amount, FluidKey key, FluidAction action) {
         var p = live();
         if (p == null || p.output() < 0 || amount <= 0) return FluidStack.EMPTY;
-        var c = cell(be, p.output());
+        var c =
+            channelCell(
+                be,
+                p.output(),
+                physical,
+                p.side(owner.assembly().profile().facing(be.getBlockState())),
+                spec);
         if (c == null || c.amount() == 0 || key != null && !key.equals(c.key()))
           return FluidStack.EMPTY;
         var owned = c.key();

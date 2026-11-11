@@ -49,7 +49,14 @@ public final class MachineInteraction {
     if (be instanceof LabBlockEntity lab
         && !factorycraft.research.ResearchTeams.member(player, lab.scope())) return false;
     var previous = player.containerMenu;
-    player.openMenu(menu, be.getBlockPos());
+    if (be instanceof factorycraft.blockentity.FluidBlockEntity f)
+      player.openMenu(
+          menu,
+          b -> {
+            b.writeBlockPos(be.getBlockPos());
+            factorycraft.fluids.FluidMenu.writePreview(f, b);
+          });
+    else player.openMenu(menu, be.getBlockPos());
     if (player.containerMenu == previous) return false;
     var owner = AssemblyAccess.owner(be);
     CONTACTS.put(

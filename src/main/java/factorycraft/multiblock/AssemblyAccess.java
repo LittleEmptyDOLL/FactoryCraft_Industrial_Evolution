@@ -49,6 +49,7 @@ public final class AssemblyAccess {
 
   public static void changed(AssemblyOwner owner) {
     var be = owner.factoryEntity();
+    factorycraft.fluids.FluidSimulation.machineChanged(be);
     if (be instanceof PoleBlockEntity pole) {
       pole.invalidateVisual();
       factorycraft.energy.PowerGrid.refreshPole(pole);

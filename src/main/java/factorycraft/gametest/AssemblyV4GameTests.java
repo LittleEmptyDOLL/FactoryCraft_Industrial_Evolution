@@ -237,24 +237,33 @@ public final class AssemblyV4GameTests {
   @GameTest(template = "empty", timeoutTicks = 100)
   public static void cachedPhysicalPortsCloseOnUnloadAndStructuralDamage(GameTestHelper h) {
     var be = place(h, MachineProfile.TANK, h.absolutePos(new BlockPos(8, 3, 8)), Direction.NORTH);
-    var p = MachinePorts.definitions(MachineProfile.TANK).getFirst();
-    var cap = port(h, be, p);
-    cap.fill(new FluidStack(Fluids.WATER, 731), EXEC);
-    var part =
-        (CasingBlockEntity)
-            h.getLevel()
-                .getBlockEntity(p.position(MachineProfile.TANK, be.getBlockPos(), Direction.NORTH));
-    part.onChunkUnloaded();
-    h.assertTrue(
-        cap.getTanks() == 0 && cap.fill(new FluidStack(Fluids.WATER, 1), EXEC) == 0,
-        "cached capability remained active during unload");
-    part.onLoad();
-    h.assertTrue(cap.getFluidInTank(0).getAmount() == 731, "reload lost volume");
-    h.getLevel().removeBlock(part.getBlockPos(), false);
-    h.assertTrue(
-        cap.getTanks() == 0 && cap.drain(100, EXEC).isEmpty(),
-        "cached capability accessed removed structure");
-    h.succeed();
+    h.runAfterDelay(
+        5,
+        () -> {
+          var p = MachinePorts.definitions(MachineProfile.TANK).getFirst();
+          var cap = port(h, be, p);
+          cap.fill(new FluidStack(Fluids.WATER, 731), EXEC);
+          var part =
+              (CasingBlockEntity)
+                  h.getLevel()
+                      .getBlockEntity(
+                          p.position(MachineProfile.TANK, be.getBlockPos(), Direction.NORTH));
+          part.onChunkUnloaded();
+          h.assertTrue(
+              cap.getTanks() == 0 && cap.fill(new FluidStack(Fluids.WATER, 1), EXEC) == 0,
+              "cached capability remained active during unload");
+          part.onLoad();
+          h.runAfterDelay(
+              5,
+              () -> {
+                h.assertTrue(cap.getFluidInTank(0).getAmount() == 731, "reload lost volume");
+                h.getLevel().removeBlock(part.getBlockPos(), false);
+                h.assertTrue(
+                    cap.getTanks() == 0 && cap.drain(100, EXEC).isEmpty(),
+                    "cached capability accessed removed structure");
+                h.succeed();
+              });
+        });
   }
 
   @GameTest(template = "empty", timeoutTicks = 150)

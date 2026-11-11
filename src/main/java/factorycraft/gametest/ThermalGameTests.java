@@ -493,30 +493,42 @@ public final class ThermalGameTests {
           for (var cell : tank.assembly().positions())
             ((factorycraft.blockentity.CasingBlockEntity) h.getLevel().getBlockEntity(cell))
                 .onLoad();
-          fluid = water(1000);
-          fluid.set(
-              net.minecraft.core.component.DataComponents.CUSTOM_DATA,
-              net.minecraft.world.item.component.CustomData.of(tag));
-          h.getLevel()
-              .getCapability(Capabilities.FluidHandler.BLOCK, tank.inputNozzle(), Direction.NORTH)
-              .fill(fluid, EXEC);
-          var hit =
-              new BlockHitResult(
-                  Vec3.atCenterOf(tank.inputNozzle()), Direction.NORTH, tank.inputNozzle(), false);
-          h.getLevel()
-              .getBlockState(tank.inputNozzle())
-              .useItemOn(
-                  player.getMainHandItem(), h.getLevel(), player, InteractionHand.MAIN_HAND, hit);
-          h.assertTrue(
-              tank.cell().amount() == 1000
-                  && player.getMainHandItem().is(Items.BUCKET)
-                  && tank.stored()
-                          .get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)
-                          .copyTag()
-                          .getInt("grade")
-                      == 7,
-              "water bucket erased components");
-          h.succeed();
+          h.runAfterDelay(
+              5,
+              () -> {
+                var waterWithComponents = water(1000);
+                waterWithComponents.set(
+                    net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                    net.minecraft.world.item.component.CustomData.of(tag));
+                h.getLevel()
+                    .getCapability(
+                        Capabilities.FluidHandler.BLOCK, tank.inputNozzle(), Direction.NORTH)
+                    .fill(waterWithComponents, EXEC);
+                var hit =
+                    new BlockHitResult(
+                        Vec3.atCenterOf(tank.inputNozzle()),
+                        Direction.NORTH,
+                        tank.inputNozzle(),
+                        false);
+                h.getLevel()
+                    .getBlockState(tank.inputNozzle())
+                    .useItemOn(
+                        player.getMainHandItem(),
+                        h.getLevel(),
+                        player,
+                        InteractionHand.MAIN_HAND,
+                        hit);
+                h.assertTrue(
+                    tank.cell().amount() == 1000
+                        && player.getMainHandItem().is(Items.BUCKET)
+                        && tank.stored()
+                                .get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)
+                                .copyTag()
+                                .getInt("grade")
+                            == 7,
+                    "water bucket erased components");
+                h.succeed();
+              });
         });
   }
 

@@ -276,7 +276,7 @@ public final class CircuitGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 120)
+  @GameTest(template = "empty", timeoutTicks = 180)
   public static void pumpGateStopsBillingAndResumesFiniteFluidWithoutLoss(GameTestHelper h) {
     var pp = h.absolutePos(new BlockPos(8, 3, 5));
     StructurePlacement.place(
@@ -306,16 +306,19 @@ public final class CircuitGameTests {
     h.runAfterDelay(
         15,
         () -> {
-          h.getLevel()
-              .getCapability(
-                  net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
-                  pump.inputNozzle(),
-                  Direction.WEST)
-              .fill(
-                  new net.neoforged.neoforge.fluids.FluidStack(
-                      net.minecraft.world.level.material.Fluids.WATER, 500),
-                  net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
-          pump.power.restore(200);
+          factorycraft.fluids.FluidSimulation.manual(
+              () ->
+                  h.getLevel()
+                      .getCapability(
+                          net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
+                          pump.inputNozzle(),
+                          Direction.WEST)
+                      .fill(
+                          new net.neoforged.neoforge.fluids.FluidStack(
+                              net.minecraft.world.level.material.Fluids.WATER, 500),
+                          net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
+                              .EXECUTE));
+          pump.power.restore(4000);
         });
     h.runAfterDelay(
         30,
@@ -323,36 +326,39 @@ public final class CircuitGameTests {
           h.assertTrue(
               pump.cell().amount() == 500
                   && tank.cell().amount() == 0
-                  && pump.power.getEnergyStored() == 200,
+                  && pump.power.getEnergyStored() == 4000,
               "disabled pump moved or billed");
           program(h, a, 0, 1);
         });
     h.runAfterDelay(
-        55,
+        110,
         () -> {
           h.assertTrue(
               tank.cell().amount() == 500
                   && pump.cell().amount() == 0
-                  && pump.power.getEnergyStored() < 200,
+                  && pump.power.getEnergyStored() < 4000,
               "enabled finite pump failed");
           program(h, a, 0, 0);
         });
     h.runAfterDelay(
-        70,
+        125,
         () -> {
-          h.getLevel()
-              .getCapability(
-                  net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
-                  pump.inputNozzle(),
-                  Direction.WEST)
-              .fill(
-                  new net.neoforged.neoforge.fluids.FluidStack(
-                      net.minecraft.world.level.material.Fluids.WATER, 400),
-                  net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE);
+          factorycraft.fluids.FluidSimulation.manual(
+              () ->
+                  h.getLevel()
+                      .getCapability(
+                          net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
+                          pump.inputNozzle(),
+                          Direction.WEST)
+                      .fill(
+                          new net.neoforged.neoforge.fluids.FluidStack(
+                              net.minecraft.world.level.material.Fluids.WATER, 400),
+                          net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
+                              .EXECUTE));
           pump.power.restore(100);
         });
     h.runAfterDelay(
-        95,
+        145,
         () -> {
           h.assertTrue(
               pump.cell().amount() == 400

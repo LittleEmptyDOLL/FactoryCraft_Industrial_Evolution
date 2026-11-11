@@ -551,5 +551,17 @@
   "signal.factorycraft.signal_8": "Signal 8",
   "signal.factorycraft.signal_9": "Signal 9",
   "gui.factorycraft.inserter_reflected.0": "Reflected: no",
-  "gui.factorycraft.inserter_reflected.1": "Reflected: yes"
+  "gui.factorycraft.inserter_reflected.1": "Reflected: yes",
+  "gui.factorycraft.pipeline_preview": "Show nearby members (10 s)",
+  "gui.factorycraft.pipeline_amount": "Amount: %s mB",
+  "gui.factorycraft.pipeline_capacity": "Capacity: %s mB",
+  "gui.factorycraft.pipeline_members": "Members: %s",
+  "gui.factorycraft.pipeline_conflicts": "Blocked boundaries: %s",
+  "gui.factorycraft.pipeline_extent": "X×Z: %s×%s; height %s",
+  "gui.factorycraft.pipeline_status.0": "Rebuilding / unavailable",
+  "gui.factorycraft.pipeline_status.1": "Pipeline ready",
+  "gui.factorycraft.pipeline_status.2": "Too long: maximum 320×320",
+  "gui.factorycraft.pipeline_status.3": "Conflicting fluid filter",
+  "gui.factorycraft.pipeline_status.4": "Overfull: drain to recover",
+  "gui.factorycraft.pipeline_status.5": "Incompatible boundary is blocked"
 }

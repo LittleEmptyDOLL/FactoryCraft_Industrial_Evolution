@@ -226,8 +226,8 @@ public final class DirectCircuitGameTests {
     for (int x = 0; x < 2; x++) {
       h.getLevel()
           .setBlockAndUpdate(
-              pos.east(x), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-      pipes.add((FluidBlockEntity) h.getLevel().getBlockEntity(pos.east(x)));
+              pos.east(x * 2), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
+      pipes.add((FluidBlockEntity) h.getLevel().getBlockEntity(pos.east(x * 2)));
     }
     var first = pipes.get(0);
     var second = pipes.get(1);
@@ -239,8 +239,20 @@ public final class DirectCircuitGameTests {
             var tag = new CompoundTag();
             tag.putInt("grade", i);
             f.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-            pipes.get(i).cell().fill(new FluidKey(f), f.getAmount(), false);
+            h.assertTrue(
+                pipes
+                        .get(i)
+                        .port(null)
+                        .fill(
+                            f,
+                            net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
+                                .EXECUTE)
+                    == f.getAmount(),
+                "finite component source refused fluid");
           }
+          h.getLevel()
+              .setBlockAndUpdate(
+                  pos.east(), Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
         });
     h.runAfterDelay(
         25,
@@ -249,10 +261,10 @@ public final class DirectCircuitGameTests {
           h.assertTrue(
               sample.ready()
                   && sample.cells() == 2
-                  && sample.amounts().get(WATER) == 1000
-                  && first.cell().amount() == 333
-                  && second.cell().amount() == 667,
-              "aggregate changed fluid mixing or missed neighbor");
+                  && sample.amounts().get(WATER) == 333
+                  && FluidSimulation.segment(first) != FluidSimulation.segment(second)
+                  && FluidSimulation.view(second).amount() == 667,
+              "sensor merged incompatible component identities");
           second.onChunkUnloaded();
         });
     h.runAfterDelay(
@@ -267,8 +279,8 @@ public final class DirectCircuitGameTests {
         55,
         () -> {
           h.assertTrue(
-              FluidSimulation.circuitContents(first).amounts().get(WATER) == 1000
-                  && second.cell().amount() == 667,
+              FluidSimulation.circuitContents(first).amounts().get(WATER) == 333
+                  && FluidSimulation.view(second).amount() == 667,
               "reload lost volume");
           h.succeed();
         });

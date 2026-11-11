@@ -111,6 +111,23 @@ public final class FactoryBlock extends BaseEntityBlock {
   }
 
   @Override
+  protected void neighborChanged(
+      BlockState state,
+      Level level,
+      BlockPos pos,
+      Block neighbor,
+      BlockPos neighborPos,
+      boolean moving) {
+    if (!level.isClientSide
+        && kind.casing()
+        && level.getBlockEntity(pos) instanceof CasingBlockEntity part) {
+      var owner = part.genericForRemoval();
+      if (owner != null && owner.factoryEntity() instanceof FluidBlockEntity fluid)
+        factorycraft.fluids.FluidSimulation.activatePump(fluid);
+    }
+  }
+
+  @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
       Level l, BlockState s, BlockEntityType<T> t) {
     if (l.isClientSide) return null;

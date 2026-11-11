@@ -1,0 +1,12 @@
+# Future construction tools and lift art — researched, not implemented (0.24.0)
+
+Reviewed Create's `mc1.21.1/dev` track sources on 11 November 2026:
+
+* [TrackBlockItem](https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/java/com/simibubi/create/content/trains/track/TrackBlockItem.java): first-end selection in item components, second use delegates to validated connection placement; clear-selection action; client prediction, authoritative server application.
+* [TrackPlacement](https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/java/com/simibubi/create/content/trains/track/TrackPlacement.java): shared PlacementInfo, cached target preview, simulated route placement and inventory sufficiency before actual material consumption/server writes. Curved track solving is specific to rails.
+* [TrackPlacementOverlay](https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/java/com/simibubi/create/content/trains/track/TrackPlacementOverlay.java): renders only a valid current cached target, with input hints; no independent authority.
+* [TrackTargetingBehaviour](https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/java/com/simibubi/create/content/trains/track/TrackTargetingBehaviour.java): a persistent relative target plus direction, resolved against actual graph data; target identity and placement geometry are separate responsibilities.
+
+A later FactoryCraft design can retain a first anchor (dimension, position, direction, canonical UUID where relevant), produce one shared immutable route/material plan, cache preview by target/configuration/topology revision, and revalidate reach, permissions, loaded volume, collisions, exact materials and endpoints on server confirmation. Commit material ownership and placement with rollback. Straight/grid-corner pipe and belt routes need no Bézier geometry. Pole spacing should derive from the four existing pole profiles. Selection must clear on MISS/world/held-item changes. This is a design note only; no construction tool, dependency, source or graphic asset is copied.
+
+Conveyor-lift twisting remains a separate future visual task: distinct bottom intake, straight shaft with repeatable sections, independent top output, while preserving the 0.23 transport trajectories, paid ownership, saves and capabilities. Do not change lift item simulation as part of that art task.

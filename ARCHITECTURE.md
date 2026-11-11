@@ -1,4 +1,4 @@
-# Architecture decisions — 0.22.0 (assembly/parts schema 4; native resource schema 1)
+# Architecture decisions — 0.24.0 (assembly/parts schema 4; fluid schema 2)
 
 ## Authority and persistence
 
@@ -12,7 +12,7 @@ Saving uses vanilla chunk persistence. Extraction into an inserter moves ownersh
 
 `CircuitAttachment` composes canonical machine state with reciprocal UUID links, independent read/write color masks, structured programs and typed sparse int32 snapshots. It owns no inventory/fluid/FE. Parts resolve the owner through `CircuitAccess`; explicitly opted-in foreign containers use FactoryCraft SavedData, never injected foreign BE NBT. Four colors remain separate instances of ports in the **existing** `CircuitGraph`; maps replace scalar contributions without replacing topology caching/limits. `CircuitSimulation` stages changed device outputs, budgets sensor/program work and quarantines missing physical ends. Graph value callbacks queue evaluations rather than merging full maps recursively; topology loss closes direct gates immediately.
 
-`SignalProgram` is registry/world-independent algebra (constant/each arithmetic/multi-condition decider with Else/selector/time). `CircuitDevices` reads real owners and issues guarded high-level commands; existing production/transfer transactions retain sole ownership. Recipe changes cannot discard paid progress; lab commands select the next available technology only for the bound team. `FluidAggregateIndex` mirrors loaded passive connections and maintains delta totals with budgeted topology rebuilds, without changing the fluid solver or mixing.
+`SignalProgram` is registry/world-independent algebra (constant/each arithmetic/multi-condition decider with Else/selector/time). `CircuitDevices` reads real owners and issues guarded high-level commands; existing production/transfer transactions retain sole ownership. Recipe changes cannot discard paid progress; lab commands select the next available technology only for the bound team. `PipelineNetwork` is the single runtime source for pipeline contents, capabilities and circuit reads. The former `FluidAggregateIndex` runtime is removed; its snapshot value type is retained for callers. Different fluid components now form separate hydraulic segments.
 
 `LogicMenu` accepts bounded typed configuration with menu identity/reach/protection/team checks. Initial state is included in native menu opening; later updates and acknowledgements are independent, so a live signal snapshot cannot erase an Apply acknowledgement. `CircuitVisuals` caches server-defined contact geometry and reciprocal wires; chunk unload evicts geometry. Client classes never evaluate production/circuit logic. See CIRCUITS.md for exact empty/wildcard/time, sample-hold, latency and limit semantics.
 
@@ -94,7 +94,9 @@ Profile-guided hot-path changes preserve ownership/speeds: index incoming-node l
 
 The diagnostic checkpoint additionally hashes canonical authoritative NBT before shutdown and verifies it before the next process's first tick. Compound keys are sorted; generated client snapshot/animation timestamps are excluded. After an exact match and resumed audit, verify atomically advances its checkpoint to the legitimately resumed state after flushing the world. It never accepts a mismatched hash by recomputing the expected value. This metadata is confined to the disposable fixture; normal game NBT schemas are unchanged.
 
-## Fluid slice (0.3.0)
+## Historical fluid slice (0.3.0–0.23.0, superseded)
+
+The following records the old solver for comparison. Runtime 0.24.0 uses the segment ownership/flow model below and in FLUIDS.md; old per-edge flow and full-cell ownership are no longer active.
 
 `simulation.fluids` is Minecraft-independent: one canonical integer-mB cell, immutable fluid identity, reserved phased transfers and a cached active-edge FIFO graph. The world adapter under `fluids` keeps loaded adjacency and pump queues; no fluid block has a ticker. `FluidKey` owns a copied FluidStack and compares fluid plus data components. `FluidBlockEntity` exposes stable, lifecycle/orientation-checked NeoForge ports and one persisted cell. `GridConsumer` lets existing power snapshots supply either production machines or pumps without duplicating the grid.
 
@@ -193,3 +195,9 @@ Current hand schema is 3; old Actuator/filter-device data are not migrated. Asse
 `InserterPlacement` is the shared pure direction rule: perpendicular feed selects the far lane; reflection resolves only a parallel/antiparallel ambiguity. Each authoritative deposit addresses exactly one guarded physical track/input slot, using the existing single-carrier/stack APIs. `Reflected` is an additive flag in the existing arm schema; no fuel, energy, hand, paid-phase or carrier NBT format changes. The same server-validated native menu controls it, and hover rendering only samples the resulting physical geometry.
 
 `TransportMesh` produces immutable cell-local faces/materials without Level/client dependencies. A monotonic height lookup bounds lift sampling to the current cell; a straight shaft slice uses one segment, an endpoint/twist at most sixteen. Closed hardware uses outward single-sided faces; ribbons retain required backfaces. The client loader rotates and bakes these faces into the ordinary solid chunk pass and caches at most 512 variants per baked model. Atlas frame updates animate tier surfaces independently of meshes. Model caches hold no ItemStack or authoritative world state. The server's route lengths, two lanes, ownership, headway, reservations and simulation scheduling are unchanged.
+
+## Fluid segments (0.24.0)
+
+`PipelineNetwork` owns one component-sensitive long pool per compatible loaded pipe/tank component. Passive edges are topology only. `FluidSimulation` adapts canonical loaded physical ports, chunk-indexed availability, pump work and persisted UUIDs. Each member serializes only a lazy capacity-prefix share; materialize before retiring/splitting/unloading/packing a pool. Chunk save arithmetic and independent-JVM restoration must conserve the exact sum. Ordinary intake/debit never walks members or recalculates connectivity; cached affected chunks are dirtied once per tick.
+
+`BoundaryFluidCell` provides nonowning physical pressure quotas with separate input/output fractional credit, simulation and shared pump paid-tick guards. Canonical pool aliases cannot transfer to themselves. Machine recipe cells remain independent; assembly-4 BOTH/sided channels and finite stoichiometric commits remain intact. Segment extent is inclusive X/Z≤320; Y follows world limits. Pending reconstruction closes transfer and reports unknown circuits. Known overlong contents remain inspectable, not transferable. See FLUIDS.md for formulas, capacities, manual container adaptation and orderly-save versus crash-journal limits.

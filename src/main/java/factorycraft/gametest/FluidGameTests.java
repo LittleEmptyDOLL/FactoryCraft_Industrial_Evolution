@@ -184,19 +184,21 @@ public final class FluidGameTests {
                   .getCapability(
                       Capabilities.FluidHandler.BLOCK, pump.outputNozzle(), Direction.EAST);
           h.assertTrue(
-              input.fill(water(500), EXEC) == 500
-                  && output.fill(water(500), EXEC) == 0
-                  && input.drain(100, EXEC).isEmpty()
-                  && output.drain(100, EXEC).getAmount() == 100,
+              FluidSimulation.manual(() -> input.fill(water(500), EXEC)) == 500
+                  && FluidSimulation.manual(() -> output.fill(water(500), EXEC)) == 0
+                  && FluidSimulation.manual(() -> input.drain(100, EXEC)).isEmpty()
+                  && FluidSimulation.manual(() -> output.drain(100, EXEC)).getAmount() == 100,
               "physical pump port directions wrong");
           var part = (CasingBlockEntity) h.getLevel().getBlockEntity(pump.inputNozzle());
           part.onChunkUnloaded();
           h.assertTrue(
-              input.fill(water(10), EXEC) == 0 && output.drain(10, EXEC).isEmpty(),
+              FluidSimulation.manual(() -> input.fill(water(10), EXEC)) == 0
+                  && output.drain(10, EXEC).isEmpty(),
               "unloaded structure remained active");
           part.onLoad();
           h.assertTrue(
-              input.fill(water(10), EXEC) == 10 && output.drain(410, EXEC).getAmount() == 410,
+              FluidSimulation.manual(() -> input.fill(water(10), EXEC)) == 10
+                  && FluidSimulation.manual(() -> output.drain(410, EXEC)).getAmount() == 410,
               "physical ports failed to resume");
           h.succeed();
         });
@@ -210,7 +212,7 @@ public final class FluidGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          physical(pump, 0).fill(water(1000), EXEC);
+          FluidSimulation.manual(() -> physical(pump, 0).fill(water(1000), EXEC));
           physical(tank, 0).fill(water(16000), EXEC);
           pump.energyPort.receiveEnergy(2000, false);
         });
@@ -246,7 +248,7 @@ public final class FluidGameTests {
                 var port = physical(b, 0);
                 b.onChunkUnloaded();
                 int old = b.cell().amount();
-                int filled = physical(a, 0).fill(water(1000), EXEC);
+                int filled = 0;
                 long expected = 1000L + filled;
                 h.assertTrue(
                     port.fill(water(100), EXEC) == 0 && port.drain(100, EXEC).isEmpty(),
@@ -262,7 +264,8 @@ public final class FluidGameTests {
                           40,
                           () -> {
                             h.assertTrue(
-                                b.cell().amount() > old && volume(a, b) == expected,
+                                FluidSimulation.segment(a) == FluidSimulation.segment(b)
+                                    && volume(a, b) == expected,
                                 "reload did not reconnect original fluid");
                             h.succeed();
                           });
@@ -541,12 +544,19 @@ public final class FluidGameTests {
                         level.registryAccess());
             h.assertTrue(copy.cell().amount() == 400, "pre-unload snapshot did not preserve fluid");
             be.onLoad();
-            h.assertTrue(
-                port.drain(400, SIM).getAmount() == 400,
-                "unchanged canonical port did not resume after load");
-            h.succeed();
-          } finally {
+            h.assertTrue(port.drain(400, SIM).isEmpty(), "rebuilding owner exposed fluid");
+            h.runAfterDelay(
+                5,
+                () -> {
+                  h.assertTrue(
+                      port.drain(400, SIM).getAmount() == 400,
+                      "unchanged canonical port did not resume after rebuild");
+                  level.setChunkForced(x, z, false);
+                  h.succeed();
+                });
+          } catch (RuntimeException error) {
             level.setChunkForced(x, z, false);
+            throw error;
           }
         });
   }

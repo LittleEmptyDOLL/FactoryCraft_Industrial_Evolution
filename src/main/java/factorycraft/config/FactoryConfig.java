@@ -42,7 +42,7 @@ public final class FactoryConfig {
             .defineInRange("powerGraphWorkPerTick", 4096, 32, 1000000);
     FLUID_WORK =
         b.comment(
-                "Maximum passive fluid edges and queued pumps processed per level tick; FIFO"
+                "Maximum pipeline topology visits and queued pumps processed per level tick; FIFO"
                     + " backlog never drops fluid.")
             .defineInRange("fluidWorkPerTick", 16384, 64, 1048576);
     OIL_RICHNESS =
@@ -77,8 +77,8 @@ public final class FactoryConfig {
             .defineInRange("circuitSignalWork", 65536, 4096, 1048576);
     CIRCUIT_FLUID_WORK =
         b.comment(
-                "Loaded hydraulic vertices indexed for circuit totals per tick; no change to flow"
-                    + " or mixing.")
+                "Legacy inactive setting: pipeline circuits now share fluidWorkPerTick; no separate"
+                    + " hydraulic index.")
             .defineInRange("circuitFluidWork", 1024, 32, 65536);
     SPEC = b.build();
   }

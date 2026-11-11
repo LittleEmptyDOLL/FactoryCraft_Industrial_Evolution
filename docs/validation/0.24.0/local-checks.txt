@@ -1,0 +1,48 @@
+FactoryCraft 0.24.0 local validation — 11 November 2026 UTC
+Base: a7aa59a3834f7a7ce9a7b11efc2d84251e7655b6
+Java 21 / Minecraft 1.21.1 / NeoForge 21.1.252
+
+v0240-publish-build.log
+BUILD SUCCESSFUL in 22s
+
+v0240-ui-final-build.log
+BUILD SUCCESSFUL in 17s
+
+v0240-publish-native.log
+FACTORYCRAFT_PETROCHEMISTRY_LINE: VERIFIED delivered=8, ledger={petroleum_gas=50, sulfuric_acid=640, heavy_oil=950, coal=4, sulfur=56, light_oil=1710, battery=8, crude_oil=60200, water=79761}
+FACTORYCRAFT_THERMAL_DISK: SEEDED fuel/progress/fluids/FE across chunks
+FACTORYCRAFT_FLUID_DISK: SEEDED 8000 mB with components across four chunks
+FACTORYCRAFT_MODULE_FACTORY: VERIFIED 50 plates -> 26 gears; 20 plates -> 10 gears with a powered beacon
+FACTORYCRAFT_SEGMENT_DISK: SEEDED 3943 mB grade=24 owners=[0f48f931-4765-49a8-9391-56c7dd76b6a9, 8b40a943-d1c4-46a2-84d3-f54e539d2f9b, 8f79a725-b7a5-442d-866c-629978b6984c, fdefdf30-e0e9-461a-9554-1751dc8d2d6f]
+[12:29:36] [Server thread/INFO] [minecraft/GameTestServer]: ========= 380 GAME TESTS COMPLETE IN 57.86 s ======================
+[12:29:36] [Server thread/INFO] [minecraft/GameTestServer]: All 380 required tests passed :)
+BUILD SUCCESSFUL in 1m 17s
+
+v0240-publish-restart.log
+FACTORYCRAFT_PETROCHEMISTRY_LINE: VERIFIED delivered=8, ledger={petroleum_gas=50, sulfuric_acid=640, heavy_oil=950, coal=4, sulfur=56, light_oil=1710, battery=8, crude_oil=60200, water=79761}
+FACTORYCRAFT_THERMAL_DISK: VERIFIED exact fuel/progress/fluids/FE across chunks
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_MODULE_FACTORY: VERIFIED 50 plates -> 26 gears; 20 plates -> 10 gears with a powered beacon
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[0f48f931-4765-49a8-9391-56c7dd76b6a9, 8b40a943-d1c4-46a2-84d3-f54e539d2f9b, 8f79a725-b7a5-442d-866c-629978b6984c, fdefdf30-e0e9-461a-9554-1751dc8d2d6f]
+[12:30:33] [Server thread/INFO] [minecraft/GameTestServer]: ========= 380 GAME TESTS COMPLETE IN 40.14 s ======================
+[12:30:33] [Server thread/INFO] [minecraft/GameTestServer]: All 380 required tests passed :)
+BUILD SUCCESSFUL in 56s
+
+JUnit XML totals: {"tests": 196, "failures": 0, "errors": 0, "skipped": 0}
+
+v0240-client.log
+[12:18:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Fluid nodes: 5, segments: 1, active passive edges: 3, physical passive edges: 3, conflicts: 0, overfull: 0, too long: 0, volume: 19000/19000 mB, queued rebuild owners: 0, topology visits: 4, queued pumps: 0, pump transfers: 39000, generated water: 20000, CPU: 197.084 ms
+[12:25:35] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Fluid nodes: 15, segments: 4, active passive edges: 10, physical passive edges: 11, conflicts: 2, overfull: 0, too long: 0, volume: 21400/29000 mB, queued rebuild owners: 0, topology visits: 30, queued pumps: 0, pump transfers: 39000, generated water: 20000, CPU: 250.374 ms
+[12:25:37] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 9m 30s
+
+v0240-client-restart.log
+[12:33:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Fluid nodes: 15, pumps: 1 (chambers 1000/1000 mB), quarantined physical volume: 0 mB, segments: 4, active passive edges: 10, physical passive edges: 11, conflicts: 2, overfull: 0, too long: 0, volume: 21400/29000 mB, queued rebuild owners: 0, topology visits: 15, queued pumps: 0, pump transfers: 0, generated water: 0, CPU: 49.910 ms
+[12:35:09] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 2m 21s
+
+Offline independent region reads before/after separate client JVM: 15 owners, 21800 mB water + 600 mB crude oil = 22400 mB; exact per-owner positions/FluidOwner UUIDs/FluidStacks unchanged.
+Regeneration: all source resources byte-identical.
+GameTest finalguard fixtures remain in run-gametest/v0240-finalguard; exploration fixture including failures/checkpoints retained as byte-verified lossless archive: /workspace/work/fluid-v0240-evidence/v0240-segments-complete.tar.xz
+Archive SHA256 bfffeaff2a5dcde2bab0dd1081f5e2273dfaa0047af36e42849e559c536b59fd
+Full factory, MIXED and optional-mod CI are not claimed locally passed.

@@ -838,3 +838,9 @@ write(str(p.relative_to(ROOT)),d)
 
 for tier,name in enumerate(['splitter','fast_splitter','express_splitter'],1):
  p=ROOT/f'assets/factorycraft/models/item/{name}.json'; d=json.loads(p.read_text()); d['textures']['belt']=f'factorycraft:block/transport/surface_{tier}'; write(str(p.relative_to(ROOT)),d)
+
+# 0.24 common pipeline status and bounded membership preview.
+for locale,index in [('en_us',0),('ru_ru',1)]:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json';d=json.loads(p.read_text())
+ values={'pipeline_preview':('Show nearby members (10 s)','Показать соседние части (10 с)'),'pipeline_amount':('Amount: %s mB','Объём: %s мБ'),'pipeline_capacity':('Capacity: %s mB','Вместимость: %s мБ'),'pipeline_members':('Members: %s','Участников: %s'),'pipeline_conflicts':('Blocked boundaries: %s','Конфликтных границ: %s'),'pipeline_extent':('X×Z: %s×%s; height %s','X×Z: %s×%s; высота %s'),'pipeline_status.0':('Rebuilding / unavailable','Пересчёт / недоступно'),'pipeline_status.1':('Pipeline ready','Сегмент готов'),'pipeline_status.2':('Too long: maximum 320×320','Превышен охват 320×320'),'pipeline_status.3':('Conflicting fluid filter','Конфликт фильтра жидкости'),'pipeline_status.4':('Overfull: drain to recover','Переполнение: требуется отбор'),'pipeline_status.5':('Incompatible boundary is blocked','Несовместимая граница закрыта')}
+ d.update({'gui.factorycraft.'+k:v[index] for k,v in values.items()});write(f'assets/factorycraft/lang/{locale}.json',d)
