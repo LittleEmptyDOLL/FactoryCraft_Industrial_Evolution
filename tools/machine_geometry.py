@@ -74,7 +74,12 @@ def generate(root,write,png):
    for track in range(2):
     box((track+.08,.10,0),(track+.92,.18,1),'belt')
     box((track,.10,0),(track+.07,.1875,1),trim);box((track+.93,.10,0),(track+1,.1875,1),trim)
-   box((.87,.11,.36),(1.13,.1875,.64),'hazard')
+   box((.87,.11,.24),(1.13,.1875,.76),'hazard')
+   box((.94,.1875,.32),(1.06,.48,.68),'steel')
+   box((.91,.48,.36),(1.09,.55,.64),trim)
+   for track in range(2):
+    for zz in [.07,.89]:box((track+.10,.035,zz),(track+.90,.105,zz+.04),'steel')
+    for xx in [track+.025,track+.94]:box((xx,.12,.25),(xx+.035,.23,.75),'steel')
    if name!='splitter':
     for track in range(2):
      for side in [-1,1]:

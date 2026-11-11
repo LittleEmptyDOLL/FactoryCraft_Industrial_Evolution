@@ -66,12 +66,13 @@ public final class TieredSplitterGameTests {
     b.loadWithComponents(tag, b.getLevel().registryAccess());
   }
 
-  @GameTest(template = "empty", timeoutTicks = 1600)
+  @GameTest(template = "empty", timeoutTicks = 2100)
   public static void allThreeFiniteSortingFactoriesDeliverExactOutputs(GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(1, 3, 1));
     SortingFactory.buildTiered(h.getLevel(), o);
     h.runAfterDelay(
-        1500,
+        // Strict one-lane 2.1 input no longer borrows the other lane while blocked.
+        2000,
         () -> {
           for (int tier = 0; tier < 3; tier++) {
             var base = o.offset(tier * 8 - 6, 0, 0);

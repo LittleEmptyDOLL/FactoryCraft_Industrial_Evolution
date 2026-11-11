@@ -1,0 +1,55 @@
+FactoryCraft 0.23.0 local validation, 11 November 2026 (Europe/Moscow)
+Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252
+JAVA_HOME=/workspace/work/jdk21; GRADLE_USER_HOME=/workspace/work/gradle-home
+
+./gradlew build: PASS; JUnit {'tests': 181, 'failures': 0, 'errors': 0, 'skipped': 0}
+
+v0230-final-delivery-build.log
+BUILD SUCCESSFUL in 19s
+
+v0230-checked-native.log
+FACTORYCRAFT_TIERED_SORTING: VERIFIED 32 iron + 32 copper per tier from real source chests
+FACTORYCRAFT_TRANSPORT_DISK: SEEDED saturated underground and up/down lifts across four chunks
+FACTORYCRAFT_SORTING_FACTORY: VERIFIED two real inputs -> 32 iron left / 32 copper right
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED stack_inserter
+[09:14:24] [Server thread/INFO] [minecraft/GameTestServer]: All 371 required tests passed :)
+[09:14:26] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[09:14:26] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+BUILD SUCCESSFUL in 1m 20s
+
+v0230-checked-restart.log
+FACTORYCRAFT_TIERED_SORTING: VERIFIED 32 iron + 32 copper per tier from real source chests
+FACTORYCRAFT_TRANSPORT_DISK: VERIFIED exact 160 items, metric coordinates, routes and sole owners
+FACTORYCRAFT_SORTING_FACTORY: VERIFIED two real inputs -> 32 iron left / 32 copper right
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED stack_inserter
+[09:15:28] [Server thread/INFO] [minecraft/GameTestServer]: All 371 required tests passed :)
+[09:15:29] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[09:15:29] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+BUILD SUCCESSFUL in 1m 2s
+
+Native command: ./gradlew runGameTestServer -PgameTestFixture=v0230-checked
+Two invocations, separate dedicated JVMs, the same strict disk fixtures, no reseeding.
+371 = original 357 required cases + 14 new transport cases; all thirty restored production cases remain active.
+Six-device filled portable and strict disk checks now include reflected state.
+Last post-native Java change: client-only pickup outline placed outside the source block; final build and real client checked.
+
+Real clients: ./gradlew runClient -PsmokeWorld=FactoryCraftTransport023
+Actual original 0.22 jar uses a separate copied baseline world. Profiler results/limits are retained in client-performance.md.
+Real RU menu on/off, precise splitter input, tiers/curves/slopes, 4/12/16/-4 shafts/turns/stack movement, green/red two-click placement and subsequent JVM reload checked.
+Creative inserterresearch 0 2: saved ledger contains bonus7 and both sandbox belt capacities with prerequisites. This is diagnostic assignment, not survival science completion.
+
+Full/mixed/optional-mod combination profiles remain GitHub Actions work; no new multiplayer claim.
+The 1500-tick sorting deadlines became 2000/timeout2100 for exclusive one-lane feed; exact source/output ledgers are unchanged.
+Intermediate setup/ascending-restore and pre-onLoad availability failures were corrected and tested.
+One additional intermediate run was invalidated by concurrent compilation removing lazy-loaded classes; its world/crash report is retained in a verified archive. Final native runs were serialized.
+Resource generator is byte-idempotent; Java formatting and git diff --check pass.

@@ -253,3 +253,18 @@ Validated: build / 176 JUnit; all 357 required native cases and clean separate-J
 ### Handoff after this requested scope
 
 This requested development stage is complete within the documented limits. Real EN/RU client checks, separate-process world reopening, direct machine/lab controls and four-color wires are recorded in VALIDATION.md and screenshots. The final handoff reports the normally published main commit and workflow once; do not wait for all CI jobs or start another stage. Do not start the next roadmap task. A future explicitly requested stage can address **physical Factorio 2.1 hydraulic mixing/segment rules**; no such solver or new machines/progression were implemented here. Quality/rocket-weight selectors wait for actual corresponding subsystems. Preserve the twenty-one new direct-circuit cases, all old required fixtures and the final strict cross-JVM checkpoint; never reset an old failed world.
+
+
+## Active 0.23.0 — Transport 2.1 and original industrial visuals
+
+1. Audit current transport and Minetorio/Create references/licenses; keep numerical transport geometry authoritative.
+2. Add persisted six-type inserter reflection, physical far-lane / ambiguous-axis selection and strict splitter input deposition, guarded menu and hover guidance. Add capacity-2 prerequisite without removing sandbox gating.
+3. Build original bounded cell-local belt/lift meshes, distinct frames/rails/rollers/terminals, tier animation and continuous local lift sections; no per-frame model reconstruction.
+4. Validate pure/native/cross-JVM conservation and geometry; real client placement, ports, all route forms/stacks and screenshots; record measured geometry costs and unmeasured limits.
+5. Publish checked changes to main without force and stop. Preserve prior diagrams/checkpoints.
+
+Implemented: six-kind additive reflected state/native control/swing/physical hover hints, exclusive far/ambiguous lanes and splitter-input deposits, unchanged paid transport kernels; original tier surfaces, frames, rails, rollers, terminal hoods, splitter mechanism and modular lift entry/shaft/rotated exit meshes. Lift mesh work is cell-local and its cache bounded; closed-box backfaces are culled. Capacity 2 now explicitly lists bonus 7 while remaining sandbox-only. A separate operator `transportlab` creates finite visual cargo and real source-fed arm examples in a checked clear volume.
+
+Validation/handoff: see VALIDATION.md for final JUnit/native/separate-JVM results, old/new geometry and real-client profiling, screenshot evidence and limits. Minetorio/Create review and **future proposals only** are in TRANSPORT_REFERENCES.md. Once this checked 0.23.0 stage is published, report CI once and stop. Do not automatically start fluids, drag building, pole spacing, route editing, robots or Space Age progression. Later visual work may measure a larger hardware-rendered client stand and replace global atlas animation with a stop-aware shader only if its complexity and cost are justified.
+
+Final local mechanics evidence: **181 JUnit / 371 required GameTests twice in separate JVMs**, normal shutdown, all old production checkpoints retained; additive reflected state also checked in filled portable devices. Real-client tier/route/lift/mirror/placement checks and original-0.22 client comparison are recorded. Geometry work/quads decrease, but the one llvmpipe frame-time sample is slower (33.0 → 35.5 ms): **client performance parity remains unproven**, with hardware/large-scene follow-up explicitly outstanding. Publication must retain this limitation, not claim an FPS improvement.

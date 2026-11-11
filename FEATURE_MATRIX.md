@@ -1,4 +1,6 @@
-# Feature matrix — 0.22.0
+# Feature matrix — 0.23.0
+
+0.23.0 adds six-type inserter reflection, exclusive physical lane/input deposition, the late capacity prerequisite, original tier belt/terminal/splitter/lift hardware and cell-local bounded geometry. Atlas animation remains global when circuits stop a belt. See BELTS.md, INSERTERS.md and VALIDATION.md.
 
 0.22.0 adds typed multi-signal direct four-color circuits, independent I/O masks, structured Constant/Arithmetic/Decider/Selector/Time, indexed pipeline readings and guarded machine/team-research control. The 0.21.0 inserters/stacks and restored finite integration scenarios remain required. Quality/rocket-weight selector modes remain unavailable. See CIRCUITS.md and VALIDATION.md.
 

@@ -50,3 +50,12 @@ Stack округляет цель захвата вниз до кратного 
 ## Direct circuits — 0.22.0
 
 All six existing types use canonical four-color contacts for enable conditions, held-item/state reads, dynamic five-type filters and researched hand-size limits. Overrides are transient commands; manual filters and limits remain saved independently. Stopping preserves paid phase and the component-exact held remainder; changing filters can flush a partial Stack hand. Fuel, FE, capacity research, physical stacks and transfer transactions remain in the 0.21 core. Shift + empty-hand right-click opens the circuit panel; normal right-click retains the inserter menu. See CIRCUITS.md.
+
+
+## 0.23 reflection and Factorio 2.1 drop rules
+
+All six kinds persist `Reflected` (default false for absent tags); the native menu toggles it with the same identity/reach/protection checks. Mirroring changes the swing side and the ambiguous parallel/antiparallel belt lane, not pickup/drop block coordinates, reach, recipes, energy, phase or hand count. For perpendicular side feed the far lane is retained in both modes. Rotation recalculates the rule from current world directions. The selected lane is exclusive: if full, the counted/component-exact hand waits without borrowing the free lane. Splitters always accept at the physical input end of the selected track; bulk deposits single carriers, Stack keeps normal height/research limits.
+
+Hover shows blue pickup volume and orange destination/input marker. The marker follows the actual route and selected lane. Settings travel in the existing portable BE tag and survive the separate-JVM six-device checkpoint. GUI status remains available on the reflection control's tooltip; FE/fuel, speed, hand and filters retain their own displays.
+
+Transport Belt Capacity 2 now explicitly requires both Capacity 1 and Inserter Capacity Bonus 7, following 2.1.15. Both belt capacity technologies remain `sandbox_only`; creative diagnostic grants recursively finish prerequisites, with no early survival unlock.

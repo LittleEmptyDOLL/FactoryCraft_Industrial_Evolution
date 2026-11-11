@@ -36,6 +36,7 @@ public final class FactoryCommands {
           "chemicalworks",
           "moduleworks",
           "transportworks",
+          "transportlab",
           "sortingworks",
           "tieredsortingworks",
           "inserterworks",
@@ -123,7 +124,7 @@ public final class FactoryCommands {
   private static int build(CommandSourceStack source, String name) {
     var level = source.getLevel();
     var origin = BlockPos.containing(source.getPosition()).offset(3, 0, 3);
-    int depth = name.equals("petrochemistry") ? 16 : 13;
+    int depth = name.equals("transportlab") ? 30 : name.equals("petrochemistry") ? 16 : 13;
     if (name.equals("petrochemistry")
         && !factorycraft.diagnostics.AdvancedOilFactory.available(level)) {
       source.sendFailure(Component.translatable("command.factorycraft.petrochemistry_recipe"));
@@ -137,7 +138,11 @@ public final class FactoryCommands {
     }
     for (var pos :
         BlockPos.betweenClosed(
-            origin, origin.offset(29, name.equals("petrochemistry") ? 12 : 7, depth - 1)))
+            origin,
+            origin.offset(
+                29,
+                name.equals("transportlab") ? 18 : name.equals("petrochemistry") ? 12 : 7,
+                depth - 1)))
       if (!level.hasChunkAt(pos) || !level.getBlockState(pos).isAir()) {
         source.sendFailure(
             Component.translatable(
@@ -180,6 +185,8 @@ public final class FactoryCommands {
       case "tieredsortingworks" ->
           factorycraft.diagnostics.SortingFactory.buildTiered(level, origin.above());
       case "sortingworks" -> factorycraft.diagnostics.SortingFactory.build(level, origin.above());
+      case "transportlab" ->
+          factorycraft.diagnostics.TransportShowcase.build(level, origin.above());
       case "transportworks" ->
           factorycraft.diagnostics.TransportFactory.build(level, origin.above());
       case "moduleworks" -> factorycraft.diagnostics.ModuleFactory.build(level, origin.above());

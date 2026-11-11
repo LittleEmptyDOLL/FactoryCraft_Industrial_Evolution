@@ -58,6 +58,26 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
       forcedDrop,
       dropCredit,
       pendingDrop;
+  private boolean reflected;
+
+  public boolean reflected() {
+    return reflected;
+  }
+
+  public boolean setReflected(boolean value) {
+    if (level != null && level.isClientSide || reflected == value) return false;
+    reflected = value;
+    sync();
+    return true;
+  }
+
+  public int dropLane(BeltBlockEntity belt) {
+    var a = getBlockState().getValue(FactoryBlock.FACING);
+    var b = belt.facing();
+    return InserterPlacement.lane(
+        a.getStepX(), a.getStepZ(), b.getStepX(), b.getStepZ(), reflected);
+  }
+
   private ItemFilters filters = ItemFilters.empty();
   private String researchScope = "";
   private Direction cachedFacing;
@@ -657,20 +677,22 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
       IItemHandler target, BeltBlockEntity belt, ItemStack stack, boolean simulate) {
     if (stack.isEmpty()) return stack;
     if (belt == null) return ItemHandlerHelper.insertItem(target, stack.copy(), simulate);
-    for (int slot = 0; slot < Math.min(8, target.getSlots()); slot++) {
-      var remainder =
-          kind().armSpec().stack()
-              ? belt.insertStack(targetPos, slot, stack, beltStackHeight(), simulate)
-              : target.insertItem(slot, stack.copyWithCount(1), simulate);
-      int sent =
-          kind().armSpec().stack()
-              ? stack.getCount() - remainder.getCount()
-              : 1 - remainder.getCount();
-      if (sent > 0)
-        return stack.getCount() == sent
-            ? ItemStack.EMPTY
-            : stack.copyWithCount(stack.getCount() - sent);
-    }
+    // One physical lane and its input end. A blocked far lane never falls back to the near lane.
+    int slot = dropLane(belt) * 4;
+    if (slot >= target.getSlots()) return stack;
+    var remainder =
+        kind().armSpec().stack()
+            ? belt.insertStack(targetPos, slot, stack, beltStackHeight(), simulate)
+            : target.insertItem(slot, stack.copyWithCount(1), simulate);
+    int sent =
+        kind().armSpec().stack()
+            ? stack.getCount() - remainder.getCount()
+            : 1 - remainder.getCount();
+    if (sent > 0)
+      return stack.getCount() == sent
+          ? ItemStack.EMPTY
+          : stack.copyWithCount(stack.getCount() - sent);
+
     return stack;
   }
 
@@ -740,6 +762,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
     tag.putLong("FuelEnergy", fuelEnergy);
     tag.putInt("Energy", power.getEnergyStored());
     tag.putBoolean("Enabled", enabled);
+    tag.putBoolean("Reflected", reflected);
     tag.putBoolean("Blacklist", blacklist());
     tag.putInt("HandLimit", manualLimit);
     tag.putInt("GatherUnits", gatherUnits);
@@ -768,6 +791,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
     fuelEnergy = Math.max(0, tag.getLong("FuelEnergy"));
     power.restore(tag.getInt("Energy"));
     enabled = !tag.contains("Enabled") || tag.getBoolean("Enabled");
+    reflected = tag.getBoolean("Reflected");
     manualLimit = Math.clamp(tag.getInt("HandLimit"), 0, 16);
     gatherUnits = Math.clamp(tag.getInt("GatherUnits"), 0, 30);
     forcedDrop = tag.getBoolean("ForcedDrop");

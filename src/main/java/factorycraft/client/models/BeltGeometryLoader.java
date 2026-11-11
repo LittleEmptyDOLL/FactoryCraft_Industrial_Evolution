@@ -37,6 +37,14 @@ public final class BeltGeometryLoader implements IGeometryLoader<BeltGeometryLoa
             sprites.apply(context.getMaterial("fast")),
             sprites.apply(context.getMaterial("express"))
           },
+          new TextureAtlasSprite[] {
+            sprites.apply(context.getMaterial("frame")),
+            sprites.apply(context.getMaterial("rail")),
+            sprites.apply(context.getMaterial("accent")),
+            sprites.apply(context.getMaterial("roller")),
+            sprites.apply(context.getMaterial("accent_fast")),
+            sprites.apply(context.getMaterial("accent_express"))
+          },
           context.getTransforms());
     }
   }
@@ -44,10 +52,18 @@ public final class BeltGeometryLoader implements IGeometryLoader<BeltGeometryLoa
   private static final class Model implements IDynamicBakedModel {
     private final TextureAtlasSprite[] sprites;
     private final ItemTransforms transforms;
-    private final Map<BeltModelData.Cell, List<BakedQuad>> cache = new HashMap<>();
+    private final TextureAtlasSprite[] details;
+    private final Map<BeltModelData.Cell, List<BakedQuad>> cache =
+        new LinkedHashMap<>(64, .75f, true) {
+          protected boolean removeEldestEntry(
+              Map.Entry<BeltModelData.Cell, List<BakedQuad>> entry) {
+            return size() > 512;
+          }
+        };
 
-    Model(TextureAtlasSprite[] sprites, ItemTransforms transforms) {
+    Model(TextureAtlasSprite[] sprites, TextureAtlasSprite[] details, ItemTransforms transforms) {
       this.sprites = sprites;
+      this.details = details;
       this.transforms = transforms;
     }
 
@@ -79,171 +95,74 @@ public final class BeltGeometryLoader implements IGeometryLoader<BeltGeometryLoa
 
     private List<BakedQuad> build(BeltModelData.Cell cell) {
       var result = new ArrayList<BakedQuad>();
-      var r = cell.route();
-      var sprite = sprites[cell.tier() - 1];
-      if (r.shape == BeltRoute.Shape.LIFT) {
-        box(result, cell, sprite, .04, 0, .04, .14, 1, .14);
-        box(result, cell, sprite, .86, 0, .04, .96, 1, .14);
-        box(result, cell, sprite, .04, 0, .86, .14, 1, .96);
-        box(result, cell, sprite, .86, 0, .86, .96, 1, .96);
-        if (cell.offsetY() != 0 && cell.offsetY() != r.span) {
-          box(result, cell, sprite, .1, .43, .1, .9, .50, .9);
-        }
-      }
-      if (r.shape == BeltRoute.Shape.UNDERGROUND || cell.output()) {
-        // Only the two terminal surfaces exist physically; the intervening route is virtual.
-        box(result, cell, sprite, 0, 0, 0, 1, .1875, 1);
-        box(
-            result,
-            cell,
-            sprite,
-            .05,
-            .1875,
-            cell.output() ? .55 : .05,
-            .95,
-            .6,
-            cell.output() ? .95 : .45);
-        return List.copyOf(result);
-      }
-      int steps =
-          r.shape == BeltRoute.Shape.FLAT
-              ? 1
-              : r.shape == BeltRoute.Shape.LIFT ? 32 + Math.abs(r.span) * 16 : 32;
-      for (int i = 0; i < steps; i++) {
-        var a = edge(r, 0, (double) i / steps, cell.offsetY());
-        var b = edge(r, 1, (double) i / steps, cell.offsetY());
-        var c = edge(r, 1, (double) (i + 1) / steps, cell.offsetY());
-        var d = edge(r, 0, (double) (i + 1) / steps, cell.offsetY());
-        polygon(result, cell, sprite, List.of(a, b, c, d), 0, 1);
-        polygon(result, cell, sprite, List.of(lower(d), lower(c), lower(b), lower(a)), 0, 1);
-        polygon(result, cell, sprite, List.of(a, d, lower(d), lower(a)), 0, 1);
-        polygon(result, cell, sprite, List.of(c, b, lower(b), lower(c)), 0, 1);
-        if (i == 0) polygon(result, cell, sprite, List.of(b, a, lower(a), lower(b)), 0, 1);
-        if (i == steps - 1) polygon(result, cell, sprite, List.of(d, c, lower(c), lower(d)), 0, 1);
+      var mesh = TransportMesh.build(cell.route(), cell.offsetY(), cell.output());
+      for (var face : mesh.faces()) {
+        var points = face.vertices();
+        if (points.size() == 4)
+          quad(
+              result,
+              cell,
+              skin(face.skin(), cell.tier()),
+              points.toArray(TransportMesh.Vertex[]::new),
+              face.doubleSided());
+        else
+          for (int i = 1; i < points.size() - 1; i++)
+            quad(
+                result,
+                cell,
+                skin(face.skin(), cell.tier()),
+                new TransportMesh.Vertex[] {
+                  points.getFirst(), points.get(i), points.get(i + 1), points.get(i + 1)
+                },
+                face.doubleSided());
       }
       return List.copyOf(result);
     }
 
-    private Vector3f edge(BeltRoute r, int side, double t, int offset) {
-      var a = r.point(0, r.length(0) * t);
-      var b = r.point(1, r.length(1) * t);
-      double k = side == 0 ? -.28 / .44 : 1 + .28 / .44;
-      return new Vector3f(
-          (float) (a.x() + (b.x() - a.x()) * k),
-          (float) (a.y() + (b.y() - a.y()) * k - offset),
-          (float) (a.z() + (b.z() - a.z()) * k));
-    }
-
-    private Vector3f lower(Vector3f p) {
-      return new Vector3f(p.x, p.y - .1875f, p.z);
-    }
-
-    private void box(
-        List<BakedQuad> out,
-        BeltModelData.Cell cell,
-        TextureAtlasSprite sprite,
-        double x0,
-        double y0,
-        double z0,
-        double x1,
-        double y1,
-        double z1) {
-      var bakery = new FaceBakery();
-      int rotation =
-          switch (cell.facing()) {
-            case EAST -> 90;
-            case SOUTH -> 180;
-            case WEST -> 270;
-            default -> 0;
-          };
-      for (var d : Direction.values())
-        out.add(
-            bakery.bakeQuad(
-                new Vector3f((float) x0 * 16, (float) y0 * 16, (float) z0 * 16),
-                new Vector3f((float) x1 * 16, (float) y1 * 16, (float) z1 * 16),
-                new BlockElementFace(
-                    null, -1, "#all", new BlockFaceUV(new float[] {0, 0, 16, 16}, 0)),
-                sprite,
-                d,
-                BlockModelRotation.by(0, rotation),
-                null,
-                true));
-    }
-
-    private void polygon(
-        List<BakedQuad> out,
-        BeltModelData.Cell cell,
-        TextureAtlasSprite sprite,
-        List<Vector3f> input,
-        float min,
-        float max) {
-      var points = clip(clip(input, min, true), max, false);
-      if (points.size() < 3) return;
-      if (points.size() == 4) {
-        quad(out, cell, sprite, points.toArray(Vector3f[]::new));
-        return;
-      }
-      for (int k = 1; k < points.size() - 1; k++)
-        quad(
-            out,
-            cell,
-            sprite,
-            new Vector3f[] {points.get(0), points.get(k), points.get(k + 1), points.get(k + 1)});
-    }
-
-    private List<Vector3f> clip(List<Vector3f> input, float at, boolean above) {
-      var out = new ArrayList<Vector3f>();
-      if (input.isEmpty()) return out;
-      var prev = input.getLast();
-      boolean prevIn = above ? prev.y >= at : prev.y <= at;
-      for (var next : input) {
-        boolean inside = above ? next.y >= at : next.y <= at;
-        if (inside != prevIn) {
-          float t = (at - prev.y) / (next.y - prev.y);
-          out.add(new Vector3f(prev).lerp(next, t));
-        }
-        if (inside) out.add(next);
-        prev = next;
-        prevIn = inside;
-      }
-      return out;
+    private TextureAtlasSprite skin(TransportMesh.Skin skin, int tier) {
+      return skin == TransportMesh.Skin.SURFACE
+          ? sprites[tier - 1]
+          : details[skin == TransportMesh.Skin.ACCENT && tier > 1 ? tier + 2 : skin.ordinal() - 1];
     }
 
     private void quad(
         List<BakedQuad> out,
         BeltModelData.Cell cell,
         TextureAtlasSprite sprite,
-        Vector3f[] points) {
+        TransportMesh.Vertex[] points,
+        boolean doubleSided) {
+      var p0 = points[0];
+      var p1 = points[1];
+      var p2 = points[2];
       var normal =
-          new Vector3f(points[1]).sub(points[0]).cross(new Vector3f(points[2]).sub(points[0]));
+          new Vector3f(
+                  (float) (p1.x() - p0.x()), (float) (p1.y() - p0.y()), (float) (p1.z() - p0.z()))
+              .cross(
+                  new Vector3f(
+                      (float) (p2.x() - p0.x()),
+                      (float) (p2.y() - p0.y()),
+                      (float) (p2.z() - p0.z())));
       if (normal.lengthSquared() < 1e-12) return;
       normal.normalize();
       int[] vertices = new int[32];
       for (int i = 0; i < 4; i++) {
         var p = points[i];
-        var rotated = TransportShapes.rotate(p.x, p.z, cell.facing());
+        var rotated = TransportShapes.rotate(p.x(), p.z(), cell.facing());
         int n = i * 8;
         vertices[n] = Float.floatToRawIntBits((float) rotated[0]);
-        vertices[n + 1] = Float.floatToRawIntBits(p.y);
+        vertices[n + 1] = Float.floatToRawIntBits((float) p.y());
         vertices[n + 2] = Float.floatToRawIntBits((float) rotated[1]);
         vertices[n + 3] = -1;
-        double u = (i == 0 || i == 3) ? 0 : 1, v = i < 2 ? 1 : 0;
-        var route = cell.route();
-        if (route.shape == BeltRoute.Shape.LEFT || route.shape == BeltRoute.Shape.RIGHT) {
-          double x = route.shape == BeltRoute.Shape.LEFT ? p.x : 1 - p.x;
-          double radius = Math.hypot(x, p.z);
-          u = route.shape == BeltRoute.Shape.LEFT ? radius : 1 - radius;
-          v = Math.atan2(p.z, x) / (Math.PI / 2);
-        } else if (route.shape != BeltRoute.Shape.LIFT) {
-          u = p.x;
-          v = p.z;
-        }
-        vertices[n + 4] = Float.floatToRawIntBits(sprite.getU((float) Math.clamp(u, 0, 1)));
-        vertices[n + 5] = Float.floatToRawIntBits(sprite.getV((float) Math.clamp(v, 0, 1)));
+        vertices[n + 4] = Float.floatToRawIntBits(sprite.getU((float) Math.clamp(p.u(), 0, 1)));
+        vertices[n + 5] = Float.floatToRawIntBits(sprite.getV((float) Math.clamp(p.v(), 0, 1)));
       }
-      Direction direction = Direction.getNearest(normal.x, normal.y, normal.z);
+      var rotatedNormal = TransportShapes.rotate(normal.x + .5, normal.z + .5, cell.facing());
+      Direction direction =
+          Direction.getNearest(
+              (float) (rotatedNormal[0] - .5), normal.y, (float) (rotatedNormal[1] - .5));
       out.add(new BakedQuad(vertices, -1, direction, sprite, true, false));
       // Ribbons are visible from either side, including downhill undersides.
+      if (!doubleSided) return;
       int[] reversed = new int[32];
       for (int i = 0; i < 4; i++) System.arraycopy(vertices, (3 - i) * 8, reversed, i * 8, 8);
       out.add(new BakedQuad(reversed, -1, direction.getOpposite(), sprite, true, false));

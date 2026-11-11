@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.22.0 Circuit Network, Factorio 2.1.24 (10 November 2026)
+## Active task — 0.23.0 Transport 2.1 and visual overhaul (11 November 2026)
+
+* User scope now includes inserter reflection/drop-side semantics, splitter input-only insertion, Transport Belt Capacity 2 prerequisite, original belt/lift art and bounded cached geometry/animation. Preserve six arms, typed four-color circuits, copper networks, all existing required cases and exact resource/phase ownership.
+* Use Minetorio/Create only as architectural/visual references. Minetorio template MIT is not a license for all its code/art; Create assets are All Rights Reserved. Copy no third-party code/art. No mandatory Create/Flywheel dependency.
+* Keep transport metric lengths, headway, speed and transaction kernels unchanged unless needed for the requested insertion semantics. Lift physical cells remain one owner's parts, no new mid-shaft ports/entities. New v0230 native/client paths; preserve older failed/completed worlds, allowing verified lossless archives for disk space.
+* Validate pure geometry/insertion rules, all required native cases, separate-JVM state, real client/screenshot evidence and bounded geometry comparison. Full/mixed/optional profiles remain CI. Publish checked main normally, preserve parallel edits, report once and stop. Do not start fluids or reference-project convenience features.
+
+## Previous task — 0.22.0 Circuit Network, Factorio 2.1.24 (10 November 2026)
 
 * Current request supersedes old bans on direct machine circuits/selectors. Extend the existing four-color incremental graph with typed sparse int32 signal maps, independent read/write masks, canonical direct contacts (including opted-in foreign containers), structured combinator programs/else/selector/time and machine/lab controls. Do not add a second simulation or mutate foreign BlockEntity NBT.
 * One owner stores settings and UUID links; parts only redirect. Preserve all inventory/fluid/FE transactions, 0.21 arms/stacks, explicit electrical wires and all thirty restored integration cases. Unknown/unloaded endpoints quarantine direct gates; never force chunks, scan the whole world per tick, or access the world from worker/diagnostic threads.

@@ -31,3 +31,8 @@ Six original generated bases distinguish Burner (fuel housing), yellow Standard,
 ## Circuit contacts — 0.22.0
 
 Selector uses an original 1×2 cyan industrial enclosure in the existing per-cell generator. All direct circuit contacts use server-defined, rotated attachment points and four distinct studs. `CircuitVisuals` replaces the old combinator-only renderer with reciprocal UUID-checked, incident-edge/chunk-indexed cached curves. Vertices are camera-relative to retain precision far from spawn; no neighbor discovery or resource simulation runs per frame. Copper power rendering is unchanged.
+
+
+## 0.23 transport
+
+Original generated belts have separate dark frames, brushed rails, rollers, tier-colored accents and directional animated surfaces. Lift entry/exit mouths, repeated open-sided shaft windows and collars share cell-local geometry; exits follow the real rotated route. Splitters share tier surfaces and a raised central mechanical housing. No graphics from reference projects/Satisfactory are included. Static geometry remains chunk-baked with a bounded loader cache, and transported item stacks retain their existing server snapshots. Selection/collision shapes and placement volumes are unchanged. Design/license review and unimplemented future ideas: TRANSPORT_REFERENCES.md.

@@ -1,0 +1,14 @@
+{
+  "baseline": {
+    "frames": 301,
+    "mean_frame_ms": 32.99903830232558,
+    "median_frame_ms": 27.842159,
+    "p95_frame_ms": 57.031703
+  },
+  "current": {
+    "frames": 280,
+    "mean_frame_ms": 35.46070401785714,
+    "median_frame_ms": 31.281072,
+    "p95_frame_ms": 64.907967
+  }
+}

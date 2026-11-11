@@ -22,7 +22,7 @@ public final class InserterRenderer implements BlockEntityRenderer<InserterBlock
       MultiBufferSource buffers,
       int light,
       int overlay) {
-    double angle = be.visualAngle(partial);
+    double angle = be.visualAngle(partial) * (be.reflected() ? -1 : 1);
     pose.pushPose();
     pose.translate(.5, .35, .5);
     pose.mulPose(

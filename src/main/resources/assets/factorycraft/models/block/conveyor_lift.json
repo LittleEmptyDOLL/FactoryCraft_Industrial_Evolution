@@ -1,9 +1,15 @@
 {
   "loader": "factorycraft:belt",
   "textures": {
-    "normal": "factorycraft:block/transport_belt",
-    "fast": "factorycraft:block/fast_transport_belt",
-    "express": "factorycraft:block/express_transport_belt",
-    "particle": "factorycraft:block/transport_belt"
+    "normal": "factorycraft:block/transport/surface_1",
+    "fast": "factorycraft:block/transport/surface_2",
+    "express": "factorycraft:block/transport/surface_3",
+    "particle": "factorycraft:block/transport_belt",
+    "frame": "factorycraft:block/transport/frame",
+    "rail": "factorycraft:block/transport/rail",
+    "accent": "factorycraft:block/transport/accent_1",
+    "accent_fast": "factorycraft:block/transport/accent_2",
+    "accent_express": "factorycraft:block/transport/accent_3",
+    "roller": "factorycraft:block/transport/roller"
   }
 }

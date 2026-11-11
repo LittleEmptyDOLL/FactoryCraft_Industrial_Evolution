@@ -643,6 +643,7 @@ public final class InserterV21GameTests {
           for (int i = 0; i < arms.size(); i++) {
             var a = arms.get(i);
             research(h, a, 7, 2);
+            a.setReflected(true);
             a.configure(
                 false,
                 new ItemFilters(
@@ -689,6 +690,7 @@ public final class InserterV21GameTests {
             var restored = (InserterBlockEntity) h.getLevel().getBlockEntity(p);
             h.assertTrue(
                 restored.kind() == a.kind()
+                    && restored.reflected()
                     && restored.held().getCount() == (i >= 4 ? 5 : 1)
                     && restored.held().get(DataComponents.CUSTOM_DATA).copyTag().getInt("grade")
                         == 17
@@ -730,6 +732,7 @@ public final class InserterV21GameTests {
         research(h, a, 7, 2);
         var t = a.saveWithoutMetadata(h.getLevel().registryAccess());
         t.putBoolean("Enabled", false);
+        t.putBoolean("Reflected", true);
         t.putInt("Energy", 731);
         t.putLong("FuelEnergy", 1237);
         t.putInt("Stage", 2);
@@ -759,6 +762,7 @@ public final class InserterV21GameTests {
       h.assertTrue(
           a.kind() == KINDS[i]
               && !a.enabled()
+              && a.reflected()
               && a.power.getEnergyStored() == 731
               && a.fuelEnergy() == 1237
               && a.stage() == 2

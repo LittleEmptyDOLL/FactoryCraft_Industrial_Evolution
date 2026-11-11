@@ -1,0 +1,156 @@
+---- Minecraft Profiler Results ----
+// Maybe if you treated it better then it'll have more motivation to work faster! Poor server.
+
+Version: 1.21.1
+Time span: 10011 ms
+Tick span: 301 ticks
+// This is approximately 30.06 ticks per second. It should be 20 ticks per second
+
+--- BEGIN PROFILE DUMP ---
+
+[00] gameRenderer(301/1) - 67.14%/67.14%
+[01] |   level(301/1) - 93.87%/63.03%
+[02] |   |   terrain(301/1) - 46.04%/29.02%
+[03] |   |   |   render_RenderType[solid:CompositeState[[texture[Optional[minecraft:textures/atlas/blocks.png](blur=false, mipmap=true)], shader[Optional[net.minecraft.client.renderer.RenderStateShard$$Lambda/0x00007f517ce7f218@ec168c5]], no_transparency, depth_test[<=], cull[true], lightmap[true], overlay[false], no_layering, main_target, default_texturing, write_mask_state[writeColor=true, writeDepth=true], no_color_logic, line_width[1.0]], outlineProperty=affects_outline]](301/1) - 48.48%/14.07%
+[03] |   |   |   render_RenderType[cutout_mipped:CompositeState[[texture[Optional[minecraft:textures/atlas/blocks.png](blur=false, mipmap=true)], shader[Optional[net.minecraft.client.renderer.RenderStateShard$$Lambda/0x00007f517ce7f438@fd59215]], no_transparency, depth_test[<=], cull[true], lightmap[true], overlay[false], no_layering, main_target, default_texturing, write_mask_state[writeColor=true, writeDepth=true], no_color_logic, line_width[1.0]], outlineProperty=affects_outline]](301/1) - 48.12%/13.96%
+[03] |   |   |   unspecified(301/1) - 2.41%/0.70%
+[03] |   |   |   render_RenderType[cutout:CompositeState[[texture[Optional[minecraft:textures/atlas/blocks.png](blur=false, mipmap=false)], shader[Optional[net.minecraft.client.renderer.RenderStateShard$$Lambda/0x00007f517ce7f658@34cec27f]], no_transparency, depth_test[<=], cull[true], lightmap[true], overlay[false], no_layering, main_target, default_texturing, write_mask_state[writeColor=true, writeDepth=true], no_color_logic, line_width[1.0]], outlineProperty=affects_outline]](301/1) - 0.84%/0.25%
+[03] |   |   |   minecraft:after_cutout_mipped_blocks(301/1) - 0.05%/0.02%
+[03] |   |   |   minecraft:after_solid_blocks(301/1) - 0.05%/0.02%
+[03] |   |   |   filterempty(903/3) - 0.03%/0.01%
+[03] |   |   |   minecraft:after_cutout_blocks(301/1) - 0.01%/0.00%
+[02] |   |   unspecified(301/1) - 24.39%/15.37%
+[02] |   |   entities(301/1) - 9.66%/6.09%
+[03] |   |   |   unspecified(301/1) - 99.19%/6.04%
+[03] |   |   |   minecraft:after_entities(301/1) - 0.81%/0.05%
+[02] |   |   blockentities(301/1) - 6.84%/4.31%
+[03] |   |   |   unspecified(301/1) - 99.75%/4.30%
+[03] |   |   |   minecraft:after_block_entities(301/1) - 0.25%/0.01%
+[02] |   |   destroyProgress(301/1) - 3.85%/2.43%
+[02] |   |   clouds(301/1) - 2.51%/1.58%
+[02] |   |   clear(301/1) - 1.44%/0.91%
+[02] |   |   compile_sections(301/1) - 1.38%/0.87%
+[03] |   |   |   upload(301/1) - 49.68%/0.43%
+[03] |   |   |   populate_sections_to_compile(301/1) - 34.06%/0.30%
+[03] |   |   |   schedule_async_compile(301/1) - 14.28%/0.12%
+[03] |   |   |   unspecified(301/1) - 1.98%/0.02%
+[02] |   |   sky(301/1) - 1.32%/0.83%
+[03] |   |   |   unspecified(301/1) - 96.01%/0.80%
+[03] |   |   |   minecraft:after_sky(301/1) - 3.99%/0.03%
+[02] |   |   translucent(301/1) - 0.80%/0.50%
+[03] |   |   |   render_RenderType[translucent:CompositeState[[texture[Optional[minecraft:textures/atlas/blocks.png](blur=false, mipmap=true)], shader[Optional[net.minecraft.client.renderer.RenderStateShard$$Lambda/0x00007f517ce7f878@206be60b]], translucent_transparency, depth_test[<=], cull[true], lightmap[true], overlay[false], no_layering, translucent_target, default_texturing, write_mask_state[writeColor=true, writeDepth=true], no_color_logic, line_width[1.0]], outlineProperty=affects_outline]](301/1) - 51.38%/0.26%
+[03] |   |   |   unspecified(301/1) - 43.31%/0.22%
+[03] |   |   |   minecraft:after_translucent_blocks(301/1) - 4.59%/0.02%
+[03] |   |   |   filterempty(301/1) - 0.51%/0.00%
+[03] |   |   |   translucent_sort(301/1) - 0.21%/0.00%
+[02] |   |   terrain_setup(301/1) - 0.35%/0.22%
+[03] |   |   |   update(301/1) - 64.50%/0.14%
+[04] |   |   |   |   section_occlusion_graph(301/1) - 83.87%/0.12%
+[04] |   |   |   |   unspecified(301/1) - 15.95%/0.02%
+[04] |   |   |   |   apply_frustum(1/0) - 0.19%/0.00%
+[03] |   |   |   unspecified(301/1) - 27.55%/0.06%
+[03] |   |   |   camera(301/1) - 3.80%/0.01%
+[03] |   |   |   culling(301/1) - 3.26%/0.01%
+[03] |   |   |   cull(301/1) - 0.88%/0.00%
+[02] |   |   string(301/1) - 0.32%/0.20%
+[03] |   |   |   render_RenderType[tripwire:CompositeState[[texture[Optional[minecraft:textures/atlas/blocks.png](blur=false, mipmap=true)], shader[Optional[net.minecraft.client.renderer.RenderStateShard$$Lambda/0x00007f517ce82ca0@25e92583]], translucent_transparency, depth_test[<=], cull[true], lightmap[true], overlay[false], no_layering, weather_target, default_texturing, write_mask_state[writeColor=true, writeDepth=true], no_color_logic, line_width[1.0]], outlineProperty=affects_outline]](301/1) - 68.02%/0.14%
+[03] |   |   |   unspecified(301/1) - 30.65%/0.06%
+[03] |   |   |   minecraft:after_tripwire_blocks(301/1) - 1.02%/0.00%
+[03] |   |   |   filterempty(301/1) - 0.32%/0.00%
+[02] |   |   camera(301/1) - 0.24%/0.15%
+[02] |   |   lightTex(180/1) - 0.22%/0.14%
+[02] |   |   pick(301/1) - 0.18%/0.11%
+[03] |   |   |   #getEntities 301/1
+[02] |   |   hand(301/1) - 0.15%/0.09%
+[02] |   |   particles(301/1) - 0.07%/0.04%
+[03] |   |   |   unspecified(301/1) - 95.19%/0.04%
+[03] |   |   |   minecraft:after_particles(301/1) - 4.81%/0.00%
+[02] |   |   fog(301/1) - 0.06%/0.04%
+[02] |   |   solid_particles(301/1) - 0.05%/0.03%
+[02] |   |   weather(301/1) - 0.05%/0.03%
+[03] |   |   |   unspecified(301/1) - 87.40%/0.02%
+[03] |   |   |   minecraft:after_weather(301/1) - 12.60%/0.00%
+[02] |   |   light_updates(301/1) - 0.04%/0.03%
+[02] |   |   light_update_queue(301/1) - 0.02%/0.01%
+[02] |   |   center(301/1) - 0.01%/0.01%
+[02] |   |   neoforge_render_last(301/1) - 0.01%/0.01%
+[03] |   |   |   unspecified(301/1) - 83.01%/0.01%
+[03] |   |   |   minecraft:after_level(301/1) - 16.99%/0.00%
+[02] |   |   captureFrustum(301/1) - 0.00%/0.00%
+[02] |   |   culling(301/1) - 0.00%/0.00%
+[01] |   gui(301/1) - 6.04%/4.06%
+[02] |   |   debug(301/1) - 66.55%/2.70%
+[02] |   |   chat(301/1) - 18.95%/0.77%
+[02] |   |   unspecified(301/1) - 14.50%/0.59%
+[01] |   unspecified(301/1) - 0.07%/0.05%
+[01] |   toasts(301/1) - 0.02%/0.01%
+[00] blit(301/1) - 19.46%/19.46%
+[00] updateDisplay(301/1) - 10.01%/10.01%
+[00] unspecified(301/1) - 1.32%/1.32%
+[00] tick(301/1) - 1.21%/1.21%
+[01] |   #clientTick 201/0
+[01] |   level(201/1) - 73.81%/0.89%
+[02] |   |   entities(201/1) - 66.87%/0.60%
+[03] |   |   |   minecraft:player(201/1) - 90.42%/0.54%
+[04] |   |   |   |   #getEntities 201/0
+[04] |   |   |   |   unspecified(201/1) - 57.81%/0.31%
+[04] |   |   |   |   push(201/1) - 12.78%/0.07%
+[05] |   |   |   |   |   #getEntities 201/0
+[04] |   |   |   |   livingEntityBaseTick(201/1) - 9.17%/0.05%
+[04] |   |   |   |   travel(201/1) - 8.78%/0.05%
+[04] |   |   |   |   entityBaseTick(201/1) - 5.78%/0.03%
+[04] |   |   |   |   ai(201/1) - 1.99%/0.01%
+[05] |   |   |   |   |   unspecified(201/1) - 67.52%/0.01%
+[05] |   |   |   |   |   newAi(201/1) - 32.48%/0.00%
+[04] |   |   |   |   freezing(201/1) - 1.75%/0.01%
+[04] |   |   |   |   headTurn(201/1) - 1.08%/0.01%
+[04] |   |   |   |   jump(201/1) - 0.53%/0.00%
+[04] |   |   |   |   rangeChecks(201/1) - 0.34%/0.00%
+[03] |   |   |   unspecified(201/1) - 9.58%/0.06%
+[02] |   |   unspecified(201/1) - 32.13%/0.29%
+[02] |   |   blockEntities(201/1) - 0.89%/0.01%
+[02] |   |   blocks(201/1) - 0.11%/0.00%
+[01] |   gameMode(201/1) - 7.37%/0.09%
+[01] |   pick(201/1) - 5.42%/0.07%
+[02] |   |   #getEntities 201/0
+[01] |   unspecified(301/1) - 5.20%/0.06%
+[01] |   gameRenderer(201/1) - 2.54%/0.03%
+[01] |   gui(201/1) - 2.52%/0.03%
+[01] |   Keybindings(201/1) - 1.58%/0.02%
+[01] |   textures(201/1) - 0.64%/0.01%
+[01] |   keyboard(201/1) - 0.35%/0.00%
+[01] |   levelRenderer(201/1) - 0.34%/0.00%
+[01] |   animateTick(201/1) - 0.13%/0.00%
+[01] |   particles(201/1) - 0.10%/0.00%
+[00] render(301/1) - 0.65%/0.65%
+[01] |   unspecified(301/1) - 92.68%/0.61%
+[01] |   mouse(301/1) - 6.20%/0.04%
+[01] |   display(301/1) - 1.12%/0.01%
+[00] sound(301/1) - 0.08%/0.08%
+[00] fpsUpdate(301/1) - 0.08%/0.08%
+[00] yield(301/1) - 0.02%/0.02%
+[00] scheduledExecutables(301/1) - 0.01%/0.01%
+--- END PROFILE DUMP ---
+
+--- BEGIN COUNTER DUMP ---
+
+-- Counter: clientTick --
+[00] root total:0/201 average: 0/0
+[01] |   tick total:201/201 average: 0/0
+
+
+-- Counter: getEntities --
+[00] root total:0/904 average: 0/3
+[01] |   tick total:0/603 average: 0/2
+[02] |   |   level total:0/402 average: 0/1
+[03] |   |   |   entities total:0/402 average: 0/1
+[04] |   |   |   |   minecraft:player total:201/402 average: 0/1
+[05] |   |   |   |   |   push total:201/201 average: 0/0
+[02] |   |   pick total:201/201 average: 0/0
+[01] |   gameRenderer total:0/301 average: 0/1
+[02] |   |   level total:0/301 average: 0/1
+[03] |   |   |   pick total:301/301 average: 1/1
+
+
+--- END COUNTER DUMP ---
+

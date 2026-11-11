@@ -25,7 +25,7 @@ public final class InserterMenu extends AbstractContainerMenu {
         id,
         inventory,
         (InserterBlockEntity) inventory.player.level().getBlockEntity(buffer.readBlockPos()),
-        new SimpleContainerData(15));
+        new SimpleContainerData(16));
   }
 
   public InserterMenu(int id, Inventory inventory, InserterBlockEntity arm) {
@@ -35,7 +35,7 @@ public final class InserterMenu extends AbstractContainerMenu {
         arm,
         new ContainerData() {
           public int getCount() {
-            return 15;
+            return 16;
           }
 
           public void set(int i, int n) {}
@@ -54,6 +54,7 @@ public final class InserterMenu extends AbstractContainerMenu {
               case 12 -> arm.status();
               case 13 -> arm.stage();
               case 14 -> arm.beltStackHeight();
+              case 15 -> arm.reflected() ? 1 : 0;
               default -> 0;
             };
           }
@@ -159,7 +160,12 @@ public final class InserterMenu extends AbstractContainerMenu {
   }
 
   public boolean clickMenuButton(Player player, int id) {
-    if (!allowed(player) || id < 0 || id > 5) return false;
+    if (!allowed(player) || id < 0 || id > 6) return false;
+    if (id == 6) {
+      boolean changed = owner.setReflected(!owner.reflected());
+      broadcastChanges();
+      return changed;
+    }
     int maximum = owner.researchedMaximum(), limit = Math.min(owner.manualLimit(), maximum);
     if (id == 3) limit = Math.max(1, (limit == 0 ? maximum : limit) - 1);
     if (id == 4) limit = Math.min(maximum, limit + 1);

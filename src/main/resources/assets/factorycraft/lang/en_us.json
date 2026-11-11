@@ -549,5 +549,7 @@
   "signal.factorycraft.signal_6": "Signal 6",
   "signal.factorycraft.signal_7": "Signal 7",
   "signal.factorycraft.signal_8": "Signal 8",
-  "signal.factorycraft.signal_9": "Signal 9"
+  "signal.factorycraft.signal_9": "Signal 9",
+  "gui.factorycraft.inserter_reflected.0": "Reflected: no",
+  "gui.factorycraft.inserter_reflected.1": "Reflected: yes"
 }

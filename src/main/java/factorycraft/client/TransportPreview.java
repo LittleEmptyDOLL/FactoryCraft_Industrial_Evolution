@@ -22,7 +22,8 @@ public final class TransportPreview {
     if (mc.level == null
         || mc.player == null
         || mc.screen != null
-        || !(mc.hitResult instanceof BlockHitResult hit)) return;
+        || !(mc.hitResult instanceof BlockHitResult hit)
+        || !PlacementPreview.validTarget(mc, hit)) return;
     for (var hand : InteractionHand.values()) {
       var stack = mc.player.getItemInHand(hand);
       if (!(stack.getItem() instanceof LiftItem item)) continue;

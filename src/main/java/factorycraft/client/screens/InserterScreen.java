@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class InserterScreen extends AbstractContainerScreen<InserterMenu> {
-  private Button enabled, mode;
+  private Button enabled, mode, reflection;
 
   public InserterScreen(InserterMenu menu, Inventory inventory, Component title) {
     super(menu, inventory, title);
@@ -26,6 +26,11 @@ public final class InserterScreen extends AbstractContainerScreen<InserterMenu> 
         addRenderableWidget(
             Button.builder(Component.empty(), b -> action(0))
                 .bounds(leftPos + 8, topPos + 23, 78, 20)
+                .build());
+    reflection =
+        addRenderableWidget(
+            Button.builder(Component.empty(), b -> action(6))
+                .bounds(leftPos + 8, topPos + 108, 160, 17)
                 .build());
     mode =
         addRenderableWidget(
@@ -111,20 +116,18 @@ public final class InserterScreen extends AbstractContainerScreen<InserterMenu> 
             String.format(java.util.Locale.ROOT, "%.2f", menu.data.get(4) / 3d),
             menu.data.get(3)),
         8,
-        115,
+        128,
         0xb0e4eb,
         false);
-    g.drawString(
-        font,
-        Component.translatable("gui.factorycraft.inserter_status." + menu.data.get(12)),
-        8,
-        127,
-        0xb0e4eb,
-        false);
+    reflection.setTooltip(
+        net.minecraft.client.gui.components.Tooltip.create(
+            Component.translatable("gui.factorycraft.inserter_status." + menu.data.get(12))));
     g.drawString(font, playerInventoryTitle, 8, 139, 0xffffff, false);
   }
 
   public void render(GuiGraphics g, int mx, int my, float partial) {
+    reflection.setMessage(
+        Component.translatable("gui.factorycraft.inserter_reflected." + menu.data.get(15)));
     enabled.setMessage(
         Component.translatable("gui.factorycraft.inserter_enabled." + menu.data.get(0)));
     mode.setMessage(Component.translatable("gui.factorycraft.inserter_mode." + menu.data.get(1)));

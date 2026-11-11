@@ -20,7 +20,10 @@
     "flame": "factorycraft:block/machine/flame",
     "belt": "factorycraft:block/machine/belt",
     "piston": "factorycraft:block/machine/piston",
-    "particle": "factorycraft:block/machine/shell"
+    "particle": "factorycraft:block/machine/shell",
+    "belt_1": "factorycraft:block/transport/surface_1",
+    "belt_2": "factorycraft:block/transport/surface_2",
+    "belt_3": "factorycraft:block/transport/surface_3"
   },
   "machines": [
     {
@@ -1969,7 +1972,7 @@
             0.18,
             1
           ],
-          "material": "belt"
+          "material": "belt_1"
         },
         {
           "from": [
@@ -2008,7 +2011,7 @@
             0.18,
             1
           ],
-          "material": "belt"
+          "material": "belt_1"
         },
         {
           "from": [
@@ -2040,14 +2043,144 @@
           "from": [
             0.87,
             0.11,
-            0.36
+            0.24
           ],
           "to": [
             1.13,
             0.1875,
-            0.64
+            0.76
           ],
           "material": "hazard"
+        },
+        {
+          "from": [
+            0.94,
+            0.1875,
+            0.32
+          ],
+          "to": [
+            1.06,
+            0.48,
+            0.68
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.91,
+            0.48,
+            0.36
+          ],
+          "to": [
+            1.09,
+            0.55,
+            0.64
+          ],
+          "material": "yellow"
+        },
+        {
+          "from": [
+            0.1,
+            0.035,
+            0.07
+          ],
+          "to": [
+            0.9,
+            0.105,
+            0.11
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.1,
+            0.035,
+            0.89
+          ],
+          "to": [
+            0.9,
+            0.105,
+            0.93
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.025,
+            0.12,
+            0.25
+          ],
+          "to": [
+            0.06,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.94,
+            0.12,
+            0.25
+          ],
+          "to": [
+            0.975,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.1,
+            0.035,
+            0.07
+          ],
+          "to": [
+            1.9,
+            0.105,
+            0.11
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.1,
+            0.035,
+            0.89
+          ],
+          "to": [
+            1.9,
+            0.105,
+            0.93
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.025,
+            0.12,
+            0.25
+          ],
+          "to": [
+            1.06,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.94,
+            0.12,
+            0.25
+          ],
+          "to": [
+            1.975,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
         }
       ]
     },
@@ -2548,7 +2681,7 @@
             0.18,
             1
           ],
-          "material": "belt"
+          "material": "belt_2"
         },
         {
           "from": [
@@ -2587,7 +2720,7 @@
             0.18,
             1
           ],
-          "material": "belt"
+          "material": "belt_2"
         },
         {
           "from": [
@@ -2619,14 +2752,144 @@
           "from": [
             0.87,
             0.11,
-            0.36
+            0.24
           ],
           "to": [
             1.13,
             0.1875,
-            0.64
+            0.76
           ],
           "material": "hazard"
+        },
+        {
+          "from": [
+            0.94,
+            0.1875,
+            0.32
+          ],
+          "to": [
+            1.06,
+            0.48,
+            0.68
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.91,
+            0.48,
+            0.36
+          ],
+          "to": [
+            1.09,
+            0.55,
+            0.64
+          ],
+          "material": "red"
+        },
+        {
+          "from": [
+            0.1,
+            0.035,
+            0.07
+          ],
+          "to": [
+            0.9,
+            0.105,
+            0.11
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.1,
+            0.035,
+            0.89
+          ],
+          "to": [
+            0.9,
+            0.105,
+            0.93
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.025,
+            0.12,
+            0.25
+          ],
+          "to": [
+            0.06,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.94,
+            0.12,
+            0.25
+          ],
+          "to": [
+            0.975,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.1,
+            0.035,
+            0.07
+          ],
+          "to": [
+            1.9,
+            0.105,
+            0.11
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.1,
+            0.035,
+            0.89
+          ],
+          "to": [
+            1.9,
+            0.105,
+            0.93
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.025,
+            0.12,
+            0.25
+          ],
+          "to": [
+            1.06,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.94,
+            0.12,
+            0.25
+          ],
+          "to": [
+            1.975,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
         },
         {
           "from": [
@@ -2735,7 +2998,7 @@
             0.18,
             1
           ],
-          "material": "belt"
+          "material": "belt_3"
         },
         {
           "from": [
@@ -2774,7 +3037,7 @@
             0.18,
             1
           ],
-          "material": "belt"
+          "material": "belt_3"
         },
         {
           "from": [
@@ -2806,14 +3069,144 @@
           "from": [
             0.87,
             0.11,
-            0.36
+            0.24
           ],
           "to": [
             1.13,
             0.1875,
-            0.64
+            0.76
           ],
           "material": "hazard"
+        },
+        {
+          "from": [
+            0.94,
+            0.1875,
+            0.32
+          ],
+          "to": [
+            1.06,
+            0.48,
+            0.68
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.91,
+            0.48,
+            0.36
+          ],
+          "to": [
+            1.09,
+            0.55,
+            0.64
+          ],
+          "material": "inlet"
+        },
+        {
+          "from": [
+            0.1,
+            0.035,
+            0.07
+          ],
+          "to": [
+            0.9,
+            0.105,
+            0.11
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.1,
+            0.035,
+            0.89
+          ],
+          "to": [
+            0.9,
+            0.105,
+            0.93
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.025,
+            0.12,
+            0.25
+          ],
+          "to": [
+            0.06,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.94,
+            0.12,
+            0.25
+          ],
+          "to": [
+            0.975,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.1,
+            0.035,
+            0.07
+          ],
+          "to": [
+            1.9,
+            0.105,
+            0.11
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.1,
+            0.035,
+            0.89
+          ],
+          "to": [
+            1.9,
+            0.105,
+            0.93
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.025,
+            0.12,
+            0.25
+          ],
+          "to": [
+            1.06,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.94,
+            0.12,
+            0.25
+          ],
+          "to": [
+            1.975,
+            0.23,
+            0.75
+          ],
+          "material": "steel"
         },
         {
           "from": [

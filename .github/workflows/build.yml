@@ -63,7 +63,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/v0220/reports/
+            run-gametest/v0230/reports/
 
   compatibility:
     name: FTB Teams, EMI, JEI and Jade compatibility
@@ -90,7 +90,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/v0220/reports/
+            run-gametest/v0230/reports/
 
   benchmark:
     name: Full factory benchmark and disk reload
@@ -116,7 +116,7 @@ jobs:
           name: factorycraft-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/full-v0220/reports/
+            run-benchmark/full-v0230/reports/
 
   mixed_benchmark:
     name: Mixed 3D factory, chunk unload and reload
@@ -142,4 +142,4 @@ jobs:
           name: factorycraft-mixed-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/mixed-v0220/reports/
+            run-benchmark/mixed-v0230/reports/

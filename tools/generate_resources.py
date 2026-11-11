@@ -633,7 +633,7 @@ for n,count in enumerate([200,250,250,250,300,400,600],1):
  write(f'data/factorycraft/recipe/inserter_capacity_bonus_{n}.json',{'type':'factorycraft:research','prerequisites':parents,'packs':packs,'units':count,'ticks':600,'unlocks':[],'x':5+n,'y':5})
 # Space Age access is explicitly sandbox-only until its real materials/science exist; no Stack recipe.
 for n,count in [(1,2000),(2,3000)]:
- write(f'data/factorycraft/recipe/transport_belt_capacity_{n}.json',{'type':'factorycraft:research','sandbox_only':True,'prerequisites':['factorycraft:inserter_capacity_bonus_7' if n==1 else 'factorycraft:transport_belt_capacity_1'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1,'factorycraft:chemical_science_pack':1},'units':count,'ticks':1200,'unlocks':[],'x':12+n,'y':5})
+ write(f'data/factorycraft/recipe/transport_belt_capacity_{n}.json',{'type':'factorycraft:research','sandbox_only':True,'prerequisites':['factorycraft:inserter_capacity_bonus_7'] if n==1 else ['factorycraft:transport_belt_capacity_1','factorycraft:inserter_capacity_bonus_7'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1,'factorycraft:chemical_science_pack':1},'units':count,'ticks':1200,'unlocks':[],'x':12+n,'y':5})
 arm_ui={'inserter':('Electric Inserter','Электроманипулятор'),'inserter_enabled.0':('Disabled','Выключен'),'inserter_enabled.1':('Enabled','Включён'),'inserter_mode.0':('Allow type','Принимать'),'inserter_mode.1':('Deny type','Исключать'),'inserter_hand':('Hand','Рука'),'inserter_power':('%s / 2000 FE','%s / 2000 FE')}
 for locale,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{locale}.json';strings=json.loads(path.read_text());strings.update({'gui.factorycraft.'+k:v[index] for k,v in arm_ui.items()});strings['technology.factorycraft.electric_inserters']=('Electric inserters','Электрические манипуляторы')[index];write(str(path.relative_to(ROOT)),strings)
@@ -784,3 +784,57 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
  for key,en,ru in [('state','Working state','Состояние работы'),('energy','Stored FE / fuel','Запас FE / топлива'),('progress','Work progress','Прогресс работы'),('game_tick','Game tick','Тик мира'),('day_tick','Day tick','Тик суток'),('day_length','Day length','Длина суток'),('signal_count','Signal count','Количество сигналов'),('hand_size','Hand size','Размер руки'),('research_cost','Research cost','Стоимость исследования'),('research_units','Completed research units','Готовые единицы исследования'),('research_level','Research level','Уровень исследования')]:data['signal.factorycraft.'+key]=(en,ru)[index]
  for char in 'abcdefghijklmnopqrstuvwxyz0123456789':data['signal.factorycraft.signal_'+char]=('Signal '+char.upper(),'Сигнал '+char.upper())[index]
  write(f'assets/factorycraft/lang/{locale}.json',data)
+
+# 0.23 reflected drop selection: own labels; recipe/energy/capacity numbers unchanged.
+for locale in ['en_us','ru_ru']:
+ p=ROOT/f'assets/factorycraft/lang/{locale}.json'; d=json.loads(p.read_text()); ru=locale=='ru_ru'
+ d['gui.factorycraft.inserter_reflected.0']='Отражение: нет' if ru else 'Reflected: no'
+ d['gui.factorycraft.inserter_reflected.1']='Отражение: да' if ru else 'Reflected: yes'
+ write(f'assets/factorycraft/lang/{locale}.json',d)
+
+# 0.23: original industrial transport surfaces and hardware, no imported assets.
+for tier,color in enumerate([(222,172,45),(209,65,49),(52,165,214)],1):
+ frames=[]
+ for frame in range(32):
+  image=[]
+  for y in range(32):
+   row=[]; phase=(y+frame*3*tier)%32
+   for x in range(32):
+    c=(31+(x%3)*3,39+(x%3)*3,43+(x%3)*3)
+    if phase%8 in (0,1):c=(72,82,86)
+    # paired moving chevrons point north, distinct from the stationary metal rails
+    if ((phase-abs(x-8))%16==0 and 3<=x<=13) or ((phase-abs(x-24))%16==0 and 19<=x<=29):c=color
+    if x in (15,16):c=(14,20,23)
+    row.append((*c,255))
+   image.append(row)
+  frames.extend(image)
+ png(f'block/transport/surface_{tier}',frames)
+ write(f'assets/factorycraft/textures/block/transport/surface_{tier}.png.mcmeta',{'animation':{'frametime':1,'interpolate':False}})
+ for kind,base in [('accent',color),('frame',(65,78,89)),('rail',(155,172,179)),('roller',(95,117,126))]:
+  pixels=[]
+  for y in range(16):
+   row=[]
+   for x in range(16):
+    c=base
+    if kind=='accent' and (x+y)%12<4:c=(30,39,45)
+    if kind=='rail':c=tuple(max(0,v-(12 if x%4==0 else 0)) for v in base)
+    if kind=='roller' and y%4==0:c=(180,194,199)
+    if kind=='frame' and (x in (2,13) and y in (2,13)):c=(184,195,202)
+    row.append((*c,255))
+   pixels.append(row)
+  png(f'block/transport/{kind}_{tier}' if kind=='accent' else f'block/transport/{kind}',pixels)
+for p in (ROOT/'assets/factorycraft/models/block').glob('*.json'):
+ d=json.loads(p.read_text())
+ if d.get('loader')!='factorycraft:belt':continue
+ d['textures'].update({'normal':'factorycraft:block/transport/surface_1','fast':'factorycraft:block/transport/surface_2','express':'factorycraft:block/transport/surface_3','frame':'factorycraft:block/transport/frame','rail':'factorycraft:block/transport/rail','accent':'factorycraft:block/transport/accent_1','accent_fast':'factorycraft:block/transport/accent_2','accent_express':'factorycraft:block/transport/accent_3','roller':'factorycraft:block/transport/roller'})
+ write(str(p.relative_to(ROOT)),d)
+# Shared splitter body uses the same tier-specific surface and hardware palette.
+p=ROOT/'assets/factorycraft/models/block/machine_shell.json'; d=json.loads(p.read_text())
+for tier,name in enumerate(['splitter','fast_splitter','express_splitter'],1):
+ d['textures'][f'belt_{tier}']=f'factorycraft:block/transport/surface_{tier}'
+ for entry in next(v['boxes'] for v in d['machines'] if v['profile']==name):
+  if entry.get('material')=='belt':entry['material']=f'belt_{tier}'
+write(str(p.relative_to(ROOT)),d)
+
+for tier,name in enumerate(['splitter','fast_splitter','express_splitter'],1):
+ p=ROOT/f'assets/factorycraft/models/item/{name}.json'; d=json.loads(p.read_text()); d['textures']['belt']=f'factorycraft:block/transport/surface_{tier}'; write(str(p.relative_to(ROOT)),d)

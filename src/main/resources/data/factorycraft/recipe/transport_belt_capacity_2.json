@@ -2,7 +2,8 @@
   "type": "factorycraft:research",
   "sandbox_only": true,
   "prerequisites": [
-    "factorycraft:transport_belt_capacity_1"
+    "factorycraft:transport_belt_capacity_1",
+    "factorycraft:inserter_capacity_bonus_7"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,

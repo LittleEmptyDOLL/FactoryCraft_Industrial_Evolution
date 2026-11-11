@@ -467,12 +467,13 @@ public final class LogisticsControlGameTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty", timeoutTicks = 1600)
+  @GameTest(template = "empty", timeoutTicks = 2100)
   public static void finiteTwoInputSorterDeliversExactIronAndCopperChests(GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(1, 3, 1));
     factorycraft.diagnostics.SortingFactory.build(h.getLevel(), o);
     h.runAfterDelay(
-        1500,
+        // Strict one-lane 2.1 input no longer borrows the other lane while blocked.
+        2000,
         () -> {
           for (int x : new int[] {6, 11}) {
             var chest =
