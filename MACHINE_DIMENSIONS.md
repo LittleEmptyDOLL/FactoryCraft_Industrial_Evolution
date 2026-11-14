@@ -9,7 +9,9 @@
 | big_electric_pole | 2×2×5 | (0,0,0) |
 | substation | 2×2×4 | (0,0,0) |
 | electric_drill | 3×3×2 | (1,0,0) |
-| electric_furnace, assembling_machine, coal_generator, industrial_furnace | 3×3×3 | (1,0,0) |
+| electric_furnace, assembling_machine, coal_generator | 3×3×3 | (1,0,0) |
+| stone_furnace | 2×2×2 | (1,0,0) |
+| steel_furnace | 2×2×3 | (1,0,0) |
 | pumpjack | 3×3×4 | (1,0,0) |
 | oil_refinery | 5×5×4 | (2,0,2) |
 | chemical_plant | 3×3×3 | (1,0,0) |

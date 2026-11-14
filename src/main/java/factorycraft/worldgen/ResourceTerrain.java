@@ -67,16 +67,6 @@ public final class ResourceTerrain {
     return level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x, z) - 1;
   }
 
-  public static factorycraft.simulation.resources.SurfaceWindow window(
-      WorldGenLevel level, int cx, int cz, int radius) {
-    for (int dx = -1; dx <= 1; dx++)
-      for (int dz = -1; dz <= 1; dz++)
-        if (!level.hasChunk(cx + dx, cz + dz))
-          throw new IllegalStateException("Incomplete resource generation region");
-    return new factorycraft.simulation.resources.SurfaceWindow(
-        cx * 16, cz * 16, 16, 16, radius, (x, z) -> surface(level, x, z));
-  }
-
   public static boolean protectedStructure(net.minecraft.world.level.chunk.ChunkAccess chunk) {
     for (var start : chunk.getAllStarts().values()) if (start.isValid()) return true;
     for (var references : chunk.getAllReferences().values()) if (!references.isEmpty()) return true;

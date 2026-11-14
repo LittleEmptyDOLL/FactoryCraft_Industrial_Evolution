@@ -38,11 +38,11 @@ public final class ResourceShowcase {
             .getDataStorage()
             .computeIfAbsent(
                 new SavedData.Factory<>(Runs::new, Runs::load),
-                "factorycraft_v0250_resource_visuals");
+                "factorycraft_v0251_resource_visuals");
     if (runs.next < 8000 || runs.next > 10000)
       throw new IllegalStateException("Visual fixture range exhausted");
     ResourceTerrainFixture.Result last = null;
-    for (int mode = 0; mode < 3; mode++) {
+    for (int mode : new int[] {0, 1, 2, 4}) {
       int index = runs.next++;
       runs.setDirty();
       last = ResourceTerrainFixture.build(level, index, mode, false);
@@ -60,7 +60,7 @@ public final class ResourceShowcase {
           false);
     }
     var p = last.center();
-    source.getPlayer().connection.teleport(p.getX() + 20.5, p.getY() + 9, p.getZ() + .5, 90, 25);
+    source.getPlayer().connection.teleport(p.getX() - 20.5, p.getY() + 9, p.getZ() + .5, -90, 10);
     return 1;
   }
 

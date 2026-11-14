@@ -11,8 +11,8 @@ public final class ResourceWorldgenConfig {
       MIN_STOCK,
       MAX_STOCK,
       SPACING,
-      DEPTH,
-      SMOOTHING,
+      MIN_DEPTH,
+      MAX_DEPTH,
       OIL_SPACING,
       OIL_POINTS_MIN,
       OIL_POINTS_MAX,
@@ -31,16 +31,14 @@ public final class ResourceWorldgenConfig {
         b.comment("Candidate field spacing, in chunks. New chunks only.")
             .worldRestart()
             .defineInRange("veinSpacingChunks", 16, 2, 32);
-    DEPTH =
-        b.comment("Maximum half-ellipsoid depth; edges taper naturally.")
+    MIN_DEPTH =
+        b.comment("Minimum full-ellipsoid vertical radius, not diameter or local depth.")
             .worldRestart()
-            .defineInRange("veinDepth", 12, 2, 64);
-    SMOOTHING =
-        b.comment(
-                "Terrain smoothing radius within the available generation region; never loads"
-                    + " chunks.")
+            .defineInRange("minVeinDepth", 5, 2, 64);
+    MAX_DEPTH =
+        b.comment("Maximum full-ellipsoid vertical radius; default diameter 10-16 blocks.")
             .worldRestart()
-            .defineInRange("terrainSmoothing", 8, 1, 8);
+            .defineInRange("maxVeinDepth", 8, 2, 64);
     NOISE = b.worldRestart().defineInRange("veinShapeNoise", 0.12, 0.0, 0.3);
     OIL_SPACING = b.worldRestart().defineInRange("oilFieldSpacingChunks", 16, 2, 64);
     OIL_POINTS_MIN = b.worldRestart().defineInRange("minOilPoints", 4, 1, 32);
@@ -64,7 +62,8 @@ public final class ResourceWorldgenConfig {
         Math.min(MIN_STOCK.get(), MAX_STOCK.get()),
         Math.max(MIN_STOCK.get(), MAX_STOCK.get()),
         SPACING.get(),
-        DEPTH.get(),
+        Math.min(MIN_DEPTH.get(), MAX_DEPTH.get()),
+        Math.max(MIN_DEPTH.get(), MAX_DEPTH.get()),
         NOISE.get());
   }
 

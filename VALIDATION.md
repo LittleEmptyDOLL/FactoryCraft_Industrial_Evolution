@@ -1,3 +1,23 @@
+# Validation — 0.25.1 / issue #4 (14 November 2026, Europe/Moscow)
+
+Java 21.0.13, Minecraft 1.21.1, NeoForge 21.1.252. Base: `1132d39689c24ae5df46091076ece4559f875bdd`. Current checks and bounded costs: [log extract](validation/v0251/local-checks.txt), [comparison](validation/v0251/comparison.md), [client checks](validation/v0251/client-checks.md).
+
+* `./gradlew build`: **221 JUnit, zero failures**. Obsolete smoothing-unit tests are replaced by full-body depth/connectivity/clipping/seam/order/bounds tests; no native baseline cases are removed.
+* `./gradlew runGameTestServer -PgameTestFixture=v0251-final`: **406 required GameTests pass** (393 baseline + 13 new). Thirty restored production scenarios remain mandatory. Separate runs create and verify the same current-format checkpoints; the final delivery run also checks actual steel-plate completion at 320/160/160 ticks and active fuel/FE costs for all three furnaces.
+* New cases cover actual fuel/nonfuel and container automation, idle/output-blocked burners, base speed/power, fractional efficiency, speed/productivity, powered beacons only on Electric, power interruption, all burner rotations/obstacles/one-item packing/stale capabilities, and independent-JVM recipe/fuel/work/FE residues. Existing true native smelting/reload tests cover all three families.
+* Geometry tests cover full upper/lower bodies, both cliff orientations, caves, water, protected BE/blocks, different ore identities, reversed chunk traversal, maximum bounds, distant NoiseBasedChunkGenerator anchors without loading their chunks and chunk-local real feature writes. Separate JVM checks preserve a generated body's stock digest and actual extracted chest output.
+* Optional JEI/EMI API compilation passes. Runtime profiles with FTB/JEI/EMI/Jade remain CI; the actual local client ran without those optional mods.
+* Real dedicated **SMOKE factory + separate-JVM persisted hash pass**: 100 belts, 20 producers, ten arms, actual steel fuel and FE-node roles. Full/MIXED and the unchanged 10000-pipe performance profile remain CI, not locally rerun.
+* Two real client worlds save normally. All furnace GUIs, common smelting browser, two Electric module slots and flat/slope/both-cliff scenes were inspected. A fresh normal-noise world contains **40199 saved finite ore owners, 87435118 units and eight oil points**; this QA environment retains its previous explicit spacing override of six chunks (source default stays sixteen). Its read-only Anvil census is [recorded](validation/v0251/natural-world-save.json). No terrain was constructed in that natural world.
+
+Prior diagnostic worlds were neither reset nor refilled. [Initial native fixture failures](validation/v0251/development-native-failures.txt) and two failed SMOKE census reports are retained. They exposed obsolete electric-consumption / burner-selection assertions, a chest coordinate intersecting the prepared cliff, fuel misclassification and an old FE-node expectation including a burner. Fixtures/assertions were corrected without removing their guarantees. The completed development world was losslessly archived and byte-compared before removing only its active-directory copy; original archives and failed SMOKE worlds remain in the workspace. Final fixtures use a separate `v0251-final` directory.
+
+Limitations: no old FactoryCraft migration; fuel durations and FE are documented Minecraft adaptations; Electric idle drain is not modeled. Generator base terrain is the canonical anchor source, not later biome decoration/carver changes. Whole maximum-field native throughput, retained ore heap, full factory/MIXED, optional runtime and multiplayer regressions remain unmeasured locally. No faster TPS claim is made. Client audio/public-key requests failed in this headless/offline environment; graphics, gameplay and normal saves worked.
+
+Historical validation below retains its original version scope.
+
+---
+
 # Validation — 0.25.0 / GitHub issue #3 (11 November 2026, Europe/Moscow)
 
 Base main: `dd7c81596e9db216fb10d75748ed9479ced1ea07` (0.24.1). Java 21.0.13, Minecraft 1.21.1, NeoForge 21.1.252. This release deliberately changes FactoryCraft schemas/gameplay; old worlds are not migrated, reset or automatically deleted. [Bounded performance report](validation/v0250/comparison.md); [local check extract](validation/v0250/local-checks.txt).

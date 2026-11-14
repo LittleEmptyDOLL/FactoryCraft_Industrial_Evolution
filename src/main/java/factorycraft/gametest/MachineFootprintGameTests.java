@@ -125,7 +125,7 @@ public final class MachineFootprintGameTests {
 
   @GameTest(template = "empty", timeoutTicks = 100)
   public static void industrialFurnaceMatchesPreviewInEveryOrientation(GameTestHelper h) {
-    verify(h, "industrial_furnace");
+    verify(h, "steel_furnace");
   }
 
   @GameTest(template = "empty", timeoutTicks = 100)

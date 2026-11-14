@@ -1,3 +1,7 @@
+# Furnace visuals — 0.25.1
+
+Stone and Steel use original per-cell masonry/metal meshes, 2×2 footprints and Minecraft heights 2/3. Electric retains its 3×3×3 body. Burner flames use the actual active-work state, so idle/blocked/unfuelled machines stop animating. Item models, placement preview, collision cells and portable dismantling all use the same MachineProfile/layout definitions. No Factorio artwork is copied. See FURNACES.md for mechanics.
+
 # Визуальная система машин — 0.20.0
 
 Все 27 профилей сохраняют собственные оригинальные цельные модели. Размеры берутся из MachineProfile; высоты адаптированы к Minecraft. Статические поверхности делятся CellMesh по физическим клеткам без внутренних крышек на стыках и запекаются в чанковые меши. Части содержат локальную визуальную идентификацию и рисуются без чтения чанка контроллера.

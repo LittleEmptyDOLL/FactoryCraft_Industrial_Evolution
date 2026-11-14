@@ -22,15 +22,13 @@ class BenchmarkPlanTest {
     }
     assertEquals(10000, counts.get(Role.BELT));
     assertEquals(500, counts.get(Role.INSERTER));
-    assertEquals(33998, counts.get(Role.CASING));
+    assertEquals(30248, counts.get(Role.CASING));
     assertEquals(
         1000,
-        counts.get(Role.FURNACE)
-            + counts.get(Role.ASSEMBLER)
-            + counts.get(Role.INDUSTRIAL_FURNACE));
+        counts.get(Role.FURNACE) + counts.get(Role.ASSEMBLER) + counts.get(Role.STEEL_FURNACE));
     assertEquals(250, counts.get(Role.GENERATOR));
     assertEquals(749, counts.get(Role.POLE));
-    assertEquals(46747, points.size());
+    assertEquals(42997, points.size());
   }
 
   @Test
@@ -54,7 +52,7 @@ class BenchmarkPlanTest {
   }
 
   @Test
-  void insertersConnectRealInventoriesAndEachControllerHasTwentySixParts() {
+  void insertersConnectRealInventoriesAndSteelUsesTwoByTwoFootprint() {
     var map = new HashMap<Point, Cell>();
     for (var c : new BenchmarkPlan(Profile.FULL).blocks())
       map.put(new Point(c.x(), c.y(), c.z()), c);
@@ -73,10 +71,10 @@ class BenchmarkPlanTest {
                 || target.role() == Role.ASSEMBLER
                 || target.role() == Role.CASING);
       }
-      if (c.role() == Role.INDUSTRIAL_FURNACE) {
+      if (c.role() == Role.STEEL_FURNACE) {
         for (int y = 0; y < 3; y++)
-          for (int z = 0; z < 3; z++)
-            for (int x = 0; x < 3; x++) {
+          for (int z = 0; z < 2; z++)
+            for (int x = 0; x < 2; x++) {
               if (x == 1 && y == 0 && z == 0) continue;
               var part = map.get(new Point(c.x() + x - 1, c.y() + y, c.z() + z));
               assertNotNull(part);
@@ -96,14 +94,14 @@ class BenchmarkPlanTest {
             Role.BELT,
             Role.FURNACE,
             Role.ASSEMBLER,
-            Role.INDUSTRIAL_FURNACE,
+            Role.STEEL_FURNACE,
             Role.CASING,
             Role.GENERATOR,
             Role.POLE,
             Role.INSERTER,
             Role.SOURCE),
         roles);
-    assertEquals(832, blocks.size());
+    assertEquals(757, blocks.size());
     assertEquals(Profile.FULL, Profile.parse("full"));
     assertThrows(IllegalArgumentException.class, () -> Profile.parse("arbitrary"));
   }
@@ -117,7 +115,7 @@ class BenchmarkPlanTest {
           switch (c.role()) {
             case POLE -> factorycraft.simulation.power.PowerTopology.Kind.POLE;
             case GENERATOR -> factorycraft.simulation.power.PowerTopology.Kind.SOURCE;
-            case FURNACE, ASSEMBLER, INDUSTRIAL_FURNACE, INSERTER ->
+            case FURNACE, ASSEMBLER, INSERTER ->
                 factorycraft.simulation.power.PowerTopology.Kind.CONSUMER;
             default -> null;
           };
@@ -146,9 +144,9 @@ class BenchmarkPlanTest {
     int rounds = 0;
     while (graph.pending() && rounds++ < 1000) graph.advance(4096);
     assertFalse(graph.pending());
-    assertEquals(2499, graph.size());
+    assertEquals(2249, graph.size());
     assertEquals(1, graph.networks());
-    assertEquals(1500, graph.info(graph.find(poles.getFirst())).consumers());
+    assertEquals(1250, graph.info(graph.find(poles.getFirst())).consumers());
     assertEquals(250, graph.info(graph.find(poles.getFirst())).sources());
   }
 }

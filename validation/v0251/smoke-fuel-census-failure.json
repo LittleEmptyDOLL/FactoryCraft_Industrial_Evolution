@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "profile": "SMOKE",
+  "mode": "measure",
+  "startedUtc": "2026-11-14T10:08:54.240775881Z",
+  "minecraft": "1.21.1",
+  "modVersion": "0.25.1",
+  "neoForge": "21.1.252",
+  "java": "21.0.13",
+  "os": "Linux",
+  "arch": "amd64",
+  "availableProcessors": 2,
+  "maxHeapBytes": 2147483648,
+  "measurementScope": "Dedicated server tick work with forced ticking chunks; harness census, report writing, startup and save are outside samples. JFR bytes are encoded packet bytes, not TCP bytes. No client FPS claim.",
+  "forcedTickingChunks": 7,
+  "status": "FAIL",
+  "failure": "java.lang.IllegalStateException: Unexpected production item 4 minecraft:coal"
+}

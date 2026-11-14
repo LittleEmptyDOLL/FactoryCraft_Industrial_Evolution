@@ -16,7 +16,8 @@ public record ResourceVeinConfiguration(
       int minStock,
       int maxStock,
       int spacing,
-      int depth,
+      int minDepth,
+      int maxDepth,
       double noise) {}
 
   private static final Codec<Bounds> BOUNDS =
@@ -28,7 +29,8 @@ public record ResourceVeinConfiguration(
                       Codec.intRange(1, 10000000).fieldOf("min_stock").forGetter(Bounds::minStock),
                       Codec.intRange(1, 10000000).fieldOf("max_stock").forGetter(Bounds::maxStock),
                       Codec.intRange(2, 32).fieldOf("spacing_chunks").forGetter(Bounds::spacing),
-                      Codec.intRange(2, 64).fieldOf("depth").forGetter(Bounds::depth),
+                      Codec.intRange(2, 64).fieldOf("min_depth").forGetter(Bounds::minDepth),
+                      Codec.intRange(2, 64).fieldOf("max_depth").forGetter(Bounds::maxDepth),
                       Codec.doubleRange(0, 0.3).fieldOf("noise").forGetter(Bounds::noise))
                   .apply(i, Bounds::new));
   public static final Codec<ResourceVeins.Settings> SETTINGS =
@@ -42,7 +44,8 @@ public record ResourceVeinConfiguration(
                       b.minStock,
                       b.maxStock,
                       b.spacing,
-                      b.depth,
+                      b.minDepth,
+                      b.maxDepth,
                       b.noise));
             } catch (IllegalArgumentException e) {
               return DataResult.error(e::getMessage);
@@ -56,7 +59,8 @@ public record ResourceVeinConfiguration(
                       s.minStock(),
                       s.maxStock(),
                       s.spacingChunks(),
-                      s.depth(),
+                      s.minDepth(),
+                      s.maxDepth(),
                       s.noise())));
   public static final Codec<ResourceVeinConfiguration> CODEC =
       RecordCodecBuilder.<ResourceVeinConfiguration>create(

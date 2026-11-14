@@ -208,7 +208,7 @@ public final class FactoryGameTests {
   @GameTest(template = "empty", timeoutTicks = 1600)
   public static void firstFactoryMinesSmeltsAssemblesIntoChest(GameTestHelper h) {
     var origin = h.absolutePos(new BlockPos(1, 2, 1));
-    var chest = factorycraft.core.FactoryCommands.ironLine(h.getLevel(), origin, false);
+    var chest = factorycraft.core.FactoryCommands.ironLine(h.getLevel(), origin);
     h.succeedWhen(
         () ->
             h.assertTrue(

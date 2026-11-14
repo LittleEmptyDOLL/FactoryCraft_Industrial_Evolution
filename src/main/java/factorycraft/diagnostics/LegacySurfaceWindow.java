@@ -1,4 +1,4 @@
-package factorycraft.simulation.resources;
+package factorycraft.diagnostics;
 
 import java.util.function.IntBinaryOperator;
 
@@ -6,11 +6,12 @@ import java.util.function.IntBinaryOperator;
  * Exact dense box filtering with a summed-area table. Query cost is constant and chunk-order
  * independent.
  */
-public final class SurfaceWindow {
+public final class LegacySurfaceWindow {
   private final int x, z, width, depth, radius, stride;
   private final long[] sums;
 
-  public SurfaceWindow(int x, int z, int width, int depth, int radius, IntBinaryOperator heights) {
+  public LegacySurfaceWindow(
+      int x, int z, int width, int depth, int radius, IntBinaryOperator heights) {
     if (width < 1 || depth < 1 || radius < 1 || radius > 8)
       throw new IllegalArgumentException("Invalid terrain window");
     this.x = x;

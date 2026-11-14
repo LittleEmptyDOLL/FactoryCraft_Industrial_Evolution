@@ -1,0 +1,10 @@
+v0251-native-first.log
+[09:35:45] [Server thread/ERROR] [minecraft/LogTestReporter]: unloadingapartpausesproductionandreloadresumes failed at 1911179, -60, -12881438! reload lost state or changed production cost
+[09:36:01] [Server thread/ERROR] [minecraft/LogTestReporter]: controllerandpartsresumefromserializedprogress failed at 1911216, -60, -12881108! serialized assembly failed to resume its original transaction
+[09:36:01] [Server thread/ERROR] [minecraft/LogTestReporter]: automaticstructureresumesserializedpartialproduction failed at 1911142, -60, -12881048! restoration lost automatic structure or partial production
+[09:36:07] [Server thread/ERROR] [minecraft/LogTestReporter]: anitemplacedfurnacerunsthecompleteautomatedline failed at 1911142, -60, -12880778! full-size industrial line has not delivered gears
+[09:36:11] [Server thread/ERROR] [minecraft/LogTestReporter]: incompleteassemblydoesnotconsumeinputorpower failed at 1911216, -60, -12880598! industrial furnace changed FE cost per result
+[09:36:25] [Server thread/INFO] [minecraft/GameTestServer]: 5 required tests failed :(
+v0251-native-third.log
+[09:56:06] [Server thread/ERROR] [minecraft/LogTestReporter]: generatedbodyandpartiallyexhaustedstockssurviveindependentjvm failed at 7924042, -60, -5262394! occupied ore ledger; refusing reset
+[09:57:00] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(

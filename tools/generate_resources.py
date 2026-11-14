@@ -43,7 +43,7 @@ def texture(name,color,style):
 colors={
  'transport_belt':(221,168,42),'fast_transport_belt':(212,63,48),'express_transport_belt':(53,156,209),'splitter':(177,126,49),
  'inserter':(215,160,50),'electric_drill':(67,135,143),'electric_furnace':(187,95,52),'assembling_machine':(55,126,161),'coal_generator':(114,127,108),'electric_pole':(162,129,88),
- 'iron_ore':(104,110,115),'copper_ore':(110,112,108),'industrial_furnace':(187,93,43),'machine_casing':(79,99,116)}
+ 'iron_ore':(104,110,115),'copper_ore':(110,112,108),'steel_furnace':(187,93,43),'machine_casing':(79,99,116)}
 for name,color in colors.items():
  belt='belt' in name or name=='splitter'
  pixels=texture('block/'+name,color,'belt' if belt else 'ore' if 'ore' in name else 'machine')
@@ -55,7 +55,7 @@ for name,color in colors.items():
   model={'parent':'minecraft:block/block','textures':{'all':tex,'particle':tex},'elements':[{'from':[lo,0,lo],'to':[hi,height,hi],'faces':{f:{'texture':'#all'} for f in ['up','down','north','south','east','west']}}]}
  else:model={'parent':'minecraft:block/cube_all','textures':{'all':tex}}
  write(f'assets/factorycraft/models/block/{name}.json',model)
- active=name in ['electric_drill','electric_furnace','assembling_machine','coal_generator','industrial_furnace','machine_casing']
+ active=name in ['electric_drill','electric_furnace','assembling_machine','coal_generator','steel_furnace','machine_casing']
  if active:
   frames=[]
   for frame in range(2):
@@ -77,13 +77,13 @@ for name,color in colors.items():
  result='minecraft:raw_iron' if name=='iron_ore' else 'minecraft:raw_copper' if name=='copper_ore' else 'factorycraft:'+name
  write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':result}],'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
 # A visible arrow and a distinct front make rotated multiblock layouts legible in game.
-top=texture('block/industrial_furnace_top',colors['industrial_furnace'],'machine')
+top=texture('block/steel_furnace_top',colors['steel_furnace'],'machine')
 for yy in range(2,13):
  for xx in range(16):
   if (yy<=6 and abs(xx-7.5)<=yy-1.5) or (6<=yy<=12 and xx in (7,8)):top[yy][xx]=(255,194,61,255)
-png('block/industrial_furnace_top',top)
+png('block/steel_furnace_top',top)
 for suffix in ['', '_active']:
- write(f'assets/factorycraft/models/block/industrial_furnace{suffix}.json',{'parent':'minecraft:block/orientable','textures':{'front':'factorycraft:block/industrial_furnace'+suffix,'side':'factorycraft:block/machine_casing','top':'factorycraft:block/industrial_furnace_top'}})
+ write(f'assets/factorycraft/models/block/steel_furnace{suffix}.json',{'parent':'minecraft:block/orientable','textures':{'front':'factorycraft:block/steel_furnace'+suffix,'side':'factorycraft:block/machine_casing','top':'factorycraft:block/steel_furnace_top'}})
 items={'iron_plate':(176,192,203),'copper_plate':(211,121,64),'iron_gear':(137,160,178),'copper_wire':(226,141,65),'electronic_circuit':(69,167,115),'wrench':(194,197,204)}
 for name,color in items.items():
  texture('item/'+name,color,'item');write(f'assets/factorycraft/models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'factorycraft:item/'+name}})
@@ -98,7 +98,7 @@ for material in ['iron','copper']:
  write(f'data/factorycraft/neoforge/biome_modifier/{material}_ore.json',{'type':'neoforge:add_features','biomes':'#minecraft:is_overworld','features':['factorycraft:'+material+'_ore'],'step':'underground_ores'})
 def ingredient(item):return {'item':item}
 def process(name,machine,inputs,result,count,ticks,energy):
- write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:processing','machine':machine,'inputs':[{'ingredient':ingredient(i),'count':n} for i,n in inputs],'result':{'id':'factorycraft:'+result,'count':count},'ticks':ticks,'energy':energy})
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:processing','machine':machine,'inputs':[{'ingredient':ingredient(i),'count':n} for i,n in inputs],'result':{'id':result if ':' in result else 'factorycraft:'+result,'count':count},'ticks':ticks,'energy':energy})
 process('iron_plate','electric_furnace',[('minecraft:raw_iron',1)],'iron_plate',1,64,10)
 process('copper_plate','electric_furnace',[('minecraft:raw_copper',1)],'copper_plate',1,64,10)
 process('iron_gear','assembling_machine',[('factorycraft:iron_plate',2)],'iron_gear',1,10,8)
@@ -120,9 +120,9 @@ craft('electric_pole',[' C ',' S ',' S '],{'C':'minecraft:copper_ingot','S':'min
 craft('wrench',['I I',' I ',' I '],{'I':'minecraft:iron_ingot'})
 # Keep the old casing ID/item for existing worlds, but generated parts are not crafted.
 (ROOT/'data/factorycraft/recipe/craft_machine_casing.json').unlink(missing_ok=True)
-craft('industrial_furnace',['CPC','FGF','CRC'],{'C':'minecraft:stone_bricks','P':'factorycraft:iron_plate','F':'factorycraft:electric_furnace','G':'factorycraft:iron_gear','R':'minecraft:redstone'})
+craft('steel_furnace',['CPC','FGF','CRC'],{'C':'minecraft:stone_bricks','P':'factorycraft:iron_plate','F':'factorycraft:electric_furnace','G':'factorycraft:iron_gear','R':'minecraft:redstone'})
 labels={
- 'industrial_furnace':('Industrial Furnace','Промышленная печь'),'machine_casing':('Machine Casing','Корпус машины'),
+ 'steel_furnace':('Industrial Furnace','Промышленная печь'),'machine_casing':('Machine Casing','Корпус машины'),
  'transport_belt':('Transport Belt','Конвейер'),'fast_transport_belt':('Fast Transport Belt','Быстрый конвейер'),'express_transport_belt':('Express Transport Belt','Экспресс-конвейер'),'splitter':('T-Splitter','Т-разделитель'),
  'inserter':('Mechanical Inserter','Механический манипулятор'),'electric_drill':('Electric Mining Drill','Электрический бур'),'electric_furnace':('Electric Furnace','Электрическая печь'),'assembling_machine':('Assembling Machine','Сборочный автомат'),
  'coal_generator':('Coal Generator','Угольный генератор'),'electric_pole':('Electric Pole','Электрический столб'),'iron_ore':('Industrial Iron Ore','Промышленная железная руда'),'copper_ore':('Industrial Copper Ore','Промышленная медная руда'),
@@ -131,7 +131,7 @@ ui={'message.factorycraft.placement_space':('Need a loaded, unobstructed 2x2x2 a
  'message.factorycraft.assembly_missing':('Structure unavailable. Check that all its chunks are loaded and parts are intact.','Структура недоступна. Проверьте загрузку чанков и целостность частей.'),
  'message.factorycraft.dismantle':('Sneak + wrench dismantles the machine safely; contents are not destroyed.','Shift + ключ: безопасно разобрать машину; предметы не уничтожаются.'),
  'command.factorycraft.smelter':('Multiblock smelter built at %s. Its source chest contains 12 raw iron.','Мультиблочная печь построена: %s. Во входном сундуке 12 необработанного железа.'),
- 'tooltip.factorycraft.industrial_furnace':('One item places a 2x2x2 machine. Twice the furnace speed; same FE per result.','Один предмет устанавливает машину 2x2x2. Скорость x2; тот же расход FE на результат.'),
+ 'tooltip.factorycraft.steel_furnace':('One item places a 2x2x2 machine. Twice the furnace speed; same FE per result.','Один предмет устанавливает машину 2x2x2. Скорость x2; тот же расход FE на результат.'),
  'tooltip.factorycraft.machine_casing':('Part of a multiblock. Shares the controller inventory and power; stores no items.','Часть мультиблока. Общий с контроллером инвентарь и энергия; своих предметов нет.'),
  'tooltip.factorycraft.belt':('Two lanes. Items follow the arrow; stopped output causes a jam.','Две полосы. Движение по стрелке; закрытый выход создаёт затор.'),
  'tooltip.factorycraft.splitter':('Alternates between the forward and right outputs.','Чередует передний и правый выходы.'),
@@ -145,7 +145,7 @@ ui={'message.factorycraft.placement_space':('Need a loaded, unobstructed 2x2x2 a
 for lang,index in [('en_us',0),('ru_ru',1)]:
  d={('block' if n in colors else 'item')+'.factorycraft.'+n:pair[index] for n,pair in labels.items()};d.update({k:v[index] for k,v in ui.items()});write(f'assets/factorycraft/lang/{lang}.json',d)
 write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})
-write('data/factorycraft/advancement/recipes/multiblock_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_industrial_furnace']}})
+write('data/factorycraft/advancement/recipes/multiblock_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:craft_steel_furnace']}})
 # Empty structure used by all code-built integration tests (NBT, data version 3955 / Minecraft 1.21.1).
 def utf(s):
  b=s.encode();return struct.pack('>H',len(b))+b
@@ -341,7 +341,7 @@ write('data/factorycraft/advancement/recipes/petroleum_basics.json',{'criteria':
 write('data/factorycraft/advancement/recipes/factory_basics.json',{'criteria':{'has_iron':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:iron_ingot']}]}}},'rewards':{'recipes':['factorycraft:'+p.stem for p in sorted((ROOT/'data/factorycraft/recipe').glob('craft_*.json'))]}})
 
 # 0.6 resource tiles and automatic machine footprints. These overrides replace one-drop ores.
-profiles={'electric_drill':(3,2,3),'electric_furnace':(3,3,3),'assembling_machine':(3,3,3),'coal_generator':(3,3,3),'industrial_furnace':(3,3,3),'pumpjack':(3,4,3),'oil_refinery':(5,4,5),'chemical_plant':(3,3,3),'boiler':(3,2,2),'steam_engine':(3,2,5),'fluid_tank':(3,3,3),'electric_pump':(1,1,2),'splitter':(2,1,1)}
+profiles={'electric_drill':(3,2,3),'electric_furnace':(3,3,3),'assembling_machine':(3,3,3),'coal_generator':(3,3,3),'steel_furnace':(2,3,2),'stone_furnace':(2,2,2),'pumpjack':(3,4,3),'oil_refinery':(5,4,5),'chemical_plant':(3,3,3),'boiler':(3,2,2),'steam_engine':(3,2,5),'fluid_tank':(3,3,3),'electric_pump':(1,1,2),'splitter':(2,1,1)}
 for casing in ['machine_casing','refinery_casing']:
  variants={}
  for profile in profiles:
@@ -375,7 +375,7 @@ for lang in ['en_us','ru_ru']:
  'tooltip.factorycraft.machine_preview':'Один предмет создаёт всю машину. Превью: зелёное — свободно, красное — препятствие.' if ru else 'One item builds the complete machine. Preview: green = clear, red = obstructed.',
  'command.factorycraft.full_size_space':'Нужна загруженная свободная область 30 × 8 × 13 рядом с вами.' if ru else 'Need a loaded, empty 30 × 8 × 13 area beside you.',
  'command.factorycraft.full_size_built':'Построено: %s, координаты %s' if ru else 'Built %s at %s',
- 'tooltip.factorycraft.industrial_furnace':'Один предмет создаёт печь 3×3×3. Скорость ×2; тот же расход FE на результат.' if ru else 'One item builds a 3×3×3 furnace. Twice the speed; same FE per result.',
+ 'tooltip.factorycraft.steel_furnace':'Один предмет создаёт печь 3×3×3. Скорость ×2; тот же расход FE на результат.' if ru else 'One item builds a 3×3×3 furnace. Twice the speed; same FE per result.',
  'tooltip.factorycraft.oil_refinery':'НПЗ 5×5. Нефть — в центр задней грани, газ — из центра передней.' if ru else '5×5 refinery. Crude enters rear center; gas leaves front center.',
  'tooltip.factorycraft.electric_drill':'Бур 3×3. Добывает запас залежей в области 5×5 на глубину до 8 блоков.' if ru else '3×3 drill. Extracts finite deposits in a 5×5 mining area, up to 8 blocks below.',
  'tooltip.factorycraft.splitter':'Два передних выхода, чередование предметов. Ширина 2 блока.' if ru else 'Alternates between two forward outputs. Two blocks wide.',
@@ -386,7 +386,7 @@ for lang in ['en_us','ru_ru']:
 
 # 0.6.1: one deterministic large surface-field sampler per resource and chunk.
 for index,name in enumerate(['iron_ore','copper_ore','coal_deposit','stone_deposit']):
- write(f'data/factorycraft/worldgen/configured_feature/{name}.json',{'type':'factorycraft:resource_patch','config':{'state':{'Name':'factorycraft:'+name},'salt':920174+(index*812791),'use_world_settings':True,'vein':{'min_radius':8,'max_radius':20,'min_stock':500,'max_stock':5000,'spacing_chunks':16,'depth':12,'noise':0.12}}})
+ write(f'data/factorycraft/worldgen/configured_feature/{name}.json',{'type':'factorycraft:resource_patch','config':{'state':{'Name':'factorycraft:'+name},'salt':920174+(index*812791),'use_world_settings':True,'vein':{'min_radius':8,'max_radius':20,'min_stock':500,'max_stock':5000,'spacing_chunks':16,'min_depth':5,'max_depth':8,'noise':0.12}}})
  write(f'data/factorycraft/worldgen/placed_feature/{name}.json',{'feature':'factorycraft:'+name,'placement':[{'type':'minecraft:biome'}]})
 for lang in ['en_us','ru_ru']:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());ru=lang=='ru_ru'
@@ -880,3 +880,52 @@ for lang,index in [('en_us',0),('ru_ru',1)]:
  path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
  for row,pair in enumerate([('Initial yield: %s%%','Начальная отдача: %s%%'),('Current yield: %s%%','Текущая отдача: %s%%'),('Normal speed: %s mB/s','Номинально: %s мБ/с')]):data[f'gui.factorycraft.oil_stat_{row}']=pair[index]
  write(str(path.relative_to(ROOT)),data)
+
+# 0.25.1: precisely the three Factorio furnace families, one common base smelting definition.
+for path in (ROOT/'data/factorycraft/recipe').glob('*.json'):
+ data=json.loads(path.read_text())
+ if data.get('type')=='factorycraft:processing' and data.get('machine')=='electric_furnace':
+  data['machine']='smelting';data['energy']=24;write(str(path.relative_to(ROOT)),data)
+process('stone_brick','smelting',[('minecraft:cobblestone',2)],'minecraft:stone_bricks',1,64,24)
+# Stone is the Factorio entity; Minecraft cobblestone/bricks are explicit material substitutes.
+craft('stone_furnace',['CCC','C C'],{'C':'minecraft:cobblestone'})
+craft('steel_furnace',['SSS','B B','SSS'],{'S':'factorycraft:steel_plate','B':'minecraft:bricks'})
+craft('electric_furnace',['SSS','ABA','BBB'],{'S':'factorycraft:steel_plate','A':'factorycraft:advanced_circuit','B':'minecraft:bricks'})
+process('steel_furnace','assembling_machine',[('factorycraft:steel_plate',6),('minecraft:stone_bricks',10)],'steel_furnace',1,60,20)
+process('electric_furnace','assembling_machine',[('factorycraft:steel_plate',10),('factorycraft:advanced_circuit',5),('minecraft:stone_bricks',10)],'electric_furnace',1,100,24)
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
+ for name,pair in {'stone_furnace':('Stone Furnace','Каменная печь'),'steel_furnace':('Steel Furnace','Стальная печь')}.items():
+  data['block.factorycraft.'+name]=pair[index]
+  data['tooltip.factorycraft.'+name]=(('Solid fuel; 2×2 footprint; speed ×1.' if name=='stone_furnace' else 'Solid fuel; 2×2 footprint; speed ×2. Same active fuel consumption as stone.') if index==0 else ('Твёрдое топливо; основание 2×2; скорость ×1.' if name=='stone_furnace' else 'Твёрдое топливо; основание 2×2; скорость ×2. Расход топлива за такт как у каменной.'))
+ data['tooltip.factorycraft.electric_furnace']=('Electric, speed ×2, 24 FE/active tick, two module slots.' if index==0 else 'Электрическая, скорость ×2, 24 FE/рабочий такт, два слота модулей.')
+ data['gui.factorycraft.burner_recipe_info']=('%s t / solid fuel' if index==0 else '%s т / твёрдое топливо')
+ write(str(path.relative_to(ROOT)),data)
+
+# Higher furnaces are made in assemblers under real research gates; no early ungated shortcut.
+for name in ['steel_furnace','electric_furnace']:
+ (ROOT/f'data/factorycraft/recipe/craft_{name}.json').unlink(missing_ok=True)
+for name,parents,unlocks,packs,units,x,y in [
+ ('advanced_material_processing',['steel_processing','logistics'],['steel_furnace'],['automation_science_pack','logistic_science_pack'],75,0,3),
+ ('advanced_material_processing_2',['advanced_material_processing','chemical_science'],['electric_furnace'],['automation_science_pack','logistic_science_pack','chemical_science_pack'],250,0,4)]:
+ write(f'data/factorycraft/recipe/{name}.json',{'type':'factorycraft:research','prerequisites':['factorycraft:'+p for p in parents],'packs':{'factorycraft:'+p:1 for p in packs},'units':units,'ticks':600,'repeatable':False,'unlocks':['factorycraft:'+p for p in unlocks],'x':x,'y':y})
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text())
+ for k,pair in {'advanced_material_processing':('Advanced material processing','Продвинутая обработка материалов'),'advanced_material_processing_2':('Advanced material processing 2','Продвинутая обработка материалов 2')}.items():data['technology.factorycraft.'+k]=pair[index]
+ write(str(path.relative_to(ROOT)),data)
+for name in ['stone_furnace','steel_furnace']:
+ write(f'data/factorycraft/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'factorycraft:'+name}]}]})
+path=ROOT/'data/minecraft/tags/block/mineable/pickaxe.json';data=json.loads(path.read_text());data['values']=list(dict.fromkeys(data['values']+['factorycraft:stone_furnace','factorycraft:steel_furnace']));write(str(path.relative_to(ROOT)),data)
+# Old ID assets are intentionally retired rather than retained as aliases.
+for path in ROOT.rglob('*'):
+ if path.is_file() and 'industrial_furnace' in path.name:path.unlink()
+
+# Break the old refinery -> late electric furnace -> chemical-science bootstrap loop.
+path=ROOT/'data/factorycraft/recipe/craft_oil_refinery.json';data=json.loads(path.read_text());data['key']['F']={'item':'minecraft:stone_bricks'};write(str(path.relative_to(ROOT)),data)
+for path in (ROOT/'data/factorycraft/advancement').rglob('*.json'):
+ data=json.loads(path.read_text());rewards=data.get('rewards',{})
+ if 'recipes' in rewards:
+  rewards['recipes']=list(dict.fromkeys(('factorycraft:craft_stone_furnace' if r in ['factorycraft:craft_electric_furnace','factorycraft:craft_steel_furnace'] else r) for r in rewards['recipes']));write(str(path.relative_to(ROOT)),data)
+
+for lang,index in [('en_us',0),('ru_ru',1)]:
+ path=ROOT/f'assets/factorycraft/lang/{lang}.json';data=json.loads(path.read_text());data['block.factorycraft.smelting']=('Smelting: stone / steel / electric','Плавка: каменная / стальная / электрическая')[index];data['category.factorycraft.smelting']=('Smelting','Плавка')[index];data['emi.category.factorycraft.smelting']=('Smelting','Плавка')[index];write(str(path.relative_to(ROOT)),data)

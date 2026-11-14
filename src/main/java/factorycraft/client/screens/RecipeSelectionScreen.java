@@ -1,7 +1,6 @@
 package factorycraft.client.screens;
 
 import factorycraft.blockentity.MachineBlockEntity;
-import factorycraft.blocks.FactoryKind;
 import factorycraft.recipes.*;
 import java.util.*;
 import net.minecraft.client.gui.GuiGraphics;
@@ -104,10 +103,8 @@ public final class RecipeSelectionScreen extends Screen {
                 List.of(),
                 List.of(r.result()),
                 List.of(),
-                machine.kind() == FactoryKind.INDUSTRIAL_FURNACE
-                    ? Math.ceilDiv(r.ticks(), 2)
-                    : r.ticks(),
-                r.energy() * (machine.kind() == FactoryKind.INDUSTRIAL_FURNACE ? 2 : 1)));
+                Math.ceilDiv(r.ticks(), machine.kind().craftingSpeed()),
+                machine.kind().burnerFurnace() ? -1 : machine.kind().furnace() ? 24 : r.energy()));
       }
     search =
         addRenderableWidget(
@@ -373,7 +370,10 @@ public final class RecipeSelectionScreen extends Screen {
     }
     text(
         g,
-        Component.translatable("gui.factorycraft.recipe_info", e.ticks, e.energy),
+        Component.translatable(
+            e.energy < 0 ? "gui.factorycraft.burner_recipe_info" : "gui.factorycraft.recipe_info",
+            e.ticks,
+            e.energy),
         x + 192,
         y + imageH - 47,
         164,

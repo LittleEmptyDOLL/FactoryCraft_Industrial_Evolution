@@ -109,8 +109,7 @@ public final class ModuleMenu extends AbstractContainerMenu {
   public static boolean open(MachineBlockEntity machine, Player player) {
     if (player.level().isClientSide
         || player.isSpectator()
-        || !(machine.kind().processing()
-            || machine.kind() == factorycraft.blocks.FactoryKind.PUMPJACK)
+        || !machine.kind().supportsModules()
         || !machine.loaded()
         || !AssemblyAccess.ready(machine)
         || !factorycraft.multiblock.MachineInteraction.inRange(machine, player)) return false;

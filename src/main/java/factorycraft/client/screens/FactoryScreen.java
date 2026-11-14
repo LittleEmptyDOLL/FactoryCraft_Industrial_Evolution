@@ -19,7 +19,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
   @Override
   protected void init() {
     super.init();
-    if (menu.machine.kind().processing())
+    if (menu.machine.kind().supportsModules())
       addRenderableWidget(
           Button.builder(
                   Component.translatable("gui.factorycraft.modules"),
@@ -57,8 +57,16 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
     g.drawString(font, Component.translatable("gui.factorycraft.input"), 18, 34, 0xffc1d0d5, false);
     g.drawString(
         font, Component.translatable("gui.factorycraft.output"), 112, 34, 0xffc1d0d5, false);
-    g.drawString(font, menu.data.get(2) + " FE", 18, 22, 0xff56d7d9, false);
-    if (menu.machine.kind() == FactoryKind.INDUSTRIAL_FURNACE)
+    g.drawString(
+        font,
+        menu.machine.kind().burnerFurnace()
+            ? Component.translatable("gui.factorycraft.burn", menu.data.get(3))
+            : Component.literal(menu.data.get(2) + " FE"),
+        18,
+        22,
+        0xff56d7d9,
+        false);
+    if (menu.machine.kind().large())
       g.drawString(
           font,
           font.plainSubstrByWidth(
@@ -104,11 +112,11 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
       g.drawString(
           font,
           Component.translatable(
-              "gui.factorycraft.recipe_info",
-              menu.machine.kind() == FactoryKind.INDUSTRIAL_FURNACE
-                  ? Math.ceilDiv(recipe.ticks(), 2)
-                  : recipe.ticks(),
-              recipe.energy() * (menu.machine.kind() == FactoryKind.INDUSTRIAL_FURNACE ? 2 : 1)),
+              menu.machine.kind().burnerFurnace()
+                  ? "gui.factorycraft.burner_recipe_info"
+                  : "gui.factorycraft.recipe_info",
+              Math.ceilDiv(recipe.ticks(), menu.machine.kind().craftingSpeed()),
+              menu.machine.kind().furnace() ? 24 : recipe.energy()),
           18,
           138,
           0xffc1d0d5,

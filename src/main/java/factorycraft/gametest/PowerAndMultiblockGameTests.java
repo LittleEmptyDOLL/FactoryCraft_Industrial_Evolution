@@ -32,7 +32,7 @@ public final class PowerAndMultiblockGameTests {
     h.setBlock(
         pos,
         Content.FACTORY
-            .get(FactoryKind.INDUSTRIAL_FURNACE)
+            .get(FactoryKind.FURNACE)
             .get()
             .defaultBlockState()
             .setValue(FactoryBlock.FACING, facing));
@@ -85,8 +85,8 @@ public final class PowerAndMultiblockGameTests {
               outputs(machine) == 2 && machine.items.getStackInSlot(0).isEmpty(),
               "formed furnace did not smelt two ores");
           h.assertTrue(
-              machine.power.getEnergyStored() == 8720,
-              "industrial furnace changed FE cost per result");
+              machine.power.getEnergyStored() == 8464,
+              "electric furnace active-tick power is incorrect");
           h.succeed();
         });
   }
@@ -160,11 +160,7 @@ public final class PowerAndMultiblockGameTests {
                           .filter(
                               e ->
                                   e.getItem()
-                                      .is(
-                                          Content.FACTORY
-                                              .get(FactoryKind.INDUSTRIAL_FURNACE)
-                                              .get()
-                                              .asItem()))
+                                      .is(Content.FACTORY.get(FactoryKind.FURNACE).get().asItem()))
                           .count()
                       == 1
                   && drops.stream().noneMatch(e -> e.getItem().is(Items.DIAMOND)),
@@ -229,7 +225,7 @@ public final class PowerAndMultiblockGameTests {
         130,
         () -> {
           h.assertTrue(
-              outputs(machine) == 2 && machine.power.getEnergyStored() == 8720,
+              outputs(machine) == 2 && machine.power.getEnergyStored() == 8464,
               "reload lost state or changed production cost");
           h.succeed();
         });
@@ -251,12 +247,7 @@ public final class PowerAndMultiblockGameTests {
         drops.stream()
                     .filter(
                         e ->
-                            e.getItem()
-                                .is(
-                                    Content.FACTORY
-                                        .get(FactoryKind.INDUSTRIAL_FURNACE)
-                                        .get()
-                                        .asItem()))
+                            e.getItem().is(Content.FACTORY.get(FactoryKind.FURNACE).get().asItem()))
                     .count()
                 == 1
             && drops.stream().noneMatch(e -> e.getItem().is(Items.RAW_IRON)),
@@ -335,7 +326,7 @@ public final class PowerAndMultiblockGameTests {
           h.assertTrue(
               restored.assembly().ready()
                   && outputs(restored) == 2
-                  && restored.power.getEnergyStored() == 8720,
+                  && restored.power.getEnergyStored() == 8464,
               "serialized assembly failed to resume its original transaction");
           h.succeed();
         });
@@ -350,7 +341,7 @@ public final class PowerAndMultiblockGameTests {
     for (var p : cells) level.getChunkAt(p);
     if (!(level.getBlockEntity(anchor) instanceof MachineBlockEntity)) {
       level.setBlockAndUpdate(
-          anchor, Content.FACTORY.get(FactoryKind.INDUSTRIAL_FURNACE).get().defaultBlockState());
+          anchor, Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
       for (var p : cells)
         level.setBlockAndUpdate(
             p, Content.FACTORY.get(FactoryKind.CASING).get().defaultBlockState());

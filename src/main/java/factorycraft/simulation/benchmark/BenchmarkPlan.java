@@ -41,7 +41,7 @@ public final class BenchmarkPlan {
     BELT,
     FURNACE,
     ASSEMBLER,
-    INDUSTRIAL_FURNACE,
+    STEEL_FURNACE,
     CASING,
     GENERATOR,
     POLE,
@@ -108,7 +108,7 @@ public final class BenchmarkPlan {
       add(cells, x + 5, 0, z + 1, Role.INSERTER, Heading.EAST);
       machine(cells, x + 6, z, Role.ASSEMBLER);
       machine(cells, x + 2, z + 6, Role.FURNACE);
-      machine(cells, x + 6, z + 6, Role.INDUSTRIAL_FURNACE);
+      machine(cells, x + 6, z + 6, Role.STEEL_FURNACE);
       machine(cells, x + 10, z, Role.GENERATOR);
       add(cells, x + 4, 0, z + 4, Role.POLE, Heading.NORTH);
       add(cells, x + 11, 0, z + 4, Role.POLE, Heading.NORTH);
@@ -124,8 +124,8 @@ public final class BenchmarkPlan {
     // Schema 4: body origin remains fixed; controller is the front-center base cell.
     add(cells, x + 1, 0, z, role, Heading.NORTH);
     for (int y = 0; y < 3; y++)
-      for (int dz = 0; dz < 3; dz++)
-        for (int dx = 0; dx < 3; dx++)
+      for (int dz = 0; dz < (role == Role.STEEL_FURNACE ? 2 : 3); dz++)
+        for (int dx = 0; dx < (role == Role.STEEL_FURNACE ? 2 : 3); dx++)
           if (dx != 1 || y != 0 || dz != 0)
             add(cells, x + dx, y, z + dz, Role.CASING, Heading.NORTH);
   }

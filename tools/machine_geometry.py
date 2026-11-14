@@ -97,7 +97,7 @@ def generate(root,write,png):
     box((.12,1.68,.4),(.4,1.94,2.6),'teal');box((2.6,1.68,.4),(2.88,1.94,2.6),'teal')
     box((1.18,1.3,1.18),(1.82,1.92,1.82),'orange')
     for a,b in [((1.34,.35,1.34),(1.66,1.65,1.66)),((.66,.60,1.38),(2.34,.76,1.62)),((1.38,.60,.66),(1.62,.76,2.34))]:box(a,b,'steel',parts)
-   elif name in ['electric_furnace','industrial_furnace']:
+   elif name=='electric_furnace':
     box((.25,.34,.25),(2.75,2.5,2.75),'orange' if name=='electric_furnace' else 'red')
     box((.42,2.5,.42),(2.58,2.79,2.58),'dark')
     box((.35,.6,.13),(2.65,1.95,.3),'steel');box((.57,.78,.10),(2.43,1.73,.18),'dark')
@@ -105,6 +105,15 @@ def generate(root,write,png):
     for x in [.12,2.7]:box((x,.5,.55),(x+.18,2.35,2.5),'steel')
     column(2.2,2.2,.28,2.6,2.98,'steel')
     box((.63,.84,.085),(2.37,1.66,.095),'flame',parts)
+   elif name in ['stone_furnace','steel_furnace']:
+    material='shell' if name=='stone_furnace' else 'steel'
+    box((.12,.34,.12),(w-.12,h-.35,d-.12),material)
+    box((.25,.42,.06),(w-.25,1.25,.18),'dark')
+    box((.35,.55,.035),(w-.35,1.10,.07),'flame',parts)
+    box((.08,h-.35,.08),(w-.08,h-.20,d-.08),'dark')
+    column(w-.45,d-.45,.22,h-.20,h-.02,'steel')
+    if name=='steel_furnace':
+     for yy in [.5,1.5,2.35]: box((.10,yy,.10),(w-.10,yy+.12,d-.10),'dark')
    elif name in ['assembling_machine','assembling_machine_2']:
     box((.27,.34,.27),(2.73,.75,2.73),'teal');box((.45,.75,.45),(2.55,.85,2.55),'steel')
     for x in [.16,2.64]:

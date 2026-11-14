@@ -1,5 +1,5 @@
 {
-  "block.factorycraft.industrial_furnace": "Industrial Furnace",
+  "block.factorycraft.steel_furnace": "Steel Furnace",
   "block.factorycraft.machine_casing": "Machine Casing",
   "block.factorycraft.transport_belt": "Transport Belt",
   "block.factorycraft.fast_transport_belt": "Fast Transport Belt",
@@ -28,13 +28,13 @@
   "message.factorycraft.assembly_missing": "Structure unavailable. Check that all its chunks are loaded and parts are intact.",
   "message.factorycraft.dismantle": "Sneak + wrench dismantles the machine safely; contents are not destroyed.",
   "command.factorycraft.smelter": "Multiblock smelter built at %s. Its source chest contains 12 raw iron.",
-  "tooltip.factorycraft.industrial_furnace": "One item builds a 3×3×3 furnace. Twice the speed; same FE per result.",
+  "tooltip.factorycraft.steel_furnace": "Solid fuel; 2×2 footprint; speed ×2. Same active fuel consumption as stone.",
   "tooltip.factorycraft.machine_casing": "Part of a multiblock. Shares the controller inventory and power; stores no items.",
   "tooltip.factorycraft.belt": "Two lanes. Items follow the arrow; stopped output causes a jam.",
   "tooltip.factorycraft.splitter": "Two inputs/outputs and four lanes. Each physical track has its own item port.",
   "tooltip.factorycraft.inserter": "Reach 1; 70/3 ticks per nominal cycle; five filters. 70 FE per nominal cycle.",
   "tooltip.factorycraft.electric_drill": "3×3 drill. Extracts finite deposits in a 5×5 mining area, up to 8 blocks below.",
-  "tooltip.factorycraft.electric_furnace": "Smelts raw iron/copper into plates. Requires power.",
+  "tooltip.factorycraft.electric_furnace": "Electric, speed ×2, 24 FE/active tick, two module slots.",
   "tooltip.factorycraft.assembling_machine": "Assembles counted ingredients. Open to inspect/select a recipe.",
   "tooltip.factorycraft.coal_generator": "Fuel goes in the bottom slot. Supplies machines through poles.",
   "tooltip.factorycraft.electric_pole": "Saved copper connections; separate square supply area. Copper wire tool: connect/disconnect; sneak: clear.",
@@ -578,5 +578,13 @@
   "gui.factorycraft.recipe_choose": "Select",
   "gui.factorycraft.oil_stat_0": "Initial yield: %s%%",
   "gui.factorycraft.oil_stat_1": "Current yield: %s%%",
-  "gui.factorycraft.oil_stat_2": "Normal speed: %s mB/s"
+  "gui.factorycraft.oil_stat_2": "Normal speed: %s mB/s",
+  "block.factorycraft.stone_furnace": "Stone Furnace",
+  "tooltip.factorycraft.stone_furnace": "Solid fuel; 2×2 footprint; speed ×1.",
+  "gui.factorycraft.burner_recipe_info": "%s t / solid fuel",
+  "technology.factorycraft.advanced_material_processing": "Advanced material processing",
+  "technology.factorycraft.advanced_material_processing_2": "Advanced material processing 2",
+  "block.factorycraft.smelting": "Smelting: stone / steel / electric",
+  "category.factorycraft.smelting": "Smelting",
+  "emi.category.factorycraft.smelting": "Smelting"
 }

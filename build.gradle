@@ -42,10 +42,10 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 // Named diagnostic runs preserve previous failed worlds instead of resetting their evidence.
-def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0250')
-if (!(gameTestFixture ==~ /v0250(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.25.0 GameTest fixture name.')
+def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0251')
+if (!(gameTestFixture ==~ /v0251(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.25.1 GameTest fixture name.')
 def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
-def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0250')
+def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0251')
 if (!(benchmarkProfile in ['full', 'smoke', 'mixed']) || !(benchmarkFixtureName ==~ /${benchmarkProfile}(?:-[a-z0-9]+)*/)) throw new GradleException('Fixture must be a simple profile[-name] child of run-benchmark.')
 def benchmarkDir = layout.projectDirectory.dir('run-benchmark/' + benchmarkFixtureName).asFile
 def benchmarkMarker = 'FactoryCraft isolated benchmark v1\n'
@@ -102,9 +102,9 @@ neoForge {
 
         fluidBenchmarkServer {
             server()
-            gameDirectory = project.file('run-benchmark/' + providers.gradleProperty('fluidFixture').getOrElse('fluids-v0250-local'))
+            gameDirectory = project.file('run-benchmark/' + providers.gradleProperty('fluidFixture').getOrElse('fluids-v0251-local'))
             programArgument '--nogui'
-            systemProperty 'factorycraft.fluidBenchmark.fixture', providers.gradleProperty('fluidFixture').getOrElse('fluids-v0250-local')
+            systemProperty 'factorycraft.fluidBenchmark.fixture', providers.gradleProperty('fluidFixture').getOrElse('fluids-v0251-local')
             systemProperty 'factorycraft.fluidBenchmark.mode', providers.gradleProperty('fluidMode').getOrElse('measure')
             systemProperty 'factorycraft.fluidBenchmark.size', providers.gradleProperty('fluidSize').getOrElse('10000')
             jvmArgument '-Xms512m'
@@ -311,8 +311,8 @@ tasks.register('resetBenchmarkWorld', Delete) {
     delete benchmarkDir
 }
 
-def fluidFixture = providers.gradleProperty('fluidFixture').getOrElse('fluids-v0250-local')
-if (!(fluidFixture ==~ /fluids-v0250-[a-z0-9-]+/)) throw new GradleException('Invalid isolated fluid fixture.')
+def fluidFixture = providers.gradleProperty('fluidFixture').getOrElse('fluids-v0251-local')
+if (!(fluidFixture ==~ /fluids-v0251-[a-z0-9-]+/)) throw new GradleException('Invalid isolated fluid fixture.')
 def fluidDir = project.file('run-benchmark/' + fluidFixture)
 def fluidMode = providers.gradleProperty('fluidMode').getOrElse('measure')
 tasks.register('prepareFluidBenchmark') {

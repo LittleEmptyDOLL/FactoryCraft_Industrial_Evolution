@@ -1,3 +1,11 @@
+# Release 0.25.1 — bounded ellipsoid cost and furnace liveness
+
+[Three pure-JVM trials, real Feature owner/allocation observations and limits](validation/v0251/comparison.md). Baseline is 0.25.0 `1132d39`. Full 3D sampling costs more than the old per-column approximation at maximum settings; no TPS improvement is claimed. Default vertical radius is 5–8, maximum opt-in 64. A native one-chunk maximum-setting slice and both cliff orientations are checked separately from pure geometry.
+
+The real dedicated SMOKE factory and independent-JVM state hash pass with actual steel-furnace coal. Full/MIXED, optional-mod runtime and the unchanged 10000-pipe profile remain independent GitHub Actions jobs. Historical measurements below retain their original meanings.
+
+---
+
 # Release 0.25.0 — bounded resource and fluid observations
 
 [Comparison, ranges and limitations](validation/v0250/comparison.md), [pure geometry driver](tools/profile_resources.py). Baseline is 0.24.1 `dd7c815`; resource geometry and fluid gameplay deliberately change, so this is not an optimization claim.

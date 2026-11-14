@@ -1,0 +1,185 @@
+
+v0251-native-final-create.log
+FACTORYCRAFT_ELLIPSOID_MAX_SLICE: owners=23439 volume=510196 nanos=83994446 chunksWritten=1
+FACTORYCRAFT_ELLIPSOID_251_DISK: CREATED 00ad00e450d3c3cc8ea59adccc2a52dad6017cce14de637dd9fdcfdc36757939
+FACTORYCRAFT_CIRCUIT_BINDING_DISK: SEEDED UUID binding diamond=1 FE=731 disabled
+FACTORYCRAFT_RESOURCE_DISK: SEEDED 137 units and cross-chunk 3x3 drill
+FACTORYCRAFT_RESEARCH_DISK: SEEDED team units, lab packs/FE and four-chunk identity
+FACTORYCRAFT_PETROLEUM_DISK: SEEDED four-chunk refinery, mixed state and finite/exhausted reserves
+FACTORYCRAFT_SPLITTER_DISK: SEEDED sixteen carriers in four physical lanes
+FACTORYCRAFT_TRANSPORT_DISK: SEEDED saturated underground and up/down lifts across four chunks
+FACTORYCRAFT_MULTIBLOCK_DISK: SEEDED cross-chunk 2x2x2 assembly
+FACTORYCRAFT_ADVANCED_OIL_DISK: SEEDED five cells, overflow/components, selected recipe and partial work
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: SEEDED tier=1 16 carriers, binding, four colors
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: SEEDED tier=2 16 carriers, binding, four colors
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: SEEDED tier=3 16 carriers, binding, four colors
+FACTORYCRAFT_ASSEMBLY_V4_DISK: SEEDED exact state, four-chunk structure; mirror=false
+FACTORYCRAFT_ACTUATOR_DISK: SEEDED fast_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: SEEDED long_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: SEEDED bulk_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_CHEMICAL_SCIENCE_DISK: SEEDED canonical partial assembly and component canister across four chunks
+FACTORYCRAFT_ASSEMBLY_V4_DISK: SEEDED exact state, four-chunk structure; mirror=true
+FACTORYCRAFT_THERMAL_DISK: SEEDED fuel/progress/fluids/FE across chunks
+FACTORYCRAFT_TIERED_SPLITTER_DISK: SEEDED fast_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_TIERED_SPLITTER_DISK: SEEDED express_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_VEIN_DISK: SEEDED native generated field tile
+FACTORYCRAFT_FLUID_SENSOR_DISK: SEEDED component grade=7 filter, 1237 mB, four-chunk tank
+FACTORYCRAFT_CIRCUIT_DISK: SEEDED 7 -> ADD 3 -> 10 reciprocal UUID ports
+FACTORYCRAFT_AUTOMATIC_DISK: SEEDED one-item cross-chunk assembly
+FACTORYCRAFT_MODULE_DISK_V2: SEEDED sole module inventories, fractional work and credit across chunks
+FACTORYCRAFT_FLUID_DISK: SEEDED 8000 mB with components across four chunks
+FACTORYCRAFT_SPLITTER_CONTROL_DISK: SEEDED exact settings, 16 carriers and cross-chunk identity
+FACTORYCRAFT_SEGMENT_DISK: SEEDED 3943 mB grade=24 owners=[061c2a12-5c48-4f65-8fb1-88f624e9b56b, 58c3ac30-4a04-4b82-b1be-20bc99ae0314, 69720361-ba99-4154-a864-3d38f1b4e734, ac6631ef-1769-416d-8b1e-103d6819655f]
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: SEEDED stack_inserter
+FACTORYCRAFT_STACK_V21_DISK: SEEDED 2
+FACTORYCRAFT_STACK_V21_DISK: SEEDED 3
+FACTORYCRAFT_STACK_V21_DISK: SEEDED 4
+FACTORYCRAFT_TYPED_FEEDBACK_DISK: SEEDED three typed outputs including INT_MIN, reciprocal blue feedback ports; detached diagnostic state
+FACTORYCRAFT_DIRECT_CIRCUIT_DISK: SEEDED typed INT_MIN, unknown ID, chest 23 diamonds, blue links, independent masks
+FACTORYCRAFT_POWER_V20_DISK: SEEDED reciprocal UUID wire, 731 FE / 3 diamonds
+FACTORYCRAFT_FURNACE_251_DISK: CREATED stone_furnace
+FACTORYCRAFT_FURNACE_251_DISK: CREATED steel_furnace
+FACTORYCRAFT_FURNACE_251_DISK: CREATED electric_furnace
+FACTORYCRAFT_SMELTING_DISK: SEEDED selected vanilla ID, 106 work / 1272 paid FE
+FACTORYCRAFT_OIL_YIELD_DISK: SEEDED real paid cycle and partial unpaid work
+FACTORYCRAFT_TERRAIN_SNAPSHOT_DISK: CREATED pre-decoration height 70, decorated height 75
+[10:11:35] [Server thread/INFO] [minecraft/GameTestServer]: All 406 required tests passed :)
+[10:11:38] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 1m 44s
+
+v0251-native-final-verify.log
+FACTORYCRAFT_ELLIPSOID_MAX_SLICE: owners=18646 volume=381353 nanos=74759796 chunksWritten=1
+FACTORYCRAFT_ELLIPSOID_251_DISK: VERIFYING 00ad00e450d3c3cc8ea59adccc2a52dad6017cce14de637dd9fdcfdc36757939
+FACTORYCRAFT_RESOURCE_DISK: VERIFIED exact finite stock, FE, progress, output and cross-chunk identity
+FACTORYCRAFT_RESEARCH_DISK: VERIFIED exact team units, lab packs/FE and identity
+FACTORYCRAFT_CIRCUIT_BINDING_DISK: VERIFIED UUID binding diamond=1 FE=731 disabled
+FACTORYCRAFT_PETROLEUM_DISK: VERIFIED exact resources, depleted reserve and four-chunk identity
+FACTORYCRAFT_SPLITTER_DISK: VERIFIED four lanes, positions and part identity
+FACTORYCRAFT_TRANSPORT_DISK: VERIFIED exact 160 items, metric coordinates, routes and sole owners
+FACTORYCRAFT_MULTIBLOCK_DISK: VERIFIED controller and 26 casing identities across four chunks
+FACTORYCRAFT_ADVANCED_OIL_DISK: VERIFIED all five cells, components, FE, progress, recipe and four-chunk identity
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=1 16 carriers, binding, four colors
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=2 16 carriers, binding, four colors
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=3 16 carriers, binding, four colors
+FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED exact resources, progress and owner identity; mirror=false
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED fast_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED long_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED bulk_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_CHEMICAL_SCIENCE_DISK: VERIFIED exact partial recipe, items, native components, canister, FE and part identity
+FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED exact resources, progress and owner identity; mirror=true
+FACTORYCRAFT_THERMAL_DISK: VERIFIED exact fuel/progress/fluids/FE across chunks
+FACTORYCRAFT_TIERED_SPLITTER_DISK: VERIFIED fast_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_TIERED_SPLITTER_DISK: VERIFIED express_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_FLUID_SENSOR_DISK: VERIFIED component grade=7 filter, 1237 mB, four-chunk tank
+FACTORYCRAFT_VEIN_DISK: VERIFIED generated stock across server processes
+FACTORYCRAFT_CIRCUIT_DISK: VERIFIED 7 -> ADD 3 -> 10 reciprocal UUID ports
+FACTORYCRAFT_AUTOMATIC_DISK: VERIFIED generated identity and inventory across four chunks
+FACTORYCRAFT_MODULE_DISK_V2: VERIFIED exact inventory, fraction, credit, FE and ownership
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_SPLITTER_CONTROL_DISK: VERIFIED exact settings, 16 carriers and cross-chunk identity
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[061c2a12-5c48-4f65-8fb1-88f624e9b56b, 58c3ac30-4a04-4b82-b1be-20bc99ae0314, 69720361-ba99-4154-a864-3d38f1b4e734, ac6631ef-1769-416d-8b1e-103d6819655f]
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED stack_inserter
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 2
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 3
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 4
+FACTORYCRAFT_TYPED_FEEDBACK_DISK: VERIFIED three typed outputs including INT_MIN, reciprocal blue feedback ports; detached diagnostic state
+FACTORYCRAFT_DIRECT_CIRCUIT_DISK: VERIFIED typed INT_MIN, unknown ID, chest 23 diamonds, blue links, independent masks
+FACTORYCRAFT_POWER_V20_DISK: VERIFIED reciprocal UUID wire, 731 FE / 3 diamonds
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING stone_furnace
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING steel_furnace
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING electric_furnace
+FACTORYCRAFT_SMELTING_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_OIL_YIELD_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_TERRAIN_SNAPSHOT_DISK: VERIFIED existing chunk attachment
+[10:12:55] [Server thread/INFO] [minecraft/GameTestServer]: All 406 required tests passed :)
+[10:12:58] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 1m 8s
+
+v0251-native-delivery.log
+FACTORYCRAFT_ELLIPSOID_MAX_SLICE: owners=9167 volume=176595 nanos=53345255 chunksWritten=1
+FACTORYCRAFT_ELLIPSOID_251_DISK: VERIFYING 00ad00e450d3c3cc8ea59adccc2a52dad6017cce14de637dd9fdcfdc36757939
+FACTORYCRAFT_RESOURCE_DISK: VERIFIED exact finite stock, FE, progress, output and cross-chunk identity
+FACTORYCRAFT_RESEARCH_DISK: VERIFIED exact team units, lab packs/FE and identity
+FACTORYCRAFT_CIRCUIT_BINDING_DISK: VERIFIED UUID binding diamond=1 FE=731 disabled
+FACTORYCRAFT_PETROLEUM_DISK: VERIFIED exact resources, depleted reserve and four-chunk identity
+FACTORYCRAFT_SPLITTER_DISK: VERIFIED four lanes, positions and part identity
+FACTORYCRAFT_TRANSPORT_DISK: VERIFIED exact 160 items, metric coordinates, routes and sole owners
+FACTORYCRAFT_MULTIBLOCK_DISK: VERIFIED controller and 26 casing identities across four chunks
+FACTORYCRAFT_ADVANCED_OIL_DISK: VERIFIED all five cells, components, FE, progress, recipe and four-chunk identity
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=1 16 carriers, binding, four colors
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=2 16 carriers, binding, four colors
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=3 16 carriers, binding, four colors
+FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED exact resources, progress and owner identity; mirror=false
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED fast_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED long_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED bulk_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_CHEMICAL_SCIENCE_DISK: VERIFIED exact partial recipe, items, native components, canister, FE and part identity
+FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED exact resources, progress and owner identity; mirror=true
+FACTORYCRAFT_THERMAL_DISK: VERIFIED exact fuel/progress/fluids/FE across chunks
+FACTORYCRAFT_TIERED_SPLITTER_DISK: VERIFIED fast_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_TIERED_SPLITTER_DISK: VERIFIED express_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_FLUID_SENSOR_DISK: VERIFIED component grade=7 filter, 1237 mB, four-chunk tank
+FACTORYCRAFT_VEIN_DISK: VERIFIED generated stock across server processes
+FACTORYCRAFT_CIRCUIT_DISK: VERIFIED 7 -> ADD 3 -> 10 reciprocal UUID ports
+FACTORYCRAFT_AUTOMATIC_DISK: VERIFIED generated identity and inventory across four chunks
+FACTORYCRAFT_MODULE_DISK_V2: VERIFIED exact inventory, fraction, credit, FE and ownership
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_SPLITTER_CONTROL_DISK: VERIFIED exact settings, 16 carriers and cross-chunk identity
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[061c2a12-5c48-4f65-8fb1-88f624e9b56b, 58c3ac30-4a04-4b82-b1be-20bc99ae0314, 69720361-ba99-4154-a864-3d38f1b4e734, ac6631ef-1769-416d-8b1e-103d6819655f]
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED stack_inserter
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 2
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 3
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 4
+FACTORYCRAFT_TYPED_FEEDBACK_DISK: VERIFIED three typed outputs including INT_MIN, reciprocal blue feedback ports; detached diagnostic state
+FACTORYCRAFT_DIRECT_CIRCUIT_DISK: VERIFIED typed INT_MIN, unknown ID, chest 23 diamonds, blue links, independent masks
+FACTORYCRAFT_POWER_V20_DISK: VERIFIED reciprocal UUID wire, 731 FE / 3 diamonds
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING stone_furnace
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING steel_furnace
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING electric_furnace
+FACTORYCRAFT_SMELTING_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_OIL_YIELD_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_TERRAIN_SNAPSHOT_DISK: VERIFIED existing chunk attachment
+[10:17:55] [Server thread/INFO] [minecraft/GameTestServer]: All 406 required tests passed :)
+[10:17:57] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 1m 20s
+
+v0251-viewers-final.log
+BUILD SUCCESSFUL in 960ms
+
+v0251-smoke-release.log
+[10:14:45] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[10:14:45] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-measure.json
+[10:14:48] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 37s
+
+v0251-smoke-verify.log
+[10:15:24] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[10:15:24] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK_DISK: VERIFIED 100 belts, 20 producers, 10 inserters, 603 casings
+[10:15:24] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-verify.json
+[10:15:24] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 16s
+
+v0251-client-final.log
+[10:21:01] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] 904, 56, 72 has the following block data: {Initialized: 1b, Schema: 1, x: 904, y: 56, z: 72, id: "factorycraft:resource_deposit", Remaining: 2763}
+[10:22:15] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[10:23:53] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 4m 36s
+
+v0251-build-final.log
+BUILD SUCCESSFUL in 19s
+Final JUnit XML census: 221 tests, zero failures. All resource JSON parse and generator idempotence pass.

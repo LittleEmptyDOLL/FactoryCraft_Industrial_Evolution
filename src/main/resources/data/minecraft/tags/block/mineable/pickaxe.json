@@ -13,7 +13,7 @@
     "factorycraft:electric_pole",
     "factorycraft:iron_ore",
     "factorycraft:copper_ore",
-    "factorycraft:industrial_furnace",
+    "factorycraft:steel_furnace",
     "factorycraft:machine_casing",
     "factorycraft:coal_deposit",
     "factorycraft:stone_deposit",
@@ -38,6 +38,7 @@
     "factorycraft:decider_combinator",
     "factorycraft:selector_combinator",
     "factorycraft:circuit_reader",
-    "factorycraft:circuit_controller"
+    "factorycraft:circuit_controller",
+    "factorycraft:stone_furnace"
   ]
 }

@@ -1,0 +1,22 @@
+{
+  "world": "FactoryCraft0251-Natural-QA",
+  "seed": 3357260786188881509,
+  "qaSpacingChunks": 6,
+  "radiusXRange": [
+    8,
+    20
+  ],
+  "verticalRadiusRange": [
+    5,
+    8
+  ],
+  "savedChunks": 1406,
+  "factorycraftEntities": {
+    "factorycraft:resource_deposit": 40199,
+    "factorycraft:oil_deposit": 8
+  },
+  "oreOwners": 40199,
+  "oreUnits": 87435118,
+  "oreStockSha256": "a846dc4710dc3f243dbc0490dc47e3f83e3ecb31dd9d9ee1b789927bdd467d29",
+  "note": "Read-only Anvil census after normal client save; prepared QA scenes are a separate world; this is not a throughput measurement."
+}

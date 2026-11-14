@@ -1,6 +1,8 @@
-# FactoryCraft: Industrial Evolution — 0.25.0
+# FactoryCraft: Industrial Evolution — 0.25.1
 
-**0.25.0 / issue #3:** единый масштаб жидкостей 1:10, процентная отдача нефтяных скважин, объёмные рудные тела, поиск и выбор рецептов по ID, ванильная плавка в печах. Требуется новый мир: старые форматы FactoryCraft не мигрируются. / Native 1:10 fluids, percentage oil, 3D finite ore, recipe browser and furnace smelting interoperability; breaking FactoryCraft data release. Current rules: FLUIDS.md, PETROLEUM.md, RESOURCE_FIELDS.md, VALIDATION.md. Older version paragraphs below are historical and do not promise pre-0.25 compatibility.
+**0.25.1 / issue #4:** полные неправильные рудные эллипсоиды с вертикальным радиусом 5–8, независимые от локальной поверхности; каменная/стальная топливные печи ×1/×2 и электрическая ×2 с двумя модулями. Прежняя Industrial Furnace удалена. Новый мир обязателен. See FURNACES.md and RESOURCE_FIELDS.md.
+
+**Previous 0.25.0 / issue #3:** единый масштаб жидкостей 1:10, процентная отдача нефтяных скважин, объёмные рудные тела, поиск и выбор рецептов по ID, ванильная плавка в печах. Требуется новый мир: старые форматы FactoryCraft не мигрируются. / Native 1:10 fluids, percentage oil, 3D finite ore, recipe browser and furnace smelting interoperability; breaking FactoryCraft data release. Current rules: FLUIDS.md, PETROLEUM.md, RESOURCE_FIELDS.md, VALIDATION.md. Older version paragraphs below are historical and do not promise pre-0.25 compatibility.
 
 
 В **0.24.1** оптимизированы существующие жидкостные сегменты: обычное изменение объёма не перестраивает граф, совместимые конечные элементы обновляются локально, крупные перестройки завершаются по бюджету, а сохранение и уведомления группируются. Рецепты, скорости и FE не изменены. Настоящий серверный стенд содержит 10 000 труб основной сети, резервуары, 16 насосов и действующую нефтехимию. Ускорение относится прежде всего к строительству и перестройкам; некоторые максимальные задержки выросли. Измерения и ограничения: [BENCHMARKS.md](BENCHMARKS.md), [VALIDATION.md](VALIDATION.md).

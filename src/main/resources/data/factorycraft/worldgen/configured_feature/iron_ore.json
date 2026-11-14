@@ -12,7 +12,8 @@
       "min_stock": 500,
       "max_stock": 5000,
       "spacing_chunks": 16,
-      "depth": 12,
+      "min_depth": 5,
+      "max_depth": 8,
       "noise": 0.12
     }
   }

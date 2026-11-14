@@ -1,6 +1,6 @@
 {
   "type": "factorycraft:processing",
-  "machine": "electric_furnace",
+  "machine": "smelting",
   "inputs": [
     {
       "ingredient": {
@@ -14,5 +14,5 @@
     "count": 1
   },
   "ticks": 320,
-  "energy": 12
+  "energy": 24
 }

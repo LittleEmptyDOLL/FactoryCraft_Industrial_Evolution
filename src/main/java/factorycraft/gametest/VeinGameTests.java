@@ -68,7 +68,7 @@ public final class VeinGameTests {
       var first = chunks.iterator().next();
       feature.place(
           level,
-          level.getChunkSource().getGenerator(),
+          factorycraft.diagnostics.ResourceTerrainFixture.generator(level, (x, z) -> Y),
           net.minecraft.util.RandomSource.create(1),
           first);
       for (int x = patch.x() - patch.radius(); x <= patch.x() + patch.radius(); x++)
@@ -80,7 +80,7 @@ public final class VeinGameTests {
       for (var origin : chunks)
         feature.place(
             level,
-            level.getChunkSource().getGenerator(),
+            factorycraft.diagnostics.ResourceTerrainFixture.generator(level, (x, z) -> Y),
             net.minecraft.util.RandomSource.create(2),
             origin);
       int count = 0;
@@ -117,7 +117,7 @@ public final class VeinGameTests {
       for (var origin : reversed)
         feature.place(
             level,
-            level.getChunkSource().getGenerator(),
+            factorycraft.diagnostics.ResourceTerrainFixture.generator(level, (x, z) -> Y),
             net.minecraft.util.RandomSource.create(3),
             origin);
       for (var entry : snapshot.entrySet())
@@ -153,7 +153,7 @@ public final class VeinGameTests {
     for (var p : chunks)
       feature.place(
           h.getLevel(),
-          h.getLevel().getChunkSource().getGenerator(),
+          factorycraft.diagnostics.ResourceTerrainFixture.generator(h.getLevel(), (x, z) -> Y),
           net.minecraft.util.RandomSource.create(),
           p);
     int count = 0;
@@ -194,7 +194,7 @@ public final class VeinGameTests {
                   Content.COPPER_ORE.get().defaultBlockState(), 719, false, settings))
           .place(
               level,
-              level.getChunkSource().getGenerator(),
+              factorycraft.diagnostics.ResourceTerrainFixture.generator(level, (x, z) -> Y),
               net.minecraft.util.RandomSource.create(),
               pos);
       h.assertTrue(

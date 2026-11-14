@@ -439,6 +439,22 @@
         0
       ],
       "ports": []
+    },
+    "steel_furnace": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "stone_furnace": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": []
     }
   }
 }

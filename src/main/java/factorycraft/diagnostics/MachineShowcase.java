@@ -17,13 +17,14 @@ public final class MachineShowcase {
   public static int build(CommandSourceStack source) {
     var level = source.getLevel();
     var origin = BlockPos.containing(source.getPosition()).offset(3, 0, 3);
-    for (var p : BlockPos.betweenClosed(origin, origin.offset(31, 5, 31)))
+    int depth = ((MachineProfile.values().length + 3) / 4) * 8;
+    for (var p : BlockPos.betweenClosed(origin, origin.offset(31, 5, depth - 1)))
       if (!level.hasChunkAt(p) || !level.getBlockState(p).isAir()) {
         source.sendFailure(Component.translatable("command.factorycraft.showroom_space"));
         return 0;
       }
     for (int x = 0; x < 32; x++)
-      for (int z = 0; z < 32; z++)
+      for (int z = 0; z < depth; z++)
         level.setBlockAndUpdate(origin.offset(x, 0, z), Blocks.STONE_BRICKS.defaultBlockState());
     int index = 0;
     for (var profile : MachineProfile.values()) {
@@ -37,9 +38,11 @@ public final class MachineShowcase {
       StructurePlacement.place(level, pos, state);
       var be = level.getBlockEntity(pos);
       if (be instanceof MachineBlockEntity machine) {
-        machine.power.restore(32000);
+        if (machine.kind().burnerFurnace())
+          machine.items.setStackInSlot(8, new ItemStack(Items.COAL, 16));
+        else machine.power.restore(32000);
         switch (profile) {
-          case FURNACE, INDUSTRIAL ->
+          case FURNACE, STEEL, STONE ->
               machine.items.setStackInSlot(0, new ItemStack(Items.RAW_IRON, 64));
           case ASSEMBLER ->
               machine.items.setStackInSlot(

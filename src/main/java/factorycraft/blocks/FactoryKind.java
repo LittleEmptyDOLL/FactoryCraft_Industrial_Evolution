@@ -15,6 +15,7 @@ public enum FactoryKind {
   INSERTER("inserter", 0),
   DRILL("electric_drill", 0),
   FURNACE("electric_furnace", 0),
+  STONE_FURNACE("stone_furnace", 0),
   ASSEMBLER("assembling_machine", 0),
   GENERATOR("coal_generator", 0),
   ADVANCED_ASSEMBLER("assembling_machine_2", 0),
@@ -24,7 +25,7 @@ public enum FactoryKind {
   MEDIUM_POLE("medium_electric_pole", 0),
   BIG_POLE("big_electric_pole", 0),
   SUBSTATION("substation", 0),
-  INDUSTRIAL_FURNACE("industrial_furnace", 0),
+  STEEL_FURNACE("steel_furnace", 0),
   CASING("machine_casing", 0),
   PUMPJACK("pumpjack", 0),
   REFINERY("oil_refinery", 0),
@@ -130,25 +131,35 @@ public enum FactoryKind {
     return beltTier > 0;
   }
 
+  public boolean furnace() {
+    return this == FURNACE || this == STONE_FURNACE || this == STEEL_FURNACE;
+  }
+
+  public boolean burnerFurnace() {
+    return this == STONE_FURNACE || this == STEEL_FURNACE;
+  }
+
+  public int craftingSpeed() {
+    return this == FURNACE || this == STEEL_FURNACE ? 2 : 1;
+  }
+
+  public boolean supportsModules() {
+    return !burnerFurnace() && (processing() || this == PUMPJACK);
+  }
+
   public boolean processing() {
-    return this == FURNACE
+    return furnace()
         || this == ASSEMBLER
         || this == ADVANCED_ASSEMBLER
-        || this == INDUSTRIAL_FURNACE
         || this == REFINERY
         || this == CHEMICAL_PLANT;
   }
 
   public String recipeGroup() {
-    return this == INDUSTRIAL_FURNACE ? FURNACE.id : id;
+    return furnace() ? "smelting" : id;
   }
 
   public boolean machine() {
-    return this == DRILL
-        || this == FURNACE
-        || this == ASSEMBLER
-        || this == GENERATOR
-        || this == INDUSTRIAL_FURNACE
-        || petroleum();
+    return this == DRILL || furnace() || this == ASSEMBLER || this == GENERATOR || petroleum();
   }
 }

@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.25.0, GitHub issue #3
+## Active task — 0.25.1, GitHub issue #4
+
+* Implement full irregular ellipsoids with one canonical center independent of local columns; random vertical radius 5–8, horizontal radius/spacing unchanged. Anchor using deterministic generator terrain sampling even outside the available region; never load anchor chunks or write outside the decorating chunk. Remove obsolete smoothing settings.
+* Exactly Stone (2×2, speed 1, solid fuel), Steel (2×2, speed 2, same active fuel rate), Electric (3×3, speed 2, two modules). Remove industrial_furnace from active code/assets/progression without migration. Preserve base recipe time, native smelting, component identity, module productive credit, paid work, container remainders and sole portable owner.
+* Retain meaningful 393 native baseline cases and thirty production chains, adapting obsolete geometry/energy assertions rather than disabling tests. Fresh v0251 fixtures only; previous diagnostic evidence remains intact or byte-verified losslessly archived. Test new fuel/geometry persistence in independent JVMs and real client, plus bounded geometry/BE generation comparison. Full/MIXED/optional CI stays independent.
+* No changes to 1:10 fluids, oil yield, belts, circuits or power topology. Publish checked main normally, preserve parallel updates, query CI once and stop.
+
+## Previous task — 0.25.0, GitHub issue #3
 
 * Implement the complete agreed release: native mB throughout with 1 Factorio unit = 10 mB; percentage-yield oil points and powered transactional pumpjack cycles; deterministic terrain-conforming 3D finite solid fields; guarded stable-ID recipe browser and actual vanilla smelting for furnaces only.
 * This release intentionally breaks old FactoryCraft data/recipe/checkpoint schemas. Do not migrate, reset, regenerate or overwrite previous diagnostic worlds. Use v0250, fluids-v0250 and new client worlds. Retain all 381 native scenarios and thirty production chains; replace obsolete finite-oil equations with stricter generated/debited/stored ledgers.

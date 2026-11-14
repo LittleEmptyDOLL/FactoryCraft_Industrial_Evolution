@@ -144,7 +144,7 @@ final class FactoryBenchmarkWorld {
           case OBSTACLE -> throw new IllegalStateException();
           case FURNACE -> FactoryKind.FURNACE;
           case ASSEMBLER -> FactoryKind.ASSEMBLER;
-          case INDUSTRIAL_FURNACE -> FactoryKind.INDUSTRIAL_FURNACE;
+          case STEEL_FURNACE -> FactoryKind.STEEL_FURNACE;
           case CASING -> FactoryKind.CASING;
           case GENERATOR -> FactoryKind.GENERATOR;
           case POLE -> FactoryKind.MEDIUM_POLE;
@@ -197,9 +197,11 @@ final class FactoryBenchmarkWorld {
           belt.setChanged();
           belt.wakeTransport();
         }
-        case FURNACE, INDUSTRIAL_FURNACE -> {
+        case FURNACE, STEEL_FURNACE -> {
           var machine = (MachineBlockEntity) be;
           machine.items.setStackInSlot(0, new ItemStack(Items.RAW_IRON, 64));
+          if (cell.role() == Role.STEEL_FURNACE)
+            machine.items.setStackInSlot(8, new ItemStack(Items.COAL, 4));
           if (machine.assembly() != null)
             require(machine.assembly().formAutomatic(), "Industrial fixture did not form");
         }
@@ -269,12 +271,17 @@ final class FactoryBenchmarkWorld {
             }
           }
         }
-        case FURNACE, ASSEMBLER, INDUSTRIAL_FURNACE -> {
+        case FURNACE, ASSEMBLER, STEEL_FURNACE -> {
           var machine = (MachineBlockEntity) be;
           producers++;
           energy += machine.power.getEnergyStored();
-          for (int slot = 0; slot < machine.items.getSlots(); slot++)
-            iron += units(machine.items.getStackInSlot(slot));
+          for (int slot = 0; slot < machine.items.getSlots(); slot++) {
+            var stack = machine.items.getStackInSlot(slot);
+            if (slot == 8 && machine.kind().burnerFurnace()) {
+              require(stack.isEmpty() || stack.is(Items.COAL), "Unexpected benchmark burner fuel");
+              require(machine.fuelTicks() >= 0, "Negative benchmark fuel");
+            } else iron += units(stack);
+          }
           if (machine.assembly() != null) {
             var assembly = machine.assembly();
             require(
@@ -328,7 +335,7 @@ final class FactoryBenchmarkWorld {
     require(
         producers == profile.cells * 4
             && inserters == profile.cells * 2
-            && casings == profile.cells * 130 + 2 * BenchmarkPlan.poleCount(profile),
+            && casings == profile.cells * 115 + 2 * BenchmarkPlan.poleCount(profile),
         "Workload counts changed");
     require(
         BeltSimulation.snapshot(level).loaded() == profile.loops * 100,

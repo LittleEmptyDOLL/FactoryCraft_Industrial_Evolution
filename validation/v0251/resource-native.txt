@@ -1,0 +1,11 @@
+FACTORYCRAFT_ELLIPSOID_MAX_SLICE: owners=18646 volume=381353 nanos=74759796 chunksWritten=1
+FACTORYCRAFT_TERRAIN_PROFILE: mode=0 legacy0250=true owners=4068 deep=2589 chunks=16 nanos=29817965 allocated=11220904
+FACTORYCRAFT_TERRAIN_PROFILE: mode=0 legacy0250=false owners=1930 deep=659 chunks=16 nanos=6860773 allocated=2014864
+FACTORYCRAFT_TERRAIN_PROFILE: mode=1 legacy0250=true owners=2810 deep=1936 chunks=16 nanos=18697873 allocated=6983296
+FACTORYCRAFT_TERRAIN_PROFILE: mode=1 legacy0250=false owners=2623 deep=1204 chunks=16 nanos=10983064 allocated=2458080
+FACTORYCRAFT_TERRAIN_PROFILE: mode=2 legacy0250=true owners=2751 deep=2054 chunks=16 nanos=8874630 allocated=7116776
+FACTORYCRAFT_TERRAIN_PROFILE: mode=2 legacy0250=false owners=969 deep=287 chunks=16 nanos=2241238 allocated=1357664
+FACTORYCRAFT_TERRAIN_PROFILE: mode=3 legacy0250=true owners=2417 deep=1635 chunks=16 nanos=9664792 allocated=5073504
+FACTORYCRAFT_TERRAIN_PROFILE: mode=3 legacy0250=false owners=1327 deep=545 chunks=16 nanos=2490432 allocated=1451536
+FACTORYCRAFT_TERRAIN_PROFILE: mode=4 legacy0250=true owners=3894 deep=3165 chunks=16 nanos=9240374 allocated=9269104
+FACTORYCRAFT_TERRAIN_PROFILE: mode=4 legacy0250=false owners=2080 deep=1292 chunks=16 nanos=2614252 allocated=1971992

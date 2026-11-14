@@ -1,5 +1,5 @@
 {
-  "block.factorycraft.industrial_furnace": "Промышленная печь",
+  "block.factorycraft.steel_furnace": "Стальная печь",
   "block.factorycraft.machine_casing": "Корпус машины",
   "block.factorycraft.transport_belt": "Конвейер",
   "block.factorycraft.fast_transport_belt": "Быстрый конвейер",
@@ -28,13 +28,13 @@
   "message.factorycraft.assembly_missing": "Структура недоступна. Проверьте загрузку чанков и целостность частей.",
   "message.factorycraft.dismantle": "Shift + ключ: безопасно разобрать машину; предметы не уничтожаются.",
   "command.factorycraft.smelter": "Мультиблочная печь построена: %s. Во входном сундуке 12 необработанного железа.",
-  "tooltip.factorycraft.industrial_furnace": "Один предмет создаёт печь 3×3×3. Скорость ×2; тот же расход FE на результат.",
+  "tooltip.factorycraft.steel_furnace": "Твёрдое топливо; основание 2×2; скорость ×2. Расход топлива за такт как у каменной.",
   "tooltip.factorycraft.machine_casing": "Часть мультиблока. Общий с контроллером инвентарь и энергия; своих предметов нет.",
   "tooltip.factorycraft.belt": "Две полосы. Движение по стрелке; закрытый выход создаёт затор.",
   "tooltip.factorycraft.splitter": "Два входа и выхода, четыре полосы. Каждая половина имеет свой предметный порт.",
   "tooltip.factorycraft.inserter": "Дальность 1; 70/3 тика на цикл; пять фильтров. 70 FE на номинальный цикл.",
   "tooltip.factorycraft.electric_drill": "Бур 3×3. Добывает запас залежей в области 5×5 на глубину до 8 блоков.",
-  "tooltip.factorycraft.electric_furnace": "Переплавляет необработанное железо и медь в пластины. Нужна энергия.",
+  "tooltip.factorycraft.electric_furnace": "Электрическая, скорость ×2, 24 FE/рабочий такт, два слота модулей.",
   "tooltip.factorycraft.assembling_machine": "Собирает компоненты. Откройте для просмотра и выбора рецепта.",
   "tooltip.factorycraft.coal_generator": "Топливо — в нижний слот. Питает машины через столбы.",
   "tooltip.factorycraft.electric_pole": "Сохранённые медные связи и отдельная квадратная зона снабжения. Инструмент: соединить/разорвать; Shift: отключить все.",
@@ -578,5 +578,13 @@
   "gui.factorycraft.recipe_choose": "Выбрать",
   "gui.factorycraft.oil_stat_0": "Начальная отдача: %s%%",
   "gui.factorycraft.oil_stat_1": "Текущая отдача: %s%%",
-  "gui.factorycraft.oil_stat_2": "Номинально: %s мБ/с"
+  "gui.factorycraft.oil_stat_2": "Номинально: %s мБ/с",
+  "block.factorycraft.stone_furnace": "Каменная печь",
+  "tooltip.factorycraft.stone_furnace": "Твёрдое топливо; основание 2×2; скорость ×1.",
+  "gui.factorycraft.burner_recipe_info": "%s т / твёрдое топливо",
+  "technology.factorycraft.advanced_material_processing": "Продвинутая обработка материалов",
+  "technology.factorycraft.advanced_material_processing_2": "Продвинутая обработка материалов 2",
+  "block.factorycraft.smelting": "Плавка: каменная / стальная / электрическая",
+  "category.factorycraft.smelting": "Плавка",
+  "emi.category.factorycraft.smelting": "Плавка"
 }

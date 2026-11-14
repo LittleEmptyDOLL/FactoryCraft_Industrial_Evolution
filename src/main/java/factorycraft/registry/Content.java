@@ -304,9 +304,10 @@ public final class Content {
                           blocks(
                               FactoryKind.DRILL,
                               FactoryKind.FURNACE,
+                              FactoryKind.STONE_FURNACE,
                               FactoryKind.ASSEMBLER,
                               FactoryKind.GENERATOR,
-                              FactoryKind.INDUSTRIAL_FURNACE,
+                              FactoryKind.STEEL_FURNACE,
                               FactoryKind.PUMPJACK,
                               FactoryKind.REFINERY,
                               FactoryKind.CHEMICAL_PLANT,

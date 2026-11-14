@@ -165,10 +165,12 @@ public final class ReleaseV25GameTests {
   public static void realVanillaSmeltingRunsInBothFurnaceTiersWithExactInputsAndFe(
       GameTestHelper h) {
     var a = machine(h, FactoryKind.FURNACE, 6);
-    var b = machine(h, FactoryKind.INDUSTRIAL_FURNACE, 18);
-    for (var m : List.of(a, b)) {
+    var b = machine(h, FactoryKind.STEEL_FURNACE, 18);
+    var c = machine(h, FactoryKind.STONE_FURNACE, 30);
+    for (var m : List.of(a, b, c)) {
       m.items.setStackInSlot(0, new ItemStack(Items.COBBLESTONE));
-      m.power.restore(2400);
+      if (m.kind().burnerFurnace()) m.items.setStackInSlot(8, new ItemStack(Items.COAL));
+      else m.power.restore(2400);
       h.assertTrue(m.selectRecipe(id("minecraft:stone")), "real vanilla smelting missing");
     }
     h.runAfterDelay(
@@ -184,13 +186,13 @@ public final class ReleaseV25GameTests {
           RecipeSelectionNetwork.generation++;
           a.tick();
           h.assertTrue(
-              a.data.get(0) == progress + 1 && a.power.getEnergyStored() == fe - 12,
+              a.data.get(0) == progress + 2 && a.power.getEnergyStored() == fe - 24,
               "unchanged datapack recipe reset or granted work");
         });
     h.runAfterDelay(
         230,
         () -> {
-          for (var m : List.of(a, b))
+          for (var m : List.of(a, b, c))
             h.assertTrue(
                 m.items.getStackInSlot(0).isEmpty()
                     && m.items.getStackInSlot(4).is(Items.STONE)
@@ -360,13 +362,13 @@ public final class ReleaseV25GameTests {
       for (int i = 0; i < 53; i++) m.tick();
       level.setBlockAndUpdate(marker, Blocks.GOLD_BLOCK.defaultBlockState());
       System.out.println(
-          "FACTORYCRAFT_SMELTING_DISK: SEEDED selected vanilla ID, 53 work / 636 paid FE");
+          "FACTORYCRAFT_SMELTING_DISK: SEEDED selected vanilla ID, 106 work / 1272 paid FE");
     } else System.out.println("FACTORYCRAFT_SMELTING_DISK: VERIFYING existing checkpoint");
     var m = (MachineBlockEntity) level.getBlockEntity(anchor);
     h.assertTrue(
         m.selectedRecipeId().equals("minecraft:stone")
-            && m.data.get(0) == 53
-            && m.power.getEnergyStored() == 1764
+            && m.data.get(0) == 106
+            && m.power.getEnergyStored() == 1128
             && m.items.getStackInSlot(0).is(Items.COBBLESTONE)
             && m.items.getStackInSlot(4).isEmpty()
             && !m.saveWithFullMetadata(level.registryAccess())
@@ -447,18 +449,18 @@ public final class ReleaseV25GameTests {
                 new net.minecraft.world.level.saveddata.SavedData.Factory<>(
                     TerrainRuns::new, TerrainRuns::load),
                 "factorycraft_v0250_terrain_runs");
-    for (int mode = 0; mode < 4; mode++)
+    for (int mode = 0; mode < 5; mode++)
       for (boolean legacy : new boolean[] {true, false}) {
         var r =
             factorycraft.diagnostics.ResourceTerrainFixture.build(
                 h.getLevel(), runs.claim(), mode, legacy);
-        h.assertTrue(
-            r.members() > 30 && (legacy ? r.deep() == 0 : r.deep() > 30),
-            "terrain is missing real volumetric stock");
+        h.assertTrue(r.members() > 30 && r.deep() > 30, "terrain is missing real volumetric stock");
+        if (mode == 4 && !legacy)
+          h.assertTrue(r.aboveCenter() > 0, "higher solid terrain lost the upper hemisphere");
         System.out.println(
             "FACTORYCRAFT_TERRAIN_PROFILE: mode="
                 + mode
-                + " legacySurface="
+                + " legacy0250="
                 + legacy
                 + " owners="
                 + r.members()

@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
  * controller.
  */
 public final class IndustrialAssembly {
-  public static final CuboidLayout LAYOUT = MachineProfile.INDUSTRIAL.layout;
+  public static final CuboidLayout LAYOUT = MachineProfile.FURNACE.layout;
   public static final int UNFORMED = 0, WAITING = 1, READY = 2;
   private final AssemblyOwner owner;
   private final FactoryBlockEntity controller;
@@ -106,7 +106,7 @@ public final class IndustrialAssembly {
   }
 
   public static List<BlockPos> positions(BlockPos origin, Direction facing) {
-    return MachineProfile.INDUSTRIAL.parts(origin, facing);
+    return MachineProfile.FURNACE.parts(origin, facing);
   }
 
   public boolean owns(UUID id) {

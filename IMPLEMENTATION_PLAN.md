@@ -323,3 +323,18 @@ Local build: 218 JUnit pass; required native suite: 393 pass, including independ
 Known scoped gaps: no pumpjack productivity, physical machines/labs still have four input/science slots, no old-world migration, no full natural terrain-noise throughput or retained ore-heap measurement. No new tiers or construction tools were added.
 
 **Next task:** stop after this release. On the next explicit request, inspect the published CI findings and agreed issue scope first; do not start routing tools, lift artwork or future machines automatically.
+
+## Active 0.25.1 — issue #4
+
+1. Replace local-height half-bodies with canonical full 3D ellipsoids. Use one supported generator-based original-terrain anchor query per candidate body, safe outside the generation region; remove per-column smoothing. Add bounds/config, seam/order/cave/cliff and no-overwrite tests, real feature cost comparison.
+2. Use FactoryKind capabilities plus FurnaceWork fixed-point budgets, stone/steel burner inventories and paid active-tick burn accounting; shared canonical recipe durations and electric 180-kW power (24 FE/t at existing 900-kW / 120-FE/t steam mapping). Both burners use one vanilla burn-time tick per active Minecraft tick, an explicit fuel-unit adaptation, without an FE intermediary. Electric has two module slots; burners none.
+3. Replace obsolete industrial type/geometry/items/recipes/research, retain all production chain guarantees, adjust time/FE expectations for speed 2 electric furnace. Update current docs and separate v0251 persistence fixtures. No old data migration or automatic world deletion.
+4. Build/JUnit, required native suite and independent-JVM checkpoints, bounded old/new sampling/BE worldgen measurements and real client. Preserve failed evidence. Publish main after relevant checks; leave full factory/MIXED/optional jobs to CI and stop.
+
+### 0.25.1 delivery / handoff
+
+Implemented canonical full irregular bodies with per-body vertical radius 5–8, generator-only remote anchor sampling and solid intersection; no local-height draping/smoothing. Stone/Steel/Electric now use 2×2/2×2/3×3 footprints and speed 1/2/2, real fuel / real fuel / 24 FE per active tick, with two module slots only on Electric. Shared smelting, Factorio-oriented recipes/research, native vanilla recipes and sole portable ownership remain integrated. Original per-cell models and furnace UI are updated.
+
+Local validation: build / 221 JUnit; 406 required native scenarios including all thirty restored chains; repeated independent-JVM ore/fuel/fraction checkpoints; optional viewer API compile; actual client furnace/browser/module and prepared/natural terrain scenes; bounded three-trial geometry comparison; real dedicated SMOKE/restart. Details, failures retained, costs and limits are in VALIDATION.md and validation/v0251. The full/MIXED/optional/10000-pipe jobs remain GitHub Actions work.
+
+**Next task:** stop after publishing this release. On a new explicit request inspect its CI findings first. Do not start construction tools, lift artwork, future machines or progression changes automatically. Old FactoryCraft worlds are unsupported; never erase them to obtain a passing diagnostic.

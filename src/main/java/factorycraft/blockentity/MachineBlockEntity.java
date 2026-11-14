@@ -32,7 +32,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity
 
   @Override
   public int receiveGridEnergy(int n, boolean simulate) {
-    return loaded()
+    return !kind().burnerFurnace()
+            && loaded()
             && factorycraft.multiblock.AssemblyAccess.ready(this)
             && factorycraft.fluids.FluidConnections.canonical(this)
         ? power.receiveEnergy(n, simulate)
@@ -123,7 +124,9 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         @Override
         public boolean isItemValid(int s, ItemStack stack) {
           if (s >= 4 && s < 8) return false;
-          if (s == 8) return kind() == FactoryKind.GENERATOR && burnTime(stack) > 0;
+          if (s == 8)
+            return (kind() == FactoryKind.GENERATOR || kind().burnerFurnace())
+                && burnTime(stack) > 0;
           return kind().processing();
         }
       };
@@ -143,7 +146,9 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         }
 
         public ItemStack extractItem(int s, int n, boolean sim) {
-          return automationReady() && s >= 4 && s < 8
+          return automationReady()
+                  && (s >= 4 && s < 8
+                      || s == 8 && kind().burnerFurnace() && burnTime(items.getStackInSlot(8)) == 0)
               ? items.extractItem(s, n, sim)
               : ItemStack.EMPTY;
         }
@@ -159,7 +164,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
   public final net.neoforged.neoforge.energy.IEnergyStorage energyPort =
       new net.neoforged.neoforge.energy.IEnergyStorage() {
         public int receiveEnergy(int n, boolean sim) {
-          return automationReady() ? power.receiveEnergy(n, sim) : 0;
+          return !kind().burnerFurnace() && automationReady() ? power.receiveEnergy(n, sim) : 0;
         }
 
         public int extractEnergy(int n, boolean sim) {
@@ -167,11 +172,11 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         }
 
         public int getEnergyStored() {
-          return automationReady() ? power.getEnergyStored() : 0;
+          return !kind().burnerFurnace() && automationReady() ? power.getEnergyStored() : 0;
         }
 
         public int getMaxEnergyStored() {
-          return power.getMaxEnergyStored();
+          return kind().burnerFurnace() ? 0 : power.getMaxEnergyStored();
         }
 
         public boolean canExtract() {
@@ -179,7 +184,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         }
 
         public boolean canReceive() {
-          return automationReady();
+          return !kind().burnerFurnace() && automationReady();
         }
       };
   private final IndustrialAssembly assembly;
@@ -189,6 +194,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity
   }
 
   private int progress, duration = 1, fuelTicks;
+  private int furnaceEnergyRemainder, furnaceBudget;
+  private boolean furnacePaid;
   private String selected = "", activeRecipe = "";
   private List<RecipeHolder<FactoryRecipe>> recipeCache = List.of();
   private long recipeCacheTick = Long.MIN_VALUE;
@@ -436,7 +443,19 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       generate();
       return;
     }
-    boolean worked = kind() == FactoryKind.DRILL ? mine() : produce();
+    boolean worked;
+    if (kind().furnace()) {
+      furnaceBudget =
+          factorycraft.simulation.production.FurnaceWork.budget(
+              kind().craftingSpeed(), modules.effects().speed());
+      furnacePaid = false;
+      worked = false;
+      // At most ten one-tick recipes fit the maximum speed; bound even malformed callbacks.
+      for (int attempts = 0; attempts < 16 && furnaceBudget > 0; attempts++) {
+        if (!produce()) break;
+        worked = true;
+      }
+    } else worked = kind() == FactoryKind.DRILL ? mine() : produce();
     if (worked && level.getGameTime() % 20 == 0) sync();
     setActive(worked);
   }
@@ -506,10 +525,11 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       activeRecipe = "";
       activeDefinition = definition;
     }
+    if (kind().furnace()) return produceFurnace(chosen, input);
     if (modules.enabled()) return produceWithModules(chosen, input);
     var recipe = chosen.value();
     if (!output(recipe.result(), true).isEmpty()) return false;
-    int step = kind() == FactoryKind.INDUSTRIAL_FURNACE ? 2 : 1;
+    int step = 1;
     int advancing = Math.min(step, recipe.ticks() - Math.min(progress, recipe.ticks() - 1));
     if (!power.spend(recipe.energy() * advancing)) return false;
     activeRecipe = chosen.id().toString();
@@ -538,6 +558,70 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     return true;
   }
 
+  private boolean produceFurnace(RecipeHolder<FactoryRecipe> chosen, FactoryInput input) {
+    var recipe = chosen.value();
+    var key = modules.identity(chosen);
+    var effects = modules.effects();
+    int phase = modules.identityChanged(key) ? 0 : modules.fraction();
+    int current = modules.identityChanged(key) ? 0 : progress;
+    int rate =
+        kind().supportsModules() && modules.productive(recipe.result())
+            ? effects.productivity()
+            : 0;
+    int batches = modules.batches(key, rate, recipe.ticks() - current, recipe.ticks());
+    var result = recipe.result().copyWithCount(recipe.result().getCount() * batches);
+    var plan = consumption(chosen, input);
+    if (plan == null || !output(result, true).isEmpty()) return false;
+    beginPetroleumInventoryTransaction();
+    try {
+      if (!furnacePaid) {
+        if (kind().burnerFurnace()) {
+          if (fuelTicks <= 0) {
+            var fuel = items.getStackInSlot(8);
+            int burn = burnTime(fuel);
+            if (burn <= 0) return false;
+            var remainder = fuel.getCraftingRemainingItem();
+            if (!remainder.isEmpty() && fuel.getCount() != 1) return false;
+            items.extractItem(8, 1, false);
+            if (!remainder.isEmpty()) items.setStackInSlot(8, remainder);
+            fuelTicks = burn;
+          }
+          fuelTicks--;
+          factorycraft.diagnostics.FactoryTelemetry.worked(this, 0);
+        } else {
+          var charge =
+              factorycraft.simulation.production.FurnaceWork.charge(
+                  effects.energy(), furnaceEnergyRemainder);
+          if (!power.spend(charge.energy())) return false;
+          furnaceEnergyRemainder = charge.remainder();
+          factorycraft.diagnostics.FactoryTelemetry.worked(this, charge.energy());
+        }
+        furnacePaid = true;
+      }
+      int used = Math.min(furnaceBudget, (recipe.ticks() - current) * 10000 - phase);
+      furnaceBudget -= used;
+      int total = phase + used, work = total / 10000;
+      progress = current + work;
+      duration = recipe.ticks();
+      activeRecipe = chosen.id().toString();
+      modules.advance(key, total % 10000, work, duration, rate);
+      markPersistentState();
+      if (progress >= duration) {
+        for (int slot = 0; slot < plan.length; slot++)
+          if (plan[slot] > 0) items.extractItem(slot, plan[slot], false);
+        output(result, false);
+        modules.finish();
+        progress = 0;
+        activeRecipe = "";
+        factorycraft.diagnostics.FactoryTelemetry.produced(this);
+        sync();
+      }
+      return true;
+    } finally {
+      endPetroleumInventoryTransaction();
+    }
+  }
+
   private boolean produceWithModules(RecipeHolder<FactoryRecipe> chosen, FactoryInput input) {
     var recipe = chosen.value();
     String key = modules.identity(chosen);
@@ -556,7 +640,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     var step =
         effects.plan(
             recipe.energy(),
-            kind() == FactoryKind.INDUSTRIAL_FURNACE ? 2 : 1,
+            1,
             recipe.ticks() - Math.min(current, recipe.ticks() - 1),
             modules.identityChanged(key) ? 0 : modules.fraction());
     if (!power.spend(step.energy())) return false;
@@ -679,7 +763,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     if (assembly != null) assembly.invalidate();
     if (!level.isClientSide) {
       if (petroleum != null) petroleumAvailable();
-      PowerGrid.add(this);
+      if (!kind().burnerFurnace()) PowerGrid.add(this);
       factorycraft.modules.BeaconIndex.add(this);
     }
   }
@@ -732,6 +816,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     t.putInt("Progress", progress);
     t.putInt("Duration", duration);
     t.putInt("Fuel", fuelTicks);
+    if (kind().furnace()) t.putInt("FurnaceEnergyRemainder", furnaceEnergyRemainder);
     t.putString("Selected", selected);
     t.putString("ActiveRecipe", activeRecipe);
     if (assembly != null) assembly.save(t);
@@ -748,6 +833,9 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     progress = Math.max(0, t.getInt("Progress"));
     duration = Math.max(1, t.getInt("Duration"));
     fuelTicks = Math.max(0, t.getInt("Fuel"));
+    furnaceEnergyRemainder = t.getInt("FurnaceEnergyRemainder");
+    if (furnaceEnergyRemainder < 0 || furnaceEnergyRemainder >= 10000)
+      throw new IllegalArgumentException("Invalid furnace energy remainder");
     selected = t.getString("Selected");
     activeDefinition = t.getString("ActiveDefinition");
     activeRecipe = t.getString("ActiveRecipe");

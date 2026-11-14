@@ -15,7 +15,7 @@
   },
   "rewards": {
     "recipes": [
-      "factorycraft:craft_industrial_furnace"
+      "factorycraft:craft_stone_furnace"
     ]
   }
 }

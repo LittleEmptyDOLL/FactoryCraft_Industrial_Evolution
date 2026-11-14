@@ -166,7 +166,7 @@ public final class FactoryCommands {
                   ? "unavailable"
                   : factorycraft.research.ResearchTeams.resolve(source.getPlayer())
                       .orElse("unavailable"));
-      case "demo", "smelter" -> ironLine(level, origin.above(), name.equals("smelter"));
+      case "demo", "smelter" -> ironLine(level, origin.above());
       case "waterworks" -> waterLine(level, origin.above(), false);
       case "steamworks" -> waterLine(level, origin.above(), true);
       case "oilworks" -> oilLine(level, origin.above());
@@ -239,7 +239,7 @@ public final class FactoryCommands {
   }
 
   /** Complete finite-resource line; shared with the physical integration test. */
-  public static ChestBlockEntity ironLine(ServerLevel level, BlockPos origin, boolean industrial) {
+  public static ChestBlockEntity ironLine(ServerLevel level, BlockPos origin) {
     var ore = origin.offset(1, -1, 3);
     level.setBlockAndUpdate(ore, Content.IRON_ORE.get().defaultBlockState());
     machine(level, origin.offset(0, 0, 2), FactoryKind.DRILL, Direction.NORTH);
@@ -247,11 +247,7 @@ public final class FactoryCommands {
     machine(level, origin.offset(4, 0, 3), FactoryKind.BELT, Direction.EAST);
     machine(level, origin.offset(5, 0, 3), FactoryKind.BELT, Direction.EAST);
     arm(level, origin, 6, 3, Direction.EAST);
-    machine(
-        level,
-        origin.offset(7, 0, 2),
-        industrial ? FactoryKind.INDUSTRIAL_FURNACE : FactoryKind.FURNACE,
-        Direction.NORTH);
+    machine(level, origin.offset(7, 0, 2), FactoryKind.FURNACE, Direction.NORTH);
     arm(level, origin, 10, 3, Direction.EAST);
     machine(level, origin.offset(11, 0, 2), FactoryKind.ASSEMBLER, Direction.NORTH);
     arm(level, origin, 14, 3, Direction.EAST);

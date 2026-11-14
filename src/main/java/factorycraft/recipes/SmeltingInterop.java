@@ -9,17 +9,17 @@ import net.minecraft.world.level.Level;
 /** Real RecipeManager smelting only; FactoryCraft definitions take deterministic priority. */
 public final class SmeltingInterop {
   public static boolean furnace(FactoryKind k) {
-    return k == FactoryKind.FURNACE || k == FactoryKind.INDUSTRIAL_FURNACE;
+    return k.furnace();
   }
 
   public static FactoryRecipe project(RecipeHolder<SmeltingRecipe> holder, Level level) {
     var r = holder.value();
     return new FactoryRecipe(
-        FactoryKind.FURNACE.id,
+        "smelting",
         List.of(new FactoryRecipe.CountedIngredient(r.getIngredients().getFirst(), 1)),
         r.getResultItem(level.registryAccess()),
         r.getCookingTime(),
-        12);
+        24);
   }
 
   public static int slot(RecipeHolder<SmeltingRecipe> holder, FactoryInput input, Level level) {

@@ -1,0 +1,20 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:advanced_material_processing",
+    "factorycraft:chemical_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 250,
+  "ticks": 600,
+  "repeatable": false,
+  "unlocks": [
+    "factorycraft:electric_furnace"
+  ],
+  "x": 0,
+  "y": 4
+}

@@ -23,9 +23,7 @@ class MixedPlanTest {
         1000,
         p.blocks().stream()
             .filter(
-                c ->
-                    Set.of(Role.FURNACE, Role.ASSEMBLER, Role.INDUSTRIAL_FURNACE)
-                        .contains(c.role()))
+                c -> Set.of(Role.FURNACE, Role.ASSEMBLER, Role.STEEL_FURNACE).contains(c.role()))
             .count());
     assertEquals(500, p.blocks().stream().filter(c -> c.role() == Role.INSERTER).count());
   }

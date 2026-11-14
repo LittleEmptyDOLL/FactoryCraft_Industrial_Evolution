@@ -1,0 +1,24 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 6
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:stone_bricks"
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:steel_furnace",
+    "count": 1
+  },
+  "ticks": 60,
+  "energy": 20
+}

@@ -2,10 +2,7 @@ package factorycraft.simulation.resources;
 
 import java.util.*;
 
-/**
- * Deterministic volumetric fields. Sampling has no chunk/world state, so chunk order cannot cut
- * seams.
- */
+/** One coordinate-seeded full ellipsoid; terrain clips solids, never deforms this geometry. */
 public final class ResourceVeins {
   public record Settings(
       int minRadius,
@@ -13,10 +10,11 @@ public final class ResourceVeins {
       int minStock,
       int maxStock,
       int spacingChunks,
-      int depth,
+      int minDepth,
+      int maxDepth,
       double noise) {
-    public Settings(int minRadius, int maxRadius, int minStock, int maxStock, int spacingChunks) {
-      this(minRadius, maxRadius, minStock, maxStock, spacingChunks, 12, 0.12);
+    public Settings(int a, int b, int c, int d, int e) {
+      this(a, b, c, d, e, 5, 8, .12);
     }
 
     public Settings {
@@ -24,113 +22,117 @@ public final class ResourceVeins {
           || maxRadius > 48
           || minRadius > maxRadius
           || minStock < 1
-          || maxStock > 10_000_000
+          || maxStock > 10000000
           || minStock > maxStock
           || spacingChunks < 2
           || spacingChunks > 32
-          || depth < 2
-          || depth > 64
+          || minDepth < 2
+          || maxDepth > 64
+          || minDepth > maxDepth
           || !Double.isFinite(noise)
           || noise < 0
-          || noise > 0.3)
-        throw new IllegalArgumentException("Invalid resource vein radius/stock/spacing range");
+          || noise > .3)
+        throw new IllegalArgumentException("Invalid resource radius/stock/spacing bounds");
     }
   }
 
-  public record Patch(int x, int z, int radius, long seed, Settings settings) {
-    public double distance(int worldX, int worldZ) {
-      double dx = worldX - x,
-          dz = worldZ - z,
-          angle = StrictMath.atan2(dz, dx),
-          phase = unit(seed) * Math.PI * 2;
-      double edge =
-          radius
-              * (.88
-                  + .08 * StrictMath.sin(angle * 3 + phase)
-                  + .04 * StrictMath.sin(angle * 5 - phase));
-      return StrictMath.sqrt(dx * dx + dz * dz) / edge;
+  public record Patch(
+      int x, int z, int radius, int radiusZ, int radiusY, long seed, Settings settings) {
+    public Body atHeight(int centerY) {
+      return new Body(this, centerY);
     }
 
-    public Column column(int worldX, int worldZ) {
-      double d = distance(worldX, worldZ);
-      if (d >= 1) return Column.EMPTY;
-      double undulation =
-          1
-              - settings.noise * .5
-              + settings.noise * .5 * StrictMath.sin(worldX * .19 + worldZ * .13 + unit(seed) * 6);
-      int depth =
-          Math.max(
-              1, (int) StrictMath.ceil(settings.depth * StrictMath.sqrt(1 - d * d) * undulation));
-      double richness =
-          (1 - d) * (.7 + .3 * unit(mix(seed ^ ((long) worldX << 32) ^ (worldZ & 0xffffffffL))));
-      return new Column(depth, richness, settings);
-    }
-
-    public int depthAt(int x, int z) {
-      return column(x, z).depth();
-    }
-
+    /** Horizontal sampling helper at the equator, independent of any local surface. */
     public int stock(int x, int z) {
-      return column(x, z).stock(0);
-    }
-
-    public int stock(int x, int z, int belowTop) {
-      return column(x, z).stock(belowTop);
+      return atHeight(0).stock(x, 0, z);
     }
   }
 
-  public record Column(int depth, double richness, Settings settings) {
-    public static final Column EMPTY = new Column(0, 0, null);
+  public record Body(Patch patch, int centerY) {
+    public Column column(int x, int z) {
+      double dx = (x - patch.x) / (double) patch.radius,
+          dz = (z - patch.z) / (double) patch.radiusZ;
+      double angle = StrictMath.atan2(dz, dx), phase = unit(patch.seed) * StrictMath.PI * 2;
+      double outline =
+          .88 + .08 * StrictMath.sin(angle * 3 + phase) + .04 * StrictMath.sin(angle * 5 - phase);
+      return new Column(
+          this,
+          (dx * dx + dz * dz) / (outline * outline),
+          dx * dx + dz * dz,
+          StrictMath.sin(phase),
+          StrictMath.cos(phase));
+    }
 
-    public int stock(int belowTop) {
-      if (belowTop < 0 || belowTop >= depth) return 0;
-      return settings.minStock
-          + (int)
-              Math.round(
-                  (settings.maxStock - settings.minStock)
-                      * richness
-                      * (1 - belowTop / (double) depth));
+    public int stock(int x, int y, int z) {
+      return column(x, z).stock(y);
+    }
+
+    public int minY() {
+      return centerY - patch.radiusY + 1;
+    }
+
+    public int maxY() {
+      return centerY + patch.radiusY - 1;
     }
   }
 
-  public static Patch patch(long worldSeed, long salt, int gridX, int gridZ, Settings settings) {
-    long seed = mix(worldSeed ^ salt ^ mix(((long) gridX << 32) ^ (gridZ & 0xffffffffL)));
-    int spacing = settings.spacingChunks * 16;
-    int x = gridX * spacing + (int) Math.floorMod(seed, spacing),
-        z = gridZ * spacing + (int) Math.floorMod(mix(seed), spacing);
-    int radius =
-        settings.minRadius
-            + (int)
-                Math.floorMod(mix(seed + 1), (long) settings.maxRadius - settings.minRadius + 1);
-    return new Patch(x, z, radius, seed, settings);
+  /** Cached horizontal terms; smooth directional 3D modulation keeps the body star-convex. */
+  public record Column(
+      Body body, double horizontal, double radial, double phaseSine, double phaseCosine) {
+    public int stock(int y) {
+      var p = body.patch;
+      double dy = (y - body.centerY) / (double) p.radiusY;
+      if (horizontal >= 1 || dy <= -1 || dy >= 1) return 0;
+      double total = radial + dy * dy,
+          v = total == 0 ? 0 : dy / StrictMath.sqrt(total),
+          w = 1 - v * v;
+      // Bounded directional harmonic: sin(phase + 2*asin(v)), without per-voxel trig.
+      double harmonic =
+          phaseSine * (1 - 2 * v * v) + phaseCosine * 2 * v * StrictMath.sqrt(Math.max(0, w));
+      double vertical = 1 - p.settings.noise * .5 * (.5 + .5 * harmonic) * w;
+      double q = horizontal + dy * dy / (vertical * vertical);
+      if (q >= 1) return 0;
+      double richness = (1 - q) * (.925 + .075 * dy);
+      return p.settings.minStock
+          + (int) StrictMath.round((p.settings.maxStock - p.settings.minStock) * richness);
+    }
   }
 
-  public static List<Patch> inChunk(
-      long worldSeed, long salt, int chunkX, int chunkZ, Settings settings) {
-    int x = chunkX * 16,
-        z = chunkZ * 16,
-        r = settings.maxRadius,
-        spacing = settings.spacingChunks * 16;
-    var patches = new ArrayList<Patch>();
-    for (int gx = Math.floorDiv(x - r, spacing); gx <= Math.floorDiv(x + 15 + r, spacing); gx++)
-      for (int gz = Math.floorDiv(z - r, spacing); gz <= Math.floorDiv(z + 15 + r, spacing); gz++) {
-        var patch = patch(worldSeed, salt, gx, gz, settings);
-        if (patch.x + patch.radius >= x
-            && patch.x - patch.radius <= x + 15
-            && patch.z + patch.radius >= z
-            && patch.z - patch.radius <= z + 15) patches.add(patch);
+  public static Patch patch(long worldSeed, long salt, int gx, int gz, Settings s) {
+    long seed = mix(worldSeed ^ salt ^ mix(((long) gx << 32) ^ (gz & 0xffffffffL)));
+    int span = s.spacingChunks * 16;
+    return new Patch(
+        gx * span + (int) Math.floorMod(seed, span),
+        gz * span + (int) Math.floorMod(mix(seed), span),
+        s.minRadius + (int) Math.floorMod(mix(seed + 1), (long) s.maxRadius - s.minRadius + 1),
+        s.minRadius + (int) Math.floorMod(mix(seed + 2), (long) s.maxRadius - s.minRadius + 1),
+        s.minDepth + (int) Math.floorMod(mix(seed + 3), (long) s.maxDepth - s.minDepth + 1),
+        seed,
+        s);
+  }
+
+  public static List<Patch> inChunk(long seed, long salt, int cx, int cz, Settings s) {
+    int x = cx * 16, z = cz * 16, r = s.maxRadius, span = s.spacingChunks * 16;
+    var result = new ArrayList<Patch>();
+    for (int gx = Math.floorDiv(x - r, span); gx <= Math.floorDiv(x + 15 + r, span); gx++)
+      for (int gz = Math.floorDiv(z - r, span); gz <= Math.floorDiv(z + 15 + r, span); gz++) {
+        var p = patch(seed, salt, gx, gz, s);
+        if (p.x + p.radius >= x
+            && p.x - p.radius <= x + 15
+            && p.z + p.radiusZ >= z
+            && p.z - p.radiusZ <= z + 15) result.add(p);
       }
-    return patches;
+    return result;
   }
 
-  private static double unit(long bits) {
-    return (bits >>> 11) * 0x1.0p-53;
+  private static double unit(long b) {
+    return (b >>> 11) * 0x1.0p-53;
   }
 
-  private static long mix(long value) {
-    value = (value ^ (value >>> 30)) * 0xbf58476d1ce4e5b9L;
-    value = (value ^ (value >>> 27)) * 0x94d049bb133111ebL;
-    return value ^ (value >>> 31);
+  private static long mix(long v) {
+    v = (v ^ (v >>> 30)) * 0xbf58476d1ce4e5b9L;
+    v = (v ^ (v >>> 27)) * 0x94d049bb133111ebL;
+    return v ^ (v >>> 31);
   }
 
   private ResourceVeins() {}

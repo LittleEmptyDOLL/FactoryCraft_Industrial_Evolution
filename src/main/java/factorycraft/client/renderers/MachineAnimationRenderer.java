@@ -47,7 +47,8 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
     boolean active = be.getBlockState().getValue(FactoryBlock.ACTIVE);
     boolean glow =
         profile == MachineProfile.FURNACE
-            || profile == MachineProfile.INDUSTRIAL
+            || profile == MachineProfile.STEEL
+            || profile == MachineProfile.STONE
             || profile == MachineProfile.BOILER;
     if (glow && !active) return;
     var phase = phases.computeIfAbsent(be, b -> new Phase());
@@ -60,7 +61,8 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
     pose.translate(.5, 0, .5);
     pose.mulPose(Axis.YP.rotationDegrees(180 - facing.toYRot()));
     pose.translate(-.5, 0, -.5);
-    var control=profile.controllerLocal();pose.translate(-control.getX(),-control.getY(),-control.getZ());
+    var control = profile.controllerLocal();
+    pose.translate(-control.getX(), -control.getY(), -control.getZ());
     float unit =
         Math.max(profile.layout.width(), Math.max(profile.layout.height(), profile.layout.depth()));
     pose.scale(unit, unit, unit);

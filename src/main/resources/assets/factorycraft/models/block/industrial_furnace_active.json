@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "factorycraft:block/industrial_furnace_active",
-    "side": "factorycraft:block/machine_casing",
-    "top": "factorycraft:block/industrial_furnace_top"
-  }
-}

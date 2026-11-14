@@ -426,7 +426,7 @@ public final class FactoryBenchmark {
           "Belt workload stopped moving");
       require(
           !power.pending()
-              && power.nodes() == profile.cells * 7 + BenchmarkPlan.poleCount(profile)
+              && power.nodes() == profile.cells * 6 + BenchmarkPlan.poleCount(profile)
               && power.networks() == 1
               && power.rebuilds() - powerBefore.rebuilds() >= 2,
           "Power split/rejoin did not complete");

@@ -53,7 +53,7 @@ public final class MachineModules {
     this.machine = machine;
     items =
         new ItemStackHandler(
-            (machine.kind().processing() || machine.kind() == FactoryKind.PUMPJACK)
+            machine.kind().supportsModules()
                 ? (machine.kind() == FactoryKind.REFINERY
                         || machine.kind() == FactoryKind.CHEMICAL_PLANT
                     ? 3
@@ -64,7 +64,8 @@ public final class MachineModules {
           }
 
           public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.getItem() instanceof ModuleItem m
+            return machine.kind().supportsModules()
+                && stack.getItem() instanceof ModuleItem m
                 && (machine.kind() != FactoryKind.PUMPJACK || m.kind.productivity == 0);
           }
 
@@ -90,6 +91,7 @@ public final class MachineModules {
   }
 
   public ModuleEffects effects() {
+    if (!machine.kind().supportsModules()) return ModuleEffects.NONE;
     if (dirty && machine.getLevel() != null && !machine.getLevel().isClientSide) {
       beacons = BeaconIndex.nearby(machine);
       dirty = false;
@@ -177,7 +179,11 @@ public final class MachineModules {
 
   public void load(CompoundTag tag, HolderLookup.Provider registry) {
     var state = tag.getCompound("Modules");
-    if (state.contains("Items")) items.deserializeNBT(registry, state.getCompound("Items"));
+    if (state.contains("Items")) {
+      if (state.getCompound("Items").getInt("Size") != items.getSlots())
+        throw new IllegalArgumentException("Module slot count does not match machine");
+      items.deserializeNBT(registry, state.getCompound("Items"));
+    }
     fraction = Math.clamp(state.getInt("Fraction"), 0, 9999);
     credit = Math.clamp(state.getInt("Credit"), 0, 19999);
     productiveRemainder = Math.clamp(state.getInt("ProductiveRemainder"), 0, 71999);
