@@ -458,6 +458,10 @@ public final class Transport3DGameTests {
         if (!b.loaded()) b.onLoad();
       }
       ((BeltBlockEntity) level.getBlockEntity(v)).toggleUnderground();
+      // This persistence-only remote fixture is FULL, not block-ticking. Seed its known
+      // geometry explicitly; runtime pair discovery now correctly waits for a safe tick.
+      ((BeltBlockEntity) level.getBlockEntity(u))
+          .initializeRoute(new BeltRoute(BeltRoute.Shape.UNDERGROUND, 9, 0));
       for (var p : List.of(l, m)) {
         var kind = p.equals(l) ? FactoryKind.FAST_LIFT : FactoryKind.EXPRESS_LIFT;
         level.setBlockAndUpdate(p, Content.FACTORY.get(kind).get().defaultBlockState());

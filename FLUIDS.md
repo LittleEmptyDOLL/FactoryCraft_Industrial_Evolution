@@ -1,3 +1,7 @@
+## 0.26.1 shoreline correction
+
+Offshore Pump is now one land controller plus one rear intake **over** the source, with one inland output; see STEAM_POWER.md / MACHINE_DIMENSIONS.md. Six-direction segment hydraulics, 1:10 units, source rate/buffer, component identity and transfer-only electric Pump are unchanged. No mandatory lake-size rule or source deletion. Supported MC shore has water and land surfaces at the same elevation. New evidence uses v0261 worlds; old parallel-shore fixtures are archived, never migrated/reset.
+
 # Fluid segments — 0.26.0
 
 ## 0.26 water-source and thermal override

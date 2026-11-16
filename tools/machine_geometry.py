@@ -178,14 +178,20 @@ def generate(root,write,png):
      box((.23,y,.65),(2.77,y+.09,2.35),'steel');box((.65,y,.23),(2.35,y+.09,2.77),'steel')
     box((1.32,.65,.18),(1.68,2.25,.28),'glass');box((1.2,2.88,1.2),(1.8,3,1.8),'bidi')
    elif name=='offshore_pump':
-    box((.15,.3,.15),(1.85,.6,.85),'teal')
-    for x in [.4,1.4]:
-     column(x,.65,.23,.35,.9,'steel')
-     box((x-.16,.35,.75),(x+.16,.65,.99),'inlet')
-    box((.65,.6,.2),(1.3,.98,.75),'orange')
+    box((.12,.18,.1),(.88,.42,1.86),'steel')
+    box((.18,.35,.14),(.82,.88,.78),'teal')
+    column(.5,.5,.23,.4,.97,'orange')
+    box((.32,.12,.04),(.68,.38,.38),'outlet')
+    box((.24,.08,1.16),(.76,.5,1.9),'inlet')
+    for z in [1.25,1.4,1.55,1.7,1.85]:box((.26,.51,z),(.74,.56,z+.04),'dark')
    elif name=='electric_pump':
     box((.18,.34,.3),(.82,.77,1.7),'teal');box((.26,.77,.4),(.74,.96,.98),'shell')
     box((.32,.44,.18),(.68,.67,.62),'piston')
+  if name in ['electric_drill','burner_mining_drill']:
+   cx=w//2+.5
+   box((cx-.3,.34,.02),(cx+.3,.52,.48),'steel')
+   box((cx-.22,.53,.08),(cx+.22,.57,.4),'yellow')
+   box((cx-.12,.53,.025),(cx+.12,.58,.14),'orange')
   specs.append({'profile':name,'boxes':boxes})
   def vanilla(mesh,scale,offset):
    elements=[]

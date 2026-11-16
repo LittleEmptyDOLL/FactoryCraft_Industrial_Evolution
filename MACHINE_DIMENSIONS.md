@@ -1,15 +1,27 @@
+# 0.26.1 placement corrections
+
+Offshore Pump is **1 wide × 2 deep × 1 high** along FACING: local `(0,0,0)` is the land-supported controller/inland output; local `(0,0,1)` is an identity-only intake hanging above source water. Original Factorio anchor is land next to water; this two-cell protrusion is a Minecraft adaptation. All rotations share the same transform/preview/validation. No support is required beneath the intake. Land and water surfaces must be at the same block elevation; stepped shores need a suitable ledge, not remote extraction.
+
+Small Electric Pole is **1×1×3**, with its wire attachment at Y=2.88 above the base. Its supply5/wire7.5, recipe and foundation stay unchanged. Other poles remain unchanged.
+
+Both drill chutes lie at local `(width/2,0,0)` and target one cell forward outside the footprint. Electric is front-center; even-width Burner is front-right. The model's front chute marks that exact cell; ordinary extraction remains available through existing guarded inventory interfaces.
+
+The older tables below retain previous release dimensions where explicitly historical; current definitions above and MachineProfile are authoritative.
+
+---
+
 # Габариты и размещение машин — 0.26.0
 
 Одна плитка Factorio соответствует одному блоку Minecraft по горизонтали. Высоты — собственная адаптация FactoryCraft. Занят и проверяется весь объём, включая визуальные промежутки. Все актуальные профили автоматически формируются из одного предмета.
 
 | Профиль | Ширина × глубина × высота | Контроллер в локальных координатах |
 |---|---|---|
-| electric_pole | 1×1×2 | (0,0,0) |
+| electric_pole | 1×1×3 | (0,0,0) |
 | medium_electric_pole | 1×1×3 | (0,0,0) |
 | big_electric_pole | 2×2×5 | (0,0,0) |
 | substation | 2×2×4 | (0,0,0) |
 | burner_mining_drill | 2×2×2 | (1,0,0) |
-| offshore_pump | 2×1×1 | (1,0,0); две береговые точки |
+| offshore_pump | 1×2×1 | (0,0,0); основание на суше, забор над водой позади |
 | electric_drill | 3×3×2 | (1,0,0) |
 | electric_furnace, assembling_machine | 3×3×3 | (1,0,0) |
 | stone_furnace | 2×2×2 | (1,0,0) |

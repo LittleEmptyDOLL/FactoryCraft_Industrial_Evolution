@@ -1,10 +1,20 @@
-# Feature matrix — 0.26.0
+# Feature matrix — 0.26.1
 
-## 0.26.0 current slice
+## 0.26.1 corrections
 
 | Feature | State |
 |---|---|
-| Distinct 2×1 Offshore Pump, shoreline validation, no FE, 600 mB/t | Implemented; guarded source ledger and portable state |
+| Offshore perpendicular to shore | One supported land controller + rear source-water overhang; inland port; rates unchanged |
+| Burner/Electric drill output | Automatic single front contact to belt/handler/fuel; bounded owned buffer; no loose ground ore |
+| Belt ticket transitions | Deferred guarded refresh/quarantine; dirty/cargo state retained |
+| Small Pole | Three high; attachment2.88, unchanged supply5/wire7.5 |
+| Existing lift/circuit extensions | Three lift tiers and four colors retained |
+
+## 0.26.0 retained slice
+
+| Feature | State |
+|---|---|
+| Distinct shore-normal 1×2 Offshore Pump, shoreline validation, no FE, 600 mB/t | Implemented; guarded source ledger and portable state |
 | Electric Pump transfers held fluids only | Implemented; world-block generation removed; FE/circuit/pressure retained |
 | Boiler 3→30 mB/t; two 15-mB/t /120-FE engines | Implemented; exact heat and owned buffers |
 | Coal Generator / remote Circuit Reader / Controller | Removed from runtime, assets and progression |

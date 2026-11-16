@@ -1,3 +1,7 @@
+## 0.26.1 local geometry corrections
+
+Offshore mesh now extends along local Z: inland pump at front and grated blue intake on the rear water-overhang part; the only output nozzle shares the controller's actual inland fluid port. Both drills have a front chute at local x=width/2, aligned with the server delivery target; even-width Burner uses front-right. Small Pole's shared post/crossbeam/insulators and wire endpoint occupy three cells; generated chunk mesh, collision and item models use the same geometry resource. Original FactoryCraft graphics only.
+
 # Furnace visuals — 0.25.1
 
 Stone and Steel use original per-cell masonry/metal meshes, 2×2 footprints and Minecraft heights 2/3. Electric retains its 3×3×3 body. Burner flames use the actual active-work state, so idle/blocked/unfuelled machines stop animating. Item models, placement preview, collision cells and portable dismantling all use the same MachineProfile/layout definitions. No Factorio artwork is copied. See FURNACES.md for mechanics.

@@ -1,3 +1,7 @@
+## 0.26.1 drill delivery
+
+Both drills automatically deliver pending ore through their single front chute to real adjacent belts or sided item handlers, including furnaces and other burner drills' valid fuel slot. Electric chute is front-center; Burner front-right. Burner mining coverage now rotates with its 2×2 body. Existing finite per-tile ore identity/debit and fixed ellipsoid generation are unchanged. No compatible receiver: at most the existing four output stacks are buffered, then ore/FE/fuel work stops. No unbounded ground item entities. See MACHINE_DIMENSIONS.md and VALIDATION.md.
+
 # Ресурсные месторождения — 0.25.1
 
 Железо, медь, уголь и камень образуют полные неправильные эллипсоиды с единственным центром `(x,y,z)`. Существующая порода обрезает тело: на равнине обычно остаётся нижняя часть глубиной 5–8 блоков, на склоне или обрыве может обнажаться верхняя половина. Форма и богатство не следуют локальной поверхности. Каждый блок владеет собственным конечным запасом и прежней механикой добычи.

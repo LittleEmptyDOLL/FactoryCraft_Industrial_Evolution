@@ -1037,3 +1037,10 @@ for locale,index in [('en_us',0),('ru_ru',1)]:
 
 # Factorio 2.1 tier-one productivity gate (no processing units/blue science).
 write('data/factorycraft/recipe/productivity.json',{'type':'factorycraft:research','prerequisites':['factorycraft:modules'],'packs':{'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1},'units':50,'ticks':600,'repeatable':False,'unlocks':['factorycraft:productivity_module'],'x':5,'y':2})
+
+for locale,ru in [('en_us',False),('ru_ru',True)]:
+ path=ROOT/f'assets/factorycraft/lang/{locale}.json';data=json.loads(path.read_text())
+ data['tooltip.factorycraft.offshore_pump']='Береговой насос 1×2: основание на суше, забор над водой позади, выход к суше. 600 мБ/т, без FE.' if ru else '1×2 shore-normal pump: land base, intake over source water behind, output inland. 600 mB/t, no FE.'
+ for name in ['burner_mining_drill','electric_drill']:
+  data['tooltip.factorycraft.'+name]=data.get('tooltip.factorycraft.'+name,'')+(' Автовыгрузка через передний желоб; при заполнении буфера остановка.' if ru else ' Automatic front-chute output; stops when pending buffer is full.')
+ write(str(path.relative_to(ROOT)),data)

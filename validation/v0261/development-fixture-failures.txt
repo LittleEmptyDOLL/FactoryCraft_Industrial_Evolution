@@ -1,0 +1,26 @@
+v0261-native-first.log
+[17:46:21] [Server thread/ERROR] [minecraft/LogTestReporter]: metrictransportpersistsacrossserverprocesses failed at -11326175, -60, 9355976! disk route changed
+[17:47:23] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 2m 12s
+
+v0261-native-reload.log
+[17:59:36] [Server thread/ERROR] [minecraft/LogTestReporter]: drillchutewaitsfortickingneighboracrosschunkboundary failed at 1008825, -60, -12860713! Occupied/unloaded structure cell: BlockPos{x=2400015, y=70, z=2400008}
+[17:59:36] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 2m 2s
+
+v0261-native-final-recheck.log
+[18:02:38] [Server thread/ERROR] [minecraft/LogTestReporter]: drillchutewaitsfortickingneighboracrosschunkboundary failed at 1915404, -60, 5961794! chute did not resume after neighbor loaded
+[18:02:38] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 1m 55s
+
+v0261-native-holder-recheck.log
+[18:05:23] [Server thread/ERROR] [minecraft/LogTestReporter]: drillchutewaitsfortickingneighboracrosschunkboundary failed at 13124850, -60, 8853257! chute did not resume after neighbor loaded
+[18:05:23] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 1m 33s
+
+v0261-optional-reload.log
+[18:11:07] [Server thread/ERROR] [minecraft/LogTestReporter]: ticketpromotiononlyreconnectsonsafetickandstaleownercannotmutate failed at -13341774, -60, 14635512! pending transport mutation was not persisted before ticket transition
+[18:11:08] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 1m 50s
+
+All evidence/checkpoint worlds preserved in byte-verified lossless archives. Corrections and final outcomes are in VALIDATION.md; no reset or disabled tests.

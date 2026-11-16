@@ -439,6 +439,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       setActive(false);
       return;
     }
+    if (kind().drill()) pushDrillOutput();
     boolean worked;
     if (kind().furnace() || kind().assembler()) {
       furnaceBudget =
@@ -650,6 +651,86 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     return remainder;
   }
 
+  /** One physical front chute. Even 2-wide drill uses local x=1 (front-right). */
+  public BlockPos drillOutputPosition() {
+    var profile = assembly.profile();
+    var facing = profile.facing(getBlockState());
+    return profile.offset(worldPosition, facing, profile.layout.width() / 2, 0, 0).relative(facing);
+  }
+
+  private boolean pushingDrill;
+
+  private void pushDrillOutput() {
+    if (pushingDrill || !automationReady() || !factorycraft.fluids.FluidConnections.canonical(this))
+      return;
+    boolean pending = false;
+    for (int slot = 4; slot < 8; slot++)
+      if (!items.getStackInSlot(slot).isEmpty()) {
+        pending = true;
+        break;
+      }
+    if (!pending) return;
+    var targetPos = drillOutputPosition();
+    var server = (net.minecraft.server.level.ServerLevel) level;
+    var targetChunk =
+        server.getChunkSource().getChunkNow(targetPos.getX() >> 4, targetPos.getZ() >> 4);
+    if (targetChunk == null
+        || !server.shouldTickBlocksAt(new net.minecraft.world.level.ChunkPos(targetPos).toLong()))
+      return;
+    var facing = getBlockState().getValue(FactoryBlock.FACING);
+    var target =
+        level.getCapability(
+            net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
+            targetPos,
+            facing.getOpposite());
+    if (target == null) return; // Safe bounded fallback: owned slots 4–7, no loose item flood.
+    var belt = factorycraft.simulation.BeltSimulation.at(level, targetPos);
+    pushingDrill = true;
+    beginPetroleumInventoryTransaction();
+    try {
+      for (int slot = 4; slot < 8; slot++) {
+        var stack = items.getStackInSlot(slot);
+        if (stack.isEmpty()) continue;
+        // Remove before invoking external observers: a recursive callback cannot extract it twice.
+        var offered = items.extractItem(slot, belt == null ? stack.getCount() : 1, false);
+        ItemStack remainder;
+        if (belt == null) remainder = ItemHandlerHelper.insertItem(target, offered.copy(), false);
+        else {
+          int lane =
+              factorycraft.simulation.inserters.InserterPlacement.lane(
+                  facing.getStepX(),
+                  facing.getStepZ(),
+                  belt.facing().getStepX(),
+                  belt.facing().getStepZ(),
+                  false);
+          remainder = target.insertItem(lane * 4, offered.copy(), false);
+        }
+        if (!remainder.isEmpty()) {
+          if (!isRemoved()) {
+            var left = output(remainder, false);
+            if (!left.isEmpty())
+              net.minecraft.world.Containers.dropItemStack(
+                  level,
+                  worldPosition.getX() + .5,
+                  worldPosition.getY() + .5,
+                  worldPosition.getZ() + .5,
+                  left);
+          } else
+            net.minecraft.world.Containers.dropItemStack(
+                level,
+                worldPosition.getX() + .5,
+                worldPosition.getY() + .5,
+                worldPosition.getZ() + .5,
+                remainder);
+        }
+        break; // One pending stack / one ordinary physical belt carrier per server tick.
+      }
+    } finally {
+      endPetroleumInventoryTransaction();
+      pushingDrill = false;
+    }
+  }
+
   private ItemStack oreResult(BlockPos pos) {
     var be = factorycraft.fluids.FluidConnections.at(level, pos);
     return be instanceof ResourceDepositBlockEntity deposit
@@ -684,7 +765,11 @@ public final class MachineBlockEntity extends FactoryBlockEntity
           for (int z = kind() == FactoryKind.BURNER_DRILL ? -1 : -2;
               z <= (kind() == FactoryKind.BURNER_DRILL ? 0 : 2);
               z++) {
-            var p = center.offset(x, -y, z);
+            var p =
+                kind() == FactoryKind.BURNER_DRILL
+                    ? profile.offset(
+                        worldPosition, profile.facing(getBlockState()), x + 1, -y, z + 1)
+                    : center.offset(x, -y, z);
             if (!oreResult(p).isEmpty()) {
               oreTarget = p.immutable();
               oreIdentity =

@@ -354,3 +354,19 @@ Implemented exclusive guarded shoreline Offshore Pump, transfer-only electric Pu
 Local build / 224 JUnit, 418 native tests with independent-JVM current-format checkpoints, real dedicated SMOKE plus hash reload and actual graphical client QA pass; all prior 406 cases and thirty chains remain required. Bounded measurements, preserved initial failures and runtime/optional limits are recorded in VALIDATION.md, BENCHMARKS.md and validation/v0260. Full/MIXED/10000-pipe and optional-mod runtime remain CI checks, not locally advertised passes.
 
 **Next task:** stop after publishing this release and reporting CI once. On a new explicit request review its published CI and agreed scope. Remaining lab module implementation, higher module/science tiers, full research parity and other audit gaps require a separately scoped task; do not begin construction tools, lift artwork, rail/robots or Space Age automatically. Old-world migration is unsupported; preserve all diagnostic evidence.
+
+## Active 0.26.1 — issue #6
+
+1. Shore-normal 1×2 Offshore controller/output on land, intake above source, rotated shared placement/preview/geometry and fixtures.
+2. Unique front drill chute, bounded owned pending buffer, component-exact sided delivery to belts/inventories/fuel; no forced chunks or loose ore flooding.
+3. Defer belt ticket transition refresh until canonical loaded/ticking physical readiness, preserving carrier/route state and eventual reconnection.
+4. Small pole height/shape/attachment 3 while retaining all supply/wire values.
+5. Build/current required native and separate-JVM, optional runtime reproducer, client and bounded liveness; publish checked main, report CI compatibility result. Stop at scope.
+
+### 0.26.1 delivery / handoff
+
+Completed shore-normal land/outlet + over-water intake placement and original mesh, correct rotated guarded ports and source ledger; directional front drill output to normal capabilities/belts/fuel with bounded pending fallback and rotated Burner area; deferred ticket refresh with pure kernel quarantine, cached physical chunks, canonical owner checks and mutation-time chunk persistence; Small Pole three-high geometry/endpoint while keeping supply5/wire7.5. No recipe/power/ore-generation or extension changes.
+
+Local226JUnit,429native including all418baseline/thirty chains, actual optional FTB/EMI/JEI/Jade runtime and repeated independent-JVM checkpoints pass. Dedicated SMOKE/hash reload and real natural-coast/drill/pole client, normal save and exact read-only census pass; evidence and limits in validation/v0261 and VALIDATION.md. Initial CI and development failures remain archived. Publish checked main; issue explicitly requires completed compatibility CI (full six-job gates), so report its real outcome.
+
+**Next:** stop after this release. On a new request inspect published CI and agreed issue first. No automatic lab/modules/research, construction tools, lift-art, trains/robots or Space Age followup. Old FactoryCraft migration unsupported; never erase archived worlds.

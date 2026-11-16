@@ -1,0 +1,109 @@
+Original 0.26.0 CI failure (not a 0.26.1 test result)
+Run: https://github.com/LittleEmptyDOLL/FactoryCraft_Industrial_Evolution/actions/runs/43879650075
+Job: 133341799848, FTB Teams, EMI, JEI and Jade compatibility
+
+2026-11-16T13:51:21.9358230Z [13:51:21] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++                                                                                                                                                                                                                                                                                                                                                                                                                    ]
+2026-11-16T13:51:22.0368810Z [13:51:21] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++                                                                                                                                                                                                                                                                                                                                                                                                                    ]
+2026-11-16T13:51:23.0355714Z FACTORYCRAFT_ELLIPSOID_MAX_SLICE: owners=23439 volume=510196 nanos=215754554 chunksWritten=1
+2026-11-16T13:51:23.8346668Z FACTORYCRAFT_ELLIPSOID_251_DISK: CREATED 00ad00e450d3c3cc8ea59adccc2a52dad6017cce14de637dd9fdcfdc36757939
+2026-11-16T13:51:24.1431364Z [13:51:24] [Server thread/ERROR] [ne.ne.bu.EventBus/EVENTBUS]: Exception caught during firing event: Chunk not there when requested: Unloaded chunk
+2026-11-16T13:51:24.1495241Z 	Index: 1
+2026-11-16T13:51:24.1495918Z 	Listeners:
+2026-11-16T13:51:24.1534877Z 		0: net.neoforged.bus.EventListenerFactory$tickets/0x00007abed0d50000@6be4df6d
+2026-11-16T13:51:24.1608013Z 		1: net.neoforged.bus.EventListenerFactory$ticketLevel/0x00007abed0d51c00@544692ea
+2026-11-16T13:51:24.1610429Z 		2: net.neoforged.bus.EventListenerFactory$tickets/0x00007abed0d58800@69872338
+2026-11-16T13:51:24.1625170Z java.lang.IllegalStateException: Chunk not there when requested: Unloaded chunk
+2026-11-16T13:51:24.1625959Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.getChunk(ServerChunkCache.java:163)
+2026-11-16T13:51:24.1626704Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunk(Level.java:202)
+2026-11-16T13:51:24.1627404Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.LevelReader.getChunk(LevelReader.java:134)
+2026-11-16T13:51:24.1628111Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunk(Level.java:196)
+2026-11-16T13:51:24.1629177Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunkAt(Level.java:192)
+2026-11-16T13:51:24.1629881Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.blockEntityChanged(Level.java:943)
+2026-11-16T13:51:24.1630676Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.block.entity.BlockEntity.setChanged(BlockEntity.java:198)
+2026-11-16T13:51:24.1631531Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.block.entity.BlockEntity.setChanged(BlockEntity.java:193)
+2026-11-16T13:51:24.1632397Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.blockentity.FactoryBlockEntity.sync(FactoryBlockEntity.java:109)
+2026-11-16T13:51:24.1633245Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.blockentity.BeltBlockEntity.changeRoute(BeltBlockEntity.java:237)
+2026-11-16T13:51:24.1634338Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.blockentity.BeltBlockEntity.refreshConnections(BeltBlockEntity.java:622)
+2026-11-16T13:51:24.1635938Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.simulation.BeltSimulation.activateChunk(BeltSimulation.java:109)
+2026-11-16T13:51:24.1637467Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.simulation.BeltSimulation.ticketLevel(BeltSimulation.java:122)
+2026-11-16T13:51:24.1639048Z 	at MC-BOOTSTRAP/net.neoforged.bus/net.neoforged.bus.EventBus.post(EventBus.java:360)
+2026-11-16T13:51:24.1639810Z 	at MC-BOOTSTRAP/net.neoforged.bus/net.neoforged.bus.EventBus.post(EventBus.java:328)
+2026-11-16T13:51:24.1640588Z 	at TRANSFORMER/neoforge@21.1.252/net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(EventHooks.java:789)
+2026-11-16T13:51:24.1641469Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ChunkMap.updateChunkScheduling(ChunkMap.java:398)
+2026-11-16T13:51:24.1642349Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ChunkMap$DistanceManager.updateChunkScheduling(ChunkMap.java:1244)
+2026-11-16T13:51:24.1643282Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.DistanceManager$ChunkTicketTracker.setLevel(DistanceManager.java:383)
+2026-11-16T13:51:24.1644538Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.lighting.DynamicGraphMinFixedPoint.runUpdates(DynamicGraphMinFixedPoint.java:161)
+2026-11-16T13:51:24.1645615Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.DistanceManager$ChunkTicketTracker.runDistanceUpdates(DistanceManager.java:391)
+2026-11-16T13:51:24.1646557Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.DistanceManager.runAllUpdates(DistanceManager.java:112)
+2026-11-16T13:51:24.1647471Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.runDistanceManagerUpdates(ServerChunkCache.java:279)
+2026-11-16T13:51:24.1648436Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.getChunkFutureMainThread(ServerChunkCache.java:237)
+2026-11-16T13:51:24.1649323Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.getChunk(ServerChunkCache.java:158)
+2026-11-16T13:51:24.1650052Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunk(Level.java:202)
+2026-11-16T13:51:24.1650729Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.LevelReader.getChunk(LevelReader.java:134)
+2026-11-16T13:51:24.1651409Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunk(Level.java:196)
+2026-11-16T13:51:24.1652060Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getBlockState(Level.java:382)
+2026-11-16T13:51:24.1652815Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.block.Block.updateFromNeighbourShapes(Block.java:161)
+2026-11-16T13:51:24.1653632Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.commands.arguments.blocks.BlockInput.place(BlockInput.java:64)
+2026-11-16T13:51:24.1655204Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.StructureUtils.clearBlock(StructureUtils.java:274)
+2026-11-16T13:51:24.1656882Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.StructureUtils.lambda$clearSpaceForStructure$4(StructureUtils.java:179)
+2026-11-16T13:51:24.1658699Z 	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+2026-11-16T13:51:24.1659891Z 	at java.base/java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1939)
+2026-11-16T13:51:24.1661168Z 	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+2026-11-16T13:51:24.1662708Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.StructureUtils.clearSpaceForStructure(StructureUtils.java:179)
+2026-11-16T13:51:24.1664770Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.StructureUtils.prepareTestStructure(StructureUtils.java:131)
+2026-11-16T13:51:24.1666558Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestInfo.prepareTestStructure(GameTestInfo.java:265)
+2026-11-16T13:51:24.1668382Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.StructureGridSpawner.spawnStructure(StructureGridSpawner.java:58)
+2026-11-16T13:51:24.1670094Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestRunner.spawn(GameTestRunner.java:221)
+2026-11-16T13:51:24.1671383Z 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+2026-11-16T13:51:24.1672918Z 	at java.base/java.util.AbstractList$RandomAccessSpliterator.forEachRemaining(AbstractList.java:722)
+2026-11-16T13:51:24.1674461Z 	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+2026-11-16T13:51:24.1675658Z 	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+2026-11-16T13:51:24.1676886Z 	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+2026-11-16T13:51:24.1678134Z 	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+2026-11-16T13:51:24.1679435Z 	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+2026-11-16T13:51:24.1680633Z 	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:622)
+2026-11-16T13:51:24.1681820Z 	at java.base/java.util.stream.ReferencePipeline.toList(ReferencePipeline.java:627)
+2026-11-16T13:51:24.1683404Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestRunner.createStructuresForBatch(GameTestRunner.java:216)
+2026-11-16T13:51:24.1685648Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestRunner.runBatch(GameTestRunner.java:149)
+2026-11-16T13:51:24.1687288Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestRunner$1.testCompleted(GameTestRunner.java:165)
+2026-11-16T13:51:24.1688995Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestRunner$1.testPassed(GameTestRunner.java:175)
+2026-11-16T13:51:24.1690607Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestInfo.lambda$tick$2(GameTestInfo.java:112)
+2026-11-16T13:51:24.1691847Z 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+2026-11-16T13:51:24.1692977Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestInfo.tick(GameTestInfo.java:112)
+2026-11-16T13:51:24.1694734Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestTicker.lambda$tick$0(GameTestTicker.java:42)
+2026-11-16T13:51:24.1696321Z 	at java.base/java.util.concurrent.CopyOnWriteArrayList.forEach(CopyOnWriteArrayList.java:891)
+2026-11-16T13:51:24.1697734Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestTicker.tick(GameTestTicker.java:42)
+2026-11-16T13:51:24.1699217Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.tickChildren(MinecraftServer.java:1055)
+2026-11-16T13:51:24.1700770Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.tickServer(MinecraftServer.java:917)
+2026-11-16T13:51:24.1702295Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.gametest.framework.GameTestServer.tickServer(GameTestServer.java:168)
+2026-11-16T13:51:24.1703804Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:707)
+2026-11-16T13:51:24.1705697Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.lambda$spin$2(MinecraftServer.java:267)
+2026-11-16T13:51:24.1706795Z 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-11-16T13:51:24.1707238Z 
+2026-11-16T13:51:24.1707769Z [13:51:24] [Server thread/ERROR] [minecraft/MinecraftServer]: Encountered an unexpected exception
+2026-11-16T13:51:24.1708905Z java.lang.IllegalStateException: Chunk not there when requested: Unloaded chunk
+2026-11-16T13:51:24.1711042Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.getChunk(ServerChunkCache.java:163) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,pl:accesstransformer:B}
+2026-11-16T13:51:24.1713797Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunk(Level.java:202) ~[neoforge-21.1.252.jar%23125!/:?] {re:computing_frames,pl:accesstransformer:B,re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+2026-11-16T13:51:24.1716533Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.LevelReader.getChunk(LevelReader.java:134) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,re:mixin}
+2026-11-16T13:51:24.1719427Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunk(Level.java:196) ~[neoforge-21.1.252.jar%23125!/:?] {re:computing_frames,pl:accesstransformer:B,re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+2026-11-16T13:51:24.1722547Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.getChunkAt(Level.java:192) ~[neoforge-21.1.252.jar%23125!/:?] {re:computing_frames,pl:accesstransformer:B,re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+2026-11-16T13:51:24.1725907Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.Level.blockEntityChanged(Level.java:943) ~[neoforge-21.1.252.jar%23125!/:?] {re:computing_frames,pl:accesstransformer:B,re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+2026-11-16T13:51:24.1728783Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.block.entity.BlockEntity.setChanged(BlockEntity.java:198) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,re:mixin}
+2026-11-16T13:51:24.1731262Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.block.entity.BlockEntity.setChanged(BlockEntity.java:193) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,re:mixin}
+2026-11-16T13:51:24.1733530Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.blockentity.FactoryBlockEntity.sync(FactoryBlockEntity.java:109) ~[%23127!/:?] {re:classloading}
+2026-11-16T13:51:24.1735738Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.blockentity.BeltBlockEntity.changeRoute(BeltBlockEntity.java:237) ~[%23127!/:?] {re:classloading}
+2026-11-16T13:51:24.1737846Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.blockentity.BeltBlockEntity.refreshConnections(BeltBlockEntity.java:622) ~[%23127!/:?] {re:classloading}
+2026-11-16T13:51:24.1739946Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.simulation.BeltSimulation.activateChunk(BeltSimulation.java:109) ~[%23127!/:?] {re:classloading}
+2026-11-16T13:51:24.1741946Z 	at TRANSFORMER/factorycraft@0.26.0/factorycraft.simulation.BeltSimulation.ticketLevel(BeltSimulation.java:122) ~[%23127!/:?] {re:classloading}
+2026-11-16T13:51:24.1743693Z 	at MC-BOOTSTRAP/net.neoforged.bus/net.neoforged.bus.EventBus.post(EventBus.java:360) ~[bus-8.0.5.jar%23106!/:?] {}
+2026-11-16T13:51:24.1745389Z 	at MC-BOOTSTRAP/net.neoforged.bus/net.neoforged.bus.EventBus.post(EventBus.java:328) ~[bus-8.0.5.jar%23106!/:?] {}
+2026-11-16T13:51:24.1747323Z 	at TRANSFORMER/neoforge@21.1.252/net.neoforged.neoforge.event.EventHooks.fireChunkTicketLevelUpdated(EventHooks.java:789) ~[neoforge-21.1.252.jar%23126!/:?] {re:classloading}
+2026-11-16T13:51:24.1749714Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ChunkMap.updateChunkScheduling(ChunkMap.java:398) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,pl:accesstransformer:B}
+2026-11-16T13:51:24.1752209Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ChunkMap$DistanceManager.updateChunkScheduling(ChunkMap.java:1244) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading}
+2026-11-16T13:51:24.1755207Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.DistanceManager$ChunkTicketTracker.setLevel(DistanceManager.java:383) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading}
+2026-11-16T13:51:24.1757903Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.world.level.lighting.DynamicGraphMinFixedPoint.runUpdates(DynamicGraphMinFixedPoint.java:161) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading}
+2026-11-16T13:51:24.1760602Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.DistanceManager$ChunkTicketTracker.runDistanceUpdates(DistanceManager.java:391) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading}
+2026-11-16T13:51:24.1763075Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.DistanceManager.runAllUpdates(DistanceManager.java:112) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading}
+2026-11-16T13:51:24.1766248Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.runDistanceManagerUpdates(ServerChunkCache.java:279) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,pl:accesstransformer:B}
+2026-11-16T13:51:24.1769344Z 	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.level.ServerChunkCache.getChunkFutureMainThread(ServerChunkCache.java:237) ~[neoforge-21.1.252.jar%23125!/:?] {re:classloading,pl:accesstransformer:B}
+

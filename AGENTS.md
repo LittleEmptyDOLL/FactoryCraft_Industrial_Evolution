@@ -16,7 +16,15 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.26.0, GitHub issue #5
+## Active task — 0.26.1, GitHub issue #6
+
+* Shore-normal Offshore: 1×2, land controller/outlet and one identity-only intake above unchanged real source water. No support under intake, no FE/fuel; keep 600 mB/t /4000 mB/source tick and owner ledgers.
+* Both drills actively push their owned pending products to one real front contact, preserving components, sided handlers/belt headway, finite ore/work/energy. Bounded no-receiver fallback blocks; no infinite item entities.
+* Ticket callbacks only quarantine/bookkeep/queue belt connectivity. Mutating refresh waits for canonical loaded block-ticking physical owners in a safe server tick; no catch-and-ignore or forced chunks.
+* Small Pole becomes 1×1×3 with attachment near 2.88; supply5/wire7.5 and other pole types unchanged.
+* Retain 224 JUnit /418 native baseline and thirty chains (current local suite226/429), add focused invariants, fresh v0261 independent-JVM checkpoints and real client. Run actual optional FTB/EMI/JEI/Jade profile locally and report completed compatibility CI; user explicitly requests its repeat result. Preserve old failed worlds/evidence. No unrelated feature work.
+
+## Previous task — 0.26.0, GitHub issue #5
 
 * Offshore Pump is the only built-in infinite world-water producer, with guarded shoreline geometry, 600 native mB/t, no FE. Electric Pump only transfers held fluid; preserve 1:10 scaling, component identity, circuit/port/loaded ownership and conservation.
 * Correct steam to 3 mB water -> 30 mB steam per tick and 15 mB steam -> 120 FE/t per engine. Remove Coal Generator entirely; adapt invariant fixtures to genuine steam chains or explicitly test-only finite precharged grids, never a hidden runtime generator.

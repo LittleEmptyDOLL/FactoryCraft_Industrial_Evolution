@@ -604,8 +604,17 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     if (transport != null) for (var n : nodes) transport.changedExternally(n);
   }
 
+  /** Pure kernel quarantine is safe even inside chunk-ticket callbacks. */
+  public void suspendTransport() {
+    if (transport != null) for (var node : nodes) transport.setAvailable(node, false);
+  }
+
   public void refreshConnections() {
     if (transport == null || level == null || refreshing || removing) return;
+    if (!BeltSimulation.refreshReady(this)) {
+      suspendTransport();
+      return;
+    }
     refreshing = true;
     try {
       if (kind().ordinaryBelt()
@@ -680,15 +689,35 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     return target.node(track * 2 + side);
   }
 
+  private net.minecraft.world.level.chunk.LevelChunk persistenceChunk;
+
   public boolean markSimulationChanged(boolean contents) {
+    // A save may clear unsaved while a notification is already queued. Keep the actual
+    // owning chunk dirty on each mutation, without a per-microstep world/chunk lookup.
+    if (persistenceChunk == null
+        && level instanceof net.minecraft.server.level.ServerLevel server) {
+      var chunk =
+          server.getChunkSource().getChunkNow(worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
+      if (chunk != null && chunk.getBlockEntity(worldPosition) == this) persistenceChunk = chunk;
+    }
+    if (persistenceChunk != null && !persistenceChunk.isUnsaved())
+      persistenceChunk.setUnsaved(true);
     contentsChanged |= contents;
     if (queuedForSync) return false;
     queuedForSync = true;
     return true;
   }
 
+  public void retireSimulationChanges() {
+    // The owning chunk was already marked at the first mutation. Geometry intent stays queued
+    // in desiredRoute and is recomputed on registration; no world writes from unload.
+    queuedForSync = false;
+    contentsChanged = false;
+  }
+
   public void flushSimulationChanges(long tick) {
-    if (desiredRoute != null
+    if (BeltSimulation.refreshReady(this)
+        && desiredRoute != null
         && simulationLoaded
         && structureReady()
         && !sameRoute(route, desiredRoute)
@@ -720,6 +749,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   }
 
   public void onLoad() {
+    persistenceChunk = null;
     super.onLoad();
     if (!level.isClientSide && !simulationLoaded) {
       simulationLoaded = true;
@@ -731,11 +761,13 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
   public void setRemoved() {
     if (simulationLoaded) BeltSimulation.unregister(this);
+    persistenceChunk = null;
     super.setRemoved();
   }
 
   public void onChunkUnloaded() {
     if (simulationLoaded) BeltSimulation.unregister(this);
+    persistenceChunk = null;
     super.onChunkUnloaded();
   }
 

@@ -1,4 +1,4 @@
-# Factorio parity audit — FactoryCraft 0.26.0
+# Factorio parity audit — FactoryCraft 0.26.1
 
 This is a current-content inventory, not a claim that all Factorio is implemented. Reference: **Factorio 2.1.24, normal quality**. Numeric source: [wube/factorio-data tag 2.1.24](https://github.com/wube/factorio-data/tree/2.1.24), specifically base/prototypes/entity/{entities,mining-drill}.lua, base/prototypes/recipe.lua and base/prototypes/technology.lua; cross-check with the official wiki links in STEAM_POWER.md / FURNACES.md / INSERTERS.md. No source graphics are copied. One FU=10 mB; 60→20 TPS is time conversion, not a second volume multiplier.
 
@@ -31,7 +31,7 @@ All FactoryKind, FluidKind and ThermalKind entries follow. The three internal pa
 | `assembling_machine_3` | Base | `assembling-machine-3` | 3×3; speed 1.25; 375 kW = 50 FE/t; 4 modules; fluid-capable; 16 inputs + 4 outputs. Added; temporary blue-science Automation 3 gate. |
 | `lab` | Base; incomplete | `lab` | 3×3; 60 kW = 8 FE/t before retained lab-efficiency adaptation. Three implemented science packs. INCOMPLETE: original two lab module slots/effects and full science tree are not implemented; FactoryKind slot metadata is not a claim of an accessible lab module inventory. |
 | `beacon` | Base | `beacon` | 3×3; 480 kW = 64 FE/t; 2 speed/efficiency modules, no productivity; normal-quality 1.5/sqrt(n) transmission. No quality variants. |
-| `electric_pole` | Base | `small-electric-pole` | 1×1, height 2; 5×5 supply, 7.5 wire; no FE/modules; explicit reciprocal wires. |
+| `electric_pole` | Base | `small-electric-pole` | 1×1, height 3; 5×5 supply, 7.5 wire; no FE/modules; explicit reciprocal wires. |
 | `medium_electric_pole` | Base | `medium-electric-pole` | 1×1, height 3; 7×7 supply, 9 wire; no FE/modules; existing compact material substitutions remain. |
 | `big_electric_pole` | Base | `big-electric-pole` | 2×2, height 5; 4×4 supply, 32 wire; no FE/modules; existing compact material substitutions remain. |
 | `substation` | Base | `substation` | 2×2, height 4; 18×18 supply, 18 wire; no FE/modules; original supply/wire geometry retained. |
@@ -55,7 +55,7 @@ All FactoryKind, FluidKind and ThermalKind entries follow. The three internal pa
 | `fluid_pipe` | Base | `pipe` | Passive six-direction segment member; 1000-mB capacity; no FE/modules; no internal per-edge flow tick. |
 | `fluid_tank` | Base | `storage-tank` | 3×3; passive shared segment member; 250000-mB capacity; sole checkpoint share on dismantle; no FE/modules. |
 | `electric_pump` | Base | `pump` | 1×2; directed segment boundary; 600 mB/t nominal/pressure-limited; 30 kW = 4 FE/active tick. No world-block generation. |
-| `offshore_pump` | Base | `offshore-pump` | 2×1; 600 mB/t; no FE/fuel/modules; two loaded shore contacts; independent saved source counter; no arbitrary minimum lake size. |
+| `offshore_pump` | Base | `offshore-pump` | 1×2; 600 mB/t; no FE/fuel/modules; land controller, rear intake above one source, inland outlet; independent saved source counter; no arbitrary minimum lake size. |
 | `boiler` | Base | `boiler` | 3×2; 1800 kW heat; 3 water→30 steam mB/t; no modules. Solid fuel/remainders and physical BOTH water ports. |
 
 | Removed ID | Reason / replacement |
@@ -187,5 +187,9 @@ Every current technology is listed below. This remains a three-science subset: c
 * Complete technology prerequisites/costs, production/utility/space science, module tiers 2/3, lab module inventories/research productivity and 1-kW combinator consumption remain incomplete. Current simplified research and hand-grid substitutions are transparent adaptations, not parity claims.
 * Pole material substitutes (iron plate for missing iron sticks, cable/plate compression), some legacy tool/hand recipes and direct vanilla smelting are Minecraft adaptations. No recipe of a newly retired ID is kept.
 * Only normal-quality base production is targeted. Quality, nuclear/heat pipes, advanced Space Age machines, spoilage, rails/robots/rockets/pollution and construction tools are absent or deliberately deferred. Stack Inserter is the implemented mechanical exception with sandbox-only progression. All three lifts and all four circuit colors are approved extensions.
-* Offshore two-source/support/clearance checks and Minecraft Y/depth reach adapt a two-dimensional shore/mining model. No minimum lake size is invented. Steam has a fixed nominal temperature; finite FE buffer charging is explicitly described in STEAM_POWER.md.
+* Offshore land-support/source/overhang checks and Minecraft Y/depth reach adapt a two-dimensional shore/mining model. No minimum lake size is invented. Steam has a fixed nominal temperature; finite FE buffer charging is explicitly described in STEAM_POWER.md.
 * This audit does not establish TPS or correctness by itself. Executed invariants, live-client evidence and CI ownership belong in VALIDATION.md.
+
+### 0.26.1 output adaptation
+
+Both base drills now auto-deliver through one real front chute to compatible belt/handler/fuel inputs. Existing output slots are a bounded four-stack pending buffer; a missing receiver eventually blocks mining. Factorio's single ground ore is deliberately not represented by unbounded ItemEntity spawning. Minecraft inventory capacity/fuel and shore Y geometry remain explicit adaptations; fluid/production recipes and rates do not change in this patch.

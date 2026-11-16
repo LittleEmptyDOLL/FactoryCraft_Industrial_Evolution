@@ -28,12 +28,15 @@ public final class BeltSimulation {
     final Set<Long> tickingTickets = new HashSet<>(),
         tickingChunks = new HashSet<>(),
         pendingActivation = new HashSet<>();
+    final ArrayDeque<BeltBlockEntity> refreshQueue = new ArrayDeque<>();
+    final Set<BeltBlockEntity> refreshQueued = Collections.newSetFromMap(new IdentityHashMap<>());
     int loaded;
     long nanos;
   }
 
   public static void register(BeltBlockEntity be) {
     var s = STATES.computeIfAbsent(be.getLevel(), l -> new State());
+    if (s.ownerChunks.containsKey(be)) return;
     s.loaded++;
     index(be, s);
     be.bindTransport(s.transport);
@@ -82,7 +85,13 @@ public final class BeltSimulation {
       s.byChunk
           .computeIfAbsent(chunk, k -> Collections.newSetFromMap(new IdentityHashMap<>()))
           .add(be);
-      if (((net.minecraft.server.level.ServerLevel) be.getLevel()).shouldTickBlocksAt(chunk))
+      if (((net.minecraft.server.level.ServerLevel) be.getLevel())
+                  .getChunkSource()
+                  .getChunkNow(
+                      net.minecraft.world.level.ChunkPos.getX(chunk),
+                      net.minecraft.world.level.ChunkPos.getZ(chunk))
+              != null
+          && ((net.minecraft.server.level.ServerLevel) be.getLevel()).shouldTickBlocksAt(chunk))
         s.tickingChunks.add(chunk);
       else if (s.tickingTickets.contains(chunk)) s.pendingActivation.add(chunk);
     }
@@ -97,16 +106,49 @@ public final class BeltSimulation {
     return true;
   }
 
+  private static void queueRefresh(State s, BeltBlockEntity be) {
+    if (be.simulationLoaded && !be.isRemoved() && s.refreshQueued.add(be)) s.refreshQueue.add(be);
+  }
+
+  /** Ticket callback: bookkeeping/quarantine only. No world mutation, neighbor lookup or save. */
   private static void activateChunk(State s, long chunk, boolean ticking) {
     if (ticking) s.tickingChunks.add(chunk);
     else s.tickingChunks.remove(chunk);
     var owners = s.byChunk.get(chunk);
     if (owners == null) return;
-    var affected = Collections.newSetFromMap(new IdentityHashMap<BeltBlockEntity, Boolean>());
-    affected.addAll(owners);
-    for (var be : owners)
-      if (be.paired() != null && be.paired().loaded()) affected.add(be.paired());
-    for (var be : affected) if (be.loaded()) be.refreshConnections();
+    for (var be : owners) {
+      if (!ticking) be.suspendTransport();
+      queueRefresh(s, be);
+      var pair = be.paired();
+      if (pair != null) {
+        if (!ticking) pair.suspendTransport();
+        queueRefresh(s, pair);
+      }
+    }
+  }
+
+  /** Safe tick/event geometry guard, independent of stale loaded/ticket flags. */
+  public static boolean refreshReady(BeltBlockEntity be) {
+    if (!be.loaded() || !(be.getLevel() instanceof net.minecraft.server.level.ServerLevel server))
+      return false;
+    var s = STATES.get(server);
+    var chunks = s == null ? null : s.ownerChunks.get(be);
+    if (chunks == null) return false;
+    // Reuse the topology's physical-chunk index: moving/dirty belts must not allocate
+    // and enumerate their complete geometry on every tick.
+    for (long key : chunks) {
+      var chunk =
+          server
+              .getChunkSource()
+              .getChunkNow(
+                  net.minecraft.world.level.ChunkPos.getX(key),
+                  net.minecraft.world.level.ChunkPos.getZ(key));
+      if (chunk == null || !server.shouldTickBlocksAt(key)) return false;
+    }
+    var p = be.getBlockPos();
+    var owner = server.getChunkSource().getChunkNow(p.getX() >> 4, p.getZ() >> 4);
+    if (owner == null || owner.getBlockEntity(p) != be) return false;
+    return be.structureReady();
   }
 
   @SubscribeEvent
@@ -119,8 +161,8 @@ public final class BeltSimulation {
     if (ticking) {
       s.tickingTickets.add(chunk);
       if (s.byChunk.containsKey(chunk)) {
-        if (event.getLevel().shouldTickBlocksAt(chunk)) activateChunk(s, chunk, true);
-        else s.pendingActivation.add(chunk);
+        activateChunk(s, chunk, false);
+        s.pendingActivation.add(chunk);
       }
     } else {
       s.tickingTickets.remove(chunk);
@@ -175,8 +217,22 @@ public final class BeltSimulation {
       for (var b : List.copyOf(nearby))
         if (b.paired() != null && b.paired().simulationLoaded) nearby.add(b.paired());
       // Geometry first, then connect sources against the final lane mapping.
-      for (var b : nearby) b.refreshConnections();
-      for (var b : nearby) b.refreshConnections();
+      for (var b : nearby) {
+        if (refreshReady(b)) b.refreshConnections();
+        else {
+          b.suspendTransport();
+          var state = STATES.get(level);
+          if (state != null) queueRefresh(state, b);
+        }
+      }
+      for (var b : nearby) {
+        if (refreshReady(b)) b.refreshConnections();
+        else {
+          b.suspendTransport();
+          var state = STATES.get(level);
+          if (state != null) queueRefresh(state, b);
+        }
+      }
       // Direct contacts follow the final route/physical footprint, including neighbor reshapes.
       for (var b : nearby)
         if (b.circuit(false) != null)
@@ -201,21 +257,46 @@ public final class BeltSimulation {
       var iterator = s.pendingActivation.iterator();
       while (iterator.hasNext()) {
         long chunk = iterator.next();
-        if (((net.minecraft.server.level.ServerLevel) e.getLevel()).shouldTickBlocksAt(chunk)) {
+        if (((net.minecraft.server.level.ServerLevel) e.getLevel())
+                    .getChunkSource()
+                    .getChunkNow(
+                        net.minecraft.world.level.ChunkPos.getX(chunk),
+                        net.minecraft.world.level.ChunkPos.getZ(chunk))
+                != null
+            && ((net.minecraft.server.level.ServerLevel) e.getLevel()).shouldTickBlocksAt(chunk)) {
           iterator.remove();
           ready.add(chunk);
         }
       }
       for (long chunk : ready) activateChunk(s, chunk, true);
     }
+    int refreshes = Math.min(4096, s.refreshQueue.size());
+    for (int i = 0; i < refreshes; i++) {
+      var be = s.refreshQueue.remove();
+      s.refreshQueued.remove(be);
+      if (!be.simulationLoaded || be.isRemoved()) continue;
+      if (refreshReady(be)) topologyChanged(be);
+      else {
+        be.suspendTransport();
+        queueRefresh(s, be);
+      }
+    }
     long start = System.nanoTime();
     if (e.getLevel().tickRateManager().runsNormally()) s.transport.tick();
     s.nanos += System.nanoTime() - start;
-    for (int i = 0; i < s.dirty.size(); i++) {
+    for (int i = 0; i < s.dirty.size(); ) {
       var be = s.dirty.get(i);
-      if (!be.isRemoved()) be.flushSimulationChanges(e.getLevel().getGameTime());
+      if (be.simulationLoaded && !be.isRemoved() && !refreshReady(be)) {
+        i++;
+        continue;
+      }
+      int last = s.dirty.size() - 1;
+      s.dirty.set(i, s.dirty.get(last));
+      s.dirty.remove(last);
+      if (!be.isRemoved() && be.simulationLoaded)
+        be.flushSimulationChanges(e.getLevel().getGameTime());
+      else be.retireSimulationChanges();
     }
-    s.dirty.clear();
   }
 
   public static String statistics(Level level) {

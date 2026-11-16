@@ -1,3 +1,7 @@
+## 0.26.1 Small Pole height
+
+Small Pole now occupies 1×1×3, original post/crossbeam/terminal geometry and copper attachment Y=2.88. One item installs all three cells; occupied third cell/build-limit rejects placement, any-part removal removes all cells. Supply remains 5×5 and wire7.5; Medium/Big/Substation and topology/energy recipes are unchanged.
+
 # Electricity — 0.20.0
 
 One Factorio tile is one horizontal Minecraft block. These are **normal-quality Factorio 2.0** parameters; height and vertical reach are Minecraft adaptations.

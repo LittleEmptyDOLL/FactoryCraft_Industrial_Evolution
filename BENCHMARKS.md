@@ -1,3 +1,11 @@
+# Release 0.26.1 — bounded transport/chute liveness
+
+This patch changes shore geometry, drill output and ticket-transition scheduling, not belt speed/headway, pipeline hydraulics or energy/recipe balance. A real dedicated SMOKE measure/restart is required locally; full/MIXED/10000-pipe jobs remain CI. No 0.26.0-to-0.26.1 TPS improvement is claimed. Per-event readiness uses the cached physical chunk index; ordinary content motion does not rebuild whole geometry or topology.
+
+Local 120-tick SMOKE: mean1.881870 ms, p50 1.365715, p95 2.242578, p99 14.509893, max27.705618; zero over50ms. Independent-JVM hash verify passes, iron units2560 and belt carriers/items200 unchanged. Raw reports and sample scope: validation/v0261. The 0.26.0 short sample was mean1.790617 /p95 2.939247 /max19.354873; the new mean/max are higher while p95 is lower. Single short samples are not controlled performance comparisons. Final local sample and checkpoint results are recorded in VALIDATION.md / validation/v0261. Historical observations below retain their exact version scope.
+
+---
+
 # Release 0.26.0 — bounded real-server liveness
 
 Gameplay changes deliberately alter power, speeds and fuel. No before/after optimization or whole-factory TPS improvement is claimed. Existing full, mixed-3D and 10000-pipe profiles remain independent CI work.

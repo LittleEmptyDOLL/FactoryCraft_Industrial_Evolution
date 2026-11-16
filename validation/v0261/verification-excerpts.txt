@@ -1,0 +1,65 @@
+v0261-native-final.log
+FACTORYCRAFT_V0261_DISK: SEEDED cross-chunk over-water intake, pending grade261 ore, fuel13, belt diamond and 3-high pole
+[17:57:18] [Server thread/INFO] [minecraft/GameTestServer]: ========= 429 GAME TESTS COMPLETE IN 1.573 min ======================
+[17:57:18] [Server thread/INFO] [minecraft/GameTestServer]: All 429 required tests passed :)
+[17:57:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[17:57:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[17:57:21] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+BUILD SUCCESSFUL in 2m 15s
+
+v0261-optional.log
+FACTORYCRAFT_V0261_DISK: SEEDED cross-chunk over-water intake, pending grade261 ore, fuel13, belt diamond and 3-high pole
+[18:08:47] [Server thread/INFO] [minecraft/GameTestServer]: ========= 429 GAME TESTS COMPLETE IN 1.587 min ======================
+[18:08:47] [Server thread/INFO] [minecraft/GameTestServer]: All 429 required tests passed :)
+[18:08:50] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:08:50] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:08:50] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+BUILD SUCCESSFUL in 2m 32s
+
+v0261-optional-final.log
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[18:14:21] [Server thread/INFO] [minecraft/GameTestServer]: ========= 429 GAME TESTS COMPLETE IN 1.181 min ======================
+[18:14:21] [Server thread/INFO] [minecraft/GameTestServer]: All 429 required tests passed :)
+[18:14:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:14:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:14:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+BUILD SUCCESSFUL in 1m 52s
+
+v0261-optional-accepted.log
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[18:17:27] [Server thread/INFO] [minecraft/GameTestServer]: ========= 429 GAME TESTS COMPLETE IN 1.175 min ======================
+[18:17:27] [Server thread/INFO] [minecraft/GameTestServer]: All 429 required tests passed :)
+[18:17:29] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:17:29] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:17:29] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+BUILD SUCCESSFUL in 1m 52s
+
+v0261-smoke.log
+[18:19:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:19:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:19:23] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:19:23] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-measure.json
+[18:19:26] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:19:26] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:19:26] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+BUILD SUCCESSFUL in 53s
+
+v0261-smoke-reload.log
+[18:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:19:46] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK_DISK: VERIFIED 100 belts, 20 producers, 10 inserters, 618 casings
+[18:19:46] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-verify.json
+[18:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+BUILD SUCCESSFUL in 19s
+
+v0261-client.log
+[18:24:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (FactoryCraft0261-Natural-QA): All chunks are saved
+[18:24:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:24:03] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:43:36] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (FactoryCraft0261-Natural-QA): All chunks are saved
+[18:43:36] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:43:36] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+BUILD SUCCESSFUL in 24m 14s

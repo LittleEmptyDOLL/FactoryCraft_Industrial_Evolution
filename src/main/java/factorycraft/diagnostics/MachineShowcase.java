@@ -116,12 +116,9 @@ public final class MachineShowcase {
         thermal.setChanged();
       } else if (be instanceof FluidBlockEntity fluid) {
         if (fluid.kind() == factorycraft.fluids.FluidKind.OFFSHORE) {
-          // This fresh admin-owned floor becomes an actual two-contact shore; no chamber seed.
-          for (int x = 0; x < 2; x++) {
-            var water = profile.offset(pos, Direction.NORTH, x, 0, 0).below().south();
-            level.setBlockAndUpdate(water.below(), Blocks.STONE_BRICKS.defaultBlockState());
-            level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
-          }
+          var water = factorycraft.fluids.OffshorePlacement.intake(pos, Direction.NORTH).below();
+          level.setBlockAndUpdate(water.below(), Blocks.STONE_BRICKS.defaultBlockState());
+          level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
         } else
           fluid
               .cell()

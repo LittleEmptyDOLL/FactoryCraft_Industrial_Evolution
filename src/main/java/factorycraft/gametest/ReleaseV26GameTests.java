@@ -111,12 +111,12 @@ public final class ReleaseV26GameTests {
   }
 
   @GameTest(template = "empty", batch = "release_v0260", timeoutTicks = 100)
-  public static void offshoreHasTwoRealIntakesAndStopsWhenShoreDisappears(GameTestHelper h) {
+  public static void offshoreHasRealOverWaterIntakeAndStopsWhenShoreDisappears(GameTestHelper h) {
     var p = h.absolutePos(new BlockPos(7, 3, 7));
     ShoreFixture.prepare(h.getLevel(), p, Direction.EAST);
     var b = fluid(h, FluidKind.OFFSHORE, 7, 7, Direction.EAST);
     h.assertTrue(
-        b.assembly().profile().layout.width() == 2 && b.assembly().profile().layout.depth() == 1,
+        b.assembly().profile().layout.width() == 1 && b.assembly().profile().layout.depth() == 2,
         "wrong offshore footprint");
     h.runAfterDelay(
         20,
@@ -138,6 +138,17 @@ public final class ReleaseV26GameTests {
           h.assertTrue(
               b.cell().amount() == 0 && b.waterGenerated() == 4000,
               "invalid shore generated water");
+          h.getLevel()
+              .setBlockAndUpdate(
+                  OffshorePlacement.intake(p, Direction.EAST).below(),
+                  Blocks.WATER.defaultBlockState());
+        });
+    h.runAfterDelay(
+        65,
+        () -> {
+          h.assertTrue(
+              b.cell().amount() == 4000 && b.waterGenerated() == 8000,
+              "restored source failed to resume without duplication");
           h.succeed();
         });
   }
@@ -153,7 +164,7 @@ public final class ReleaseV26GameTests {
       ShoreFixture.prepare(h.getLevel(), p, f);
       h.assertTrue(
           OffshorePlacement.invalid(h.getLevel(), p, f).isEmpty(), "valid rotated shore rejected");
-      var water = MachineProfile.OFFSHORE.offset(p, f, 1, 0, 0).below().relative(f.getOpposite());
+      var water = OffshorePlacement.intake(p, f).below();
       h.getLevel().setBlockAndUpdate(water, Blocks.AIR.defaultBlockState());
       h.assertTrue(
           !OffshorePlacement.invalid(h.getLevel(), p, f).isEmpty(),
@@ -448,8 +459,22 @@ public final class ReleaseV26GameTests {
   public static void coldBootstrap(GameTestHelper h) {
     var o = h.absolutePos(new BlockPos(10, 3, 8));
     var engine = SteamPlant.buildReal(h.getLevel(), o, 64);
-    var miner = machine(h, FactoryKind.DRILL, 6, 6);
-    ore(h, miner.assembly().profile().center(miner.getBlockPos(), Direction.NORTH).below(), 4);
+    var minerPos = h.absolutePos(new BlockPos(6, 3, 6));
+    StructurePlacement.place(
+        h.getLevel(),
+        minerPos,
+        Content.FACTORY
+            .get(FactoryKind.DRILL)
+            .get()
+            .defaultBlockState()
+            .setValue(FactoryBlock.FACING, Direction.SOUTH));
+    var miner = (MachineBlockEntity) h.getLevel().getBlockEntity(minerPos);
+    load(miner);
+    ore(h, miner.assembly().profile().center(miner.getBlockPos(), Direction.SOUTH).below(), 4);
+    // Genuine drill chute -> two ordinary belts -> furnace-loading arm; no mining-output arm.
+    for (int z : new int[] {7, 8})
+      FactoryCommands.machine(
+          h.getLevel(), h.absolutePos(new BlockPos(6, 3, z)), FactoryKind.BELT, Direction.SOUTH);
     var furnace = machine(h, FactoryKind.FURNACE, 6, 10);
     var first = machine(h, FactoryKind.ASSEMBLER, 6, 14);
     for (int z : new int[] {9, 13, 17})

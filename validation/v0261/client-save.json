@@ -1,0 +1,64 @@
+{
+  "world": "FactoryCraft0261-Natural-QA",
+  "seed": 26116112026,
+  "generation": "fresh normal-noise chunks; only vanilla generation settings reused; no prior chunks/entities/FactoryCraft data",
+  "shore": {
+    "controller": [
+      20,
+      63,
+      -256
+    ],
+    "intake": [
+      19,
+      63,
+      -256
+    ],
+    "land": "minecraft:grass_block",
+    "waterUnderIntake": "minecraft:water",
+    "waterGenerated": 5000,
+    "stored": 4000,
+    "pipeStored": 1000,
+    "sourceFE": 0
+  },
+  "drills": {
+    "declaredInitialOre": 16,
+    "remainingOre": 0,
+    "exhaustedTilesBecomeAir": true,
+    "burnerChestOre": 8,
+    "beltCarriers": 8,
+    "beltOre": 8,
+    "pendingOre": 0,
+    "declaredElectricInitialFE": 16000,
+    "electricRemainingFE": 12160,
+    "electricSpentFE": 3840,
+    "declaredBurnerCoal": 2,
+    "burnerUnspentFuelThirds": 1600
+  },
+  "smallPoles": {
+    "positions": [
+      [
+        120,
+        150,
+        -205
+      ],
+      [
+        125,
+        150,
+        -205
+      ],
+      [
+        130,
+        150,
+        -205
+      ]
+    ],
+    "allThirdPartsSaved": true,
+    "attachmentYAboveBase": 2.88
+  },
+  "limitations": [
+    "single-client creative/admin-assisted QA, not a survival playthrough",
+    "electric drill given declared finite 16000 FE for chute inspection; genuine steam bootstrap checked natively",
+    "initial UI focus/placement misclick yard retained at x40..85; final declared-input yard at x95..135",
+    "external pipe-pack visuals and optional viewer/Jade client UI not tested locally"
+  ]
+}

@@ -1,3 +1,7 @@
+## 0.26.1 drill automation
+
+Both drills now auto-unload through the front chute to belts, compatible inventories/furnaces and valid burner fuel slots. An inserter is optional for mining output; the cold-bootstrap fixture uses drill → two belts → furnace-loading arm. Existing recipe/research costs, mining/assembly speeds and FE/fuel rates are unchanged. See RESOURCE_FIELDS.md for the bounded-buffer/no-ground-entity adaptation.
+
 # Production progression — 0.26.0
 
 The implemented game remains a three-science subset of Factorio 2.1.24. The complete current recipe and research inventory, source references and remaining deviations are in [docs/FACTORIO_PARITY_AUDIT.md](docs/FACTORIO_PARITY_AUDIT.md). Old FactoryCraft formats are unsupported; no old diagnostic world is migrated/refilled.

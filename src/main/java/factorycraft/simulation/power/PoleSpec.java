@@ -2,7 +2,7 @@ package factorycraft.simulation.power;
 
 /** Normal quality Factorio 2.0.77 metrics; heights are original Minecraft adaptations. */
 public enum PoleSpec {
-  SMALL("electric_pole", 1, 2, 5, 7.5),
+  SMALL("electric_pole", 1, 3, 5, 7.5),
   MEDIUM("medium_electric_pole", 1, 3, 7, 9),
   BIG("big_electric_pole", 2, 5, 4, 32),
   SUBSTATION("substation", 2, 4, 18, 18);

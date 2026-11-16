@@ -442,7 +442,7 @@
     },
     "offshore_pump": {
       "controller": [
-        1,
+        0,
         0,
         0
       ],
@@ -450,7 +450,7 @@
         {
           "name": "water_out",
           "at": [
-            1,
+            0,
             0,
             0
           ],
