@@ -1,3 +1,11 @@
+## 0.27.0 — Space Age-aligned research (17 November 2026)
+
+Reference is Factorio 2.1.24 **with Space Age enabled**, following the updated issue #7. Final local build: **240 JUnit, zero failures/errors**. Complete native suites: **440 required passes** without optional mods and with FTB Teams /EMI /JEI /Jade; all 429 previous cases and thirty finite chains remain required. Independent JVMs verify both V0261 and new twelve-science/two-module V0270 resource checkpoints, including exact partial/FE/productivity residues.
+
+Real clients covered EN without optional mods and RU with all four: 12+2 lab inventory, bounded searchable graph, source science gates, nine module identities/tooltips/viewer recipe, casing/controller Jade and current-format reopen. Actual survival handcraft debited exactly 10 circuits +10 gears +4 belts for one lab. Source-derived SA checks pass; tier 2 genuinely needs space science, tier 3 its planet materials/research. Required protocol is 0.27.0.
+
+Detailed evidence, test scope and limitations: [validation/v0270/README.md](validation/v0270/README.md). No full/MIXED/large-pipe workload rerun locally, no TPS claim, and no claim that pending GitHub Actions has passed. Late production/spoilage/quality/space sources remain future work; metadata-only identities do not provide fake survival recipes. Earlier base-only development evidence is explicitly archived and superseded, without resetting failed worlds.
+
 # Release 0.26.1 — issue #6 (16 November 2026)
 
 Local environment: Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252.

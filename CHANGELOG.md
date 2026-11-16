@@ -1,3 +1,13 @@
+## 0.27.0 — Space Age-aligned pre-space research
+
+- Canonical reference is Factorio 2.1.24 with Space Age enabled; late source variants remain legitimately gated.
+- Twelve fixed science identities/physical slots, two lab module slots, exact paid FE/work, multiplied research speed and per-lab scientific productivity. Same-force final-unit transactions, component-exact transport, portable state and independent saving retained.
+- Nine module profiles and canonical recipes/categories; tier 2 needs space science, tier 3 its real planet inputs/tech. Metadata-only future identities do not supply fake survival production, spoilage or quality gameplay.
+- Six finite research-speed technologies replace lab_efficiency; current research costs/unlocks and real production triggers audited. Counted original Lab/Assembler 1 handcrafts remove the bootstrap cycle; vanilla crafting shares research guards.
+- Dynamic clipped/searchable EN/RU tree, module/science/FE status and optional viewer/Jade support. Three lifts/four wire colors and existing production/energy/fluids preserved.
+- Future Space Science primarily uses platforms; an additional later Satellite extension yields 1000 packs in a Space Age-cost rocket. No rocket, satellite or planetary production is implemented here.
+- Breaking lab schema 3 /bounded recipe metadata; no old-world migration/deletion. Actual test results are recorded in VALIDATION.md.
+
 # 0.18.0 — four-color circuits and splitter gates (9 November 2026)
 
 * Added independent blue/white wires (IDs 2/3), original item assets, dye recipes and EN/RU text. Kept red/green IDs 0/1 and existing links; expanded bounded node persistence to 64 links.

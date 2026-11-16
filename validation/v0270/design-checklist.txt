@@ -1,0 +1,10 @@
+0.27.0 authoritative checklist — issue #7 updated 17 November 2026
+Reference: Factorio 2.1.24 WITH Space Age enabled, normal quality; only pre-space implementation now.
+- Review base prototypes plus space-age/base-data-updates.lua, not base alone. Actual scoped technology overrides are Automation 3 and all three families' module tiers 2/3.
+- Lab: twelve stable physical science slots for all canonical packs, two singleton modules, bounded matching codec/menu/NBT/capability counts. Seven initial packs remain valid; no quality science pack.
+- Tier 2: 200 red/green/blue/space units, 30 s/unit, preceding family + space science. Tier 3 retains offworld science/handling and tungsten carbide /biter egg /spoilage recipe inputs. Effects are normal quality; no quality gameplay now.
+- Automation 3: Space Age count 500; other scoped research-speed/machine-tech values unchanged unless source override proves otherwise. No fake late science or production unlocks.
+- Future science/material items are metadata-only, creative/admin stock; no survival sources, spoilage, planets or new factories. Module categories persist crafting + electromagnetics without inventing an EM plant.
+- Shared atomic unit ledger, paid fractional work/FE and per-lab productive credit remain; preserve source components, loaded owners and all 429 legacy tests /30 finite chains.
+- New SA-specific diagnostic worlds, source checks, Native/JUnit and independent JVM/client/optional checks. Keep base-spec development worlds/evidence archived, never reset to hide a failure.
+- Future primary Space Science: platforms. Additional later Satellite extension: 1000 packs per launch in a Space Age-cost rocket; no satellite implementation now.

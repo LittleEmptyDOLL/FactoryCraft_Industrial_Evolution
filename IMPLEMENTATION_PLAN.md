@@ -1,3 +1,10 @@
+## Completed implementation: 0.27.0 / updated issue #7
+
+Canonical progression is **Factorio 2.1.24 with Space Age enabled**, user clarification 17 November. Lab has twelve stable science slots +two modules; all nine module profiles, exact SA materials/categories/tech gates, finite research speed and paid scientific productivity. Source checks and new SA-specific worlds replace the superseded base-only development checks without deleting their evidence. No late science production, planets, quality or rockets implemented. Local evidence: 240 JUnit, complete 440-case native suites in both dependency profiles, independent-JVM checkpoint proofs and real EN/RU clients. Full/MIXED/large-pipe checks remain GitHub Actions; see validation/v0270/README.md.
+
+Next task remains the separately authorized military/industrial milestone; do not begin automatically. Future Space Science primarily comes from platforms, with an additional Satellite alternative (1000 packs /Space Age-cost rocket), implemented only in the later rocket milestone.
+
+
 # FactoryCraft: Industrial Evolution — implementation plan
 
 Target: Minecraft **1.21.1**, NeoForge **21.1.252**, Java **21**, ModDevGradle **2.0.148**.

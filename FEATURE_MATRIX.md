@@ -1,4 +1,21 @@
-# Feature matrix — 0.26.1
+# Feature matrix — 0.27.0
+
+## 0.27.0 research infrastructure
+
+| Feature | State |
+|---|---|
+| Twelve Space Age science identities | Twelve fixed filtered lab slots; initial seven preserved, no survival sources beyond red/green/blue |
+| Laboratory modules | Two singleton slots; all nine module items; paid FE, speed multiplication, per-work productive credit and persistence |
+| Team research | Atomic base/bonus commits, partial switching, source cost/level hashes, FTB/vanilla scope guards |
+| Module tiers 1–3 | Canonical effects, recipes, timings and separate technologies; tiers 2/3 retain real space/offworld science and material gates |
+| Lab Research Speed | Six finite source-defined technologies; invented energy-discount research removed |
+| Existing research audit | Source costs/dependencies/unlocks corrected; original startup/oil production triggers; visible missing future gates |
+| Handcraft research guards | Server result + pickup/shift-click guards; original counted Lab/Assembler 1 ingredients remove startup cycle |
+| Research UI/viewers/Jade | Twelve + two slots, bounded dynamic graph, EN/RU stats/status, nine module identities and owner-only inspection |
+| Late science factories | Deferred: real military, production, utility and satellite-rocket chains; no placeholders |
+| Transport/circuits | Existing three lifts and four colors preserved |
+
+
 
 ## 0.26.1 corrections
 

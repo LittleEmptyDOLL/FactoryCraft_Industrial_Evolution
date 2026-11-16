@@ -1,0 +1,32 @@
+native1:
+[21:06:17] [Server thread/ERROR] [minecraft/LogTestReporter]: capacitytworequiresbothearliercapacityandbonusseven failed at 3010473, -60, -10346917! Cannot invoke "factorycraft.research.ResearchCatalog$Entry.recipe()" because "e" is null
+[21:06:29] [Server thread/ERROR] [minecraft/LogTestReporter]: twofluidrecipeconsumesonlyitsassignedports failed at 3010325, -60, -10346707! two-fluid recipe failed
+[21:06:30] [Server thread/ERROR] [minecraft/LogTestReporter]: twolabsspendonlyonesetofthreepacksforlastblueunit failed at 3010288, -60, -10346707! three-pack technology did not complete
+[21:06:30] [Server thread/ERROR] [minecraft/LogTestReporter]: refineryfluidbackpressurepausesandresumesrecipe failed at 3010436, -60, -10346857! basic oil recipe incorrect
+[21:06:30] [Server thread/ERROR] [minecraft/LogTestReporter]: actualownedassemblerwaitsforteamunlock failed at 3010473, -60, -10346767! unlocked machine did not produce science
+[21:06:36] [Server thread/ERROR] [minecraft/LogTestReporter]: unlocksaffectownedmachinesbutpreservelegacyfactories failed at 3010436, -60, -10346647! completed research did not unlock production
+[21:06:36] [Server thread/ERROR] [minecraft/LogTestReporter]: vanillateamsshareresearchandmembershipchangesdonotcopyit failed at 3010510, -60, -10346587! leaving team copied or erased research
+[21:06:40] [Server thread/ERROR] [minecraft/LogTestReporter]: poweredlabsshareunitsandspendexactlyonepackperunit failed at 3010325, -60, -10346527! labs did not finish shared research
+[21:06:44] [Server thread/ERROR] [minecraft/LogTestReporter]: automatedsciencelineactuallyunlockslogisticpacks failed at 3010362, -60, -10346557! automatic science did not unlock technology
+[21:06:46] [Server thread/ERROR] [minecraft/LogTestReporter]: networkselectionrequirescurrentmenuteamandprerequisites failed at 3010510, -60, -10346437! menu or prerequisite validation failed
+[21:06:47] [Server thread/ERROR] [minecraft/LogTestReporter]: modulerecipewaitsforteamresearch failed at 3010473, -60, -10346377! module prerequisites rejected
+[21:06:48] [Server thread/ERROR] [minecraft/LogTestReporter]: labpauseswithoutenergyandwhenapartisunavailable failed at 3010510, -60, -10346497! lab did not resume
+[21:07:06] [Server thread/ERROR] [minecraft/LogTestReporter]: expresssplitterreserveslubricantandresearchbeforemanufacturing failed at 3010473, -60, -10346077! missing logistics research
+[21:07:06] [Server thread/ERROR] [minecraft/LogTestReporter]: itemoutputreservationspreventconsumptionwhilefull failed at 3010473, -60, -10346017! chemical output did not resume safely
+[21:07:06] [Server thread/ERROR] [minecraft/LogTestReporter]: mixedrecipeneedsenergyandcommitscoalgasandplastictogether failed at 3010362, -60, -10345957! mixed commit did not conserve recipe counts/FE
+[21:07:09] [Server thread/ERROR] [minecraft/LogTestReporter]: partialchemicalproductionresumesafternbtreconstruction failed at 3010547, -60, -10345837! fixture lacks partial progress
+[21:07:16] [Server thread/ERROR] [minecraft/LogTestReporter]: conflictinglabsrejectunavailableresearchandusecanonicalteamorder failed at 3010436, -60, -10345627! conflicting labs did not use stable owner order
+[21:07:16] [Server thread/ERROR] [minecraft/LogTestReporter]: labselectsnextavailableteamtechnologybutpreservesmanualselection failed at 3010325, -60, -10345567! next available team research not selected/read
+[21:07:18] [Server thread/ERROR] [minecraft/LogTestReporter]: actualpolerecipesrespectresearchandproduceafterunlock failed at 3010436, -60, -10345537! starter pole production failed
+[21:07:40] [Server thread/INFO] [minecraft/GameTestServer]: 19 required tests failed :(
+native2:
+[21:13:49] [Server thread/ERROR] [minecraft/LogTestReporter]: twofluidrecipeconsumesonlyitsassignedports failed at -11819954, -60, 4487962! two-fluid recipe failed
+[21:15:14] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+optional1:
+[21:26:24] [Server thread/ERROR] [minecraft/LogTestReporter]: twofluidrecipeconsumesonlyitsassignedports failed at 8543094, -60, -2828088! sulfur recipe selection
+[21:26:27] [Server thread/ERROR] [minecraft/LogTestReporter]: refineryfluidbackpressurepausesandresumesrecipe failed at 8543205, -60, -2828238! basic oil recipe incorrect
+[21:27:13] [Server thread/ERROR] [minecraft/LogTestReporter]: itemoutputreservationspreventconsumptionwhilefull failed at 8543242, -60, -2827398! chemical output did not resume safely
+[21:27:13] [Server thread/ERROR] [minecraft/LogTestReporter]: mixedrecipeneedsenergyandcommitscoalgasandplastictogether failed at 8543131, -60, -2827338! mixed commit did not conserve recipe counts/FE
+[21:27:16] [Server thread/ERROR] [minecraft/LogTestReporter]: partialchemicalproductionresumesafternbtreconstruction failed at 8543316, -60, -2827218! fixture lacks partial progress
+[21:27:34] [Server thread/ERROR] [minecraft/LogTestReporter]: realvanillaresultslotcannotbypassteamresearchonpickup failed at 8543131, -60, -2826858! creative diagnostic exception blocked
+[21:27:50] [Server thread/INFO] [minecraft/GameTestServer]: 6 required tests failed :(

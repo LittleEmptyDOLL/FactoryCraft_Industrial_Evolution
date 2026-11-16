@@ -1,0 +1,28 @@
+build-final:
+BUILD SUCCESSFUL in 17s
+native-base:
+FACTORYCRAFT_V0270_DISK: VERIFIED twelve component packs, two modules, two partial definitions, FE and bonus
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[22:09:55] [Server thread/INFO] [minecraft/GameTestServer]: All 440 required tests passed :)
+BUILD SUCCESSFUL in 1m 55s
+native-optional:
+FACTORYCRAFT_V0270_DISK: VERIFIED twelve component packs, two modules, two partial definitions, FE and bonus
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[22:12:44] [Server thread/INFO] [minecraft/GameTestServer]: All 440 required tests passed :)
+BUILD SUCCESSFUL in 1m 30s
+native-base-reload:
+FACTORYCRAFT_V0270_DISK: VERIFIED twelve component packs, two modules, two partial definitions, FE and bonus
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[21:54:19] [Server thread/INFO] [minecraft/GameTestServer]: All 438 required tests passed :)
+BUILD SUCCESSFUL in 1m 46s
+native-optional-reload:
+FACTORYCRAFT_V0270_DISK: VERIFIED twelve component packs, two modules, two partial definitions, FE and bonus
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[22:02:04] [Server thread/INFO] [minecraft/GameTestServer]: All 438 required tests passed :)
+BUILD SUCCESSFUL in 1m 47s
+client-en:
+BUILD SUCCESSFUL in 5m 17s
+client-ru:
+BUILD SUCCESSFUL in 8m 44s
+client-ru-reload:
+BUILD SUCCESSFUL in 3m 43s

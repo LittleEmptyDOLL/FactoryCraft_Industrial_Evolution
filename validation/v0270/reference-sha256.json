@@ -1,0 +1,12 @@
+{
+  "ref": "wube/factorio-data 2.1.24",
+  "configuration": "Space Age enabled; normal quality",
+  "sources": {
+    "recipe.lua": "8ac181d33e985664d766f741e3501a695fd27f21575b08f1c8fd49d2cac72f62",
+    "technology.lua": "0fe834c532069856f9ed227dc1cb952ac3227592fd5c98a78210daa0e5137d2c",
+    "entities.lua": "a6d0356285a56ad4af0b08d9acee669981c888dd5962cb0ee5d79d9b31294d1b",
+    "space-age/base-data-updates.lua": "3186fadf83ec2ea17f5935f27aba584fd829a42bb067382f196f0a23b745bc7a",
+    "space-age/prototypes/recipe.lua": "392bd1b35d108e084827224d7768033f18c1588d496593764560c1371651b509",
+    "space-age/prototypes/technology.lua": "0d5d4c16b22de39925e26ed605a644bfe757b83d84c76fc6a666966af435970f"
+  }
+}

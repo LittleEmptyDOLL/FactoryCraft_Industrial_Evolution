@@ -1,0 +1,8 @@
+0.27.0 source/behavior checklist (16 November 2026)
+- Wube factorio-data 2.1.24 base recipe.lua/technology.lua/entities.lua; official Module/Lab/Research/Science pack references. Numeric data only, no copied art/code.
+- Seven fixed science identities, bounded seven-pack recipes and seven filtered slots; two independent singleton module slots. Late packs have no survival sources.
+- Nine immutable family/tier module profiles, additive machine effects, existing normal-quality beacon transmission; lab accepts beacon speed/efficiency, never broadcast productivity.
+- Lab paid work: 60 kW = 8 FE/t, multiplicative research/module speed, exact integer energy/work/productivity residues; saved per-definition/level partial work and per-lab bonus credit. Shared ledger remains sole authority for base/bonus unit commits.
+- Canonical finite research-speed 1–6, costs/ingredients/time and module recipes; future dependencies remain explicitly unavailable, never fake science or silently satisfied missing prerequisites.
+- Preserve all transport/fluids/energy owners and 429 native /30 finite-chain checks. Add current-format independent-JVM lab fixtures; keep prior disk markers.
+- Validate guarded crafting, team menus, codec bounds, partial transfer/components, UI EN/RU and affected optional-mod behavior. Full/MIXED CI remains separate.

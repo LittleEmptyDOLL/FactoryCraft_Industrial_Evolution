@@ -1,63 +1,52 @@
-# Командные исследования — 0.11.0
+# Research — 0.27.0
 
-0.25.0 recipe menus display server-supplied research availability and select by stable recipe ID, with current menu/reach/permission checks. Auto still respects the machine's fixed team scope. Vanilla smelting entries are available only in furnaces and follow existing FactoryCraft recipe locks where applicable. No new technologies/science tiers are added. Existing labs/technology definitions remain four-pack bounded; a future six-plus-pack extension must change inventory, menu and validation together. Processing/chemistry codecs accept up to sixteen counted ingredients, but current physical machines still expose four input slots and atomically reject unsatisfied plans. Pre-0.25 FactoryCraft data is not migrated.
+The reference is **Factorio 2.1.24 WITH Space Age enabled, normal quality**. Space Age overrides: [base-data-updates.lua](https://github.com/wube/factorio-data/blob/2.1.24/space-age/base-data-updates.lua). Numerical sources: [Wube technology prototypes](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/technology.lua), [lab prototype](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/entity/entities.lua), [Lab](https://wiki.factorio.com/Lab), [Research](https://wiki.factorio.com/Research), [Science pack](https://wiki.factorio.com/Science_pack). No proprietary graphics/source were imported.
 
+## Laboratory inventory and ownership
 
-Лаборатория занимает **3×3×3**, строится одним предметом от центра основания и питается от существующей электросети/NeoForge FE. Контроллер хранит четыре входных слота науки, FE и незавершённую работу; части содержат только привязку. Красный пакет можно изготовить вручную или сборщиком из шестерни и медной пластины; зелёный — сборщиком из конвейера и манипулятора после «Автоматизации».
+One 3×3 controller owns twelve stable science slots and **two separate singleton module slots**. Science slot order is automation/red, logistic/green, chemical/blue, military/grey, production/purple, utility/yellow, space/white, metallurgic, agricultural, electromagnetic, cryogenic, promethium. The original seven keep their indices; all five future packs already have separate physical slots. Keeping blue at index 2 is a layout choice, not an extra science type. Each science slot accepts only its own item identity; item components remain intact. Input/extraction capabilities expose the twelve science slots for physical inserters, including real lab-to-lab chaining through loaded casing contacts. Module slots are edited in the guarded lab menu; science transport cannot insert/extract modules by mistake. All parts delegate to the controller. Jade inspection includes installed modules without creating a writable capability or duplicate owner.
 
-Синяя наука 0.10.0 производится из продвинутых схем, двигателей и серы; лаборатории принимают все три пакета. Шесть дополнительных технологий и точные цепочки описаны в [PROGRESSION.md](PROGRESSION.md). Прежние шесть определений и накопленная работа сохранены.
+All twelve canonical packs are registered items with models, EN/RU names and creative/viewer visibility. **No survival recipes or unlocks are supplied for the nine future packs.** Only red/green/blue have survival production. Military and production/utility require their genuine later industries. Future primary Space Science comes from orbital platforms and asteroid-derived materials. An explicitly approved additional Satellite route will produce **1000 packs per launch**, using a Space Age-cost rocket. Satellite is absent from original Space Age: this is a future FactoryCraft extension, not a base-game progression replacement. Neither source is implemented now. Five planetary sciences are identities/inventory metadata only. Research Productivity is part of the eventual Space Age progression, with its gameplay deferred. There is no standalone quality science pack.
 
-## Команда и сохранение
+`TechnologyRecipe` admits at most twelve known canonical Space Age pack identities (1–64 of each per unit), sixteen prerequisites, 64 unlocks, 100000 initial units and 72000 Minecraft ticks per unit. JSON and network validation use the same bounds as physical inventory. Other science identities/thirteenth packs fail closed: this bound already covers all canonical Space Age packs. Datapacks may define arbitrary subsets of these twelve and bounded technologies; noncanonical science identities require an explicit appended physical layout/registry extension. No accepted recipe can need more distinct packs than the lab owns slots. Catalogs allow 1024 technology definitions, coordinates 0–4096; the tree clips rendering/hit tests and derives pan limits from current definitions. Missing/cyclic dependencies retain visible disabled definitions and recipe locks; they are never treated as completed. High-tier definitions reference real future dependencies instead of substitute science technologies.
 
-При наличии **FTB Teams 2101.1.12 для NeoForge 1.21.1** используется его публичный серверный API и эффективная UUID команды/группы. Библиотека загружается только при установленном моде; обязательной зависимости нет. Проверены FTB Library 2101.1.37 и Architectury 13.0.8. Если установленный API ещё не готов или несовместим, исследование приостанавливается; прогресс не перенаправляется другой команде.
+## Work, power and productivity
 
-Без FTB Teams используется ванильная `/team`; игрок без команды получает личную область UUID. Префиксы `ftb:`, `vanilla:`, `player:` исключают пересечение владельцев. Ванильная команда идентифицируется её именем: удаление и создание команды с тем же именем возвращает её прежнюю область. При вступлении/выходе/смене провайдера прогресс **не копируется и не объединяется**. Он остаётся у исходного владельца. Установка FTB после ванильной игры создаёт отдельную область; автоматической миграции нет.
+A base laboratory runs at speed 1 and **60 kW = 8 FE per active Minecraft tick** using the established 7.5 kW/FE convention. A technology's source seconds become seconds ×20 ticks; Factorio 60 TPS timings are not copied as Minecraft tick counts. Installed module modifiers are additive; the technology multiplier multiplies the resulting module/beacon speed factor. Energy is base 8 × additive module/beacon energy, with the original 20% minimum. Integer FE billing retains its denominator-10000 remainder across pauses, module edits, unloading and portable moves. No eligible packs/research, unavailable structure, circuit stop or insufficient FE means no paid work.
 
-Лаборатория привязывается при установке и сохраняет команду при переносе. Участники открывают общее дерево и выбирают общий активный проект. Чужая/устаревшая панель не может выбирать проект или извлекать пакеты; автоматические предметные порты остаются публичными, как остальные машины, и не являются системой защиты территории. Командные исследования продолжаются при отсутствии игроков, пока область существует и чанки активны. Если команда недоступна, пакеты/FE/работа сохраняются.
+`LabWork` uses 100000000 units per base work tick, allowing the product of the two basis-point speed factors without rounding. Definition hashes identify saved per-lab partial work. Finite level keys stay distinct; repeatable research keeps one signature key because its per-unit pack/time cost is fixed while the team ledger grows the number of required units. This retains paid overshoot across mid-tick/multi-lab level completions without accumulating one history entry per repeat level. Switching selection keeps earlier partials. A bounded history limit stalls new definitions visibly rather than allocating unbounded history or charging for rejected work. Definition/cost edits cannot reuse incompatible old work; completed team levels survive reload. The schema stores at most 1024 partial records with bounded SHA-256 keys.
 
-Состояние команд — `data/factorycraft_research.dat` основного мира; оно общее для измерений. Лаборатория сохраняет своё содержимое, привязку и локальную работу отдельно. Расход пакетов происходит только при завершении одной единицы исследования. Несколько лабораторий не могут оплатить последнюю единицу дважды. Все предметы и командный результат фиксируются до уведомлений наблюдателей. Это обычная серверная транзакция, не журнал восстановления после аварии диска посреди записи разных чанков.
+Productivity accrues proportionally to actual work with the installed module rate. The per-lab credit and exact per-definition integer residue persist. Whole bonus units commit through the **same team ledger** as paid units, without another pack debit. Normal units debit one full recipe pack set in a deferred-observer server transaction. Several labs cannot consume packs for an already completed final unit. Fast/short units retain work overshoot; pauses do not erase credit. This adapts Factorio to unit-by-unit item debit, rather than mutating partially consumed science-pack durability.
 
-## Базовые технологии 0.9.0 (сохранены)
+Loaded spatial beacon candidates include laboratories. Only paid, complete, block-ticking beacons broadcast speed/efficiency, with normal-quality `1.5 / sqrt(active beacons)` transmission. Productivity is never broadcast. No global laboratory scan or forced chunks is introduced.
 
-| Технология | Требования | Единицы × тики | Открывает |
-|---|---|---:|---|
-| Автоматизация | красная наука | 10 × 40 | производство зелёной науки |
-| Логистика | автоматизация, красная + зелёная | 15 × 60 | prerequisite для нефтепереработки |
-| Электроника | автоматизация, красная + зелёная | 15 × 60 | продвинутые схемы |
-| Переработка нефти | логистика, оба пакета | 20 × 80 | продвинутая переработка, крекинг, смазка |
-| Аккумуляторы | нефть + электроника, оба пакета | 20 × 80 | кислота и аккумуляторы |
-| Эффективность лабораторий | аккумуляторы, оба пакета | повторяемые 30 × (уровень + 1), 60 т/ед. | −1 FE/т лаборатории за уровень, минимум 4 |
+## Force selection and progression
 
-Пакеты в таблице расходуются по одному каждого указанного типа **на единицу**. Базовый расход лаборатории — 20 FE/т. При нехватке FE/пакетов работа стоит, при недоступной части останавливаются также порты. При переключении проекта завершённые единицы сохраняются, локальная работа лаборатории относится к конкретному определению. Изменение стоимости/состава/времени в датапаке не переиспользует прежнюю незавершённую работу; завершённые уровни по ID сохраняются.
+One selected technology belongs to each FTB Team; without FTB Teams, vanilla scoreboard teams or personal UUID scopes apply. An unavailable FTB API pauses rather than redirects research. Menu actions, science/module moves and network selection verify the current owner, physical reach, team and spectator status. Four circuit colors and direct research controls remain; trigger/sandbox/invalid technologies cannot be selected by these controls.
 
-Для совместимости машины из 0.6.0–0.8.0 и административные примеры без `ResearchScope` работают по прежним правилам. **Новые машины игрока** сохраняют командную область и проверяют открытие производственных рецептов. Основная добыча/плавка/шестерни/провода/простые схемы/красная наука доступны для старта. Это ограничения производственных рецептов, а не скрытие всех предметов или переделка старого ручного крафта. Переносимый старый контроллер сохраняет прежний режим, новый — свою команду. Рецепты/предметы в Creative и просмотрщиках остаются видимыми.
+The former repeatable `lab_efficiency` power discount is removed. Six **finite** Lab Research Speed technologies map to Wube `research-speed-1..6`:
 
-## Интерфейс и пример
+| Level | Added / cumulative speed | Units | Packs | Seconds/unit |
+|---|---|---:|---|---:|
+| 1 | 20% / 20% | 100 | red, green | 30 |
+| 2 | 30% / 50% | 200 | red, green | 30 |
+| 3 | 40% / 90% | 250 | red, green, blue | 30 |
+| 4 | 50% / 140% | 500 | red, green, blue | 30 |
+| 5 | 50% / 190% | 500 | red, green, blue, purple | 30 |
+| 6 | 60% / 250% | 500 | red, green, blue, purple, yellow | 30 |
 
-ПКМ по части лаборатории открывает дерево зависимостей: зелёные узлы завершены, доступные — синие, выбранный — оранжевый. Нажмите узел для выбора проекта, наведите для стоимости/зависимостей/открытий. Поиск фильтрует названия/ID; удержание ПКМ перемещает дерево для больших датапаков. Прогресс и состав команды приходят с сервера; клиент их не рассчитывает.
+The six finite research-speed costs are unchanged by the Space Age prototype patch. Speed 1 requires Automation 2; speed 3 additionally requires chemical science, 5 production science, 6 utility science. The full actual definition/cost table is in `docs/RESEARCH_REFERENCE_0270.md`.
 
-`/factorycraft researchworks` требует свободную загруженную область 30×8×13 и доступную команду. Сундук с 20 шестернями/20 медными пластинами, манипуляторы, сборщик и лента автоматически производят красную науку и подают её в лабораторию, питаемую угольным генератором. Команда выбирает «Автоматизацию», если она ещё доступна. Уже завершённое исследование не сбрасывается. Научные пакеты и результат не выдаются командой напрямую.
+Original 2.1 startup triggers now count actual output: 50 iron plates → steam power; 10 copper plates → electronics; a crafted laboratory after both → automation science. FactoryCraft machines report only committed outputs; handcraft/smelting events report produced stacks. Scope is the producing machine's force or player team. Moving stocks/portable placement never reports production. Vanilla furnace output is attributed when a player actually takes it; unowned vanilla automation has no team attribution. Oil Processing triggers on the first successful pumpjack extraction after Oil Gathering. Trigger counters/levels live in the same persisted team ledger and do not steal current science selection.
 
-## Датапаки
+Automation unlocks Assembler 1/long-handed inserter; Logistic Science is its own original 75-red-unit technology. Automation 2, processing units, chemistry, module families/tiers, fluid handling and existing logistics/circuit/pole research use pinned source costs/dependencies. Automation 3 retains its Space Age 500-unit cost and genuine purple dependency; beacons and late bonuses keep their real gates. Module tier 2 requires **200 red/green/blue/space units** and Space Science. Tier 3 adds genuine planetary/handling research and recipe materials; no base-game-only module unlock is used. They remain survival-locked until those chains exist. No fake late dependency definitions or early substitute costs are supplied.
 
-Определения — обычные синхронизируемые рецепты типа `factorycraft:research`; отдельный сетевой формат каталогов не нужен:
+Vanilla workbench/2×2 handcrafts are checked against the same recipe locks, via narrowly scoped server mixins before result publication and again at pickup/shift-click. A `craft_` recipe aliases its canonical factory recipe ID; creative is an explicit administrative exception. Starter recipes without an original technology lock remain available. Production machines retain their existing bound-team checks; old unowned diagnostic machines are an explicit admin-fixture behavior, not a survival unlock.
 
-```json
-{
-  "type": "factorycraft:research",
-  "prerequisites": ["factorycraft:automation"],
-  "packs": {"factorycraft:automation_science_pack": 1, "factorycraft:logistic_science_pack": 1},
-  "units": 15,
-  "ticks": 60,
-  "repeatable": false,
-  "unlocks": ["factorycraft:advanced_circuit"],
-  "x": 1,
-  "y": 1
-}
-```
+## Persistence and validation
 
-До 128 технологий, четырёх типов пакетов, 16 зависимостей, 64 открытий; 1–100000 базовых единиц, 1–72000 тиков, 1–64 пакета каждого типа. Повторяемая стоимость ограничена 1000000 единицами. Координаты узлов 0–32. Пакеты могут быть предметами других модов, если указаны в каталоге. Циклы/отсутствующие зависимости отключают соответствующие узлы; связанные открытия остаются закрытыми у новых машин. Для названия добавьте перевод `technology.<namespace>.<path>`.
+Lab schema 3 writes all science, modules, FE/remainder, force, selected work key, per-definition partials and productive credit. The assembler/furnace/petroleum/drill resource owners remain unchanged. Old intermediate lab/research formats are intentionally unsupported; no worlds are deleted or migrated. See `VALIDATION.md` and `validation/v0270/` for executed tests and remaining checks. Native seven-pack definitions are injected only by tests in memory; they are not survival recipes or fake science sources.
 
-Ограничения: два уровня науки и шесть технологий, без модулей/маяков/полного позднего дерева. Нет автоматического переноса проектов между командами, вкладов игроков, очереди проектов, привилегий лидера или защиты территории. Реальные два сетевых клиента ещё не проверялись; серверные тесты и один клиент с настоящим FTB Teams проверены отдельно. Следующее расширение — химическая наука/двигатели/процессоры и безопасное извлечение небольших остатков входных жидкостей.
+The two pre-existing sandbox transport-capacity definitions also retain original Space Age seven-pack costs (including agricultural science); capacity 1 references the genuinely deferred Stack Inserter technology, and capacity 2 requires capacity 1 plus Inserter Capacity Bonus 7. They remain creative diagnostics until their real progression is implemented, without a new inserter recipe or industry.
 
-0.11.0: три технологии модулей/передачи эффектов, рецепты трёх модулей и маяка; см. MODULES.md. Версия JEI из main сохранена (19.21.1.248); для запуска используется полный NeoForge-мод, а не API-only архив.
+The required research payload protocol is `0.27.0`, explicitly rejecting old peers before using the changed recipe/inventory wire layouts. Client and server must use the same release.
