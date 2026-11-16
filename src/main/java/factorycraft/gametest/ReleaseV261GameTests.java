@@ -128,7 +128,7 @@ public final class ReleaseV261GameTests {
                   .get(kind)
                   .get()
                   .defaultBlockState()
-                  .setValue(FactoryBlock.FACING, Direction.EAST));
+                  .setValue(FactoryBlock.FACING, Direction.NORTH));
       var b = (BeltBlockEntity) h.getLevel().getBlockEntity(p);
       b.onLoad();
       miners.add(m);
@@ -146,6 +146,8 @@ public final class ReleaseV261GameTests {
             for (int lane = 0; lane < 2; lane++)
               for (var c : b.lane(lane).carriers())
                 h.assertTrue(c.value.getCount() == 1, "drill created belt stack");
+            h.assertTrue(
+                b.lane(1).carriers().isEmpty(), "perpendicular drill used inserter far lane");
           }
           h.succeed();
         });

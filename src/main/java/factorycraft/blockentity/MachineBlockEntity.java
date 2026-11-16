@@ -697,12 +697,11 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         if (belt == null) remainder = ItemHandlerHelper.insertItem(target, offered.copy(), false);
         else {
           int lane =
-              factorycraft.simulation.inserters.InserterPlacement.lane(
+              factorycraft.simulation.production.DrillChute.beltLane(
                   facing.getStepX(),
                   facing.getStepZ(),
                   belt.facing().getStepX(),
-                  belt.facing().getStepZ(),
-                  false);
+                  belt.facing().getStepZ());
           remainder = target.insertItem(lane * 4, offered.copy(), false);
         }
         if (!remainder.isEmpty()) {

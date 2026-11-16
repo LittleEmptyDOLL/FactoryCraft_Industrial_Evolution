@@ -63,3 +63,13 @@ v0261-client.log
 [18:43:36] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
 [18:43:36] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
 BUILD SUCCESSFUL in 24m 14s
+
+
+Late lane-rule correction
+v0261-chute-lane-build.log
+BUILD SUCCESSFUL in 24s
+v0261-lane-native.log
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+[18:55:08] [Server thread/INFO] [minecraft/GameTestServer]: ========= 429 GAME TESTS COMPLETE IN 1.231 min ======================
+[18:55:08] [Server thread/INFO] [minecraft/GameTestServer]: All 429 required tests passed :)
+BUILD SUCCESSFUL in 1m 37s

@@ -2,7 +2,7 @@
 
 Java21.0.13 / Minecraft1.21.1 / NeoForge21.1.252. Executed local results, not an assertion that CI has completed:
 
-* Build: **226 JUnit** (224 baseline + two actual geometry/endpoint contract tests), zero failures/errors.
+* Build: **228 JUnit** (224 baseline + two geometry/endpoint and two rotational chute-lane contract tests), zero failures/errors.
 * **429 required native GameTests** (418 baseline + eleven), all thirty restored finite chains retained. Final optional-runtime passes and independent-JVM checkpoint verification include FTB Teams2101.1.12, FTB Library2101.1.37, Architectury13.0.8, EMI1.1.24, JEI19.21.1.248 and Jade15.10.6 together. Final runs: `v0261-optional-final.log` and `v0261-optional-accepted.log`; decisive excerpts [here](verification-excerpts.txt).
 * `FACTORYCRAFT_V0261_DISK` preserves cross-chunk land/source/overhang, 4000mB source/counter, eight grade261 pending items, thirteen coal, exact belt diamond position and third pole ownership across JVMs. Existing saved checkpoints remain required.
 * Real dedicated SMOKE [measure](smoke-measure.json) and [separate-JVM verify](smoke-verify.json): 100 belts /200 carriers, twenty producers, ten arms; iron2560 conserved, moving owners remain live. Short tick-work sample mean1.881870ms /p95 2.242578 /max27.705618. No universal TPS/improvement claim; full/MIXED/10000-pipe are CI gates.
@@ -31,3 +31,7 @@ Initial UI focus/placement misclicks remain in an unused separate yard x40..85; 
 Drills keep bounded four-stack pending output and stop when full; no receiver does not spawn endless loose entities. This is the documented safe fallback instead of Factorio's single ground ore. Shore support/source must share a block elevation. External handlers follow the standard committed-remainder contract; undisclosed third-party commits/exceptions cannot be made atomically recoverable across mods. Optional viewer/Jade client UI and an external pipe-pack visual test were not run locally. Three lifts and four circuit colors are unchanged.
 
 CI is triggered on publication. [Workflow](https://github.com/LittleEmptyDOLL/FactoryCraft_Industrial_Evolution/actions/workflows/build.yml) repeats vanilla native/restart, optional runtime, full/MIXED and10000-pipe gates. Issue #6 explicitly requests its completed compatibility result; report actual CI outcomes after publication, never infer a pass from this record.
+
+Post-publication review corrected the initial shared inserter lane rule: drill chutes use the near lane on perpendicular belts and right lane when parallel/antiparallel. Two added rotational JUnit contracts and the three-tier native case cover this; the actual parallel client screenshots/census remain applicable. No saved resources/geometry or recipe/energy changes. The follow-up commit and its complete CI are the final release head.
+
+SMOKE and client captures were collected on the initial release commit6e06603; the follow-up only corrects perpendicular drill lane selection and adds its regressions. Parallel client behavior and both saved resource ledgers are unchanged; those captures are not presented as a newly repeated benchmark. The follow-up build passes228JUnit and all429native cases with optional mods, including existing disk verification.

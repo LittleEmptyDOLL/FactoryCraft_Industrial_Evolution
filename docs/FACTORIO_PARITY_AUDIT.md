@@ -193,3 +193,5 @@ Every current technology is listed below. This remains a three-science subset: c
 ### 0.26.1 output adaptation
 
 Both base drills now auto-deliver through one real front chute to compatible belt/handler/fuel inputs. Existing output slots are a bounded four-stack pending buffer; a missing receiver eventually blocks mining. Factorio's single ground ore is deliberately not represented by unbounded ItemEntity spawning. Minecraft inventory capacity/fuel and shore Y geometry remain explicit adaptations; fluid/production recipes and rates do not change in this patch.
+
+Drill drop-lane correction: near perpendicular lane, right parallel/antiparallel lane. Inserter placement rules remain unchanged; pure rotational and three-speed native checks enforce the distinction.

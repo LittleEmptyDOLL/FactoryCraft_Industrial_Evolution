@@ -22,7 +22,7 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * Both drills actively push their owned pending products to one real front contact, preserving components, sided handlers/belt headway, finite ore/work/energy. Bounded no-receiver fallback blocks; no infinite item entities.
 * Ticket callbacks only quarantine/bookkeep/queue belt connectivity. Mutating refresh waits for canonical loaded block-ticking physical owners in a safe server tick; no catch-and-ignore or forced chunks.
 * Small Pole becomes 1×1×3 with attachment near 2.88; supply5/wire7.5 and other pole types unchanged.
-* Retain 224 JUnit /418 native baseline and thirty chains (current local suite226/429), add focused invariants, fresh v0261 independent-JVM checkpoints and real client. Run actual optional FTB/EMI/JEI/Jade profile locally and report completed compatibility CI; user explicitly requests its repeat result. Preserve old failed worlds/evidence. No unrelated feature work.
+* Retain 224 JUnit /418 native baseline and thirty chains (current local suite228/429), add focused invariants, fresh v0261 independent-JVM checkpoints and real client. Run actual optional FTB/EMI/JEI/Jade profile locally and report completed compatibility CI; user explicitly requests its repeat result. Preserve old failed worlds/evidence. No unrelated feature work.
 
 ## Previous task — 0.26.0, GitHub issue #5
 
