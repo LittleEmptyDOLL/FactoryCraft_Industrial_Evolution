@@ -1,3 +1,17 @@
+# Factorio parity audit — 0.27.0
+
+Reference: Wube **2.1.24 with Space Age enabled**, normal quality. [Pinned technology](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/technology.lua), [recipe](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/recipe.lua), [Lab](https://wiki.factorio.com/Lab), [Module](https://wiki.factorio.com/Module), [Research](https://wiki.factorio.com/Research). [Space Age overrides](https://github.com/wube/factorio-data/blob/2.1.24/space-age/base-data-updates.lua). Numeric/prototype review only; no source or art copied.
+
+Current changes: all nine modules with original effects and 15/30/60-second recipes, including tier-3 planet materials and original Space Age technology gates; twelve science identities and twelve physical slots plus two lab modules; original 60-kW lab, multiplicative six research-speed bonuses and per-work productive science. Existing reachable technology costs/dependencies/unlocks are source-defined; original startup and first-oil triggers now replace fictional shortcut costs. Corrected Lab/Assembler 1 counted handcrafts resolve the actual bootstrap cycle. The source table and public-ID mappings are in RESEARCH_REFERENCE_0270.md.
+
+Future gates are intentional: military/production/utility/space items have no fake survival recipes. Automation 3 uses Space Age count 500. Module tier 2 requires real space science; tier 3 includes tungsten carbide/biter egg/spoilage and offworld science/handling. Purple/yellow gates on the other late technologies stay closed. No mock production-science/rail/robot technologies are registered. Future primary space science comes from platforms. An additional approved Satellite route yields 1000 packs with Space Age rocket costs; satellite is not in original Space Age. Both routes are deferred. Research Productivity/quality/biolabs/planets belong to the final Space Age goal, with implementation deferred.
+
+Minecraft adaptations: FE conversion and physical 3D machines/ports; 64-item science stacks; research consumes complete pack sets per committed unit instead of storing fractional durability in items. Per-lab work/credit survives switching and moving; stable force ledgers arbitrate final units. Vanilla furnace production receives team attribution on player collection; FactoryCraft furnaces use their bound force at output commit. Counted handcrafts use one stack per component and do not model Factorio's handcraft delay. Existing unrelated manufacturing/handcraft and circuit-model adaptations are not claimed fully identical to Factorio. Three conveyor lifts and four logical wire colors are explicitly retained extensions.
+
+Validation is reported only in VALIDATION.md /validation/v0270, separately from pending CI. Earlier audit text below is historical context, superseded for laboratories/modules/research.
+
+## Historical 0.26.1 audit
+
 # Factorio parity audit — FactoryCraft 0.26.1
 
 This is a current-content inventory, not a claim that all Factorio is implemented. Reference: **Factorio 2.1.24, normal quality**. Numeric source: [wube/factorio-data tag 2.1.24](https://github.com/wube/factorio-data/tree/2.1.24), specifically base/prototypes/entity/{entities,mining-drill}.lua, base/prototypes/recipe.lua and base/prototypes/technology.lua; cross-check with the official wiki links in STEAM_POWER.md / FURNACES.md / INSERTERS.md. No source graphics are copied. One FU=10 mB; 60→20 TPS is time conversion, not a second volume multiplier.
