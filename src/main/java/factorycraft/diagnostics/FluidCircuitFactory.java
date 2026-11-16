@@ -60,9 +60,7 @@ public final class FluidCircuitFactory {
             0),
         gate.program());
     CircuitFactory.wire(sensor, 0, gate, 0, 0);
-    var generator =
-        FactoryCommands.machine(level, o.offset(2, 0, 0), FactoryKind.GENERATOR, Direction.NORTH);
-    generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
+    var generator = SteamPlant.build(level, o.offset(2, 0, 0), 64);
     FactoryCommands.machine(level, o.offset(5, 0, 3), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 

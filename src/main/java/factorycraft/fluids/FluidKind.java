@@ -3,7 +3,13 @@ package factorycraft.fluids;
 public enum FluidKind {
   PIPE("fluid_pipe", factorycraft.simulation.fluids.FluidUnits.PIPE_CAPACITY),
   TANK("fluid_tank", factorycraft.simulation.fluids.FluidUnits.TANK_CAPACITY),
-  PUMP("electric_pump", factorycraft.simulation.fluids.FluidUnits.PUMP_CAPACITY);
+  PUMP("electric_pump", factorycraft.simulation.fluids.FluidUnits.PUMP_CAPACITY),
+  OFFSHORE("offshore_pump", factorycraft.simulation.fluids.FluidUnits.PUMP_CAPACITY);
+
+  public boolean boundary() {
+    return this == PUMP || this == OFFSHORE;
+  }
+
   public final String id;
   public final int capacity;
 

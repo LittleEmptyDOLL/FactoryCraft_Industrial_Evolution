@@ -24,10 +24,7 @@ public final class PowerShowcase {
         })
       factorycraft.core.FactoryCommands.machine(
           level, o.offset((int) entry[0], 0, 3), (FactoryKind) entry[1], Direction.NORTH);
-    var generator =
-        factorycraft.core.FactoryCommands.machine(
-            level, o.offset(17, 0, 7), FactoryKind.GENERATOR, Direction.NORTH);
-    generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    var generator = SteamPlant.build(level, o.offset(17, 0, 7), 64);
     var furnace =
         factorycraft.core.FactoryCommands.machine(
             level, o.offset(8, 0, 6), FactoryKind.FURNACE, Direction.NORTH);

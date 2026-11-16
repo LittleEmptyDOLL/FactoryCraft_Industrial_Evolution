@@ -6,7 +6,6 @@ import factorycraft.blocks.*;
 import factorycraft.fluids.*;
 import factorycraft.registry.Content;
 import factorycraft.thermal.*;
-import java.util.List;
 import net.minecraft.core.*;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.world.*;
@@ -73,20 +72,20 @@ public final class ThermalGameTests {
         10,
         () -> {
           h.assertTrue(b.steam.amount() == 0 && b.boiler.fuel() == 0, "empty boiler worked");
-          physical(b, false).fill(water(2000), EXEC);
+          physical(b, false).fill(water(60), EXEC);
         });
     h.runAfterDelay(
         20,
         () -> {
           h.assertTrue(
-              b.water.amount() == 2000 && b.boiler.progress() == 0, "unfueled boiler worked");
+              b.water.amount() == 60 && b.boiler.progress() == 0, "unfueled boiler worked");
           b.items.setStackInSlot(0, new ItemStack(Items.COAL));
         });
     h.runAfterDelay(
         60,
         () -> {
           h.assertTrue(
-              b.water.amount() == 0 && b.steam.amount() == 2000 && b.boiler.fuel() == 1580,
+              b.water.amount() == 0 && b.steam.amount() == 600 && b.boiler.fuel() == 1200,
               "boiling recipe/fuel balance incorrect");
           h.succeed();
         });
@@ -98,7 +97,7 @@ public final class ThermalGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          b.water.fill(new FluidKey(water(1)), 2000, false);
+          b.water.fill(new FluidKey(water(1)), 60, false);
           b.steam.fill(new FluidKey(steam(1)), 40000, false);
           b.items.setStackInSlot(0, new ItemStack(Items.COAL));
         });
@@ -108,13 +107,13 @@ public final class ThermalGameTests {
           h.assertTrue(
               b.boiler.fuel() == 0 && b.items.getStackInSlot(0).getCount() == 1,
               "blocked boiler spent fuel");
-          physical(b, true).drain(2000, EXEC);
+          physical(b, true).drain(600, EXEC);
         });
     h.runAfterDelay(
         80,
         () -> {
           h.assertTrue(
-              b.steam.amount() == 40000 && b.water.amount() == 0 && b.boiler.fuel() == 1580,
+              b.steam.amount() == 40000 && b.water.amount() == 0 && b.boiler.fuel() == 1200,
               "blocked boiler failed to resume");
           h.succeed();
         });
@@ -136,8 +135,7 @@ public final class ThermalGameTests {
           h.assertTrue(n > 0 && e.engine.energy() == n, "FE simulation mutated buffer");
           int actual = e.energyPort.extractEnergy(Integer.MAX_VALUE, false);
           h.assertTrue(
-              actual == n && 5L * actual + e.engine.residue() + 6L * e.steam.amount() == 120000,
-              "steam/FE ledger failed");
+              actual == n && actual + 8L * e.steam.amount() == 160000, "steam/FE ledger failed");
           h.assertTrue(e.energyPort.receiveEnergy(100, false) == 0, "generator accepted FE input");
           h.succeed();
         });
@@ -151,15 +149,15 @@ public final class ThermalGameTests {
         170,
         () -> {
           h.assertTrue(
-              e.engine.energy() == 16000 && e.engine.residue() == 4 && e.steam.amount() == 6666,
+              e.engine.energy() == 16000 && e.engine.residue() == 0 && e.steam.amount() == 18000,
               "FE buffer overfilled or steam wasted");
-          e.energyPort.extractEnergy(2, false);
+          e.energyPort.extractEnergy(8, false);
         });
     h.runAfterDelay(
         200,
         () -> {
           h.assertTrue(
-              e.engine.energy() == 16000 && e.engine.residue() == 0 && e.steam.amount() == 6665,
+              e.engine.energy() == 16000 && e.engine.residue() == 0 && e.steam.amount() == 17999,
               "Fractional FE remainder did not resume exactly");
           h.succeed();
         });
@@ -233,14 +231,14 @@ public final class ThermalGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          physical(b, false).fill(water(2000), EXEC);
+          physical(b, false).fill(water(60), EXEC);
           b.automation().insertItem(0, new ItemStack(Items.LAVA_BUCKET), false);
         });
     h.runAfterDelay(
         55,
         () -> {
           h.assertTrue(
-              b.steam.amount() == 2000 && b.boiler.fuel() == 19980, "container fuel incorrect");
+              b.steam.amount() == 600 && b.boiler.fuel() == 19600, "container fuel incorrect");
           h.assertTrue(
               b.automation().extractItem(0, 1, false).is(Items.BUCKET),
               "fuel remainder was destroyed or unextractable");
@@ -290,7 +288,7 @@ public final class ThermalGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          physical(b, false).fill(water(2000), EXEC);
+          physical(b, false).fill(water(60), EXEC);
           b.items.setStackInSlot(0, new ItemStack(Items.COAL));
         });
     h.runAfterDelay(
@@ -305,7 +303,7 @@ public final class ThermalGameTests {
                       b.saveWithFullMetadata(level.registryAccess()),
                       level.registryAccess());
           h.assertTrue(
-              copy.boiler.progress() > 0 && copy.boiler.progress() < 20,
+              copy.boiler.progress() == 0 && copy.boiler.fuel() > 0 && copy.water.amount() > 0,
               "fixture did not preserve partial progress");
           b.setRemoved();
           level.setBlockEntity(copy);
@@ -316,7 +314,7 @@ public final class ThermalGameTests {
         () -> {
           var be = (ThermalBlockEntity) h.getBlockEntity(new BlockPos(4, 2, 4));
           h.assertTrue(
-              be.water.amount() == 0 && be.steam.amount() == 2000 && be.boiler.fuel() == 1580,
+              be.water.amount() == 0 && be.steam.amount() == 600 && be.boiler.fuel() == 1200,
               "partial recipe did not resume exactly");
           h.succeed();
         });
@@ -337,85 +335,30 @@ public final class ThermalGameTests {
     h.runAfterDelay(
         5,
         () -> {
-          physical(b, false).fill(water(10000), EXEC);
+          physical(b, false).fill(water(240), EXEC);
           b.items.setStackInSlot(0, new ItemStack(Items.COAL));
         });
     h.runAfterDelay(
         220,
         () -> {
           long fluid =
-              b.water.amount()
+              10L * b.water.amount()
                   + b.steam.amount()
                   + e.steam.amount()
                   + pipes.stream().mapToLong(f -> f.cell().amount()).sum();
           h.assertTrue(
               e.engine.energy() > 0
-                  && fluid * 6 + 5L * e.engine.energy() + e.engine.residue() == 60000
-                  && b.boiler.fuel() == 1500,
+                  && fluid * 8 + e.engine.energy() == 19200
+                  && b.boiler.fuel() == 0,
               "finite schema-4 steam/FE/fuel ledger failed");
           h.succeed();
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 900)
+  @GameTest(template = "empty", timeoutTicks = 2000)
   public static void naturalWaterSteamPowersThePumpAndProductionWithoutCoalGenerator(
       GameTestHelper h) {
-    var pp = h.absolutePos(new BlockPos(4, 2, 2));
-    factorycraft.multiblock.StructurePlacement.place(
-        h.getLevel(),
-        pp,
-        Content.FLUID_BLOCKS
-            .get(FluidKind.PUMP)
-            .get()
-            .defaultBlockState()
-            .setValue(FluidDeviceBlock.FACING, Direction.EAST));
-    var b = put(h, ThermalKind.BOILER, 8, 2);
-    var e = put(h, ThermalKind.ENGINE, 15, 2);
-    for (var p :
-        List.of(
-            new BlockPos(5, 2, 2),
-            new BlockPos(5, 2, 3),
-            new BlockPos(5, 2, 4),
-            new BlockPos(6, 2, 4),
-            new BlockPos(7, 2, 4),
-            new BlockPos(9, 2, 2),
-            new BlockPos(10, 2, 2),
-            new BlockPos(11, 2, 2),
-            new BlockPos(12, 2, 2)))
-      h.setBlock(p, Content.FLUID_BLOCKS.get(FluidKind.PIPE).get().defaultBlockState());
-    var fp = h.absolutePos(new BlockPos(22, 2, 2));
-    factorycraft.multiblock.StructurePlacement.place(
-        h.getLevel(), fp, Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
-    for (int x : new int[] {4, 10, 16, 22})
-      factorycraft.multiblock.StructurePlacement.place(
-          h.getLevel(),
-          h.absolutePos(new BlockPos(x, 2, 5)),
-          Content.FACTORY.get(FactoryKind.MEDIUM_POLE).get().defaultBlockState());
-    var source = new BlockPos(2, 2, 2);
-    h.setBlock(source.below(), Blocks.STONE);
-    for (var d : Direction.Plane.HORIZONTAL)
-      if (d != Direction.EAST) h.setBlock(source.relative(d), Blocks.STONE);
-    h.setBlock(source, Blocks.WATER);
-    h.runAfterDelay(
-        5,
-        () -> {
-          ((FluidBlockEntity) h.getLevel().getBlockEntity(pp)).energyPort.receiveEnergy(400, false);
-          b.items.setStackInSlot(0, new ItemStack(Items.COAL));
-          ((MachineBlockEntity) h.getLevel().getBlockEntity(fp))
-              .items.setStackInSlot(0, new ItemStack(Items.RAW_IRON, 4));
-        });
-    h.runAfterDelay(
-        700,
-        () -> {
-          var pump = (FluidBlockEntity) h.getLevel().getBlockEntity(pp);
-          var furnace = (MachineBlockEntity) h.getLevel().getBlockEntity(fp);
-          h.assertTrue(
-              furnace.items.getStackInSlot(4).getCount() == 4
-                  && pump.power.getEnergyStored() > 400
-                  && e.engine.energy() > 0,
-              "native-water steam network did not sustain pump and production");
-          h.succeed();
-        });
+    ReleaseV26GameTests.coldBootstrap(h);
   }
 
   @GameTest(template = "empty", timeoutTicks = 100)

@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /** Finite steam-to-energy conversion. Energy is owned before the fluid observer can run. */
 public final class SteamEngine<K> {
-  public static final int CAPACITY = 16000, FE_NUMERATOR = 6, MB_DENOMINATOR = 5, MB_PER_TICK = 100;
+  public static final int CAPACITY = 16000, FE_NUMERATOR = 8, MB_DENOMINATOR = 1, MB_PER_TICK = 15;
   private final FluidCell<K> steam;
   private final Runnable changed;
   private int energy, residue;

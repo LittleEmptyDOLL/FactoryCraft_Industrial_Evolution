@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG",
+    "IFI",
+    " I "
+  ],
+  "key": {
+    "G": {
+      "item": "factorycraft:iron_gear"
+    },
+    "I": {
+      "item": "factorycraft:iron_plate"
+    },
+    "F": {
+      "type": "neoforge:components",
+      "items": [
+        "factorycraft:stone_furnace"
+      ],
+      "components": {},
+      "strict": true
+    }
+  },
+  "result": {
+    "id": "factorycraft:burner_mining_drill",
+    "count": 1
+  }
+}

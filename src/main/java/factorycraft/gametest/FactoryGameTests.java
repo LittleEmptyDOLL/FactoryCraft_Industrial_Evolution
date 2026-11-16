@@ -146,12 +146,11 @@ public final class FactoryGameTests {
 
   @GameTest(template = "empty", timeoutTicks = 240)
   public static void poleGraphSplitsAndRejoins(GameTestHelper h) {
-    MachineBlockEntity g = place(h, FactoryKind.GENERATOR, p(1, 5), Direction.NORTH);
+    var g = FinitePowerFixture.place(h.getLevel(), h.absolutePos(p(1, 5)), Direction.NORTH);
     place(h, FactoryKind.POLE, p(2, 3), Direction.EAST);
     place(h, FactoryKind.POLE, p(7, 3), Direction.EAST);
     place(h, FactoryKind.POLE, p(12, 3), Direction.EAST);
     MachineBlockEntity m = place(h, FactoryKind.FURNACE, p(14, 2), Direction.NORTH);
-    g.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
     h.runAfterDelay(
         40,
         () -> {

@@ -38,8 +38,7 @@ public final class MachineShowcase {
       StructurePlacement.place(level, pos, state);
       var be = level.getBlockEntity(pos);
       if (be instanceof MachineBlockEntity machine) {
-        if (machine.kind().burnerFurnace())
-          machine.items.setStackInSlot(8, new ItemStack(Items.COAL, 16));
+        if (machine.kind().burner()) machine.items.setStackInSlot(8, new ItemStack(Items.COAL, 16));
         else machine.power.restore(32000);
         switch (profile) {
           case FURNACE, STEEL, STONE ->
@@ -51,7 +50,7 @@ public final class MachineShowcase {
                       BuiltInRegistries.ITEM.get(
                           ResourceLocation.fromNamespaceAndPath("factorycraft", "iron_plate")),
                       64));
-          case ADVANCED_ASSEMBLER -> {
+          case ADVANCED_ASSEMBLER, ASSEMBLER_3 -> {
             machine.items.setStackInSlot(0, new ItemStack(Content.ENGINE_UNIT.get(), 8));
             machine.items.setStackInSlot(
                 1,
@@ -69,8 +68,7 @@ public final class MachineShowcase {
                         factorycraft.petroleum.PetroleumFluids.LUBRICANT.stack(1)),
                     1200);
           }
-          case GENERATOR -> machine.items.setStackInSlot(8, new ItemStack(Items.COAL, 8));
-          case DRILL ->
+          case DRILL, BURNER_DRILL ->
               level.setBlockAndUpdate(
                   profile.center(pos, Direction.NORTH).below(),
                   Content.IRON_ORE.get().defaultBlockState());
@@ -117,13 +115,21 @@ public final class MachineShowcase {
               40000);
         thermal.setChanged();
       } else if (be instanceof FluidBlockEntity fluid) {
-        fluid
-            .cell()
-            .restore(
-                new factorycraft.fluids.FluidKey(
-                    new net.neoforged.neoforge.fluids.FluidStack(
-                        net.minecraft.world.level.material.Fluids.WATER, 1)),
-                1000);
+        if (fluid.kind() == factorycraft.fluids.FluidKind.OFFSHORE) {
+          // This fresh admin-owned floor becomes an actual two-contact shore; no chamber seed.
+          for (int x = 0; x < 2; x++) {
+            var water = profile.offset(pos, Direction.NORTH, x, 0, 0).below().south();
+            level.setBlockAndUpdate(water.below(), Blocks.STONE_BRICKS.defaultBlockState());
+            level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
+          }
+        } else
+          fluid
+              .cell()
+              .restore(
+                  new factorycraft.fluids.FluidKey(
+                      new net.neoforged.neoforge.fluids.FluidStack(
+                          net.minecraft.world.level.material.Fluids.WATER, 1)),
+                  1000);
         fluid.setChanged();
       } else if (be instanceof BeltBlockEntity splitter) {
         for (int track = 0; track < 2; track++) {

@@ -334,7 +334,7 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
       status = 3;
       return false;
     }
-    if (boiler.fuel() == 0 && !refuel()) {
+    if (boiler.fuel() < 20 && !refuel()) {
       status = 1;
       return false;
     }
@@ -344,7 +344,7 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     String identity = chosen.identity();
     boolean worked =
         boiler.advance(
-            identity, duration, water, recipe.input().amount(), steam, key, result.getAmount());
+            identity, duration, water, recipe.input().amount(), steam, key, result.getAmount(), 20);
     if (worked) changed();
     status = worked ? 4 : 0;
     return worked;

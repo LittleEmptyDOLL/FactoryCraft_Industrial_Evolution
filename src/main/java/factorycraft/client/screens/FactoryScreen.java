@@ -1,6 +1,5 @@
 package factorycraft.client.screens;
 
-import factorycraft.blocks.FactoryKind;
 import factorycraft.production.FactoryMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -41,12 +40,19 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
     g.fill(x, y, x + imageWidth, y + imageHeight, 0xff202933);
     g.fill(x + 3, y + 3, x + imageWidth - 3, y + imageHeight - 3, 0xff34414b);
     for (var slot : menu.slots) {
+      if (!slot.isActive()) continue;
       g.fill(x + slot.x - 1, y + slot.y - 1, x + slot.x + 17, y + slot.y + 17, 0xff62747d);
       g.fill(x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0xff111a20);
     }
     int progress = menu.data.get(0), duration = Math.max(1, menu.data.get(1));
-    g.fill(x + 18, y + 69, x + 184, y + 74, 0xff14202a);
-    g.fill(x + 18, y + 69, x + 18 + Math.min(166, 166 * progress / duration), y + 74, 0xffffae34);
+    int progressX = menu.machine.kind().assembler() ? 112 : 18, progressWidth = 184 - progressX;
+    g.fill(x + progressX, y + 69, x + 184, y + 74, 0xff14202a);
+    g.fill(
+        x + progressX,
+        y + 69,
+        x + progressX + Math.min(progressWidth, progressWidth * progress / duration),
+        y + 74,
+        0xffffae34);
     g.fill(x + 190, y + 30, x + 197, y + 100, 0xff14202a);
     g.fill(x + 190, y + 100 - 70 * menu.data.get(2) / 16000, x + 197, y + 100, 0xff40c9d0);
   }
@@ -59,7 +65,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
         font, Component.translatable("gui.factorycraft.output"), 112, 34, 0xffc1d0d5, false);
     g.drawString(
         font,
-        menu.machine.kind().burnerFurnace()
+        menu.machine.kind().burner()
             ? Component.translatable("gui.factorycraft.burn", menu.data.get(3))
             : Component.literal(menu.data.get(2) + " FE"),
         18,
@@ -85,6 +91,31 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
           0xffffba55,
           false);
     var rs = menu.machine.recipes();
+    if (menu.machine.kind().assembler()) {
+      int i = menu.data.get(4) > 0 ? menu.data.get(4) : menu.data.get(5);
+      if (i > 0 && i <= rs.size()) {
+        var r = rs.get(i - 1).value();
+        g.drawString(
+            font,
+            font.plainSubstrByWidth(r.result().getHoverName().getString(), 80),
+            106,
+            122,
+            0xffeeeeee,
+            false);
+        g.drawString(
+            font,
+            Component.translatable(
+                "gui.factorycraft.recipe_info",
+                Math.ceilDiv(r.ticks() * 4, menu.machine.kind().workQuarters()),
+                menu.machine.kind().activeFE()),
+            18,
+            140,
+            0xffc1d0d5,
+            false);
+      }
+      g.drawString(font, playerInventoryTitle, 22, 154, 0xffc1d0d5, false);
+      return;
+    }
     int index = menu.data.get(4);
     Component label =
         index > 0 && index <= rs.size()
@@ -112,7 +143,7 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
       g.drawString(
           font,
           Component.translatable(
-              menu.machine.kind().burnerFurnace()
+              menu.machine.kind().burner()
                   ? "gui.factorycraft.burner_recipe_info"
                   : "gui.factorycraft.recipe_info",
               Math.ceilDiv(recipe.ticks(), menu.machine.kind().craftingSpeed()),
@@ -122,14 +153,6 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
           0xffc1d0d5,
           false);
     }
-    if (menu.machine.kind() == FactoryKind.GENERATOR)
-      g.drawString(
-          font,
-          Component.translatable("gui.factorycraft.burn", menu.data.get(3)),
-          42,
-          85,
-          0xfff5b648,
-          false);
     g.drawString(font, playerInventoryTitle, 22, 154, 0xffc1d0d5, false);
   }
 

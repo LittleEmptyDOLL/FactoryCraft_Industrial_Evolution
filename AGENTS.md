@@ -16,7 +16,16 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.25.1, GitHub issue #4
+## Active task — 0.26.0, GitHub issue #5
+
+* Offshore Pump is the only built-in infinite world-water producer, with guarded shoreline geometry, 600 native mB/t, no FE. Electric Pump only transfers held fluid; preserve 1:10 scaling, component identity, circuit/port/loaded ownership and conservation.
+* Correct steam to 3 mB water -> 30 mB steam per tick and 15 mB steam -> 120 FE/t per engine. Remove Coal Generator entirely; adapt invariant fixtures to genuine steam chains or explicitly test-only finite precharged grids, never a hidden runtime generator.
+* Add Burner Mining Drill, Assembler 3, canonical mining/assembling speeds, per-kind modules and adequate physical input inventories. Audit all registered items/machines/recipes/tech; remove obsolete reader/controller bridges after preserving direct circuits. Keep all three lifts and four wire colors.
+* Preserve meaningful 406 native baseline cases and thirty finite chains, with fresh v0260 checkpoints and separate-JVM proofs. Old formats unsupported; retain failed worlds/evidence. Build, native, bounded benchmark and actual client checks; full/MIXED/optional CI stays independent.
+* 0.26.0 local evidence: 224 JUnit, 418 native cases and independent-JVM checkpoints, dedicated SMOKE/hash reload and actual client. Final current-format fixtures and failures remain separate; see VALIDATION.md.
+* Publish only checked main normally; query CI once and stop. No Space Age/rails/robots/construction/ore redesign.
+
+## Previous task — 0.25.1, GitHub issue #4
 
 * Implement full irregular ellipsoids with one canonical center independent of local columns; random vertical radius 5–8, horizontal radius/spacing unchanged. Anchor using deterministic generator terrain sampling even outside the available region; never load anchor chunks or write outside the decorating chunk. Remove obsolete smoothing settings.
 * Exactly Stone (2×2, speed 1, solid fuel), Steel (2×2, speed 2, same active fuel rate), Electric (3×3, speed 2, two modules). Remove industrial_furnace from active code/assets/progression without migration. Preserve base recipe time, native smelting, component identity, module productive credit, paid work, container remainders and sole portable owner.

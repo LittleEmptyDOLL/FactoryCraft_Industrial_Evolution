@@ -2,22 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "PGP",
-    "BCB",
-    "PGP"
+    "IPI",
+    "GGG",
+    "IPI"
   ],
   "key": {
-    "P": {
+    "I": {
       "item": "factorycraft:iron_plate"
     },
     "G": {
       "item": "factorycraft:iron_gear"
     },
-    "B": {
+    "P": {
       "item": "factorycraft:fluid_pipe"
-    },
-    "C": {
-      "item": "factorycraft:copper_plate"
     }
   },
   "result": {

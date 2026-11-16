@@ -16,8 +16,9 @@
     "bidi": "factorycraft:block/machine/bidi",
     "indicator_off": "factorycraft:block/machine/indicator_off",
     "indicator_on": "factorycraft:block/machine/indicator_on",
+    "green": "factorycraft:block/machine/green",
     "flame": "factorycraft:block/machine/flame",
-    "belt": "factorycraft:block/transport/surface_3",
+    "belt": "factorycraft:block/machine/belt",
     "piston": "factorycraft:block/machine/piston",
     "particle": "factorycraft:block/machine/shell"
   },

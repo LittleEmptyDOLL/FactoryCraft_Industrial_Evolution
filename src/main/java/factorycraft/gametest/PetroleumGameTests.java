@@ -123,7 +123,7 @@ public final class PetroleumGameTests {
         30,
         () -> {
           h.assertTrue(pump.petroleum().cells.get(2).amount() == 0, "unpowered pump extracted");
-          pump.power.receiveEnergy(300, false);
+          pump.power.receiveEnergy(240, false);
         });
     h.runAfterDelay(
         80,
@@ -167,7 +167,7 @@ public final class PetroleumGameTests {
         () -> {
           h.assertTrue(
               pump.petroleum().cells.get(2).amount() == 10000
-                  && pump.power.getEnergyStored() == 700,
+                  && pump.power.getEnergyStored() == 760,
               "pump failed to resume");
           h.succeed();
         });
@@ -182,7 +182,7 @@ public final class PetroleumGameTests {
         () -> {
           oil.yield().restore(150000, 30000, 24000, 0, 0);
           oil.changed();
-          pump.power.receiveEnergy(500, false);
+          pump.power.receiveEnergy(440, false);
           oil.onChunkUnloaded();
           oil.onLoad();
         });
@@ -241,13 +241,13 @@ public final class PetroleumGameTests {
               .get(0)
               .fill(new FluidKey(PetroleumFluids.CRUDE.stack(1)), 1000, false);
           r.petroleum().cells.get(2).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 39900, false);
-          r.power.receiveEnergy(5000, false);
+          r.power.receiveEnergy(7600, false);
         });
     h.runAfterDelay(
         40,
         () -> {
           h.assertTrue(
-              r.power.getEnergyStored() == 5000 && r.petroleum().cells.get(0).amount() == 1000,
+              r.power.getEnergyStored() == 7600 && r.petroleum().cells.get(0).amount() == 1000,
               "blocked refinery spent input or FE");
           r.petroleum().cells.get(2).drain(1000, false);
         });
@@ -289,7 +289,7 @@ public final class PetroleumGameTests {
               c.petroleum().cells.get(0).amount() == 0
                   && count(c, Items.COAL) == 0
                   && count(c, plastic()) == 2
-                  && c.power.getEnergyStored() == 600,
+                  && c.power.getEnergyStored() == 440,
               "mixed commit did not conserve recipe counts/FE");
           h.succeed();
         });
@@ -465,7 +465,7 @@ public final class PetroleumGameTests {
           h.assertTrue(
               count(m, plastic()) == 2
                   && m.petroleum().cells.get(0).amount() == 0
-                  && m.power.getEnergyStored() == 600,
+                  && m.power.getEnergyStored() == 440,
               "restart changed mixed recipe balance");
           h.succeed();
         });
@@ -498,7 +498,7 @@ public final class PetroleumGameTests {
       h.assertTrue(
           decoded.fluids().getFirst().amount() == 200
               && decoded.results().getFirst().getCount() == 2
-              && decoded.energy() == 20,
+              && decoded.energy() == 28,
           "mixed recipe wire changed");
     } finally {
       buffer.release();

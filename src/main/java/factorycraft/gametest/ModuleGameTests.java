@@ -22,7 +22,9 @@ public final class ModuleGameTests {
   private static MachineBlockEntity machine(GameTestHelper h, int x) {
     var p = h.absolutePos(new BlockPos(x, 2, 4));
     StructurePlacement.place(
-        h.getLevel(), p, Content.FACTORY.get(FactoryKind.ASSEMBLER).get().defaultBlockState());
+        h.getLevel(),
+        p,
+        Content.FACTORY.get(FactoryKind.ADVANCED_ASSEMBLER).get().defaultBlockState());
     return (MachineBlockEntity) h.getLevel().getBlockEntity(p);
   }
 
@@ -90,14 +92,13 @@ public final class ModuleGameTests {
                   .findFirst()
                   .orElseThrow()
                   .value();
-          int expectedTicks = Math.ceilDiv(recipe.ticks() * 10000, 12000);
+          int expectedTicks = Math.ceilDiv(recipe.ticks() * 40000, 3 * 12000);
           h.assertTrue(
               speed.power.getEnergyStored()
-                  == 5000 - expectedTicks * Math.ceilDiv(recipe.energy() * 15000, 10000),
+                  == 5000 - expectedTicks * Math.ceilDiv(20 * 15000, 10000),
               "speed FE ledger incorrect");
           h.assertTrue(
-              efficient.power.getEnergyStored()
-                  == 5000 - recipe.ticks() * Math.ceilDiv(recipe.energy() * 7000, 10000),
+              efficient.power.getEnergyStored() == 5000 - Math.ceilDiv(recipe.ticks() * 4, 3) * 14,
               "efficiency FE ledger incorrect");
           h.succeed();
         });
@@ -180,7 +181,7 @@ public final class ModuleGameTests {
         30,
         () -> {
           h.assertTrue(
-              m.modules.effects().speed() == 10000 && b.power.getEnergyStored() == 0,
+              m.modules.effects().speed() == 10000 && b.power.getEnergyStored() == 16,
               "empty beacon kept free effects");
           h.assertTrue(
               !b.modules.isItemValid(0, new ItemStack(Content.PRODUCTIVITY_MODULE.get())),
@@ -272,7 +273,7 @@ public final class ModuleGameTests {
                   .filter(r -> r.id().getPath().equals("iron_gear"))
                   .findFirst()
                   .orElseThrow();
-          String key = m.modules.identity(recipe);
+          String key = m.petroleum().recipeSignature(recipe.id());
           m.modules.advance(key, 0, 24, 1, 400);
           m.items.setStackInSlot(0, new ItemStack(plate(), 2));
           for (int slot = 4; slot < 8; slot++)
@@ -355,13 +356,13 @@ public final class ModuleGameTests {
           m.power.restore(16000);
         });
     h.runAfterDelay(
-        190,
+        235,
         () -> {
           h.assertTrue(
               m.items.getStackInSlot(4).is(Content.PROCESSING_UNIT.get())
                   && m.items.getStackInSlot(0).isEmpty()
                   && m.petroleum().cells.get(0).amount() == 0
-                  && m.power.getEnergyStored() == 5980,
+                  && m.power.getEnergyStored() == 9310,
               "mixed module recipe lost item/fluid/FE ledger");
           h.succeed();
         });
@@ -462,12 +463,14 @@ public final class ModuleGameTests {
     var p = new BlockPos(815, 70, 815);
     var q = new BlockPos(823, 70, 815);
     var cells = new ArrayList<BlockPos>();
-    cells.addAll(MachineProfile.ASSEMBLER.cells(p, Direction.NORTH));
+    cells.addAll(MachineProfile.ADVANCED_ASSEMBLER.cells(p, Direction.NORTH));
     cells.addAll(MachineProfile.BEACON.cells(q, Direction.NORTH));
     for (var cell : cells) h.getLevel().getChunkAt(cell);
     if (cells.stream().allMatch(cell -> h.getLevel().getBlockEntity(cell) == null)) {
       StructurePlacement.place(
-          h.getLevel(), p, Content.FACTORY.get(FactoryKind.ASSEMBLER).get().defaultBlockState());
+          h.getLevel(),
+          p,
+          Content.FACTORY.get(FactoryKind.ADVANCED_ASSEMBLER).get().defaultBlockState());
       StructurePlacement.place(
           h.getLevel(), q, Content.FACTORY.get(FactoryKind.BEACON).get().defaultBlockState());
       var m = (MachineBlockEntity) h.getLevel().getBlockEntity(p);
@@ -535,7 +538,7 @@ public final class ModuleGameTests {
         20,
         () -> {
           h.assertTrue(
-              m.items.getStackInSlot(4).getCount() == 1 && m.modules.credit() == 40,
+              m.items.getStackInSlot(4).getCount() == 1 && m.modules.credit() == 160,
               "late module insertion received a whole cycle of productivity");
           h.succeed();
         });
@@ -594,7 +597,7 @@ public final class ModuleGameTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty", timeoutTicks = 430)
+  @GameTest(template = "empty", timeoutTicks = 500)
   public static void moduleRecipeWaitsForTeamResearch(GameTestHelper h) {
     var m = machine(h, 4);
     var scope = ResearchGameTests.personal(h, "module-unlock");
@@ -616,12 +619,8 @@ public final class ModuleGameTests {
                       ResourceLocation.fromNamespaceAndPath("factorycraft", "advanced_circuit")),
                   5));
           m.power.restore(16000);
-          for (int n = 0; n <= m.recipes().size(); n++) {
-            int index = m.selectedIndex();
-            if (index > 0 && m.recipes().get(index - 1).id().getPath().equals("speed_module"))
-              break;
-            m.cycleRecipe();
-          }
+          m.petroleum()
+              .selectRecipe(ResourceLocation.fromNamespaceAndPath("factorycraft", "speed_module"));
         });
     h.runAfterDelay(
         40,
@@ -639,14 +638,17 @@ public final class ModuleGameTests {
           h.assertTrue(ledger.select(tech), "module prerequisites rejected");
           for (int n = 0; n < tech.units(); n++) ledger.completeUnit(tech, () -> {});
           data.setDirty();
+          h.assertTrue(
+              m.selectRecipe(ResourceLocation.fromNamespaceAndPath("factorycraft", "speed_module")),
+              "unlocked module selection failed");
         });
     h.runAfterDelay(
-        365,
+        455,
         () -> {
           h.assertTrue(
               m.items.getStackInSlot(4).is(Content.SPEED_MODULE.get())
                   && m.items.getStackInSlot(0).isEmpty()
-                  && m.power.getEnergyStored() == 8800,
+                  && m.power.getEnergyStored() == 8000,
               "module unlock/result/FE ledger incorrect");
           h.succeed();
         });

@@ -276,13 +276,7 @@ public final class PowerAndMultiblockGameTests {
             .defaultBlockState()
             .setValue(FactoryBlock.FACING, Direction.NORTH));
     h.setBlock(new BlockPos(4, 2, 1), Blocks.CHEST);
-    factorycraft.core.FactoryCommands.machine(
-            h.getLevel(),
-            h.absolutePos(new BlockPos(8, 2, 7)),
-            FactoryKind.GENERATOR,
-            Direction.NORTH)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL));
+    FinitePowerFixture.place(h.getLevel(), h.absolutePos(new BlockPos(8, 2, 7)), Direction.NORTH);
     for (int z : new int[] {1, 6})
       factorycraft.core.FactoryCommands.machine(
           h.getLevel(),

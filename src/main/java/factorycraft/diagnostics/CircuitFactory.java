@@ -53,7 +53,7 @@ public final class CircuitFactory {
     direct.putBoolean("Legacy", false);
     n.load(direct);
     n.persistent();
-    CircuitSimulation.add(n);
+    CircuitSimulation.programChanged(n);
   }
 
   public static void wire(CircuitAttachment a, int pa, CircuitAttachment b, int pb, int color) {
@@ -120,9 +120,7 @@ public final class CircuitFactory {
         node(level, o.offset(24, 0, 4), FactoryKind.DECIDER, SignalProgramData.load(decide), 2, 1);
     wire(a.circuit(true), 0, b.circuit(true), 0, 0);
     wire(b.circuit(true), 1, c.circuit(true), 0, 1);
-    var generator =
-        FactoryCommands.machine(level, o.offset(2, 0, 9), FactoryKind.GENERATOR, Direction.NORTH);
-    generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
+    var generator = SteamPlant.build(level, o.offset(2, 0, 9), 64);
     FactoryCommands.machine(level, o.offset(6, 0, 9), FactoryKind.POLE, Direction.NORTH);
     FactoryCommands.machine(level, o.offset(9, 0, 8), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }

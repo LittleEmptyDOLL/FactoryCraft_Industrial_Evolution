@@ -45,6 +45,15 @@ public final class FactoryEmiPlugin implements EmiPlugin {
                   factorycraft.registry.Content.FACTORY
                       .get(factorycraft.blocks.FactoryKind.ADVANCED_ASSEMBLER)
                       .get())));
+    var third =
+        EmiStack.of(
+            new net.minecraft.world.item.ItemStack(
+                factorycraft.registry.Content.FACTORY
+                    .get(factorycraft.blocks.FactoryKind.ASSEMBLER_3)
+                    .get()));
+    if (dry != null) registry.addWorkstation(dry, third);
+    var wet = categories.get("assembling_machine_2");
+    if (wet != null) registry.addWorkstation(wet, third);
   }
 
   private record Display(EmiRecipeCategory category, RecipeDisplay recipe) implements EmiRecipe {

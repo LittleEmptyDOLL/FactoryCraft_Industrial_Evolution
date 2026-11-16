@@ -61,6 +61,13 @@ public final class FactoryJeiPlugin implements IModPlugin {
                 .get(factorycraft.blocks.FactoryKind.ADVANCED_ASSEMBLER)
                 .get()),
         categories.get("assembling_machine").type);
+    var third =
+        new net.minecraft.world.item.ItemStack(
+            factorycraft.registry.Content.FACTORY
+                .get(factorycraft.blocks.FactoryKind.ASSEMBLER_3)
+                .get());
+    registration.addRecipeCatalyst(third, categories.get("assembling_machine").type);
+    registration.addRecipeCatalyst(third, categories.get("assembling_machine_2").type);
     for (var kind : factorycraft.blocks.FactoryKind.values())
       if (kind.furnace()) {
         var stack =

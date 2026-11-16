@@ -43,7 +43,7 @@ public final class BenchmarkPlan {
     ASSEMBLER,
     STEEL_FURNACE,
     CASING,
-    GENERATOR,
+    STEAM_ENGINE,
     POLE,
     INSERTER,
     SOURCE,
@@ -109,9 +109,9 @@ public final class BenchmarkPlan {
       machine(cells, x + 6, z, Role.ASSEMBLER);
       machine(cells, x + 2, z + 6, Role.FURNACE);
       machine(cells, x + 6, z + 6, Role.STEEL_FURNACE);
-      machine(cells, x + 10, z, Role.GENERATOR);
+      machine(cells, x + 10, z, Role.STEAM_ENGINE);
       add(cells, x + 4, 0, z + 4, Role.POLE, Heading.NORTH);
-      add(cells, x + 11, 0, z + 4, Role.POLE, Heading.NORTH);
+      add(cells, x + 13, 0, z + 4, Role.POLE, Heading.NORTH);
       if (i + 1 < profile.cells && i % 25 < 24)
         add(cells, x + 17, 0, z + 4, Role.POLE, Heading.NORTH);
       if (i % 25 == 0 && i + 25 < profile.cells)
@@ -122,11 +122,13 @@ public final class BenchmarkPlan {
 
   private static void machine(List<Cell> cells, int x, int z, Role role) {
     // Schema 4: body origin remains fixed; controller is the front-center base cell.
-    add(cells, x + 1, 0, z, role, Heading.NORTH);
-    for (int y = 0; y < 3; y++)
-      for (int dz = 0; dz < (role == Role.STEEL_FURNACE ? 2 : 3); dz++)
+    add(cells, x + 1, 0, z + (role == Role.STEAM_ENGINE ? 2 : 0), role, Heading.NORTH);
+    for (int y = 0; y < (role == Role.STEAM_ENGINE ? 2 : 3); y++)
+      for (int dz = 0;
+          dz < (role == Role.STEAM_ENGINE ? 5 : role == Role.STEEL_FURNACE ? 2 : 3);
+          dz++)
         for (int dx = 0; dx < (role == Role.STEEL_FURNACE ? 2 : 3); dx++)
-          if (dx != 1 || y != 0 || dz != 0)
+          if (dx != 1 || y != 0 || dz != (role == Role.STEAM_ENGINE ? 2 : 0))
             add(cells, x + dx, y, z + dz, Role.CASING, Heading.NORTH);
   }
 

@@ -392,22 +392,6 @@
       ],
       "ports": []
     },
-    "circuit_reader": {
-      "controller": [
-        0,
-        0,
-        0
-      ],
-      "ports": []
-    },
-    "circuit_controller": {
-      "controller": [
-        0,
-        0,
-        0
-      ],
-      "ports": []
-    },
     "electric_pole": {
       "controller": [
         0,
@@ -449,6 +433,65 @@
       "ports": []
     },
     "stone_furnace": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "offshore_pump": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": [
+        {
+          "name": "water_out",
+          "at": [
+            1,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "OUTPUT",
+          "output": 0
+        }
+      ]
+    },
+    "assembling_machine_3": {
+      "controller": [
+        1,
+        0,
+        1
+      ],
+      "ports": [
+        {
+          "name": "input",
+          "at": [
+            1,
+            0,
+            0
+          ],
+          "face": "north",
+          "mode": "INPUT",
+          "input": 0
+        },
+        {
+          "name": "output",
+          "at": [
+            1,
+            0,
+            2
+          ],
+          "face": "south",
+          "mode": "OUTPUT",
+          "output": 2
+        }
+      ]
+    },
+    "burner_mining_drill": {
       "controller": [
         1,
         0,

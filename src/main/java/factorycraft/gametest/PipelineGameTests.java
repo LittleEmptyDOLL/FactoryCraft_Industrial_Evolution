@@ -408,7 +408,8 @@ public final class PipelineGameTests {
   }
 
   @GameTest(template = "empty", batch = "fluids_v0240", timeoutTicks = 120)
-  public static void dryPumpWakesWhenWorldWaterAppearsBehindRemoteInputPart(GameTestHelper h) {
+  public static void dryPumpWakesWhenFiniteFluidOwnerAppearsBehindRemoteInputPart(
+      GameTestHelper h) {
     var p = h.absolutePos(new BlockPos(7, 3, 7));
     var pump = pump(h, p);
     var sink = pipe(h, pump.outputNozzle().east());
@@ -420,16 +421,14 @@ public final class PipelineGameTests {
               pump.power.getEnergyStored() == 2000 && pump.cell().amount() == 0,
               "dry pump billed work");
           var source = pump.inputNozzle().west();
-          h.getLevel()
-              .setBlockAndUpdate(
-                  source, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+          pipe(h, source).localCell().restore(new FluidKey(new FluidStack(Fluids.WATER, 1)), 1000);
         });
     h.runAfterDelay(
         70,
         () -> {
           h.assertTrue(
               sink.cell().amount() > 0 && pump.power.getEnergyStored() < 2000,
-              "water behind casing did not wake idle pump");
+              "finite input behind casing did not wake idle pump");
           h.succeed();
         });
   }

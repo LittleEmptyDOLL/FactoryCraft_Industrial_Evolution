@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CPC",
+    " G "
+  ],
+  "key": {
+    "C": {
+      "item": "factorycraft:electronic_circuit"
+    },
+    "P": {
+      "item": "factorycraft:fluid_pipe"
+    },
+    "G": {
+      "item": "factorycraft:iron_gear"
+    }
+  },
+  "result": {
+    "id": "factorycraft:offshore_pump",
+    "count": 1
+  }
+}

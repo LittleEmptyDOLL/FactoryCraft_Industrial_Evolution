@@ -47,9 +47,7 @@ public final class InserterShowcase {
         arm.loadWithComponents(tag, level.registryAccess());
       }
     }
-    FactoryCommands.machine(level, o.offset(24, 0, 3), FactoryKind.GENERATOR, Direction.NORTH)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    SteamPlant.build(level, o.offset(24, 0, 3), 64);
     for (int x = 2; x <= 27; x += 5)
       FactoryCommands.machine(level, o.offset(x, 0, 6), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }

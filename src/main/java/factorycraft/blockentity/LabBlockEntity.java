@@ -160,7 +160,7 @@ public final class LabBlockEntity extends FactoryBlockEntity
           progress = 0;
         }
         int[] used = plan(entry.recipe());
-        int fe = Math.max(4, 20 - Math.min(16, ledger.level("factorycraft:lab_efficiency")));
+        int fe = Math.max(2, 8 - Math.min(6, ledger.level("factorycraft:lab_efficiency")));
         if (used != null && power.spend(fe)) {
           active = true;
           progress++;

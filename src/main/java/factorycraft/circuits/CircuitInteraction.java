@@ -1,7 +1,6 @@
 package factorycraft.circuits;
 
 import factorycraft.FactoryCraft;
-import factorycraft.blocks.FactoryKind;
 import net.minecraft.world.InteractionResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -16,10 +15,7 @@ public final class CircuitInteraction {
     var player = event.getEntity();
     if (!event.getItemStack().isEmpty() || !player.getOffhandItem().isEmpty()) return;
     var node = CircuitSimulation.at(event.getLevel(), event.getPos());
-    boolean modern =
-        node != null
-            && node.kind() != FactoryKind.CIRCUIT_READER
-            && node.kind() != FactoryKind.CIRCUIT_CONTROLLER;
+    boolean modern = node != null;
     if (!modern && !player.isShiftKeyDown()) return;
     if (event.getLevel().isClientSide) {
       if (modern || CircuitAccess.supported(event.getLevel().getBlockEntity(event.getPos()))) {

@@ -1,5 +1,18 @@
 # Architecture decisions — 0.25.1 (assembly/parts schema 4; fluid schema 2)
 
+## Active production architecture — 0.26.0
+
+`OffshorePlacement` is shared by item preview, placement and server production. Only Offshore creates world water. Ordinary Pump wraps real owned fluid capabilities, retains FE/circuit/pressure gates and cannot inspect water blocks to manufacture volume. The Offshore owner persists its generated-source ledger and last production tick alongside the chamber.
+
+`FactoryKind` now supplies per-kind quarter-speed, active FE and module slots. `PaidWork` combines quarter speed with basis-point module speed on a 40000-unit denominator; energy uses separately saved /10000 residues. Dry production and `PetroleumProduction` consume the same paid per-frame work budget, carry work across completed recipes in that tick and reserve all outputs before payment. Recipe IDs and serialized definitions remain stable selection/work identities. Assembler inputs expose sixteen virtual inputs mapped to real inventory indices 0–3/9–20, with real output indices 4–7. Counted recipe requirements can span stacks. Mixed recipes use a variable-input immutable transaction plan; source components are conserved.
+
+Mining stores paid whole/fractional work, fuel heat in thirds, productivity credit and canonical tile UUID/relative target. Temporarily unavailable tiles pause without payment; a replaced target cannot inherit paid extraction. Electric mining uses three modules, burner mining none. Fluid productivity reserves all bonus outputs before work and commits them with base item/fluid debits. Pumpjack retains its oil-yield owner and now uses nominal 12 FE/t with exact reserved-cycle energy residue.
+
+Thermal input/output ratio is 3→30 mB/t, with 20 native fuel ticks/t. Engines generate 8 FE/mB, up to 15 mB/t, into the same finite owned buffer before pole export. Coal Generator is not a runtime kind/source. See STEAM_POWER.md for exact heat accounting and bounded initial-buffer adaptation.
+
+Removed reader/controller registrations are replaced by existing canonical direct attachments; `CircuitBinding` is only the common direct-enable utility, with no remote position/UUID control owner. Sensor reads and four combinators use the unchanged four-color typed graph. Belt startup/configuration explicitly refreshes its cached gate even if permitted was already false. Invalid settings withdraw graph readiness immediately. All existing physical ports and single-owner assembly schema remain in place. The inventory/technology audit and explicit remaining parity gaps are in [docs/FACTORIO_PARITY_AUDIT.md](docs/FACTORIO_PARITY_AUDIT.md). Older slices below describe historical implementations and are superseded by this section.
+
+
 ## 0.25 resource / recipe boundary
 
 Native mB is the only fluid transaction unit; source Factorio values convert once at 1:10. Pipeline ownership/pressure algorithms remain 0.24.1. OilYield is exact geological percentage/cycle state, not an inventory; a ready canonical pumpjack commits paid, output-reserved crude creation and depletion together, retaining fractional work/output and source UUID. Generated-crude counters are explicit source terms in production ledgers.
@@ -122,7 +135,7 @@ New fluid NBT schema 1 uses the native FluidStack codec, retaining data componen
 
 The independent `factorycraft:boiling` recipe type uses SizedFluidIngredient.FLAT_CODEC, native FluidStack components and a bounded validated stream codec. Existing item-processing codecs are unchanged. Sorted definitions refresh at most once/20 ticks per boiler; a canonical codec-encoded definition in saved recipe identity prevents object identities from corrupting restart progress or edited datapacks from reusing another recipe's work.
 
-GridGenerator classifies the existing coal generator and new steam engine as sources in the same cached graph; GridConsumer behavior is retained. Engine output uses stored generated FE only. The 0.4.0 dedicated benchmark reload checks old authoritative hashes. Thermal menus use validated vanilla slots/data and split 32-bit values; only changed state requests BE synchronization on a five-tick cadence. New equipment has normal per-BE server tickers; large fluid/thermal-world profiling and batched thermal scheduling remain future optimization work.
+Historically GridGenerator classified a coal generator and steam engine as sources (Coal Generator is removed in 0.26.0) in the same cached graph; GridConsumer behavior is retained. Engine output uses stored generated FE only. The 0.4.0 dedicated benchmark reload checks old authoritative hashes. Thermal menus use validated vanilla slots/data and split 32-bit values; only changed state requests BE synchronization on a five-tick cadence. New equipment has normal per-BE server tickers; large fluid/thermal-world profiling and batched thermal scheduling remain future optimization work.
 
 ## Petroleum composition (0.5.0)
 

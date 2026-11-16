@@ -271,12 +271,12 @@ public final class ReleaseV25GameTests {
       GameTestHelper h) {
     var m = machine(h, FactoryKind.PUMPJACK, 6);
     var oil = point(h, m, 10000);
-    m.power.restore(300);
+    m.power.restore(240);
     h.runAfterDelay(
         18,
         () -> {
           h.assertTrue(
-              oil.yield().cycles() == 0 && m.power.getEnergyStored() == 300, "early cycle charged");
+              oil.yield().cycles() == 0 && m.power.getEnergyStored() == 240, "early cycle charged");
           m.petroleum()
               .cells
               .get(2)
@@ -286,7 +286,7 @@ public final class ReleaseV25GameTests {
         35,
         () -> {
           h.assertTrue(
-              oil.yield().cycles() == 0 && m.power.getEnergyStored() == 300,
+              oil.yield().cycles() == 0 && m.power.getEnergyStored() == 240,
               "blocked final cycle consumed resources");
           m.petroleum().cells.get(2).drain(10000, false);
         });
@@ -307,7 +307,7 @@ public final class ReleaseV25GameTests {
   public static void pumpjackReconstructionKeepsUnpaidWorkAndSourceIdentity(GameTestHelper h) {
     var m = machine(h, FactoryKind.PUMPJACK, 6);
     var oil = point(h, m, 11550);
-    m.power.restore(300);
+    m.power.restore(240);
     h.runAfterDelay(
         10,
         () -> {
@@ -389,9 +389,9 @@ public final class ReleaseV25GameTests {
     m.modules.items.setStackInSlot(0, new ItemStack(Content.SPEED_MODULE.get()));
     h.assertTrue(
         m.modules.effects().speed() == 12000
-            && !m.modules.items.isItemValid(1, new ItemStack(Content.PRODUCTIVITY_MODULE.get())),
+            && m.modules.items.isItemValid(1, new ItemStack(Content.PRODUCTIVITY_MODULE.get())),
         "pumpjack module constraints wrong");
-    m.power.restore(391);
+    m.power.restore(306);
     for (int i = 0; i < 17; i++) m.tick();
     h.assertTrue(
         oil.yield().cycles() == 1
@@ -498,7 +498,7 @@ public final class ReleaseV25GameTests {
           level, anchor, Content.FACTORY.get(FactoryKind.PUMPJACK).get().defaultBlockState());
       for (var cell : profile.cells(anchor, Direction.NORTH)) level.getBlockEntity(cell).onLoad();
       var pump = (MachineBlockEntity) level.getBlockEntity(anchor);
-      pump.power.restore(600);
+      pump.power.restore(480);
       for (int i = 0; i < 28; i++) pump.tick();
       level.setBlockAndUpdate(marker, Blocks.GOLD_BLOCK.defaultBlockState());
       System.out.println(
@@ -514,9 +514,9 @@ public final class ReleaseV25GameTests {
             && oil.yield().residue() == 750
             && oil.yield().cycles() == 1
             && pump.petroleum().cells.get(2).amount() == 115
-            && pump.power.getEnergyStored() == 300
+            && pump.power.getEnergyStored() == 240
             && tag.getInt("PumpWork") == 80000
-            && tag.getInt("PumpCost") == 120
+            && tag.getInt("PumpCost") == 96
             && tag.getUUID("PumpPoint").equals(oil.identity()),
         "paid output, percentage or partial-work checkpoint changed");
     oil.onChunkUnloaded();

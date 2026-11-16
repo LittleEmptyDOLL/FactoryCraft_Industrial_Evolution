@@ -30,7 +30,6 @@ public final class CircuitSimulation {
         sensorChunks = new HashMap<>();
     final Map<CircuitAttachment, Set<Long>> physicalChunks = new IdentityHashMap<>(),
         sensorDependencies = new IdentityHashMap<>();
-    final Map<BlockPos, Set<BeltBlockEntity>> controlledSplitters = new HashMap<>();
     final LinkedHashSet<CircuitAttachment> pending = new LinkedHashSet<>(),
         dirty = new LinkedHashSet<>(),
         poll = new LinkedHashSet<>(),
@@ -51,7 +50,6 @@ public final class CircuitSimulation {
                   CircuitDevices.controlChanged(p.owner);
                 }
               }
-              controlChanged(p.owner);
             });
   }
 
@@ -157,7 +155,7 @@ public final class CircuitSimulation {
     s.dirty.remove(n);
     s.poll.remove(n);
     CircuitDevices.controlChanged(n);
-    controlChanged(n);
+
     notifyPeers(n, s);
   }
 
@@ -214,10 +212,9 @@ public final class CircuitSimulation {
     if (s == null) return;
     s.dirty.add(n);
     s.pending.add(n);
-    if (n.legacy() != null && n.legacy().kind() == FactoryKind.CIRCUIT_READER) {
-      n.legacy().readerReady = false;
-      for (int c = 0; c < 4; c++) s.graph.complete(key(n, 0, c), false);
-    }
+    if (n.invalid())
+      for (int port = 0; port < n.ports(); port++)
+        for (int color = 0; color < 4; color++) s.graph.complete(key(n, port, color), false);
     if (!n.combinator() && !n.legacyMode) {
       // Configuration changes must withdraw old sensor outputs, including Hold -> Pulse.
       s.pulses.remove(n);
@@ -245,6 +242,7 @@ public final class CircuitSimulation {
     }
     if (n.owner() instanceof BeltBlockEntity b) b.updateCircuitPulseWatch();
     updateDirect(n, s);
+    CircuitDevices.controlChanged(n);
   }
 
   private static CircuitLink reverse(CircuitAttachment n, CircuitLink l) {
@@ -331,15 +329,6 @@ public final class CircuitSimulation {
   public static void destroyed(CircuitAttachment n) {
     if (n.level() == null || n.level().isClientSide) return;
     for (int p = 0; p < n.ports(); p++) for (int c = 0; c < 4; c++) clear(n, p, c);
-    if (n.legacy() != null) {
-      var t = target(n.legacy());
-      if (t != null) {
-        var binding = CircuitBinding.get(t);
-        if (binding != null
-            && binding.controller().equals(n.pos())
-            && Objects.equals(binding.identity(), n.identity())) CircuitBinding.set(t, null);
-      }
-    }
   }
 
   private static void refresh(CircuitAttachment n, State s) {
@@ -400,12 +389,7 @@ public final class CircuitSimulation {
     }
     for (int p = 0; p < n.ports(); p++)
       for (int c = 0; c < 4; c++) {
-        boolean complete =
-            !n.invalid()
-                && n.sensorReady
-                && (n.legacy() == null
-                    || n.legacy().kind() != FactoryKind.CIRCUIT_READER
-                    || n.legacy().readerReady);
+        boolean complete = !n.invalid() && n.sensorReady;
         for (var l : n.links)
           if (l.localPort() == p && l.color() == c) {
             var peer = s.nodes.get(l.peer());
@@ -463,7 +447,6 @@ public final class CircuitSimulation {
   }
 
   private static void publish(CircuitAttachment n, State s) {
-    if (n.legacy() != null && n.legacy().kind() == FactoryKind.CIRCUIT_CONTROLLER) return;
     for (int c = 0; c < 4; c++)
       s.graph.output(
           key(n, n.outputPort(), c),
@@ -486,60 +469,6 @@ public final class CircuitSimulation {
         || !n.configured
         || !n.invalid()
             && (!n.settings().gate() || n.active && n.available() && n.inputReady && n.permitted);
-  }
-
-  public static void watchSplitter(BeltBlockEntity belt, CircuitBinding old) {
-    if (belt.getLevel() == null || belt.getLevel().isClientSide) return;
-    var s = STATES.computeIfAbsent(belt.getLevel(), l -> new State());
-    if (old != null) {
-      var set = s.controlledSplitters.get(old.controller());
-      if (set != null) {
-        set.remove(belt);
-        if (set.isEmpty()) s.controlledSplitters.remove(old.controller());
-      }
-    }
-    if (belt.loaded() && belt.circuitBinding != null)
-      s.controlledSplitters
-          .computeIfAbsent(
-              belt.circuitBinding.controller(),
-              k -> Collections.newSetFromMap(new IdentityHashMap<>()))
-          .add(belt);
-    if (belt.loaded()) belt.refreshCircuitControl();
-  }
-
-  private static void controlChanged(CircuitAttachment n) {
-    if (n.legacy() == null || n.legacy().kind() != FactoryKind.CIRCUIT_CONTROLLER) return;
-    var s = STATES.get(n.level());
-    var belts = s == null ? null : s.controlledSplitters.get(n.pos());
-    if (belts != null)
-      for (var belt : List.copyOf(belts)) if (belt.loaded()) belt.refreshCircuitControl();
-    var target = target(n.legacy());
-    if (target instanceof FluidBlockEntity f) FluidSimulation.activatePump(f);
-  }
-
-  private static FactoryBlockEntity target(CircuitNodeBlockEntity n) {
-    var b = FluidConnections.endpoint(n.getLevel(), n.targetPosition());
-    return b instanceof InserterBlockEntity
-            || b instanceof FluidBlockEntity f && f.kind() == FluidKind.PUMP
-            || b instanceof BeltBlockEntity belt && belt.kind().splitter()
-        ? b
-        : null;
-  }
-
-  public static boolean controls(CircuitNodeBlockEntity n, FactoryBlockEntity device) {
-    return target(n) == device;
-  }
-
-  private static boolean bind(CircuitNodeBlockEntity n) {
-    var target = target(n);
-    if (target == null) return false;
-    var old = CircuitBinding.get(target);
-    if (old != null
-        && (!old.controller().equals(n.getBlockPos())
-            || !old.identity().equals(n.assembly().identity()))) return false;
-    if (old == null)
-      CircuitBinding.set(target, new CircuitBinding(n.getBlockPos(), n.assembly().identity()));
-    return true;
   }
 
   private static void unwatch(CircuitAttachment n, State s) {
@@ -644,10 +573,6 @@ public final class CircuitSimulation {
           n.sensorReady = reading.ready();
           refresh(n, s);
         }
-        if (n.legacy() != null && n.legacy().kind() == FactoryKind.CIRCUIT_READER) {
-          n.legacy().readerReady = reading.ready();
-          refresh(n, s);
-        }
         if (reading.ready() && !reading.signals().equals(n.output)) {
           n.output = reading.signals();
           n.persistent();
@@ -684,22 +609,9 @@ public final class CircuitSimulation {
         var old = n.legacy();
         int in = n.input.get(SignalProgramData.legacy(old.program().input()));
         old.inputValue = in;
-        switch (old.kind()) {
-          case CIRCUIT_CONTROLLER ->
-              old.gate =
-                  bind(old)
-                      && inputReady(old)
-                      && SignalMath.test(
-                          SignalMath.Compare.values()[Math.min(5, old.program().operation())],
-                          in,
-                          old.program().operand());
-          case CIRCUIT_READER -> {}
-          default -> {
-            if (old.kind() == FactoryKind.CONSTANT || inputReady(old)) out = evaluate(n, level);
-          }
-        }
+        if (old.kind() == FactoryKind.CONSTANT || inputReady(old)) out = evaluate(n, level);
         old.persistSignal();
-        controlChanged(n);
+
       } else if (n.combinator()) {
         if (!n.program().enabled()
             || n.inputReady

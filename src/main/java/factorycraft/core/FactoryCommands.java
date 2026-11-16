@@ -6,7 +6,6 @@ import factorycraft.blocks.*;
 import factorycraft.fluids.FluidKind;
 import factorycraft.multiblock.StructurePlacement;
 import factorycraft.registry.Content;
-import factorycraft.thermal.ThermalKind;
 import net.minecraft.commands.*;
 import net.minecraft.core.*;
 import net.minecraft.network.chat.Component;
@@ -233,9 +232,7 @@ public final class FactoryCommands {
   }
 
   private static void generator(ServerLevel level, BlockPos origin, int x, int z) {
-    machine(level, origin.offset(x, 0, z), FactoryKind.GENERATOR, Direction.NORTH)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    factorycraft.diagnostics.SteamPlant.build(level, origin.offset(x, 0, z), 64);
   }
 
   /** Complete finite-resource line; shared with the physical integration test. */
@@ -267,57 +264,27 @@ public final class FactoryCommands {
   }
 
   private static void waterLine(ServerLevel level, BlockPos o, boolean thermal) {
-    int pumpX = thermal ? 4 : 3;
-    var water = o.offset(pumpX - 2, 0, 2);
-    level.setBlockAndUpdate(water.below(), Blocks.STONE.defaultBlockState());
-    for (var side : Direction.Plane.HORIZONTAL)
-      if (side != Direction.EAST)
-        level.setBlockAndUpdate(water.relative(side), Blocks.STONE.defaultBlockState());
-    level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
-    fluid(level, o, pumpX, 2, FluidKind.PUMP);
+    var engine = factorycraft.diagnostics.SteamPlant.build(level, o.offset(10, 0, 3), 64);
     if (thermal) {
-      StructurePlacement.place(
-          level,
-          o.offset(8, 0, 2),
-          Content.THERMAL_BLOCKS
-              .get(ThermalKind.BOILER)
-              .get()
-              .defaultBlockState()
-              .setValue(ThermalBlock.FACING, Direction.EAST));
-      ((ThermalBlockEntity) level.getBlockEntity(o.offset(8, 0, 2)))
-          .items.setStackInSlot(0, new ItemStack(Items.COAL, 8));
-      StructurePlacement.place(
-          level,
-          o.offset(15, 0, 2),
-          Content.THERMAL_BLOCKS
-              .get(ThermalKind.ENGINE)
-              .get()
-              .defaultBlockState()
-              .setValue(ThermalBlock.FACING, Direction.EAST));
-      for (var p :
-          java.util.List.of(
-              new BlockPos(5, 0, 2),
-              new BlockPos(5, 0, 3),
-              new BlockPos(5, 0, 4),
-              new BlockPos(6, 0, 4),
-              new BlockPos(7, 0, 4),
-              new BlockPos(9, 0, 2),
-              new BlockPos(10, 0, 2),
-              new BlockPos(11, 0, 2),
-              new BlockPos(12, 0, 2))) fluid(level, o, p.getX(), p.getZ(), FluidKind.PIPE);
-      StructurePlacement.place(
-          level,
-          o.offset(22, 0, 2),
-          Content.FACTORY.get(FactoryKind.FURNACE).get().defaultBlockState());
-      ((MachineBlockEntity) level.getBlockEntity(o.offset(22, 0, 2)))
-          .items.setStackInSlot(0, new ItemStack(Items.RAW_IRON, 8));
-      for (int x : new int[] {4, 10, 16, 22}) pole(level, o, x, 5);
+      machine(level, o.offset(19, 0, 3), FactoryKind.FURNACE, Direction.NORTH)
+          .items
+          .setStackInSlot(0, new ItemStack(Items.RAW_IRON, 8));
+      for (int x : new int[] {5, 10, 15, 20}) pole(level, o, x, 5);
     } else {
+      // A separate ground-level shoreline feeds a tank without electricity.
+      var offshore = o.offset(3, 0, 2);
+      factorycraft.diagnostics.ShoreFixture.prepare(level, offshore, Direction.EAST);
+      StructurePlacement.place(
+          level,
+          offshore,
+          Content.FLUID_BLOCKS
+              .get(FluidKind.OFFSHORE)
+              .get()
+              .defaultBlockState()
+              .setValue(FluidDeviceBlock.FACING, Direction.EAST));
       for (int x = 4; x <= 6; x++) fluid(level, o, x, 2, FluidKind.PIPE);
       fluid(level, o, 8, 3, FluidKind.TANK);
-      pole(level, o, 3, 5);
     }
-    generator(level, o, 0, 7);
   }
 
   public static void oilLine(ServerLevel level, BlockPos o) {

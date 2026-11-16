@@ -10,9 +10,9 @@ import net.minecraft.world.level.block.state.BlockState;
 /** Factorio X/Z tile footprints; Minecraft heights are explicit 3D design choices. */
 public enum MachineProfile implements StringRepresentable {
   DRILL("electric_drill", 3, 2, 3),
+  BURNER_DRILL("burner_mining_drill", 2, 2, 2),
   FURNACE("electric_furnace", 3, 3, 3),
   ASSEMBLER("assembling_machine", 3, 3, 3),
-  GENERATOR("coal_generator", 3, 3, 3),
   STEEL("steel_furnace", 2, 3, 2),
   STONE("stone_furnace", 2, 2, 2),
   PUMPJACK("pumpjack", 3, 4, 3),
@@ -22,17 +22,17 @@ public enum MachineProfile implements StringRepresentable {
   ENGINE("steam_engine", 3, 2, 5),
   TANK("fluid_tank", 3, 3, 3),
   PUMP("electric_pump", 1, 1, 2),
+  OFFSHORE("offshore_pump", 2, 1, 1),
   SPLITTER("splitter", 2, 1, 1),
   LAB("lab", 3, 3, 3),
   ADVANCED_ASSEMBLER("assembling_machine_2", 3, 3, 3),
+  ASSEMBLER_3("assembling_machine_3", 3, 3, 3),
   BEACON("beacon", 3, 3, 3),
   FAST_SPLITTER("fast_splitter", 2, 1, 1),
   EXPRESS_SPLITTER("express_splitter", 2, 1, 1),
   CONSTANT("constant_combinator", 1, 1, 1),
   ARITHMETIC("arithmetic_combinator", 1, 1, 2),
   DECIDER("decider_combinator", 1, 1, 2),
-  CIRCUIT_READER("circuit_reader", 1, 1, 1),
-  CIRCUIT_CONTROLLER("circuit_controller", 1, 1, 1),
   SMALL_POLE("electric_pole", 1, 2, 1),
   MEDIUM_POLE("medium_electric_pole", 1, 3, 1),
   BIG_POLE("big_electric_pole", 2, 5, 2),
@@ -130,12 +130,7 @@ public enum MachineProfile implements StringRepresentable {
   }
 
   public boolean circuit() {
-    return this == CONSTANT
-        || this == ARITHMETIC
-        || this == DECIDER
-        || this == CIRCUIT_READER
-        || this == CIRCUIT_CONTROLLER
-        || this == SELECTOR;
+    return this == CONSTANT || this == ARITHMETIC || this == DECIDER || this == SELECTOR;
   }
 
   public boolean splitter() {

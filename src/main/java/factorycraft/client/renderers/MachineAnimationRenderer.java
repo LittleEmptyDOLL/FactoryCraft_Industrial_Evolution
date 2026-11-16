@@ -70,9 +70,9 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
       case BEACON -> rotate(pose, unit, 1.5, 2, 1.5, Axis.YP, (float) (phase.time * 4));
       case LAB -> rotate(pose, unit, 1.5, 1.35, 1.5, Axis.YP, (float) (phase.time * 8));
       case DRILL -> rotate(pose, unit, 1.5, .9, 1.5, Axis.YP, (float) (phase.time * 18));
-      case ASSEMBLER, ADVANCED_ASSEMBLER ->
+      case BURNER_DRILL -> rotate(pose, unit, 1, .9, 1, Axis.YP, (float) (phase.time * 9));
+      case ASSEMBLER, ADVANCED_ASSEMBLER, ASSEMBLER_3 ->
           pose.translate(0, -.22 * (1 - Math.cos(phase.time * .32)) / unit, 0);
-      case GENERATOR -> rotate(pose, unit, 1.5, 1.2, .2, Axis.ZP, (float) (phase.time * 12));
       case PUMPJACK ->
           rotate(pose, unit, 1.5, 2.65, 1.5, Axis.XP, (float) (Math.sin(phase.time * .15) * 12));
       case REFINERY -> rotate(pose, unit, 3.7, .77, .3, Axis.ZP, (float) (phase.time * 10));

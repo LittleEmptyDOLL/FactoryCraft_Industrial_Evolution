@@ -109,22 +109,19 @@ class SteamCycleTest {
   @Test
   void engineProducesOnlyFromSteamAndNeverOverfills() {
     var steam = cell("steam", 1000);
-    var engine = new SteamEngine<>(steam, () -> {});
-    assertEquals(0, engine.generate(false));
+    var e = new SteamEngine<>(steam, () -> {});
+    assertEquals(0, e.generate(false));
     assertEquals(1000, steam.amount());
-    assertEquals(120, engine.generate(true));
-    assertEquals(900, steam.amount());
-    assertEquals(120, engine.energy());
-    engine.restore(15995);
-    assertEquals(4, engine.generate(true));
-    assertEquals(896, steam.amount());
-    assertEquals(4, engine.residue());
-    assertEquals(0, engine.generate(true));
-    engine.extract(1, false);
-    assertEquals(2, engine.generate(true));
-    assertEquals(16000, engine.energy());
-    assertEquals(895, steam.amount());
-    assertEquals(0, engine.residue());
+    assertEquals(120, e.generate(true));
+    assertEquals(985, steam.amount());
+    e.restore(15995);
+    assertEquals(0, e.generate(true));
+    assertEquals(985, steam.amount());
+    e.extract(3, false);
+    assertEquals(8, e.generate(true));
+    assertEquals(16000, e.energy());
+    assertEquals(984, steam.amount());
+    assertEquals(0, e.residue());
   }
 
   @Test
@@ -132,7 +129,7 @@ class SteamCycleTest {
     @SuppressWarnings("unchecked")
     SteamEngine<String>[] engines = new SteamEngine[1];
     var steam = new FluidCell<String>(40000, () -> assertEquals(120, engines[0].energy()));
-    steam.restore("steam", 100);
+    steam.restore("steam", 15);
     engines[0] = new SteamEngine<>(steam, () -> {});
     assertEquals(120, engines[0].generate(true));
     assertEquals(0, steam.amount());
@@ -142,15 +139,15 @@ class SteamCycleTest {
   void fractionalSteamEnergySurvivesRestartWithoutFreeEnergy() {
     var steam = cell("steam", 1);
     var e = new SteamEngine<>(steam, () -> {});
-    assertEquals(1, e.generate(true));
-    assertEquals(1, e.residue());
+    e.restore(15995);
+    assertEquals(0, e.generate(true));
+    assertEquals(1, steam.amount());
     var copy = new SteamEngine<>(steam, () -> {});
     copy.restore(e.energy(), e.residue());
-    for (int i = 0; i < 4; i++) {
-      steam.restore("steam", 1);
-      copy.generate(true);
-    }
-    assertEquals(6, copy.energy());
+    assertEquals(3, copy.extract(3, false));
+    assertEquals(8, copy.generate(true));
+    assertEquals(16000, copy.energy());
+    assertEquals(0, steam.amount());
     assertEquals(0, copy.residue());
   }
 
@@ -169,21 +166,23 @@ class SteamCycleTest {
 
   @Test
   void completeCycleMatchesItsMaterialFuelAndEnergyLedger() {
-    var input = cell("water", 40000);
+    var input = cell("water", 240);
     var steam = cell(null, 0);
     var boiler = new BoilerProcess();
-    boiler.refuel(400);
-    var engine = new SteamEngine<>(steam, () -> {});
+    boiler.refuel(1600);
+    var a = new SteamEngine<>(steam, () -> {});
+    var b = new SteamEngine<>(steam, () -> {});
     long delivered = 0;
-    for (int tick = 0; tick < 500; tick++) {
-      boiler.advance("water", 20, input, 2000, steam, "steam", 2000);
-      engine.generate(true);
-      delivered += engine.extract(120, false);
+    for (int tick = 0; tick < 100; tick++) {
+      boiler.advance("canonical", 1, input, 3, steam, "steam", 30, 20);
+      a.generate(true);
+      b.generate(true);
+      delivered += a.extract(120, false) + b.extract(120, false);
     }
     assertEquals(0, boiler.fuel());
     assertEquals(0, input.amount());
     assertEquals(0, steam.amount());
-    assertEquals(48000, delivered + engine.energy());
+    assertEquals(19200, delivered + a.energy() + b.energy());
   }
 
   @Test

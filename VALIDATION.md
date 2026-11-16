@@ -1,3 +1,23 @@
+# Release 0.26.0 — issue #5 (16 November 2026)
+
+Java 21.0.13 / Minecraft 1.21.1 / NeoForge 21.1.252. Relevant local checks:
+
+* `./gradlew build`: **224 JUnit tests pass**. Fixed-point paid work, existing transport/fluid/topology/resource invariants and benchmark layout expectations remain active.
+* `./gradlew runGameTestServer -PgameTestFixture=v0260-final`: **418 required native tests pass**, including all 406 prior cases and thirty restored finite production scenarios. A second independent JVM against the same directory passes all 418 and verifies existing checkpoints without reseeding. Twelve new cases cover exclusive shore-water production, ordinary Pump non-generation, three assembler speeds/16 physical input types/counts above one stack, mining/fuel/module debit, component identity, registry retirements, real cold steam bootstrap and genuine productive refinery outputs.
+* New `FACTORYCRAFT_V0260_DISK` checkpoint verifies source counters/water, boiler heat and 3:30 conversion, 15-steam/120-FE engine work, drill target UUID/third-fuel residue, ASM3 partial work and exact components between JVMs. Previous thermal, fluid, oil, ore, furnace, power, circuit and portable checkpoints remain required. Old FactoryCraft formats are intentionally unsupported.
+* Real dedicated **SMOKE** and **separate-JVM hash reload** pass: 100 belts, 200 physical carriers/items, twenty production machines, ten arms, five explicitly finite precharged steam engines. All twenty machines work and produce results; the iron-unit ledger stays 2560, belt count stays 200, and physical owner identities remain unchanged. This is a bounded liveness/conservation measurement, not a cold-bootstrap substitution. The native cold-bootstrap case separately uses actual shore water, coal, boiler, two engines, poles, finite ore, inserters and real products.
+* Actual graphical Minecraft client launched under Xvfb/Mesa, without optional mods: shore placement/green preview and actual water-producing menu, boiler/engines, original models for both drills and all three assemblers, physical input slots, recipe selection and four ASM3 module slots. Saved the separate current-version QA world normally and reopened it in another client JVM. This is single-client QA, not a survival progression playthrough or a multiplayer result. Screenshots and scope are in [validation/v0260](validation/v0260/README.md).
+
+The dedicated SMOKE samples measure server tick work: mean **1.791 ms**, p50 **1.284 ms**, p95 **2.939 ms**, p99 **17.721 ms**, max **19.355 ms**, zero samples over 50 ms; 120 measured ticks after forty warmup ticks, two CPUs / 2-GiB heap. These do not establish improved TPS or a full-factory performance claim. Raw [measure](validation/v0260/smoke-measure.json) / [reload](validation/v0260/smoke-verify.json) reports are retained; see BENCHMARKS.md.
+
+Development failures were preserved rather than reset: earlier native worlds exposed outdated ratios, legacy electric/circuit fixtures, accidental layout adjacency/overlap and a mining-productivity reload bound. Corrections retain the original invariant assertions; no required test was disabled. Closed failed directories were losslessly archived and byte-compared before removing only their active-directory copies. The successful final checkpoint remains separate. Real client QA additionally exposed an assembler progress-bar overlap and stale thermal labels, which were corrected before final capture.
+
+**Remaining release checks:** full/MIXED/chunk-unload factory profiles, unchanged 10000-pipe performance/restart, FTB Teams/JEI/EMI/Jade runtime and GitHub-hosted build/native repeat remain independent GitHub Actions jobs. Local optional API compilation is not optional-mod runtime validation; foreign-mod pipe interoperability is supported through NeoForge capabilities but no external pipe pack was visually tested. No real multiplayer playthrough was performed. Headless audio/public-key network warnings did not prevent gameplay/saving. No old-world migration, dynamic fluid temperature, full science/module tree or complete Factorio parity is claimed; [the registry audit](docs/FACTORIO_PARITY_AUDIT.md) lists the exact remaining differences.
+
+Historical validation below retains its original version scope.
+
+---
+
 # Validation — 0.25.1 / issue #4 (14 November 2026, Europe/Moscow)
 
 Java 21.0.13, Minecraft 1.21.1, NeoForge 21.1.252. Base: `1132d39689c24ae5df46091076ece4559f875bdd`. Current checks and bounded costs: [log extract](validation/v0251/local-checks.txt), [comparison](validation/v0251/comparison.md), [client checks](validation/v0251/client-checks.md).

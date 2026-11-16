@@ -47,7 +47,11 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
           Button.builder(
                   Component.translatable("gui.factorycraft.select"),
                   b -> RecipeSelectionScreen.open(this, menu.machine, menu.containerId))
-              .bounds(leftPos + 18, topPos + 110, 70, 18)
+              .bounds(
+                  leftPos + (menu.machine.kind().assembler() ? 125 : 18),
+                  topPos + 110,
+                  menu.machine.kind().assembler() ? 104 : 70,
+                  18)
               .build());
   }
 
@@ -91,13 +95,16 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
           204,
           i < 2 ? 0xa2dce9 : 0xe8cb8c);
     }
-    g.drawString(font, Component.translatable("gui.factorycraft.input"), 18, 78, 0xd8e9f0, false);
-    g.drawString(font, Component.translatable("gui.factorycraft.output"), 140, 78, 0xd8e9f0, false);
+    if (!menu.machine.kind().assembler())
+      g.drawString(font, Component.translatable("gui.factorycraft.input"), 18, 78, 0xd8e9f0, false);
+    if (!menu.machine.kind().assembler())
+      g.drawString(
+          font, Component.translatable("gui.factorycraft.output"), 140, 78, 0xd8e9f0, false);
     line(
         g,
         Component.translatable("gui.factorycraft.petroleum_status_" + menu.data.get(5)),
         125,
-        115,
+        menu.machine.kind().assembler() ? 78 : 115,
         104,
         0xd8e9f0);
     var recipes = menu.machine.petroleum().recipes();
@@ -108,10 +115,13 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
       line(
           g,
           Component.translatable(
-              "gui.factorycraft.chemical_recipe_info", name, recipe.ticks(), recipe.energy()),
-          18,
+              "gui.factorycraft.chemical_recipe_info",
+              name,
+              Math.ceilDiv(recipe.ticks() * 4, menu.machine.kind().workQuarters()),
+              menu.machine.kind().activeFE()),
+          menu.machine.kind().assembler() ? 125 : 18,
           137,
-          194,
+          menu.machine.kind().assembler() ? 104 : 194,
           0xe8cb8c);
       g.drawString(font, "?", 218, 137, 0xa2dce9, false);
     } else if (menu.machine.kind() == FactoryKind.PUMPJACK) {
@@ -129,7 +139,7 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
             204,
             0xe8cb8c);
     } else line(g, Component.translatable("gui.factorycraft.auto"), 18, 137, 204, 0xe8cb8c);
-    if (menu.machine.kind().large())
+    if (menu.machine.kind().large() && !menu.machine.kind().assembler())
       line(
           g,
           Component.translatable("gui.factorycraft.assembly." + menu.data.get(7)),
@@ -211,7 +221,10 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
     for (var fluid : recipe.fluidResults())
       lines.add(Component.literal(fluid.getAmount() + " mB ").append(fluid.getHoverName()));
     lines.add(
-        Component.translatable("gui.factorycraft.recipe_info", recipe.ticks(), recipe.energy()));
+        Component.translatable(
+            "gui.factorycraft.recipe_info",
+            Math.ceilDiv(recipe.ticks() * 4, menu.machine.kind().workQuarters()),
+            menu.machine.kind().activeFE()));
     g.renderComponentTooltip(font, lines, mx, my);
   }
 }

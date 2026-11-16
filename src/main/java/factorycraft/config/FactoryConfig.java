@@ -11,9 +11,7 @@ public final class FactoryConfig {
       CIRCUIT_SIGNAL_WORK,
       CIRCUIT_FLUID_WORK;
   public static final ModConfigSpec.IntValue LIFT_HEIGHT;
-  public static final ModConfigSpec.IntValue GENERATOR_FE;
   public static final ModConfigSpec.IntValue POWER_VERTICAL_REACH;
-  public static final ModConfigSpec.IntValue DRILL_TICKS;
   public static final ModConfigSpec.IntValue POWER_GRAPH_WORK;
   public static final ModConfigSpec.IntValue FLUID_WORK;
   public static final ModConfigSpec.IntValue ORE_RICHNESS;
@@ -23,17 +21,11 @@ public final class FactoryConfig {
     LIFT_HEIGHT =
         b.comment("Maximum signed conveyor lift height selected with one item.")
             .defineInRange("conveyorLiftMaxHeight", 16, 1, 32);
-    GENERATOR_FE =
-        b.comment("FE produced per tick while burning coal; vanilla coal lasts 1600 ticks.")
-            .defineInRange("generatorFePerTick", 80, 1, 10000);
     POWER_VERTICAL_REACH =
         b.comment(
                 "Maximum difference between pole and device base Y. Horizontal area and wire reach"
                     + " are fixed per type.")
             .defineInRange("powerVerticalReach", 4, 0, 64);
-    DRILL_TICKS =
-        b.comment("Powered ticks needed to extract one finite ore block beneath a drill.")
-            .defineInRange("drillTicks", 60, 1, 12000);
     POWER_GRAPH_WORK =
         b.comment(
                 "Logical power-graph rebuild work units per level per tick, including empty spatial"

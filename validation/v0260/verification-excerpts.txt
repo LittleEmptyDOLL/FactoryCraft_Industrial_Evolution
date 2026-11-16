@@ -1,0 +1,39 @@
+v0260-native-final.log
+FACTORYCRAFT_V0260_DISK: SEEDED real shoreline water, 10x steam, paid fuel/mining and ASM3 components/fractions
+[10:18:28] [Server thread/INFO] [minecraft/GameTestServer]: ========= 418 GAME TESTS COMPLETE IN 1.303 min ======================
+[10:18:28] [Server thread/INFO] [minecraft/GameTestServer]: All 418 required tests passed :)
+BUILD SUCCESSFUL in 1m 48s
+
+v0260-native-final-reload.log
+FACTORYCRAFT_V0260_DISK: VERIFIED source, heat/steam/FE, mining target UUID, thirds and ASM3 components/fractions across JVM
+[10:21:59] [Server thread/INFO] [minecraft/GameTestServer]: ========= 418 GAME TESTS COMPLETE IN 58.76 s ======================
+[10:21:59] [Server thread/INFO] [minecraft/GameTestServer]: All 418 required tests passed :)
+BUILD SUCCESSFUL in 1m 30s
+
+v0260-final-release.log
+FACTORYCRAFT_V0260_DISK: VERIFIED source, heat/steam/FE, mining target UUID, thirds and ASM3 components/fractions across JVM
+[10:53:03] [Server thread/INFO] [minecraft/GameTestServer]: ========= 418 GAME TESTS COMPLETE IN 1.029 min ======================
+[10:53:03] [Server thread/INFO] [minecraft/GameTestServer]: All 418 required tests passed :)
+BUILD SUCCESSFUL in 1m 38s
+
+v0260-smoke.log
+> Task :writeBenchmarkServerLegacyClasspath UP-TO-DATE
+> Task :prepareBenchmarkWorld
+> Task :prepareBenchmarkServerRun
+> Task :runBenchmarkServer
+[10:23:19] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: SMOKE measure starting; 772 cells, 7 pinned chunks
+[10:23:19] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: seeded; warming up for 40 real server ticks
+[10:23:31] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: measuring 120 real server ticks
+[10:23:37] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-measure.json
+BUILD SUCCESSFUL in 39s
+
+v0260-smoke-reload.log
+> Task :writeBenchmarkServerLegacyClasspath UP-TO-DATE
+> Task :prepareBenchmarkServerRun
+> Task :prepareBenchmarkWorld
+> Task :runBenchmarkServer
+> Task :runBenchmarkServer
+[10:24:28] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: SMOKE verify starting; 772 cells, 7 pinned chunks
+[10:24:30] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK_DISK: VERIFIED 100 belts, 20 producers, 10 inserters, 618 casings
+[10:24:30] [Server thread/INFO] [fa.di.FactoryBenchmark/]: FACTORYCRAFT_BENCHMARK: PASS SMOKE; report smoke-verify.json
+BUILD SUCCESSFUL in 35s

@@ -117,7 +117,7 @@ public final class MachinePorts {
               switch (p) {
                 case REFINERY -> 5;
                 case BOILER, ENGINE -> 2;
-                case TANK, PUMP -> 1;
+                case TANK, PUMP, OFFSHORE -> 1;
                 default -> 4;
               };
           for (var port : out)

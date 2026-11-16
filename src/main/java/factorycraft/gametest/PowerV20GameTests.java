@@ -53,7 +53,7 @@ public final class PowerV20GameTests {
     }
   }
 
-  private static BlockPos site(GameTestHelper h, int id) {
+  static BlockPos site(GameTestHelper h, int id) {
     var base =
         RUNS.computeIfAbsent(
             h.getLevel(),
@@ -168,16 +168,16 @@ public final class PowerV20GameTests {
       }
     }
     var small = machines.getFirst();
-    for (int n = 0; n < 10; n++) small.tick();
+    for (int n = 0; n < 20; n++) small.tick();
     h.assertTrue(
         small.items.getStackInSlot(4).is(Content.FACTORY.get(FactoryKind.POLE).get().asItem())
             && small.items.getStackInSlot(4).getCount() == 2
-            && small.power.getEnergyStored() == 880,
+            && small.power.getEnergyStored() == 800,
         "starter pole production failed");
     completeTechnology(catalog, ledger, dist1);
     for (int i = 1; i <= 2; i++) {
       var m = machines.get(i);
-      for (int n = 0; n < 20; n++) m.tick();
+      for (int n = 0; n < 40; n++) m.tick();
       h.assertTrue(
           m.items
                   .getStackInSlot(4)
@@ -186,7 +186,7 @@ public final class PowerV20GameTests {
                           .get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, specs[i].id))
                           .asItem())
               && m.items.getStackInSlot(4).getCount() == 1
-              && m.power.getEnergyStored() == 760,
+              && m.power.getEnergyStored() == 600,
           "unlocked pole did not produce once with exact FE");
     }
     var sub = machines.getLast();
@@ -195,10 +195,10 @@ public final class PowerV20GameTests {
         sub.power.getEnergyStored() == 1000 && sub.items.getStackInSlot(4).isEmpty(),
         "distribution 1 bypassed substation gate");
     completeTechnology(catalog, ledger, dist2);
-    for (int n = 0; n < 20; n++) sub.tick();
+    for (int n = 0; n < 40; n++) sub.tick();
     h.assertTrue(
         sub.items.getStackInSlot(4).is(Content.FACTORY.get(FactoryKind.SUBSTATION).get().asItem())
-            && sub.power.getEnergyStored() == 760,
+            && sub.power.getEnergyStored() == 600,
         "distribution 2 did not unlock substation");
     h.succeed();
   }
@@ -395,9 +395,7 @@ public final class PowerV20GameTests {
     var a = pole(h, MachineProfile.BIG_POLE, at);
     var middle = pole(h, MachineProfile.MEDIUM_POLE, at.east(8));
     var b = pole(h, MachineProfile.MEDIUM_POLE, at.east(16));
-    var source =
-        (MachineBlockEntity)
-            place(h, MachineProfile.GENERATOR, at.offset(1, 0, 2), Direction.NORTH);
+    var source = FinitePowerFixture.place(h.getLevel(), at.offset(1, 0, 2), Direction.NORTH, 0);
     var receiver =
         (MachineBlockEntity) place(h, MachineProfile.FURNACE, at.offset(17, 0, 2), Direction.NORTH);
     PowerWires.clear(a);
@@ -539,9 +537,7 @@ public final class PowerV20GameTests {
   public static void refineryReceivesEnergyWhenOnlyOneFoundationCellIsCovered(GameTestHelper h) {
     var at = h.absolutePos(new BlockPos(6, 2, 6));
     var pole = pole(h, MachineProfile.SMALL_POLE, at);
-    var source =
-        (MachineBlockEntity)
-            place(h, MachineProfile.GENERATOR, at.offset(-3, 0, -2), Direction.NORTH);
+    var source = FinitePowerFixture.place(h.getLevel(), at.offset(-3, 0, -2), Direction.NORTH, 0);
     var refinery =
         (MachineBlockEntity) place(h, MachineProfile.REFINERY, at.offset(4, 0, 4), Direction.NORTH);
     h.assertTrue(

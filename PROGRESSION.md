@@ -1,33 +1,28 @@
-# Production progression — 0.10.0
+# Production progression — 0.26.0
 
-Minecraft 1.21.1 / NeoForge 21.1.252. This extends the first research slice, not the complete Factorio tree. Team binding, old-save policy and definitions are described in [RESEARCH.md](RESEARCH.md).
+The implemented game remains a three-science subset of Factorio 2.1.24. The complete current recipe and research inventory, source references and remaining deviations are in [docs/FACTORIO_PARITY_AUDIT.md](docs/FACTORIO_PARITY_AUDIT.md). Old FactoryCraft formats are unsupported; no old diagnostic world is migrated/refilled.
 
-The new assembling machine 2 forms a centered **3×3×3** structure from one item. It uses the same sole controller, 16000-FE buffer, four input/four output item slots, guarded physical fluid ports and atomic mixed production as the chemical plant. It accepts ordinary assembler recipes under their original IDs/research locks as well as its own fluid recipes. Ordinary recipes keep their existing times/FE; tier speed bonuses/modules are not yet implemented. The first assembler and its saved fields are unchanged. No empty Petroleum/ResearchScope data is added to legacy assemblers.
-
-| Recipe | Machine | Inputs | Result | Work / FE per tick |
+| Machine | Base work speed | Active FE/t | Physical module slots | Item inputs / fluid support |
 |---|---|---|---|---|
-| Steel | Electric or industrial furnace | 5 iron plates | 1 steel plate | 320 t / 12 |
-| Engine | Assembler 1 or 2 | 1 steel, 1 gear, 2 pipes | 1 engine | 200 t / 24 |
-| Assembler 2 | Assembler 1 or 2 | 5 steel, 3 advanced circuits, 5 gears | 1 machine item | 200 t / 24 |
-| Chemical science | Assembler 1 or 2 | 2 advanced circuits, 3 engines, 1 sulfur | 2 blue packs | 480 t / 24 |
-| Electric engine | Assembler 2 | 1 engine, 2 circuits, 15 mB lubricant | 1 electric engine | 200 t / 30 |
-| Processor | Assembler 2 | 20 circuits, 2 advanced circuits, 5 mB sulfuric acid | 1 processor | 200 t / 40 |
+| Assembling Machine 1 | .5 | 10 | 0 | 16 / dry only |
+| Assembling Machine 2 | .75 | 20 | 2 | 16 / fluids |
+| Assembling Machine 3 | 1.25 | 50 | 4 | 16 / fluids |
+| Electric Drill | .5 basic ore/s | 12 | 3 | finite 5×5 area, depth up to 8 |
+| Burner Mining Drill | .25 basic ore/s | native solid heat | 0 | finite 2×2 area, depth up to 8 |
+| Oil Refinery | 1 | 56 | 3 | existing five fluid channels |
+| Chemical Plant | 1 | 28 | 3 | existing mixed recipes/physical ports |
+| Pumpjack | 1 yield cycle/s | 12 | 2 | original percentage oil-yield owner |
 
-Industrial furnace advances steel twice as quickly at the same total FE, following the existing rule. One second is 20 Minecraft ticks. Steel/engine/electronics ratios follow the intended industrial chain; energy and heights are explicit Minecraft balance choices. Electric engines/processors are real outputs but their later robot/module/rocket consumers remain future work.
+The sixteen assembler inputs are real slots available to players and IItemHandler automation. Requirements exceeding one stack can reserve several slots; output/fuel indices never become recipe inputs. Stable recipe-ID selection, Auto, search, component-exact transactions and team unlocks apply across tiers. An unchanged definition preserves paid work; a different definition cannot borrow it. Tiers 2/3 inherit dry recipes under the same IDs and execute them only once through the mixed-production component.
 
-Six technologies are added to the six existing definitions:
+Times in recipe JSON are **base work ticks**. A 20-tick recipe needs 40 / 26⅔ / 16 MC ticks at the three nominal speeds; work and module residues carry through consecutive crafts without per-craft rounding. Energy is machine power per active real tick. Modules modify the base speed/power once. Output reservations include productivity bonus items and fluids. No resources, power or burner heat are consumed while the complete next result is blocked.
 
-| Technology | Prerequisites | Packs per unit | Units × ticks | Unlock |
-|---|---|---|---|---|
-| Steel processing | Automation | red + green | 10 × 60 | steel |
-| Engines | Steel processing, Logistics | red + green | 20 × 60 | engine |
-| Automation 2 | Electronics | red + green | 20 × 60 | assembler 2 production |
-| Chemical science | Engines, Batteries | red + green | 30 × 80 | chemical science |
-| Advanced electronics 2 | Chemical science, Automation 2 | red + green + blue | 50 × 120 | processors |
-| Electric engines | Chemical science, Automation 2 | red + green + blue | 40 × 100 | electric engines |
+Essential base timings now include gear/cable/electronic circuit .5 s (10 ticks), advanced circuit 6 s, processing unit/engine/electric engine 10 s, chemical science 24 s. Existing 1:10 fluid ingredients are retained. Solid Fuel has all three one-second Chemical Plant recipes: 200 mB gas, 100 mB light oil or 200 mB heavy oil → one fuel; 4800 native smelting-fuel ticks, three coals. No additional material was invented. Empty-component upgrade ingredients reject packed resource owners.
 
-Labs already have four science slots and now accept the third pack from native recipe definitions. Concurrent labs spend only one set of all three packs for the last shared unit. The existing six technology definitions and canonical partial-work signatures are retained; existing research is not restarted. New gates apply to explicitly owned machines; legacy/admin machines without an owner remain ungated, as in 0.9.0.
+Early survival can hand-craft Stone Furnace and Burner Drill, use finite natural ore, make circuits and an Offshore Pump, then fuel a Boiler and supply two Steam Engines and real poles. Only Offshore Pump creates water from a valid loaded shore, without FE; the ordinary electric Pump cannot solve bootstrap by generating water. See [STEAM_POWER.md](STEAM_POWER.md). Nine-cell Minecraft hand recipes compress starting-machine counts and use only the corresponding material families; full counted industrial machine recipes are listed in the audit. This compression is an explicit adaptation, not original Factorio hand-crafting parity.
 
-`/factorycraft chemicalworks` builds a component-fed, powered **steel/gears/pipes → engines → chemical science → chest** example in an empty loaded 30×8×13 area beside the player. It starts with 6 steel, 6 gears, 12 pipes, 4 advanced circuits, 2 sulfur and 8 coal, produces 6 engines and then 4 blue packs through inserters/belts, and grants no research. Its two production machines bind to the invoking player's effective research team. Complete Engines and Chemical science first; otherwise the line correctly waits on research. This example is not a raw-ore-to-blue factory: the steel/refining/electronics supply chains are separate real recipes and can be connected normally.
+Assembler 2 remains behind Automation 2. New Assembler 3 is made from four Speed Modules and two empty Assembler 2 items and requires Automation 3. Its current research uses existing red/green/blue packs, with Automation 2, Modules and Advanced Electronics 2 prerequisites: production science is not implemented, so this gate is explicitly temporary. Stack Inserter/stack-height research remains sandbox-only until its real Space Age progression exists. Higher science/module tiers and full original technology costs/prerequisites remain incomplete. Existing lab-efficiency research is a noncanonical retained adaptation; labs now use the 60-kW /8-FE base before that effect, but their two original module slots/effects remain future work.
 
-EMI/JEI list the native recipes, fluid quantities and requirements. Assembler 2 is also a catalyst for the original dry assembler category, avoiding duplicate synthetic recipe IDs. The built-in machine menu lists both dry and fluid definitions. Use explicit recipe selection when feeding components suitable for several outputs.
+Machines bind to the invoking player's current vanilla/FTB research team as before. Team labs share authoritative progress and reserve the last science unit once. Diagnostic/admin unbound machines remain ungated for controlled fixtures. The audit distinguishes these diagnostics from survival progression.
+
+The standalone recipe browser remains usable without optional mods. EMI/JEI show native ingredients, base work time, nominal primary-machine FE and research; Assembler 3 is a workstation for the existing dry and fluid assembler categories, avoiding duplicate synthetic recipe IDs. The real machine GUI reports that machine's speed/FE.

@@ -1,3 +1,29 @@
+# Release 0.26.0 — bounded real-server liveness
+
+Gameplay changes deliberately alter power, speeds and fuel. No before/after optimization or whole-factory TPS improvement is claimed. Existing full, mixed-3D and 10000-pipe profiles remain independent CI work.
+
+The local dedicated **SMOKE** fixture uses 100 real belt owners / 200 physical single-item carriers, twenty production machines, ten arms and five steam-engine sources with explicitly declared finite 40000-mB steam inputs. It does not contain a runtime Coal Generator or use the old water-creating Pump. Sources are finite diagnostic preparation; the separate native cold-bootstrap scenario tests Offshore → coal Boiler → two Engines with no injected working fluid/FE. The fixture occupies 772 blocks including 618 technical casings in seven diagnostic ticking chunks.
+
+| Dedicated tick-work metric | 0.26.0 local SMOKE |
+|---|---:|
+| Samples / warmup | 120 / 40 ticks |
+| Mean | 1.790617 ms |
+| p50 | 1.284214 ms |
+| p95 | 2.939247 ms |
+| p99 | 17.720524 ms |
+| Maximum | 19.354873 ms |
+| Samples over 50 ms | 0 |
+
+Environment: Java 21.0.13, NeoForge 21.1.252, Minecraft 1.21.1, two available CPUs, 2-GiB max heap. Startup, census, report generation and saves are outside tick samples; no FPS claim. Window is short, and this is not the 10000-belt factory workload.
+
+All twenty machines show real paid work and results, all ten arms deliver, all hundred belts move; measured recipes complete 90 times, arms deliver 42 items and cross-segment transfers total 2300. Iron-unit count remains **2560**, belt carriers/items **200**, owner identity hash unchanged. The independent-JVM verify run confirms the previous full-state hash **before** resumed simulation and passes fresh conservation/liveness checks. Its post-resume save hash can legitimately differ. [Raw measure](validation/v0260/smoke-measure.json), [raw verify](validation/v0260/smoke-verify.json).
+
+A 0.25.1 timing comparison is intentionally omitted: using removed generators or different canonical machine rates would not be a controlled performance comparison. No full/MIXED or large fluid workload is claimed locally in this release.
+
+Historical measurements below retain their original release semantics.
+
+---
+
 # Release 0.25.1 — bounded ellipsoid cost and furnace liveness
 
 [Three pure-JVM trials, real Feature owner/allocation observations and limits](validation/v0251/comparison.md). Baseline is 0.25.0 `1132d39`. Full 3D sampling costs more than the old per-column approximation at maximum settings; no TPS improvement is claimed. Default vertical radius is 5–8, maximum opt-in 64. A native one-chunk maximum-setting slice and both cliff orientations are checked separately from pure geometry.

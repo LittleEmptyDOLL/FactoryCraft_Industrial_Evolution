@@ -114,7 +114,16 @@ public final class MachineItem extends BlockItem {
               "tooltip.factorycraft.pole_properties", pole.supply, pole.supply, pole.wire));
     }
     switch (profile) {
-      case ADVANCED_ASSEMBLER, PUMPJACK, REFINERY, CHEMICAL, BOILER, ENGINE, TANK, PUMP ->
+      case ADVANCED_ASSEMBLER,
+              ASSEMBLER_3,
+              PUMPJACK,
+              REFINERY,
+              CHEMICAL,
+              BOILER,
+              ENGINE,
+              TANK,
+              PUMP,
+              OFFSHORE ->
           lines.add(Component.translatable("tooltip.factorycraft.fluid_nozzles"));
       default -> {}
     }

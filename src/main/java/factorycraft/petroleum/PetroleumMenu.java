@@ -25,7 +25,13 @@ public final class PetroleumMenu extends AbstractContainerMenu {
     this.machine = machine;
     this.data = data;
     addDataSlots(data);
-    for (int i = 0; i < 4; i++) addSlot(new SlotItemHandler(machine.items, i, 18 + i * 18, 90));
+    for (int i = 0; i < (machine.kind().assembler() ? 16 : 4); i++)
+      addSlot(
+          new SlotItemHandler(
+              machine.items,
+              factorycraft.recipes.FactoryInput.realSlot(i),
+              18 + (i % 4) * 18,
+              (machine.kind().assembler() ? 78 : 90) + (i / 4) * 18));
     for (int i = 4; i < 8; i++)
       addSlot(
           new SlotItemHandler(machine.items, i, 140 + (i - 4) * 18, 90) {
@@ -77,9 +83,10 @@ public final class PetroleumMenu extends AbstractContainerMenu {
     if (!slot.hasItem()) return ItemStack.EMPTY;
     var stack = slot.getItem();
     var original = stack.copy();
-    if (index < 8) {
-      if (!moveItemStackTo(stack, 8, 44, true)) return ItemStack.EMPTY;
-    } else if (!machine.kind().processing() || !moveItemStackTo(stack, 0, 4, false))
+    int inputs = machine.kind().assembler() ? 16 : 4, own = inputs + 4;
+    if (index < own) {
+      if (!moveItemStackTo(stack, own, slots.size(), true)) return ItemStack.EMPTY;
+    } else if (!machine.kind().processing() || !moveItemStackTo(stack, 0, inputs, false))
       return ItemStack.EMPTY;
     if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
     else slot.setChanged();

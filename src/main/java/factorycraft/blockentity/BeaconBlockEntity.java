@@ -1,6 +1,7 @@
 package factorycraft.blockentity;
 
 import factorycraft.blocks.FactoryBlock;
+import factorycraft.blocks.FactoryKind;
 import factorycraft.energy.*;
 import factorycraft.fluids.FluidConnections;
 import factorycraft.modules.*;
@@ -130,7 +131,7 @@ public final class BeaconBlockEntity extends FactoryBlockEntity
             && ((net.minecraft.server.level.ServerLevel) level)
                 .shouldTickBlocksAt(new net.minecraft.world.level.ChunkPos(worldPosition).toLong())
             && (speedBonus() != 0 || energyBonus() != 0)
-            && power.spend(40);
+            && power.spend(FactoryKind.BEACON.activeFE());
     if (next != paid) {
       paid = next;
       BeaconIndex.changed(this);

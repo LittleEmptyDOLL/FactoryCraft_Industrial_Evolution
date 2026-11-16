@@ -90,6 +90,8 @@ public final class FluidScreen extends AbstractContainerScreen<FluidMenu> {
         132,
         0xd8e9f0,
         false);
+    if (menu.machine.kind() == FluidKind.OFFSHORE)
+      g.drawString(font, "600 mB/t · 0 FE", 55, 148, 0x5ed3c8, false);
     if (menu.machine.kind() == FluidKind.PUMP)
       g.drawString(
           font,

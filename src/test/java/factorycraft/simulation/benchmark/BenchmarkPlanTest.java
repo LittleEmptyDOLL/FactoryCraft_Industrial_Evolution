@@ -22,13 +22,13 @@ class BenchmarkPlanTest {
     }
     assertEquals(10000, counts.get(Role.BELT));
     assertEquals(500, counts.get(Role.INSERTER));
-    assertEquals(30248, counts.get(Role.CASING));
+    assertEquals(30998, counts.get(Role.CASING));
     assertEquals(
         1000,
         counts.get(Role.FURNACE) + counts.get(Role.ASSEMBLER) + counts.get(Role.STEEL_FURNACE));
-    assertEquals(250, counts.get(Role.GENERATOR));
+    assertEquals(250, counts.get(Role.STEAM_ENGINE));
     assertEquals(749, counts.get(Role.POLE));
-    assertEquals(42997, points.size());
+    assertEquals(43747, points.size());
   }
 
   @Test
@@ -96,12 +96,12 @@ class BenchmarkPlanTest {
             Role.ASSEMBLER,
             Role.STEEL_FURNACE,
             Role.CASING,
-            Role.GENERATOR,
+            Role.STEAM_ENGINE,
             Role.POLE,
             Role.INSERTER,
             Role.SOURCE),
         roles);
-    assertEquals(757, blocks.size());
+    assertEquals(772, blocks.size());
     assertEquals(Profile.FULL, Profile.parse("full"));
     assertThrows(IllegalArgumentException.class, () -> Profile.parse("arbitrary"));
   }
@@ -114,7 +114,7 @@ class BenchmarkPlanTest {
       var kind =
           switch (c.role()) {
             case POLE -> factorycraft.simulation.power.PowerTopology.Kind.POLE;
-            case GENERATOR -> factorycraft.simulation.power.PowerTopology.Kind.SOURCE;
+            case STEAM_ENGINE -> factorycraft.simulation.power.PowerTopology.Kind.SOURCE;
             case FURNACE, ASSEMBLER, INSERTER ->
                 factorycraft.simulation.power.PowerTopology.Kind.CONSUMER;
             default -> null;

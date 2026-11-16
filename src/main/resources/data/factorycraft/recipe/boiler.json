@@ -1,0 +1,29 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:stone_furnace"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:fluid_pipe"
+      },
+      "count": 4
+    }
+  ],
+  "result": {
+    "id": "factorycraft:boiler",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 10
+}

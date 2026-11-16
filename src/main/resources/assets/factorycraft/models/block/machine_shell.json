@@ -17,13 +17,11 @@
     "bidi": "factorycraft:block/machine/bidi",
     "indicator_off": "factorycraft:block/machine/indicator_off",
     "indicator_on": "factorycraft:block/machine/indicator_on",
+    "green": "factorycraft:block/machine/green",
     "flame": "factorycraft:block/machine/flame",
     "belt": "factorycraft:block/machine/belt",
     "piston": "factorycraft:block/machine/piston",
-    "particle": "factorycraft:block/machine/shell",
-    "belt_1": "factorycraft:block/transport/surface_1",
-    "belt_2": "factorycraft:block/transport/surface_2",
-    "belt_3": "factorycraft:block/transport/surface_3"
+    "particle": "factorycraft:block/machine/shell"
   },
   "machines": [
     {
@@ -197,6 +195,141 @@
             1.82
           ],
           "material": "orange"
+        }
+      ]
+    },
+    {
+      "profile": "burner_mining_drill",
+      "boxes": [
+        {
+          "from": [
+            0.05,
+            0,
+            0.05
+          ],
+          "to": [
+            1.95,
+            0.24,
+            1.95
+          ],
+          "material": "dark"
+        },
+        {
+          "from": [
+            0.08,
+            0.24,
+            0.08
+          ],
+          "to": [
+            1.92,
+            0.34,
+            1.92
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.12,
+            0.12,
+            0.022
+          ],
+          "to": [
+            0.58,
+            0.22,
+            0.052
+          ],
+          "material": "indicator"
+        },
+        {
+          "from": [
+            0.18,
+            0.34,
+            0.18
+          ],
+          "to": [
+            1.82,
+            0.62,
+            1.82
+          ],
+          "material": "orange"
+        },
+        {
+          "from": [
+            0.16,
+            0.34,
+            0.16
+          ],
+          "to": [
+            0.36,
+            1.8,
+            0.36
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.16,
+            0.34,
+            1.64
+          ],
+          "to": [
+            0.36,
+            1.8,
+            1.84
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.64,
+            0.34,
+            0.16
+          ],
+          "to": [
+            1.84,
+            1.8,
+            0.36
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.64,
+            0.34,
+            1.64
+          ],
+          "to": [
+            1.84,
+            1.8,
+            1.84
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.25,
+            1.65,
+            0.25
+          ],
+          "to": [
+            1.75,
+            1.9,
+            1.75
+          ],
+          "material": "shell"
+        },
+        {
+          "from": [
+            1.36,
+            0.65,
+            1.25
+          ],
+          "to": [
+            1.77,
+            1.55,
+            1.8
+          ],
+          "material": "dark"
         }
       ]
     },
@@ -519,167 +652,6 @@
             2.45
           ],
           "material": "hazard"
-        }
-      ]
-    },
-    {
-      "profile": "coal_generator",
-      "boxes": [
-        {
-          "from": [
-            0.05,
-            0,
-            0.05
-          ],
-          "to": [
-            2.95,
-            0.24,
-            2.95
-          ],
-          "material": "dark"
-        },
-        {
-          "from": [
-            0.08,
-            0.24,
-            0.08
-          ],
-          "to": [
-            2.92,
-            0.34,
-            2.92
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            0.12,
-            0.12,
-            0.022
-          ],
-          "to": [
-            0.58,
-            0.22,
-            0.052
-          ],
-          "material": "indicator"
-        },
-        {
-          "from": [
-            0.3,
-            0.34,
-            0.35
-          ],
-          "to": [
-            2.7,
-            2.35,
-            2.65
-          ],
-          "material": "shell"
-        },
-        {
-          "from": [
-            0.48,
-            0.55,
-            0.18
-          ],
-          "to": [
-            2.52,
-            2.1,
-            0.36
-          ],
-          "material": "dark"
-        },
-        {
-          "from": [
-            0.3505,
-            2.2,
-            2.19
-          ],
-          "to": [
-            0.6495,
-            2.98,
-            2.65
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            0.27,
-            2.2,
-            2.2705
-          ],
-          "to": [
-            0.3505,
-            2.98,
-            2.5695
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            0.6495,
-            2.2,
-            2.2705
-          ],
-          "to": [
-            0.73,
-            2.98,
-            2.5695
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            2.3505,
-            2.2,
-            2.19
-          ],
-          "to": [
-            2.6495,
-            2.98,
-            2.65
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            2.27,
-            2.2,
-            2.2705
-          ],
-          "to": [
-            2.3505,
-            2.98,
-            2.5695
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            2.6495,
-            2.2,
-            2.2705
-          ],
-          "to": [
-            2.73,
-            2.98,
-            2.5695
-          ],
-          "material": "steel"
-        },
-        {
-          "from": [
-            0.4,
-            2.35,
-            0.45
-          ],
-          "to": [
-            2.6,
-            2.62,
-            2.15
-          ],
-          "material": "yellow"
         }
       ]
     },
@@ -2055,6 +2027,180 @@
       ]
     },
     {
+      "profile": "offshore_pump",
+      "boxes": [
+        {
+          "from": [
+            0.05,
+            0,
+            0.05
+          ],
+          "to": [
+            1.95,
+            0.24,
+            0.95
+          ],
+          "material": "dark"
+        },
+        {
+          "from": [
+            0.08,
+            0.24,
+            0.08
+          ],
+          "to": [
+            1.92,
+            0.34,
+            0.92
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.12,
+            0.12,
+            0.022
+          ],
+          "to": [
+            0.58,
+            0.22,
+            0.052
+          ],
+          "material": "indicator"
+        },
+        {
+          "from": [
+            0.15,
+            0.3,
+            0.15
+          ],
+          "to": [
+            1.85,
+            0.6,
+            0.85
+          ],
+          "material": "teal"
+        },
+        {
+          "from": [
+            0.2505,
+            0.35,
+            0.42
+          ],
+          "to": [
+            0.5495,
+            0.9,
+            0.88
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.17,
+            0.35,
+            0.5005
+          ],
+          "to": [
+            0.2505,
+            0.9,
+            0.7995
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.5495,
+            0.35,
+            0.5005
+          ],
+          "to": [
+            0.63,
+            0.9,
+            0.7995
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.24,
+            0.35,
+            0.75
+          ],
+          "to": [
+            0.56,
+            0.65,
+            0.99
+          ],
+          "material": "inlet"
+        },
+        {
+          "from": [
+            1.2505,
+            0.35,
+            0.42
+          ],
+          "to": [
+            1.5495,
+            0.9,
+            0.88
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.17,
+            0.35,
+            0.5005
+          ],
+          "to": [
+            1.2505,
+            0.9,
+            0.7995
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.5495,
+            0.35,
+            0.5005
+          ],
+          "to": [
+            1.63,
+            0.9,
+            0.7995
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            1.24,
+            0.35,
+            0.75
+          ],
+          "to": [
+            1.56,
+            0.65,
+            0.99
+          ],
+          "material": "inlet"
+        },
+        {
+          "from": [
+            0.65,
+            0.6,
+            0.2
+          ],
+          "to": [
+            1.3,
+            0.98,
+            0.75
+          ],
+          "material": "orange"
+        }
+      ]
+    },
+    {
       "profile": "splitter",
       "boxes": [
         {
@@ -2081,7 +2227,7 @@
             0.18,
             1
           ],
-          "material": "belt_1"
+          "material": "belt"
         },
         {
           "from": [
@@ -2120,7 +2266,7 @@
             0.18,
             1
           ],
-          "material": "belt_1"
+          "material": "belt"
         },
         {
           "from": [
@@ -2681,6 +2827,219 @@
       ]
     },
     {
+      "profile": "assembling_machine_3",
+      "boxes": [
+        {
+          "from": [
+            0.05,
+            0,
+            0.05
+          ],
+          "to": [
+            2.95,
+            0.24,
+            2.95
+          ],
+          "material": "dark"
+        },
+        {
+          "from": [
+            0.08,
+            0.24,
+            0.08
+          ],
+          "to": [
+            2.92,
+            0.34,
+            2.92
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.12,
+            0.12,
+            0.022
+          ],
+          "to": [
+            0.58,
+            0.22,
+            0.052
+          ],
+          "material": "indicator"
+        },
+        {
+          "from": [
+            0.27,
+            0.34,
+            0.27
+          ],
+          "to": [
+            2.73,
+            0.75,
+            2.73
+          ],
+          "material": "teal"
+        },
+        {
+          "from": [
+            0.45,
+            0.75,
+            0.45
+          ],
+          "to": [
+            2.55,
+            0.85,
+            2.55
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.16,
+            0.34,
+            0.16
+          ],
+          "to": [
+            0.36,
+            2.88,
+            0.36
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.16,
+            0.34,
+            2.64
+          ],
+          "to": [
+            0.36,
+            2.88,
+            2.84
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            2.64,
+            0.34,
+            0.16
+          ],
+          "to": [
+            2.84,
+            2.88,
+            0.36
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            2.64,
+            0.34,
+            2.64
+          ],
+          "to": [
+            2.84,
+            2.88,
+            2.84
+          ],
+          "material": "steel"
+        },
+        {
+          "from": [
+            0.15,
+            2.55,
+            0.15
+          ],
+          "to": [
+            2.85,
+            2.96,
+            2.85
+          ],
+          "material": "teal"
+        },
+        {
+          "from": [
+            0.55,
+            0.85,
+            0.55
+          ],
+          "to": [
+            2.45,
+            1.02,
+            2.45
+          ],
+          "material": "hazard"
+        },
+        {
+          "from": [
+            0.35,
+            1.05,
+            2.65
+          ],
+          "to": [
+            0.75,
+            2.4,
+            2.95
+          ],
+          "material": "inlet"
+        },
+        {
+          "from": [
+            2.25,
+            1.05,
+            2.65
+          ],
+          "to": [
+            2.65,
+            2.4,
+            2.95
+          ],
+          "material": "inlet"
+        },
+        {
+          "from": [
+            0.16,
+            2.55,
+            0.16
+          ],
+          "to": [
+            2.84,
+            2.95,
+            2.84
+          ],
+          "material": "green"
+        },
+        {
+          "from": [
+            0.45,
+            0.85,
+            2.6
+          ],
+          "to": [
+            0.7,
+            2.4,
+            2.9
+          ],
+          "material": "green"
+        },
+        {
+          "from": [
+            2.25,
+            0.85,
+            2.6
+          ],
+          "to": [
+            2.5,
+            2.4,
+            2.9
+          ],
+          "material": "green"
+        }
+      ]
+    },
+    {
       "profile": "beacon",
       "boxes": [
         {
@@ -2790,7 +3149,7 @@
             0.18,
             1
           ],
-          "material": "belt_2"
+          "material": "belt"
         },
         {
           "from": [
@@ -2829,7 +3188,7 @@
             0.18,
             1
           ],
-          "material": "belt_2"
+          "material": "belt"
         },
         {
           "from": [
@@ -3107,7 +3466,7 @@
             0.18,
             1
           ],
-          "material": "belt_3"
+          "material": "belt"
         },
         {
           "from": [
@@ -3146,7 +3505,7 @@
             0.18,
             1
           ],
-          "material": "belt_3"
+          "material": "belt"
         },
         {
           "from": [
@@ -3706,224 +4065,6 @@
             0.85,
             0.5,
             1.94
-          ],
-          "material": "teal"
-        },
-        {
-          "from": [
-            0.4,
-            0.441,
-            0.16
-          ],
-          "to": [
-            0.6,
-            0.49,
-            0.36
-          ],
-          "material": "indicator"
-        }
-      ]
-    },
-    {
-      "profile": "circuit_reader",
-      "boxes": [
-        {
-          "from": [
-            0.05,
-            0,
-            0.05
-          ],
-          "to": [
-            0.95,
-            0.15,
-            0.95
-          ],
-          "material": "dark"
-        },
-        {
-          "from": [
-            0.12,
-            0.15,
-            0.12
-          ],
-          "to": [
-            0.88,
-            0.44,
-            0.88
-          ],
-          "material": "inlet"
-        },
-        {
-          "from": [
-            0.22,
-            0.44,
-            0.22
-          ],
-          "to": [
-            0.78,
-            0.48,
-            0.78
-          ],
-          "material": "glass"
-        },
-        {
-          "from": [
-            0.15,
-            0.44,
-            0.06
-          ],
-          "to": [
-            0.3,
-            0.5,
-            0.18
-          ],
-          "material": "red"
-        },
-        {
-          "from": [
-            0.7,
-            0.44,
-            0.06
-          ],
-          "to": [
-            0.85,
-            0.5,
-            0.18
-          ],
-          "material": "teal"
-        },
-        {
-          "from": [
-            0.15,
-            0.44,
-            0.82
-          ],
-          "to": [
-            0.3,
-            0.5,
-            0.94
-          ],
-          "material": "red"
-        },
-        {
-          "from": [
-            0.7,
-            0.44,
-            0.82
-          ],
-          "to": [
-            0.85,
-            0.5,
-            0.94
-          ],
-          "material": "teal"
-        },
-        {
-          "from": [
-            0.4,
-            0.441,
-            0.16
-          ],
-          "to": [
-            0.6,
-            0.49,
-            0.36
-          ],
-          "material": "indicator"
-        }
-      ]
-    },
-    {
-      "profile": "circuit_controller",
-      "boxes": [
-        {
-          "from": [
-            0.05,
-            0,
-            0.05
-          ],
-          "to": [
-            0.95,
-            0.15,
-            0.95
-          ],
-          "material": "dark"
-        },
-        {
-          "from": [
-            0.12,
-            0.15,
-            0.12
-          ],
-          "to": [
-            0.88,
-            0.44,
-            0.88
-          ],
-          "material": "red"
-        },
-        {
-          "from": [
-            0.22,
-            0.44,
-            0.22
-          ],
-          "to": [
-            0.78,
-            0.48,
-            0.78
-          ],
-          "material": "glass"
-        },
-        {
-          "from": [
-            0.15,
-            0.44,
-            0.06
-          ],
-          "to": [
-            0.3,
-            0.5,
-            0.18
-          ],
-          "material": "red"
-        },
-        {
-          "from": [
-            0.7,
-            0.44,
-            0.06
-          ],
-          "to": [
-            0.85,
-            0.5,
-            0.18
-          ],
-          "material": "teal"
-        },
-        {
-          "from": [
-            0.15,
-            0.44,
-            0.82
-          ],
-          "to": [
-            0.3,
-            0.5,
-            0.94
-          ],
-          "material": "red"
-        },
-        {
-          "from": [
-            0.7,
-            0.44,
-            0.82
-          ],
-          "to": [
-            0.85,
-            0.5,
-            0.94
           ],
           "material": "teal"
         },

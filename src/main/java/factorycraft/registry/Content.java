@@ -303,15 +303,16 @@ public final class Content {
                           MachineBlockEntity::new,
                           blocks(
                               FactoryKind.DRILL,
+                              FactoryKind.BURNER_DRILL,
                               FactoryKind.FURNACE,
                               FactoryKind.STONE_FURNACE,
                               FactoryKind.ASSEMBLER,
-                              FactoryKind.GENERATOR,
                               FactoryKind.STEEL_FURNACE,
                               FactoryKind.PUMPJACK,
                               FactoryKind.REFINERY,
                               FactoryKind.CHEMICAL_PLANT,
-                              FactoryKind.ADVANCED_ASSEMBLER))
+                              FactoryKind.ADVANCED_ASSEMBLER,
+                              FactoryKind.ASSEMBLER_3))
                       .build(null));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PoleBlockEntity>> POLE =
       ENTITIES.register(
@@ -408,6 +409,9 @@ public final class Content {
       ITEMS.register(
           "fluid_canister",
           () -> new factorycraft.items.FluidCanisterItem(new Item.Properties().stacksTo(1)));
+  public static final DeferredItem<factorycraft.items.SolidFuelItem> SOLID_FUEL =
+      ITEMS.register(
+          "solid_fuel", () -> new factorycraft.items.SolidFuelItem(new Item.Properties()));
   public static final DeferredItem<Item> STEEL_PLATE = ITEMS.registerSimpleItem("steel_plate");
   public static final DeferredItem<Item> ENGINE_UNIT = ITEMS.registerSimpleItem("engine_unit");
   public static final DeferredItem<Item> ELECTRIC_ENGINE_UNIT =

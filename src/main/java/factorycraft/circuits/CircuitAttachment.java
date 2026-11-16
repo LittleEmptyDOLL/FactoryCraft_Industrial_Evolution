@@ -40,10 +40,7 @@ public final class CircuitAttachment {
         CircuitSettings.defaults(
             owner instanceof ChestBlockEntity || owner instanceof FluidBlockEntity);
     program = SignalProgram.defaults(kind());
-    legacyMode =
-        owner instanceof CircuitNodeBlockEntity n
-            && (n.kind() == FactoryKind.CIRCUIT_READER
-                || n.kind() == FactoryKind.CIRCUIT_CONTROLLER);
+    legacyMode = false;
     randomSeed = owner.getBlockPos().asLong() ^ 0x675842d9e513L;
   }
 
@@ -79,9 +76,7 @@ public final class CircuitAttachment {
   }
 
   public boolean combinator() {
-    return owner instanceof CircuitNodeBlockEntity n
-        && n.kind() != FactoryKind.CIRCUIT_READER
-        && n.kind() != FactoryKind.CIRCUIT_CONTROLLER;
+    return owner instanceof CircuitNodeBlockEntity;
   }
 
   public CircuitSettings settings() {

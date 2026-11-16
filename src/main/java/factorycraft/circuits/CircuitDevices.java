@@ -30,17 +30,13 @@ public final class CircuitDevices {
   private static final Map<Level, Map<String, BlockPos>> RESEARCH_CONTROL = new IdentityHashMap<>();
 
   public static boolean needsPoll(CircuitAttachment n) {
-    return n.legacyMode
-            && n.legacy() != null
-            && (n.legacy().kind() == FactoryKind.CIRCUIT_READER
-                || n.legacy().kind() == FactoryKind.CIRCUIT_CONTROLLER)
-        || !n.combinator()
-            && (n.settings().contents()
-                || n.settings().state()
-                || n.settings().ingredients()
-                || n.settings().results()
-                || n.settings().researchInfo()
-                || n.settings().selectResearch());
+    return !n.combinator()
+        && (n.settings().contents()
+            || n.settings().state()
+            || n.settings().ingredients()
+            || n.settings().results()
+            || n.settings().researchInfo()
+            || n.settings().selectResearch());
   }
 
   public static boolean gateable(BlockEntity be) {
@@ -49,7 +45,7 @@ public final class CircuitDevices {
         || be instanceof MachineBlockEntity
         || be instanceof ThermalBlockEntity
         || be instanceof LabBlockEntity
-        || be instanceof FluidBlockEntity fluid && fluid.kind() == FluidKind.PUMP;
+        || be instanceof FluidBlockEntity fluid && fluid.kind().boundary();
   }
 
   public static boolean stateful(BlockEntity be) {
@@ -66,6 +62,7 @@ public final class CircuitDevices {
         b instanceof MachineBlockEntity m
             && (m.kind() == FactoryKind.ASSEMBLER
                 || m.kind() == FactoryKind.ADVANCED_ASSEMBLER
+                || m.kind() == FactoryKind.ASSEMBLER_3
                 || m.kind() == FactoryKind.REFINERY
                 || m.kind() == FactoryKind.CHEMICAL_PLANT);
     return (!s.filters() && !s.hand() || b instanceof InserterBlockEntity)
@@ -134,8 +131,6 @@ public final class CircuitDevices {
 
   public static Reading read(CircuitAttachment n) {
     if (!n.available()) return new Reading(false, SignalSet.EMPTY);
-    if (n.legacyMode && n.legacy() != null && n.legacy().kind() == FactoryKind.CIRCUIT_READER)
-      return legacyRead(n);
     var out = new SignalSet.Builder().addAll(stateSignals(n));
     var be = n.owner();
     var settings = n.settings();
@@ -368,67 +363,6 @@ public final class CircuitDevices {
   public static void unload(Level level) {
     RESEARCH.remove(level);
     RESEARCH_CONTROL.remove(level);
-  }
-
-  private static Reading legacyRead(CircuitAttachment attachment) {
-    var n = attachment.legacy();
-    var level = (ServerLevel) n.getLevel();
-    var p = n.targetPosition();
-    if (level.getChunkSource().getChunkNow(p.getX() >> 4, p.getZ() >> 4) == null
-        || !level.shouldTickBlocksAt(
-            net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4)))
-      return new Reading(false, SignalSet.EMPTY);
-    var endpoint = FluidConnections.endpoint(level, p);
-    CircuitSimulation.watchSensor(attachment, p, endpoint);
-    if (endpoint instanceof FluidBlockEntity fluid && !fluid.simulationAvailable())
-      return new Reading(false, SignalSet.EMPTY);
-    var owner = AssemblyAccess.owner(endpoint);
-    if (owner != null) {
-      if (!owner.loaded() || !owner.assembly().ready()) return new Reading(false, SignalSet.EMPTY);
-      for (var cell :
-          owner
-              .assembly()
-              .profile()
-              .cells(
-                  endpoint.getBlockPos(),
-                  owner.assembly().profile().facing(endpoint.getBlockState())))
-        if (!level.shouldTickBlocksAt(
-            net.minecraft.world.level.ChunkPos.asLong(cell.getX() >> 4, cell.getZ() >> 4)))
-          return new Reading(false, SignalSet.EMPTY);
-    }
-    if (endpoint instanceof BeltBlockEntity belt
-        && (!belt.loaded() || !factorycraft.simulation.BeltSimulation.tickable(belt)))
-      return new Reading(false, SignalSet.EMPTY);
-    if (!n.readerSettings().valid()) return new Reading(false, SignalSet.EMPTY);
-    int total = 0;
-    if (n.readerSettings().fluids()) {
-      var handler =
-          level.getCapability(
-              Capabilities.FluidHandler.BLOCK,
-              p,
-              n.getBlockState().getValue(FactoryBlock.FACING).getOpposite());
-      if (handler == null || handler.getTanks() < 1 || handler.getTanks() > 64)
-        return new Reading(false, SignalSet.EMPTY);
-      for (int i = 0; i < handler.getTanks(); i++) {
-        var fluid = handler.getFluidInTank(i);
-        if (n.readerSettings().accepts(fluid)) total += fluid.getAmount();
-      }
-    } else {
-      var handler =
-          level.getCapability(
-              Capabilities.ItemHandler.BLOCK,
-              p,
-              n.getBlockState().getValue(FactoryBlock.FACING).getOpposite());
-      if (handler == null || handler.getSlots() < 1 || handler.getSlots() > 256)
-        return new Reading(false, SignalSet.EMPTY);
-      for (int i = 0; i < handler.getSlots(); i++) {
-        var item = handler.getStackInSlot(i);
-        if (n.program().input().equals(CircuitProgram.A)
-            || BuiltInRegistries.ITEM.getKey(item.getItem()).equals(n.program().input()))
-          total += item.getCount();
-      }
-    }
-    return new Reading(true, SignalSet.of(SignalProgramData.legacy(n.program().output()), total));
   }
 
   private CircuitDevices() {}

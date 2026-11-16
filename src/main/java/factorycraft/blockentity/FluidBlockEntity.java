@@ -31,8 +31,23 @@ public final class FluidBlockEntity extends FactoryBlockEntity
     return assembly;
   }
 
-  public factorycraft.circuits.CircuitBinding circuitBinding;
   private boolean loaded, packed;
+  private long waterGenerated, lastWaterTick = Long.MIN_VALUE;
+
+  public long waterGenerated() {
+    return waterGenerated;
+  }
+
+  public boolean waterTickAvailable() {
+    return level.getGameTime() != lastWaterTick;
+  }
+
+  public void recordWater(int n) {
+    waterGenerated = Math.addExact(waterGenerated, n);
+    lastWaterTick = level.getGameTime();
+    markPersistentState();
+  }
+
   private java.util.UUID fluidOwner = java.util.UUID.randomUUID();
 
   public java.util.UUID fluidOwner() {
@@ -311,7 +326,7 @@ public final class FluidBlockEntity extends FactoryBlockEntity
   @Override
   public void setBlockState(BlockState state) {
     boolean rotated =
-        kind == FluidKind.PUMP
+        kind.boundary()
             && getBlockState().getValue(FluidDeviceBlock.FACING)
                 != state.getValue(FluidDeviceBlock.FACING);
     super.setBlockState(state);
@@ -336,7 +351,13 @@ public final class FluidBlockEntity extends FactoryBlockEntity
             case 6 -> id >>> 16;
             case 7 -> v.cells() & 65535;
             case 8 -> v.cells() >>> 16;
-            case 9 -> v.status();
+            case 9 ->
+                kind == FluidKind.OFFSHORE
+                        && !factorycraft.fluids.OffshorePlacement.invalid(
+                                level, worldPosition, facing())
+                            .isEmpty()
+                    ? 6
+                    : v.status();
             case 10 -> v.conflicts();
             case 11 -> Math.min(65535, v.x());
             case 12 -> Math.min(65535, v.z());
@@ -399,10 +420,13 @@ public final class FluidBlockEntity extends FactoryBlockEntity
   @Override
   protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
     super.saveAdditional(tag, registries);
-    if (circuitBinding != null) tag.put("CircuitControl", circuitBinding.save());
     if (assembly != null) assembly.save(tag);
     tag.putInt("Schema", 2);
     tag.putUUID("FluidOwner", fluidOwner);
+    if (kind == FluidKind.OFFSHORE) {
+      tag.putLong("WaterGenerated", waterGenerated);
+      tag.putLong("LastWaterTick", lastWaterTick);
+    }
     tag.put("StoredFluid", stored().saveOptional(registries));
     tag.putInt("Energy", power.getEnergyStored());
   }
@@ -417,7 +441,9 @@ public final class FluidBlockEntity extends FactoryBlockEntity
     for (int i = 0; i < ports.length; i++)
       ports[i] = new Port(i == 6 ? null : Direction.from3DDataValue(i));
     super.loadAdditional(tag, registries);
-    circuitBinding = factorycraft.circuits.CircuitBinding.load(tag.getCompound("CircuitControl"));
+    waterGenerated = tag.getLong("WaterGenerated");
+    lastWaterTick = tag.contains("LastWaterTick") ? tag.getLong("LastWaterTick") : Long.MIN_VALUE;
+    if (waterGenerated < 0) throw new IllegalArgumentException("Negative source ledger");
     if (assembly != null) assembly.load(tag);
     var fluid = FluidStack.parseOptional(registries, tag.getCompound("StoredFluid"));
     cell.restore(fluid.isEmpty() ? null : new FluidKey(fluid), fluid.getAmount());

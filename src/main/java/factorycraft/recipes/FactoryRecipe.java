@@ -19,7 +19,7 @@ public record FactoryRecipe(
         || machine.isBlank()
         || inputs.isEmpty()
         || inputs.size() > 16
-        || inputs.stream().anyMatch(i -> i.count() < 1 || i.count() > 64)
+        || inputs.stream().anyMatch(i -> i.count() < 1 || i.count() > 1024)
         || result.isEmpty()
         || result.getCount() > result.getMaxStackSize() * 4
         || ticks < 1
@@ -43,7 +43,9 @@ public record FactoryRecipe(
                         Ingredient.CODEC_NONEMPTY
                             .fieldOf("ingredient")
                             .forGetter(CountedIngredient::ingredient),
-                        Codec.intRange(1, 64).fieldOf("count").forGetter(CountedIngredient::count))
+                        Codec.intRange(1, 1024)
+                            .fieldOf("count")
+                            .forGetter(CountedIngredient::count))
                     .apply(i, CountedIngredient::new));
   }
 

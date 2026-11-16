@@ -124,6 +124,11 @@ final class FactoryBenchmarkWorld {
   }
 
   private BlockState state(Cell cell) {
+    if (cell.role() == Role.STEAM_ENGINE)
+      return Content.THERMAL_BLOCKS
+          .get(factorycraft.thermal.ThermalKind.ENGINE)
+          .get()
+          .defaultBlockState();
     if (cell.role() == Role.SOURCE) return Blocks.CHEST.defaultBlockState();
     if (cell.role() == Role.OBSTACLE) return Blocks.STONE_BRICKS.defaultBlockState();
     var kind =
@@ -146,7 +151,7 @@ final class FactoryBenchmarkWorld {
           case ASSEMBLER -> FactoryKind.ASSEMBLER;
           case STEEL_FURNACE -> FactoryKind.STEEL_FURNACE;
           case CASING -> FactoryKind.CASING;
-          case GENERATOR -> FactoryKind.GENERATOR;
+          case STEAM_ENGINE -> throw new IllegalStateException();
           case POLE -> FactoryKind.MEDIUM_POLE;
           case INSERTER -> FactoryKind.INSERTER;
           case SOURCE -> throw new IllegalStateException();
@@ -211,8 +216,13 @@ final class FactoryBenchmarkWorld {
             machine.items.setStackInSlot(slot, new ItemStack(plate(), 64));
         }
         case SOURCE -> ((ChestBlockEntity) be).setItem(0, new ItemStack(Items.RAW_IRON, 64));
-        case GENERATOR ->
-            ((MachineBlockEntity) be).items.setStackInSlot(8, new ItemStack(Items.COAL, 4));
+        case STEAM_ENGINE ->
+            ((ThermalBlockEntity) be)
+                .steam.restore(
+                    new factorycraft.fluids.FluidKey(
+                        new net.neoforged.neoforge.fluids.FluidStack(
+                            factorycraft.thermal.SteamFluids.STEAM.get(), 1)),
+                    40000);
         default -> {}
       }
     }
@@ -335,7 +345,7 @@ final class FactoryBenchmarkWorld {
     require(
         producers == profile.cells * 4
             && inserters == profile.cells * 2
-            && casings == profile.cells * 115 + 2 * BenchmarkPlan.poleCount(profile),
+            && casings == profile.cells * 118 + 2 * BenchmarkPlan.poleCount(profile),
         "Workload counts changed");
     require(
         BeltSimulation.snapshot(level).loaded() == profile.loops * 100,

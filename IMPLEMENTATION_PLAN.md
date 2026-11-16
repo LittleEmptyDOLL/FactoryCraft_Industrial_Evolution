@@ -338,3 +338,19 @@ Implemented canonical full irregular bodies with per-body vertical radius 5–8,
 Local validation: build / 221 JUnit; 406 required native scenarios including all thirty restored chains; repeated independent-JVM ore/fuel/fraction checkpoints; optional viewer API compile; actual client furnace/browser/module and prepared/natural terrain scenes; bounded three-trial geometry comparison; real dedicated SMOKE/restart. Details, failures retained, costs and limits are in VALIDATION.md and validation/v0251. The full/MIXED/optional/10000-pipe jobs remain GitHub Actions work.
 
 **Next task:** stop after publishing this release. On a new explicit request inspect its CI findings first. Do not start construction tools, lift artwork, future machines or progression changes automatically. Old FactoryCraft worlds are unsupported; never erase them to obtain a passing diagnostic.
+
+## Active 0.26.0 — issue #5
+
+1. Audit current registry, fuel/FE/fluid paths and Factorio 2.1 sources; record exhaustive parity decisions.
+2. Add guarded shoreline Offshore Pump and remove world-fluid creation from ordinary Pump; genuine cold steam bootstrap and canonical 3:30:15 rates, fixed-point fuel/FE ledgers.
+3. Remove Coal Generator and obsolete circuit bridges, preserving direct four-color contacts and four combinators; adapt examples, finite test fixtures and benchmarks.
+4. Add burner drill / assembler 3 and canonical mining/production speed, energy, module limits and expanded guarded item inventories. Correct affected recipes, solid fuel and research.
+5. Build/JUnit, all native baseline invariants/thirty chains, fresh independent-JVM checkpoints, limited benchmark, real client and documentation. Publish checked main normally, report CI once and stop.
+
+### 0.26.0 delivery / handoff
+
+Implemented exclusive guarded shoreline Offshore Pump, transfer-only electric Pump, canonical 3:30:15 steam ratios and coherent heat/FE accounting; Burner Mining Drill and Assembling Machine 3; precise mining/assembling paid work, per-kind module slots, all-tier sixteen-input inventories and counted ingredients spanning stacks. Corrected affected recipes/research and solid fuel, enabled genuine fluid productivity, removed Coal Generator and obsolete reader/controller registrations while preserving direct four-color circuits and all three lifts. Full current-content classification and explicit deferred gaps are in docs/FACTORIO_PARITY_AUDIT.md.
+
+Local build / 224 JUnit, 418 native tests with independent-JVM current-format checkpoints, real dedicated SMOKE plus hash reload and actual graphical client QA pass; all prior 406 cases and thirty chains remain required. Bounded measurements, preserved initial failures and runtime/optional limits are recorded in VALIDATION.md, BENCHMARKS.md and validation/v0260. Full/MIXED/10000-pipe and optional-mod runtime remain CI checks, not locally advertised passes.
+
+**Next task:** stop after publishing this release and reporting CI once. On a new explicit request review its published CI and agreed scope. Remaining lab module implementation, higher module/science tiers, full research parity and other audit gaps require a separately scoped task; do not begin construction tools, lift artwork, rail/robots or Space Age automatically. Old-world migration is unsupported; preserve all diagnostic evidence.

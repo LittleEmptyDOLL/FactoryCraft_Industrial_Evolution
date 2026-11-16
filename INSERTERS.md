@@ -59,3 +59,8 @@ All six kinds persist `Reflected` (default false for absent tags); the native me
 Hover shows blue pickup volume and orange destination/input marker. The marker follows the actual route and selected lane. Settings travel in the existing portable BE tag and survive the separate-JVM six-device checkpoint. GUI status remains available on the reflection control's tooltip; FE/fuel, speed, hand and filters retain their own displays.
 
 Transport Belt Capacity 2 now explicitly requires both Capacity 1 and Inserter Capacity Bonus 7, following 2.1.15. Both belt capacity technologies remain `sandbox_only`; creative diagnostic grants recursively finish prerequisites, with no early survival unlock.
+
+
+## 0.26.0 power and obsolete bridge retirement
+
+All six arm mechanics, their three lift/belt tier integrations and four logic colors are retained. Runtime Coal Generator, Circuit Reader and Circuit Controller are removed. Demonstrations in a normal world use the real Offshore→Boiler→two-Engine plant; designated native transport-only fixtures use declared finite steam instead. Direct circuit contacts are the sole enable/filter/hand-size signal owners. Portable items preserve manual settings/resources and remove physical links/identity; there is no remote CircuitControl binding. Existing cross-process hand/FE/fuel/component fixtures remain required. Labs now consume 8 FE/t before the retained efficiency research adaptation, so the capacity-unit test's exact ledger is updated without changing science-pack consumption.

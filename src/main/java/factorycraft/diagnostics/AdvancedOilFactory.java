@@ -41,9 +41,9 @@ public final class AdvancedOilFactory {
         .selectRecipe(
             ResourceLocation.fromNamespaceAndPath("factorycraft", "advanced_oil_processing")))
       throw new IllegalStateException("Advanced oil recipe missing");
-    chemical(level, o, 15, 4);
-    chemical(level, o, 15, 10);
-    chemical(level, o, 21, 10);
+    chemical(level, o, 15, 4, "sulfur");
+    chemical(level, o, 15, 10, "sulfuric_acid");
+    chemical(level, o, 21, 10, "battery");
     // West-facing inputs put gas at z=4 and water at z=2, on the physical front.
     for (int x = 12; x <= 14; x++) pipe(level, o, x, 0, 5);
     pipe(level, o, 14, 0, 4);
@@ -70,17 +70,13 @@ public final class AdvancedOilFactory {
     for (int y = 0; y < 7; y++) pipe(level, o, 18, y, 5);
     tank(level, o, 20, 1);
     tank(level, o, 20, 6);
-    var water = o.offset(1, 0, 13);
-    level.setBlockAndUpdate(water.below(), Blocks.STONE.defaultBlockState());
-    for (var side : Direction.Plane.HORIZONTAL)
-      if (side != Direction.EAST)
-        level.setBlockAndUpdate(water.relative(side), Blocks.STONE.defaultBlockState());
-    level.setBlockAndUpdate(water, Blocks.WATER.defaultBlockState());
+    var intake = o.offset(3, 0, 13);
+    ShoreFixture.prepare(level, intake, Direction.EAST);
     StructurePlacement.place(
         level,
-        o.offset(3, 0, 13),
+        intake,
         Content.FLUID_BLOCKS
-            .get(FluidKind.PUMP)
+            .get(FluidKind.OFFSHORE)
             .get()
             .defaultBlockState()
             .setValue(FluidDeviceBlock.FACING, Direction.EAST));
@@ -93,9 +89,11 @@ public final class AdvancedOilFactory {
       pipe(level, o, 14, y, 2);
       pipe(level, o, 14, y, 10);
     }
-    machine(level, o, 8, 13, FactoryKind.GENERATOR)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    boolean nativeTest =
+        level.getServer() instanceof net.minecraft.gametest.framework.GameTestServer;
+    SteamPlant.build(level, o.offset(8, 0, nativeTest ? 13 : 35), 64);
+    for (int z : nativeTest ? new int[] {} : new int[] {19, 26, 33})
+      FactoryCommands.machine(level, o.offset(8, 0, z), FactoryKind.MEDIUM_POLE, Direction.NORTH);
     FactoryCommands.machine(level, o.offset(13, 0, 6), FactoryKind.MEDIUM_POLE, Direction.NORTH);
     for (int x = 0; x < 30; x += 4)
       for (int z = 0; z < 16; z += 4)
@@ -104,8 +102,10 @@ public final class AdvancedOilFactory {
               level, o.offset(x, 0, z), FactoryKind.MEDIUM_POLE, Direction.NORTH);
   }
 
-  private static void chemical(ServerLevel level, BlockPos o, int x, int z) {
-    FactoryCommands.machine(level, o.offset(x, 0, z), FactoryKind.CHEMICAL_PLANT, Direction.WEST);
+  private static void chemical(ServerLevel level, BlockPos o, int x, int z, String recipe) {
+    FactoryCommands.machine(level, o.offset(x, 0, z), FactoryKind.CHEMICAL_PLANT, Direction.WEST)
+        .petroleum()
+        .selectRecipe(ResourceLocation.fromNamespaceAndPath("factorycraft", recipe));
   }
 
   private static MachineBlockEntity machine(

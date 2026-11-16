@@ -21,7 +21,8 @@ public final class ModuleFactory {
             ResourceLocation.fromNamespaceAndPath("factorycraft", "iron_plate"));
     for (int x : new int[] {3, 12}) {
       var machine =
-          FactoryCommands.machine(level, o.offset(x, 0, 2), FactoryKind.ASSEMBLER, Direction.NORTH);
+          FactoryCommands.machine(
+              level, o.offset(x, 0, 2), FactoryKind.ADVANCED_ASSEMBLER, Direction.NORTH);
       machine.modules.items.setStackInSlot(
           0,
           new ItemStack(
@@ -40,9 +41,7 @@ public final class ModuleFactory {
         level, pos, Content.FACTORY.get(FactoryKind.BEACON).get().defaultBlockState());
     ((BeaconBlockEntity) level.getBlockEntity(pos))
         .modules.setStackInSlot(0, new ItemStack(Content.SPEED_MODULE.get()));
-    FactoryCommands.machine(level, o.offset(3, 0, 8), FactoryKind.GENERATOR, Direction.NORTH)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    SteamPlant.build(level, o.offset(3, 0, 8), 64);
     for (int x : new int[] {3, 8, 11, 16})
       FactoryCommands.machine(level, o.offset(x, 0, 5), FactoryKind.MEDIUM_POLE, Direction.NORTH);
     for (int x : new int[] {7, 16})

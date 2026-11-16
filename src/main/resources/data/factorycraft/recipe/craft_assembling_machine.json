@@ -4,20 +4,17 @@
   "pattern": [
     "III",
     "GCG",
-    "IRI"
+    "III"
   ],
   "key": {
     "I": {
-      "item": "minecraft:iron_ingot"
+      "item": "factorycraft:iron_plate"
     },
     "G": {
       "item": "factorycraft:iron_gear"
     },
     "C": {
-      "item": "minecraft:crafting_table"
-    },
-    "R": {
-      "item": "minecraft:redstone"
+      "item": "factorycraft:electronic_circuit"
     }
   },
   "result": {

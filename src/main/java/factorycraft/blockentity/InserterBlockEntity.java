@@ -44,7 +44,6 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
         }
       };
 
-  public factorycraft.circuits.CircuitBinding circuitBinding;
   public final PowerBuffer power = new PowerBuffer(2000, this::markPersistentState);
   private final ArmCycle cycle;
   private final java.util.function.IntPredicate debit = this::spend;
@@ -772,7 +771,6 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
     for (var id : filters.ids()) ids.add(StringTag.valueOf(id));
     tag.put("Filters", ids);
     if (!researchScope.isEmpty()) tag.putString("ResearchScope", researchScope);
-    if (circuitBinding != null) tag.put("CircuitControl", circuitBinding.save());
   }
 
   public CompoundTag getUpdateTag(HolderLookup.Provider registry) {
@@ -803,6 +801,5 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
     researchScope = tag.getString("ResearchScope");
     researchTick = Long.MIN_VALUE;
     working = tag.getBoolean("ArmMoving");
-    circuitBinding = factorycraft.circuits.CircuitBinding.load(tag.getCompound("CircuitControl"));
   }
 }

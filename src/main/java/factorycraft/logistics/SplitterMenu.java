@@ -36,7 +36,10 @@ public final class SplitterMenu extends AbstractContainerMenu {
               case 0 -> owner.splitterSettings().input();
               case 1 -> owner.splitterSettings().output();
               case 2 -> owner.splitterSettings().filter() == null ? 0 : 1;
-              case 3 -> owner.circuitBinding == null ? 0 : owner.circuitRunning() ? 1 : 2;
+              case 3 ->
+                  owner.circuit(false) == null || !owner.circuit(false).settings().gate()
+                      ? 0
+                      : owner.circuitRunning() ? 1 : 2;
               default -> 0;
             };
           }
@@ -83,7 +86,7 @@ public final class SplitterMenu extends AbstractContainerMenu {
             && owner.loaded()
             && owner.structureReady()
             && FluidConnections.canonical(owner)
-            && factorycraft.multiblock.MachineInteraction.inRange(owner,player);
+            && factorycraft.multiblock.MachineInteraction.inRange(owner, player);
   }
 
   private boolean permitted(Player player) {
@@ -150,11 +153,18 @@ public final class SplitterMenu extends AbstractContainerMenu {
   }
 
   public static boolean open(BeltBlockEntity belt, Player player) {
-    return open(belt,player,belt.getBlockPos());
+    return open(belt, player, belt.getBlockPos());
   }
-  public static boolean open(BeltBlockEntity belt,Player player,net.minecraft.core.BlockPos physical) {
-    if(!belt.kind().splitter())return false;
-    return factorycraft.multiblock.MachineInteraction.open(belt,player,physical,
-        new SimpleMenuProvider((id,inv,p)->new SplitterMenu(id,inv,belt),Component.translatable("gui.factorycraft.splitter")));
+
+  public static boolean open(
+      BeltBlockEntity belt, Player player, net.minecraft.core.BlockPos physical) {
+    if (!belt.kind().splitter()) return false;
+    return factorycraft.multiblock.MachineInteraction.open(
+        belt,
+        player,
+        physical,
+        new SimpleMenuProvider(
+            (id, inv, p) -> new SplitterMenu(id, inv, belt),
+            Component.translatable("gui.factorycraft.splitter")));
   }
 }

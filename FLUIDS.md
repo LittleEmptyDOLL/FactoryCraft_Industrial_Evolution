@@ -1,4 +1,9 @@
-# Fluid segments — 0.25.0
+# Fluid segments — 0.26.0
+
+## 0.26 water-source and thermal override
+
+Offshore Pump is the sole built-in infinite world-water source: separate 2×1 footprint, loaded two-contact shoreline, no FE, up to 600 native mB/t, 4000-mB owned chamber. Removing a shore contact pauses production without removing stored water. Generation counters and a persisted per-world-tick guard accompany the same portable sole owner. Electric Pump now exclusively transfers held fluid (including foreign NeoForge handlers) at physical input/output faces and 4 FE/active tick; full/flowing/waterlogged world water and lava generate nothing. Input/output networks remain separate. The shared boundary quotas, pressure, 1:10 units, exact component keys, segment ownership and no-load graph are unchanged. Boiler uses 3 water → 30 steam/t; Engine uses 15 steam →120 FE/t. [STEAM_POWER.md](STEAM_POWER.md) defines heat, source geometry and finite-buffer adaptations. Older source shortcuts/rates below are historical and superseded.
+
 
 Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. Server-authoritative, integer mB; one vanilla bucket is 1000 mB. Reference mechanics: **Factorio 2.1.24**, especially [FFF-442](https://factorio.com/blog/post/fff-442), alongside [FFF-416](https://factorio.com/blog/post/fff-416), [FFF-430](https://factorio.com/blog/post/fff-430), [Fluid system](https://wiki.factorio.com/Fluid_system), [Pump](https://wiki.factorio.com/Pump) and [2.1 history](https://wiki.factorio.com/Version_history/2.1.0). Older 1.1 mixing and 2.0 fixed-100-port descriptions are not the chosen rules. No Factorio source code or art is copied.
 

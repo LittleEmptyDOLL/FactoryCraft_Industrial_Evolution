@@ -119,8 +119,8 @@ public final class MachineFootprintGameTests {
   }
 
   @GameTest(template = "empty", timeoutTicks = 100)
-  public static void coalGeneratorMatchesPreviewInEveryOrientation(GameTestHelper h) {
-    verify(h, "coal_generator");
+  public static void burnerMiningDrillMatchesPreviewInEveryOrientation(GameTestHelper h) {
+    verify(h, "burner_mining_drill");
   }
 
   @GameTest(template = "empty", timeoutTicks = 100)

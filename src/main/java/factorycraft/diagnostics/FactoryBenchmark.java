@@ -406,7 +406,7 @@ public final class FactoryBenchmark {
       result.addProperty("productionEnergySpentFE", spent - armSpent);
       result.addProperty("inserterEnergySpentFE", armSpent);
       result.addProperty("powerGraphWorkBudget", FactoryConfig.POWER_GRAPH_WORK.get());
-      result.addProperty("generatorFePerTick", FactoryConfig.GENERATOR_FE.get());
+      result.addProperty("engineFePerTick", 120);
       result.addProperty("powerVerticalReach", FactoryConfig.POWER_VERTICAL_REACH.get());
       result.addProperty("beSyncRequests", telemetry.syncRequests);
       result.add("network", JSON.toJsonTree(packetSummary));

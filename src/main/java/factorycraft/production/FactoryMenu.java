@@ -33,7 +33,20 @@ public final class FactoryMenu extends AbstractContainerMenu {
               return false;
             }
           });
-    addSlot(new SlotItemHandler(machine.items, 8, 18, 82));
+    addSlot(
+        new SlotItemHandler(machine.items, 8, 18, 82) {
+          public boolean isActive() {
+            return !machine.kind().assembler();
+          }
+        });
+    if (machine.kind().assembler())
+      for (int i = 4; i < 16; i++)
+        addSlot(
+            new SlotItemHandler(
+                machine.items,
+                factorycraft.recipes.FactoryInput.realSlot(i),
+                18 + (i % 4) * 18,
+                46 + (i / 4) * 18));
     for (int row = 0; row < 3; row++)
       for (int col = 0; col < 9; col++)
         addSlot(new Slot(inv, col + row * 9 + 9, 22 + col * 18, 166 + row * 18));
@@ -73,12 +86,21 @@ public final class FactoryMenu extends AbstractContainerMenu {
     Slot slot = slots.get(index);
     if (!slot.hasItem()) return ItemStack.EMPTY;
     ItemStack stack = slot.getItem(), original = stack.copy();
-    if (index < 9) {
-      if (!moveItemStackTo(stack, 9, 45, true)) return ItemStack.EMPTY;
+    if (index < machine.items.getSlots()) {
+      if (!moveItemStackTo(stack, machine.items.getSlots(), slots.size(), true))
+        return ItemStack.EMPTY;
     } else {
       if (machine.items.isItemValid(8, stack)) {
         if (!moveItemStackTo(stack, 8, 9, false)) return ItemStack.EMPTY;
-      } else if (!moveItemStackTo(stack, 0, 4, false)) return ItemStack.EMPTY;
+      } else {
+        boolean moved = false;
+        var input = new factorycraft.recipes.FactoryInput(machine.items);
+        for (int i = 0; i < input.size(); i++) {
+          int at = factorycraft.recipes.FactoryInput.realSlot(i);
+          moved |= moveItemStackTo(stack, at, at + 1, false);
+        }
+        if (!moved) return ItemStack.EMPTY;
+      }
     }
     if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
     else slot.setChanged();

@@ -103,8 +103,8 @@ public final class RecipeSelectionScreen extends Screen {
                 List.of(),
                 List.of(r.result()),
                 List.of(),
-                Math.ceilDiv(r.ticks(), machine.kind().craftingSpeed()),
-                machine.kind().burnerFurnace() ? -1 : machine.kind().furnace() ? 24 : r.energy()));
+                Math.ceilDiv(r.ticks() * 4, machine.kind().workQuarters()),
+                machine.kind().burnerFurnace() ? -1 : machine.kind().activeFE()));
       }
     search =
         addRenderableWidget(

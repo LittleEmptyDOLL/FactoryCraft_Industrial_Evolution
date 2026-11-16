@@ -35,9 +35,7 @@ public final class InserterFactory {
         a.loadWithComponents(tag, level.registryAccess());
       }
     }
-    var generator =
-        FactoryCommands.machine(level, o.offset(24, 0, 2), FactoryKind.GENERATOR, Direction.NORTH);
-    generator.items.setStackInSlot(8, new ItemStack(Items.COAL, 4));
+    var generator = SteamPlant.build(level, o.offset(24, 0, 2), 64);
     for (int x = 2; x <= 22; x += 5)
       FactoryCommands.machine(level, o.offset(x, 0, 8), FactoryKind.MEDIUM_POLE, Direction.NORTH);
     FactoryCommands.machine(level, o.offset(25, 0, 6), FactoryKind.MEDIUM_POLE, Direction.NORTH);

@@ -149,7 +149,7 @@ public final class ChemicalScienceGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 280)
+  @GameTest(template = "empty", timeoutTicks = 330)
   public static void fluidAssemblerProducesElectricEnginesAndProcessors(GameTestHelper h) {
     var engines = machine(h, FactoryKind.ADVANCED_ASSEMBLER, 3);
     var processors = machine(h, FactoryKind.ADVANCED_ASSEMBLER, 10);
@@ -164,12 +164,12 @@ public final class ChemicalScienceGameTests {
               .get(0)
               .restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 150);
           engines.petroleum().selectRecipe(id("electric_engine_unit"));
-          engines.power.restore(7000);
+          engines.power.restore(6340);
           processorInput(processors);
-          processors.power.restore(9000);
+          processors.power.restore(6340);
         });
     h.runAfterDelay(
-        230,
+        285,
         () -> {
           h.assertTrue(
               engines.items.getStackInSlot(4).is(Content.ELECTRIC_ENGINE_UNIT.get())
@@ -199,13 +199,13 @@ public final class ChemicalScienceGameTests {
               "unpowered assembly consumed resources");
           for (int s = 4; s < 8; s++)
             m.items.setStackInSlot(s, new ItemStack(Items.COBBLESTONE, 64));
-          m.power.restore(8000);
+          m.power.restore(5340);
         });
     h.runAfterDelay(
         45,
         () -> {
           h.assertTrue(
-              m.power.getEnergyStored() == 8000 && m.petroleum().data.get(0) == 0,
+              m.power.getEnergyStored() == 5340 && m.petroleum().data.get(0) == 0,
               "blocked output spent FE");
           m.items.setStackInSlot(4, ItemStack.EMPTY);
         });
@@ -236,7 +236,7 @@ public final class ChemicalScienceGameTests {
               });
         });
     h.runAfterDelay(
-        315,
+        360,
         () -> {
           h.assertTrue(
               m.items.getStackInSlot(4).is(Content.PROCESSING_UNIT.get())
@@ -246,7 +246,7 @@ public final class ChemicalScienceGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 300)
+  @GameTest(template = "empty", timeoutTicks = 350)
   public static void processorProductionWaitsForActualTeamUnlock(GameTestHelper h) {
     var m = machine(h, FactoryKind.ADVANCED_ASSEMBLER, 4);
     var scope = ResearchGameTests.personal(h, "processor-gate");
@@ -255,13 +255,13 @@ public final class ChemicalScienceGameTests {
         5,
         () -> {
           processorInput(m);
-          m.power.restore(8000);
+          m.power.restore(5340);
         });
     h.runAfterDelay(
         35,
         () -> {
           h.assertTrue(
-              m.power.getEnergyStored() == 8000
+              m.power.getEnergyStored() == 5340
                   && m.items.getStackInSlot(0).getCount() == 20
                   && m.petroleum().cells.get(0).amount() == 50,
               "locked processor spent resources");
@@ -277,7 +277,7 @@ public final class ChemicalScienceGameTests {
           ResearchData.get(h.getLevel().getServer()).setDirty();
         });
     h.runAfterDelay(
-        260,
+        310,
         () -> {
           h.assertTrue(
               m.items.getStackInSlot(4).is(Content.PROCESSING_UNIT.get())
@@ -519,7 +519,7 @@ public final class ChemicalScienceGameTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty", timeoutTicks = 280)
+  @GameTest(template = "empty", timeoutTicks = 330)
   public static void physicalPipeFeedsFluidAssemblerAndKeepsUnusedLubricant(GameTestHelper h) {
     var m = machine(h, FactoryKind.ADVANCED_ASSEMBLER, 4);
     var pos = m.petroleum().nozzle(0).relative(m.petroleum().direction(0));
@@ -533,10 +533,10 @@ public final class ChemicalScienceGameTests {
               .fill(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 520, false);
           m.items.setStackInSlot(0, new ItemStack(Content.ENGINE_UNIT.get()));
           m.items.setStackInSlot(1, new ItemStack(item("electronic_circuit"), 2));
-          m.power.restore(6000);
+          m.power.restore(5340);
         });
     h.runAfterDelay(
-        235,
+        285,
         () -> {
           var pipe = (FluidBlockEntity) h.getLevel().getBlockEntity(pos);
           h.assertTrue(
@@ -548,7 +548,7 @@ public final class ChemicalScienceGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 280)
+  @GameTest(template = "empty", timeoutTicks = 330)
   public static void liveFluidAssemblerReconstructionKeepsCanonicalPartialWork(GameTestHelper h) {
     var m = machine(h, FactoryKind.ADVANCED_ASSEMBLER, 4);
     var pos = m.getBlockPos();
@@ -556,7 +556,7 @@ public final class ChemicalScienceGameTests {
         5,
         () -> {
           processorInput(m);
-          m.power.restore(8000);
+          m.power.restore(5340);
         });
     h.runAfterDelay(
         35,
@@ -573,7 +573,7 @@ public final class ChemicalScienceGameTests {
           restored.onLoad();
         });
     h.runAfterDelay(
-        235,
+        285,
         () -> {
           var restored = (MachineBlockEntity) h.getLevel().getBlockEntity(pos);
           h.assertTrue(
@@ -697,7 +697,7 @@ public final class ChemicalScienceGameTests {
       for (int tick = 0; tick < 17; tick++) m.petroleum().tick();
       m.setChanged();
       h.assertTrue(
-          m.petroleum().data.get(0) == 17 && m.power.getEnergyStored() == 7312,
+          m.petroleum().data.get(0) == 12 && m.power.getEnergyStored() == 7652,
           "disk seed did not execute actual partial recipe");
       System.out.println(
           "FACTORYCRAFT_CHEMICAL_SCIENCE_DISK: SEEDED canonical partial assembly and component"
@@ -711,9 +711,9 @@ public final class ChemicalScienceGameTests {
       h.assertTrue(
           m.items.getStackInSlot(0).getCount() == 20
               && m.items.getStackInSlot(1).getCount() == 2
-              && m.power.getEnergyStored() == 7312
+              && m.power.getEnergyStored() == 7652
               && FluidStack.matches(m.petroleum().stored(0), acid(731))
-              && tag.getInt("Progress") == 17
+              && tag.getInt("Progress") == 12
               && !tag.getString("Active").isEmpty()
               && tag.getString("SelectedRecipe").equals(id("processing_unit").toString())
               && FluidStack.matches(

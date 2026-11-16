@@ -6,11 +6,11 @@
       "ingredient": {
         "item": "factorycraft:steel_plate"
       },
-      "count": 5
+      "count": 2
     },
     {
       "ingredient": {
-        "item": "factorycraft:advanced_circuit"
+        "item": "factorycraft:electronic_circuit"
       },
       "count": 3
     },
@@ -19,12 +19,23 @@
         "item": "factorycraft:iron_gear"
       },
       "count": 5
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:assembling_machine"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
     }
   ],
   "result": {
     "id": "factorycraft:assembling_machine_2",
     "count": 1
   },
-  "ticks": 200,
-  "energy": 24
+  "ticks": 10,
+  "energy": 10
 }

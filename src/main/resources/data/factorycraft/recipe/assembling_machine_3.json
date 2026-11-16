@@ -1,0 +1,29 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:speed_module"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:assembling_machine_2"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:assembling_machine_3",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 10
+}

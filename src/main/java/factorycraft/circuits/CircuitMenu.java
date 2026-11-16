@@ -38,7 +38,7 @@ public final class CircuitMenu extends AbstractContainerMenu {
               case 6 -> n.lastOutput & 65535;
               case 7 -> n.lastOutput >>> 16;
               case 8 -> n.gate ? 1 : 0;
-              case 9 -> n.readerSettings().mode().ordinal();
+              case 9 -> 0;
               case 10 -> n.readerReady ? 1 : 0;
               default -> 0;
             };
@@ -63,9 +63,7 @@ public final class CircuitMenu extends AbstractContainerMenu {
           new Slot(ghosts, i, 24 + i * 112, 42) {
             public boolean isActive() {
               if (owner == null) return true;
-              return index == 0
-                  ? owner.kind() != factorycraft.blocks.FactoryKind.CONSTANT
-                  : owner.kind() != factorycraft.blocks.FactoryKind.CIRCUIT_CONTROLLER;
+              return index == 0 ? owner.kind() != factorycraft.blocks.FactoryKind.CONSTANT : true;
             }
 
             public boolean mayPlace(ItemStack s) {
@@ -99,17 +97,8 @@ public final class CircuitMenu extends AbstractContainerMenu {
     return data.get(1) & 65535 | (data.get(2) & 65535) << 16;
   }
 
-  public boolean fluidReader() {
-    return owner != null
-        && owner.kind() == factorycraft.blocks.FactoryKind.CIRCUIT_READER
-        && data.get(9) == 1;
-  }
-
   private ItemStack inputIcon() {
-    return owner.kind() == factorycraft.blocks.FactoryKind.CIRCUIT_READER
-            && owner.readerSettings().fluids()
-        ? owner.readerSettings().icon()
-        : CircuitProgram.icon(owner.program().input());
+    return CircuitProgram.icon(owner.program().input());
   }
 
   public int input() {
@@ -126,7 +115,7 @@ public final class CircuitMenu extends AbstractContainerMenu {
         || owner != null
             && p.level() == owner.getLevel()
             && owner.available()
-            && factorycraft.multiblock.MachineInteraction.inRange(owner,p);
+            && factorycraft.multiblock.MachineInteraction.inRange(owner, p);
   }
 
   public boolean allowed(Player p) {
@@ -150,31 +139,6 @@ public final class CircuitMenu extends AbstractContainerMenu {
       if (!p.level().isClientSide && type == ClickType.PICKUP && (button == 0 || button == 1)) {
         var old = owner.program();
         var sample = getCarried();
-        if (slot == 0 && fluidReader()) {
-          if (button == 1 || sample.isEmpty())
-            owner.configureReader(
-                ReaderSettings.fluid(net.neoforged.neoforge.fluids.FluidStack.EMPTY));
-          else {
-            // Query a private copy: even a poorly behaved foreign item handler cannot consume the
-            // cursor.
-            var handler =
-                sample
-                    .copy()
-                    .getCapability(
-                        net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.ITEM);
-            if (handler != null && handler.getTanks() > 0 && handler.getTanks() <= 64) {
-              for (int i = 0; i < handler.getTanks(); i++) {
-                var fluid = handler.getFluidInTank(i);
-                if (!fluid.isEmpty()) {
-                  owner.configureReader(ReaderSettings.fluid(fluid));
-                  break;
-                }
-              }
-            }
-          }
-          broadcastChanges();
-          return;
-        }
         var signal =
             button == 1 || sample.isEmpty()
                 ? CircuitProgram.A
@@ -195,12 +159,7 @@ public final class CircuitMenu extends AbstractContainerMenu {
 
   @Override
   public boolean clickMenuButton(Player p, int b) {
-    if (!allowed(p) || b < 0 || b > 2) return false;
-    if (b == 2) {
-      boolean ok = owner.configureReader(owner.readerSettings().toggled());
-      if (ok) broadcastChanges();
-      return ok;
-    }
+    if (!allowed(p) || b < 0 || b > 1) return false;
     var old = owner.program();
     boolean ok =
         owner.configure(

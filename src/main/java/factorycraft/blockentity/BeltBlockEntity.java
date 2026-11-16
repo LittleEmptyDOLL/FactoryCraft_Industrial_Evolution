@@ -28,7 +28,6 @@ public final class BeltBlockEntity extends FactoryBlockEntity
   private factorycraft.logistics.SplitterSettings splitterSettings =
       factorycraft.logistics.SplitterSettings.DEFAULT;
   private final int[] committedOutputs = new int[4];
-  public factorycraft.circuits.CircuitBinding circuitBinding;
   private boolean circuitRunning = true;
 
   public boolean circuitRunning() {
@@ -725,22 +724,18 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     if (!level.isClientSide && !simulationLoaded) {
       simulationLoaded = true;
       BeltSimulation.register(this);
-      if (kind().splitter()) factorycraft.circuits.CircuitSimulation.watchSplitter(this, null);
+      refreshCircuitControl();
       if (assembly != null) assembly.invalidate();
     }
   }
 
   public void setRemoved() {
     if (simulationLoaded) BeltSimulation.unregister(this);
-    if (kind().splitter())
-      factorycraft.circuits.CircuitSimulation.watchSplitter(this, circuitBinding);
     super.setRemoved();
   }
 
   public void onChunkUnloaded() {
     if (simulationLoaded) BeltSimulation.unregister(this);
-    if (kind().splitter())
-      factorycraft.circuits.CircuitSimulation.watchSplitter(this, circuitBinding);
     super.onChunkUnloaded();
   }
 
@@ -768,10 +763,8 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
   protected void saveAdditional(CompoundTag tag, HolderLookup.Provider r) {
     super.saveAdditional(tag, r);
-    if (circuitBinding != null) {
-      tag.put("CircuitControl", circuitBinding.save());
+    if (circuit(false) != null && circuit(false).configured)
       tag.putBoolean("CircuitMoving", circuitRunning);
-    }
     if (assembly != null) assembly.save(tag);
     tag.putInt("Schema", tracks() == 2 ? 3 : 2);
     tag.putLong("SnapshotTick", level == null ? 0 : level.getGameTime());
@@ -787,8 +780,7 @@ public final class BeltBlockEntity extends FactoryBlockEntity
     if (special()) tag.putUUID("TransportIdentity", transportIdentity);
     if (undergroundOutput) tag.putBoolean("UndergroundOutput", true);
     if (kind().splitter()
-        && (!splitterSettings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)
-            || circuitBinding != null)) {
+        && !splitterSettings.equals(factorycraft.logistics.SplitterSettings.DEFAULT)) {
       var settings = splitterSettings.save();
       int[] outputs = committedOutputs.clone();
       if (transport != null && !nodes.isEmpty())
@@ -814,14 +806,11 @@ public final class BeltBlockEntity extends FactoryBlockEntity
 
   protected void loadAdditional(CompoundTag tag, HolderLookup.Provider r) {
     super.loadAdditional(tag, r);
-    var oldBinding = circuitBinding;
-    circuitBinding = factorycraft.circuits.CircuitBinding.load(tag.getCompound("CircuitControl"));
     circuitRunning =
-        circuitBinding == null
+        circuit(false) == null
+            || !circuit(false).settings().gate()
             || level != null && level.isClientSide && tag.getBoolean("CircuitMoving");
     if (transport != null) for (var n : nodes) transport.setEnabled(n, circuitRunning);
-    if (level != null && !level.isClientSide && kind().splitter())
-      factorycraft.circuits.CircuitSimulation.watchSplitter(this, oldBinding);
     if (assembly != null) assembly.load(tag);
     snapshotTick = tag.getLong("SnapshotTick");
     if (kind().splitter()) {

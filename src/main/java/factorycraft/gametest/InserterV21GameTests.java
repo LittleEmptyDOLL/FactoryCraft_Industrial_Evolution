@@ -491,7 +491,13 @@ public final class InserterV21GameTests {
     var left = belt(h, beltType, new BlockPos(6, 3, 5), Direction.NORTH);
     var right = belt(h, beltType, new BlockPos(7, 3, 5), Direction.NORTH);
     var signal = CircuitGameTests.node(h, FactoryKind.CONSTANT, 3, 7, Direction.NORTH);
-    var gate = CircuitGameTests.node(h, FactoryKind.CIRCUIT_CONTROLLER, 6, 7, Direction.NORTH);
+    var gate =
+        DirectGateFixture.gate(
+            split,
+            factorycraft.simulation.circuits.SignalKey.A,
+            factorycraft.simulation.circuits.SignalMath.Compare.GREATER,
+            0,
+            1 << color);
     h.runAfterDelay(
         5,
         () -> {
@@ -503,8 +509,7 @@ public final class InserterV21GameTests {
                   .save());
           split.loadWithComponents(tag, h.getLevel().registryAccess());
           CircuitGameTests.program(h, signal, 0, 0);
-          CircuitGameTests.program(h, gate, 0, 0);
-          CircuitGameTests.link(h, signal, 0, gate, 0, color);
+          DirectGateFixture.wire(signal.circuit(true), gate, color);
         });
     h.runAfterDelay(
         25,
@@ -603,12 +608,7 @@ public final class InserterV21GameTests {
             h.getLevel(), o, grade(Items.DIAMOND, 12, 17));
     var source = (ChestBlockEntity) h.getLevel().getBlockEntity(o.offset(1, 0, 0));
     var a = (InserterBlockEntity) h.getLevel().getBlockEntity(o.offset(2, 0, 0));
-    StructurePlacement.place(
-        h.getLevel(),
-        o.offset(0, 0, 8),
-        Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-    ((MachineBlockEntity) h.getLevel().getBlockEntity(o.offset(0, 0, 8)))
-        .items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
+    FinitePowerFixture.place(h.getLevel(), o.offset(0, 0, 8), Direction.NORTH);
     for (var p : List.of(o.offset(1, 0, 7), o.offset(2, 0, 2)))
       StructurePlacement.place(
           h.getLevel(), p, Content.FACTORY.get(FactoryKind.MEDIUM_POLE).get().defaultBlockState());
@@ -845,10 +845,7 @@ public final class InserterV21GameTests {
     var source = chest(h, a.sourcePosition());
     var target = chest(h, a.targetPosition());
     var genPos = h.absolutePos(new BlockPos(4, 3, 3));
-    StructurePlacement.place(
-        h.getLevel(), genPos, Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-    var gen = (MachineBlockEntity) h.getLevel().getBlockEntity(genPos);
-    gen.items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
+    var gen = FinitePowerFixture.place(h.getLevel(), genPos, Direction.NORTH);
     var poles = new ArrayList<PoleBlockEntity>();
     for (int x : new int[] {6, secondX}) {
       var p = h.absolutePos(new BlockPos(x, 3, 6));
@@ -916,10 +913,7 @@ public final class InserterV21GameTests {
     var target = chest(h, a.targetPosition());
     source.setItem(0, grade(Items.DIAMOND, 64, 17));
     var gp = h.absolutePos(new BlockPos(4, 3, 3));
-    StructurePlacement.place(
-        h.getLevel(), gp, Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-    ((MachineBlockEntity) h.getLevel().getBlockEntity(gp))
-        .items.setStackInSlot(8, new ItemStack(Items.COAL, 2));
+    FinitePowerFixture.place(h.getLevel(), gp, Direction.NORTH);
     var poles = new ArrayList<PoleBlockEntity>();
     for (int x : new int[] {6, 13}) {
       var p = h.absolutePos(new BlockPos(x, 3, 6));
@@ -1017,7 +1011,7 @@ public final class InserterV21GameTests {
               ledger.level(entry.id().toString()) == 1
                   && lab.items.getStackInSlot(0).isEmpty()
                   && lab.items.getStackInSlot(1).isEmpty()
-                  && lab.power.getEnergyStored() == 0,
+                  && lab.power.getEnergyStored() == 7200,
               "real capacity unit did not conserve packs/FE");
           h.assertTrue(
               ordinary.researchedMaximum() == 2

@@ -26,7 +26,8 @@ public record ChemicalRecipe(
     int energy)
     implements Recipe<ChemicalInput> {
   public ChemicalRecipe {
-    if (!List.of("oil_refinery", "chemical_plant", "assembling_machine_2").contains(machine)
+    if (!List.of("oil_refinery", "chemical_plant", "assembling_machine_2", "assembling_machine_3")
+            .contains(machine)
         || items.size() > 16
         || fluids.size() > 2
         || results.size() > 4
@@ -35,9 +36,9 @@ public record ChemicalRecipe(
         || results.isEmpty() && fluidResults.isEmpty()
         || ticks < 1
         || ticks > 72000
-        || energy < (machine.equals("assembling_machine_2") ? 0 : 1)
-        || energy > (machine.equals("assembling_machine_2") ? 100000 : 16000)
-        || items.stream().anyMatch(i -> i.count() < 1 || i.count() > 64)
+        || energy < (machine.startsWith("assembling_machine_") ? 0 : 1)
+        || energy > (machine.startsWith("assembling_machine_") ? 100000 : 16000)
+        || items.stream().anyMatch(i -> i.count() < 1 || i.count() > 1024)
         || fluids.stream().anyMatch(f -> f.amount() < 1 || f.amount() > 40000)
         || results.stream().anyMatch(s -> s.isEmpty() || s.getCount() > s.getMaxStackSize())
         || fluidResults.stream().anyMatch(f -> f.isEmpty() || f.getAmount() > 40000))

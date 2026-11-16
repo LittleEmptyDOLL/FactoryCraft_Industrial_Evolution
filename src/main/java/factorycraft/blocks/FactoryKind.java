@@ -14,11 +14,12 @@ public enum FactoryKind {
   SPLITTER("splitter", 1),
   INSERTER("inserter", 0),
   DRILL("electric_drill", 0),
+  BURNER_DRILL("burner_mining_drill", 0),
   FURNACE("electric_furnace", 0),
   STONE_FURNACE("stone_furnace", 0),
   ASSEMBLER("assembling_machine", 0),
-  GENERATOR("coal_generator", 0),
   ADVANCED_ASSEMBLER("assembling_machine_2", 0),
+  ASSEMBLER_3("assembling_machine_3", 0),
   LAB("lab", 0),
   BEACON("beacon", 0),
   POLE("electric_pole", 0),
@@ -41,8 +42,6 @@ public enum FactoryKind {
   CONSTANT("constant_combinator", 0),
   ARITHMETIC("arithmetic_combinator", 0),
   DECIDER("decider_combinator", 0),
-  CIRCUIT_READER("circuit_reader", 0),
-  CIRCUIT_CONTROLLER("circuit_controller", 0),
   SELECTOR("selector_combinator", 0);
   public final String id;
   public final int beltTier;
@@ -61,12 +60,7 @@ public enum FactoryKind {
   }
 
   public boolean circuit() {
-    return this == CONSTANT
-        || this == ARITHMETIC
-        || this == DECIDER
-        || this == CIRCUIT_READER
-        || this == CIRCUIT_CONTROLLER
-        || this == SELECTOR;
+    return this == CONSTANT || this == ARITHMETIC || this == DECIDER || this == SELECTOR;
   }
 
   public boolean dualCircuit() {
@@ -113,7 +107,8 @@ public enum FactoryKind {
   }
 
   public boolean petroleum() {
-    return this == ADVANCED_ASSEMBLER
+    return this == ASSEMBLER_3
+        || this == ADVANCED_ASSEMBLER
         || this == PUMPJACK
         || this == REFINERY
         || this == CHEMICAL_PLANT;
@@ -143,14 +138,63 @@ public enum FactoryKind {
     return this == FURNACE || this == STEEL_FURNACE ? 2 : 1;
   }
 
+  public boolean assembler() {
+    return this == ASSEMBLER || this == ADVANCED_ASSEMBLER || this == ASSEMBLER_3;
+  }
+
+  public boolean drill() {
+    return this == DRILL || this == BURNER_DRILL;
+  }
+
+  public boolean burner() {
+    return burnerFurnace() || this == BURNER_DRILL;
+  }
+
+  public int workQuarters() {
+    return switch (this) {
+      case ASSEMBLER -> 2;
+      case ADVANCED_ASSEMBLER -> 3;
+      case ASSEMBLER_3 -> 5;
+      case BURNER_DRILL -> 1;
+      case DRILL -> 2;
+      case FURNACE, STEEL_FURNACE -> 8;
+      default -> 4;
+    };
+  }
+
+  public int activeFE() {
+    return switch (this) {
+      case ASSEMBLER -> 10;
+      case ADVANCED_ASSEMBLER -> 20;
+      case ASSEMBLER_3 -> 50;
+      case LAB -> 8;
+      case BEACON -> 64;
+      case FURNACE -> 24;
+      case DRILL, PUMPJACK -> 12;
+      case REFINERY -> 56;
+      case CHEMICAL_PLANT -> 28;
+      default -> 0;
+    };
+  }
+
+  public int moduleSlots() {
+    return switch (this) {
+      case ASSEMBLER_3 -> 4;
+      case DRILL, REFINERY, CHEMICAL_PLANT -> 3;
+      case FURNACE, ADVANCED_ASSEMBLER, PUMPJACK, LAB, BEACON -> 2;
+      default -> 0;
+    };
+  }
+
   public boolean supportsModules() {
-    return !burnerFurnace() && (processing() || this == PUMPJACK);
+    return moduleSlots() > 0;
   }
 
   public boolean processing() {
     return furnace()
         || this == ASSEMBLER
         || this == ADVANCED_ASSEMBLER
+        || this == ASSEMBLER_3
         || this == REFINERY
         || this == CHEMICAL_PLANT;
   }
@@ -160,6 +204,6 @@ public enum FactoryKind {
   }
 
   public boolean machine() {
-    return this == DRILL || furnace() || this == ASSEMBLER || this == GENERATOR || petroleum();
+    return drill() || furnace() || this == ASSEMBLER || petroleum();
   }
 }

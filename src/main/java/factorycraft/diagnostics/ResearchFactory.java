@@ -51,9 +51,7 @@ public final class ResearchFactory {
             .entry(ResourceLocation.fromNamespaceAndPath("factorycraft", "automation"))
             .logic());
     ResearchData.get(level.getServer()).setDirty();
-    FactoryCommands.machine(level, o.offset(4, 0, 8), FactoryKind.GENERATOR, Direction.NORTH)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    SteamPlant.build(level, o.offset(4, 0, 8), 64);
     for (int x : new int[] {3, 8, 12})
       FactoryCommands.machine(level, o.offset(x, 0, 6), FactoryKind.MEDIUM_POLE, Direction.NORTH);
     FactoryCommands.machine(level, o.offset(7, 0, 0), FactoryKind.MEDIUM_POLE, Direction.NORTH);

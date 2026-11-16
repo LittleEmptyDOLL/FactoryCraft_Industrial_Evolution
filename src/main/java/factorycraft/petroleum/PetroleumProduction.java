@@ -26,12 +26,14 @@ public final class PetroleumProduction {
   private final MachineBlockEntity machine;
   public final List<FluidCell<FluidKey>> cells;
   private BlockPos deposit;
-  private int pumpWork, pumpCost;
+  private int pumpWork, pumpCost, pumpProductivity;
   private java.util.UUID pumpPoint;
   private int progress, duration = 1, selected, status, preview;
   private String active = "", selectedId = "";
   private long recipesAt = Long.MIN_VALUE, recipeEpoch = -1;
   private boolean syncPending;
+  private int workBudget, energyRemainder;
+  private boolean paid;
 
   private record Cached(
       RecipeHolder<ChemicalRecipe> holder,
@@ -69,7 +71,7 @@ public final class PetroleumProduction {
         || !selectedId.isEmpty()
         || machine.power.getEnergyStored() > 0
         || cells.stream().anyMatch(c -> c.amount() > 0)
-        || java.util.stream.IntStream.range(0, 9)
+        || java.util.stream.IntStream.range(0, machine.items.getSlots())
             .anyMatch(i -> !machine.items.getStackInSlot(i).isEmpty());
   }
 
@@ -154,8 +156,20 @@ public final class PetroleumProduction {
             false);
     }
     if (!ready()) return false;
-    boolean worked =
-        factorycraft.circuits.CircuitBinding.allowed(machine) && (pump() ? extract() : produce());
+    boolean worked = false;
+    if (factorycraft.circuits.CircuitBinding.allowed(machine)) {
+      if (pump()) worked = extract();
+      else {
+        workBudget =
+            factorycraft.simulation.production.PaidWork.budget(
+                machine.kind().workQuarters(), machine.modules.effects().speed());
+        paid = false;
+        for (int attempts = 0; attempts < 16 && workBudget > 0; attempts++) {
+          if (!produce()) break;
+          worked = true;
+        }
+      }
+    }
     if (ready())
       for (var site : machine.assembly().ports()) {
         var p = site.port();
@@ -196,18 +210,24 @@ public final class PetroleumProduction {
       changed();
     }
     var key = new FluidKey(PetroleumFluids.CRUDE.stack(1));
-    int amount = oil.yield().nextAmount();
+    int baseAmount = oil.yield().nextAmount();
+    var effects = machine.modules.effects();
+    int earned = baseAmount * effects.productivity() + pumpProductivity;
+    int amount = baseAmount + earned / 10000;
     var out = cells.get(2);
     if (!out.accepts(key) || out.space() < amount) {
       status = 2;
       return false;
     }
-    var effects = machine.modules.effects();
-    int stepCost = (int) Math.ceilDiv(15L * effects.energy(), 10000);
+    var stepCharge =
+        factorycraft.simulation.production.PaidWork.charge(
+            machine.kind().activeFE(), effects.energy(), energyRemainder);
+    int stepCost = stepCharge.energy();
     if (machine.power.getEnergyStored() < pumpCost + stepCost) {
       status = 3;
       return false;
     }
+    energyRemainder = stepCharge.remainder();
     pumpCost += stepCost;
     pumpWork += effects.speed();
     progress = pumpWork / 10000;
@@ -220,8 +240,9 @@ public final class PetroleumProduction {
     if (!FluidCell.commitBatch(
         List.of(new FluidCell.Mutation<>(out, key, out.amount() + amount)),
         () -> {
-          if (oil.yield().commit() != amount)
+          if (oil.yield().commit() != baseAmount)
             throw new IllegalStateException("Oil reservation changed");
+          pumpProductivity = earned % 10000;
           pumpWork -= 200000;
           pumpCost = 0;
           progress = pumpWork / 10000;
@@ -241,10 +262,13 @@ public final class PetroleumProduction {
     var manager = machine.getLevel().getRecipeManager();
     var candidates = new ArrayList<RecipeHolder<ChemicalRecipe>>();
     for (var holder : manager.getAllRecipesFor(Content.CHEMISTRY.get()))
-      if (holder.value().machine().equals(machine.kind().id)) candidates.add(holder);
+      if (holder.value().machine().equals(machine.kind().id)
+          || machine.kind() == FactoryKind.ASSEMBLER_3
+              && holder.value().machine().equals(FactoryKind.ADVANCED_ASSEMBLER.id))
+        candidates.add(holder);
     // Tier two also executes the original dry definitions with their native IDs/gates.
     // Projection never registers duplicate recipes or changes the old assembler's data.
-    if (machine.kind() == FactoryKind.ADVANCED_ASSEMBLER)
+    if (machine.kind().assembler())
       for (var holder : manager.getAllRecipesFor(Content.PROCESSING.get())) {
         var recipe = holder.value();
         if (!recipe.machine().equals(FactoryKind.ASSEMBLER.id)) continue;
@@ -307,6 +331,15 @@ public final class PetroleumProduction {
     selected = selectedId.isEmpty() ? 0 : -1;
     for (int i = 0; i < recipes.size(); i++)
       if (recipes.get(i).holder.id().toString().equals(selectedId)) selected = i + 1;
+  }
+
+  public String recipeSignature(ResourceLocation id) {
+    refreshRecipes();
+    return recipes.stream()
+        .filter(r -> r.holder.id().equals(id))
+        .findFirst()
+        .orElseThrow()
+        .signature;
   }
 
   public boolean acceptsInput(int channel, FluidKey key) {
@@ -383,9 +416,11 @@ public final class PetroleumProduction {
   }
 
   private List<BatchInventory.Stack<ItemKey>> inventory() {
-    var result = new ArrayList<BatchInventory.Stack<ItemKey>>(8);
-    for (int i = 0; i < 8; i++) {
-      var s = machine.items.getStackInSlot(i);
+    var input = new FactoryInput(machine.items);
+    var result = new ArrayList<BatchInventory.Stack<ItemKey>>(input.size() + 4);
+    for (int i = 0; i < input.size() + 4; i++) {
+      int actual = i < input.size() ? FactoryInput.realSlot(i) : i - input.size() + 4;
+      var s = machine.items.getStackInSlot(actual);
       result.add(
           new BatchInventory.Stack<>(
               s.isEmpty() ? null : new ItemKey(s),
@@ -404,7 +439,7 @@ public final class PetroleumProduction {
     boolean modular = machine.modules.enabled();
     var effects =
         modular ? machine.modules.effects() : factorycraft.simulation.modules.ModuleEffects.NONE;
-    int chosenRate = 0;
+    int chosenRate = 0, chosenBatches = 1;
     for (int i = 0; i < recipes.size(); i++) {
       var cached = recipes.get(i);
       if (!selectedId.isEmpty() && !selectedId.equals(cached.holder.id().toString())) continue;
@@ -423,8 +458,7 @@ public final class PetroleumProduction {
       if (before == null) before = inventory();
       int rate =
           modular
-                  && recipe.fluidResults().isEmpty()
-                  && !recipe.results().isEmpty()
+                  && (!recipe.fluidResults().isEmpty() || !recipe.results().isEmpty())
                   && recipe.results().stream().allMatch(machine.modules::productive)
               ? effects.productivity()
               : 0;
@@ -449,6 +483,7 @@ public final class PetroleumProduction {
         chosen = cached;
         itemPlan = plan;
         chosenRate = rate;
+        chosenBatches = batches;
         break;
       } else if (BatchInventory.plan(before, cached.items, List.of()) != null) blocked = true;
     }
@@ -460,7 +495,7 @@ public final class PetroleumProduction {
     var recipe = chosen.holder.value();
     duration = recipe.ticks();
     for (int i = 0; i < chosen.fluids.size(); i++)
-      if (cells.get(i + 2).space() < chosen.volumes.get(i)
+      if (cells.get(i + 2).space() < chosen.volumes.get(i) * chosenBatches
           || !cells.get(i + 2).accepts(chosen.fluids.get(i))) {
         status = 2;
         return false;
@@ -470,23 +505,24 @@ public final class PetroleumProduction {
                 || modular && machine.modules.identityChanged(chosen.signature)
             ? 0
             : progress;
-    var step =
-        modular
-            ? effects.plan(
-                recipe.energy(),
-                1,
-                duration - Math.min(current, duration - 1),
-                machine.modules.identityChanged(chosen.signature) ? 0 : machine.modules.fraction())
-            : null;
-    if (!machine.power.spend(modular ? step.energy() : recipe.energy())) {
-      status = 3;
-      return false;
+    var charge =
+        factorycraft.simulation.production.PaidWork.charge(
+            machine.kind().activeFE(), effects.energy(), energyRemainder);
+    if (!paid) {
+      if (!machine.power.spend(charge.energy())) {
+        status = 3;
+        return false;
+      }
+      energyRemainder = charge.remainder();
+      paid = true;
     }
+    int phase = machine.modules.identityChanged(chosen.signature) ? 0 : machine.modules.fraction();
+    int used = Math.min(workBudget, (duration - current) * 40000 - phase);
+    workBudget -= used;
+    int total = phase + used;
     active = chosen.signature;
-    progress = Math.min(current, duration - 1) + (modular ? step.work() : 1);
-    if (modular)
-      machine.modules.advance(
-          chosen.signature, step.remainder(), step.work(), duration, chosenRate);
+    progress = current + total / 40000;
+    machine.modules.advance(chosen.signature, total % 40000, total / 40000, duration, chosenRate);
     changed();
     status = 4;
     if (progress >= duration) {
@@ -499,7 +535,8 @@ public final class PetroleumProduction {
       for (int i = 0; i < chosen.fluids.size(); i++) {
         var c = cells.get(i + 2);
         mutations.add(
-            new FluidCell.Mutation<>(c, chosen.fluids.get(i), c.amount() + chosen.volumes.get(i)));
+            new FluidCell.Mutation<>(
+                c, chosen.fluids.get(i), c.amount() + chosen.volumes.get(i) * chosenBatches));
       }
       var committed = itemPlan;
       final int productivityRate = chosenRate;
@@ -509,12 +546,14 @@ public final class PetroleumProduction {
             FluidCell.commitBatch(
                 mutations,
                 () -> {
-                  for (int i = 0; i < 8; i++) {
+                  for (int i = 0; i < committed.size(); i++) {
+                    int inputs = committed.size() - 4;
+                    int actual = i < inputs ? FactoryInput.realSlot(i) : i - inputs + 4;
                     var s = committed.get(i);
                     machine.items.setStackInSlot(
-                        i, s.count() == 0 ? ItemStack.EMPTY : s.key().stack(s.count()));
+                        actual, s.count() == 0 ? ItemStack.EMPTY : s.key().stack(s.count()));
                   }
-                  if (modular) machine.modules.finish();
+                  machine.modules.finish();
                   progress = 0;
                   active = "";
                 },
@@ -564,12 +603,14 @@ public final class PetroleumProduction {
 
   public void save(CompoundTag parent, HolderLookup.Provider r) {
     var tag = new CompoundTag();
+    tag.putInt("EnergyRemainder", energyRemainder);
     tag.putInt("Schema", cells.size() == 5 ? 2 : 1);
     for (int i = 0; i < cells.size(); i++) tag.put("Fluid" + i, stored(i).saveOptional(r));
     tag.putInt("Progress", progress);
     if (pumpPoint != null) tag.putUUID("PumpPoint", pumpPoint);
     tag.putInt("PumpWork", pumpWork);
     tag.putInt("PumpCost", pumpCost);
+    tag.putInt("PumpProductivity", pumpProductivity);
     tag.putInt("Duration", duration);
     tag.putString("SelectedRecipe", selectedId);
     tag.putString("Active", active);
@@ -578,6 +619,9 @@ public final class PetroleumProduction {
 
   public void load(CompoundTag parent, HolderLookup.Provider r) {
     var tag = parent.getCompound("Petroleum");
+    energyRemainder = tag.getInt("EnergyRemainder");
+    if (energyRemainder < 0 || energyRemainder >= 10000)
+      throw new IllegalArgumentException("Invalid paid energy residue");
     for (int i = 0; i < cells.size(); i++) {
       var f = FluidStack.parseOptional(r, tag.getCompound("Fluid" + i));
       cells.get(i).restore(f.isEmpty() ? null : new FluidKey(f), f.getAmount());
@@ -586,6 +630,9 @@ public final class PetroleumProduction {
     pumpPoint = tag.hasUUID("PumpPoint") ? tag.getUUID("PumpPoint") : null;
     pumpWork = tag.getInt("PumpWork");
     pumpCost = tag.getInt("PumpCost");
+    pumpProductivity = tag.getInt("PumpProductivity");
+    if (pumpProductivity < 0 || pumpProductivity >= 10000)
+      throw new IllegalArgumentException("Invalid pump productivity");
     if (pumpWork < 0 || pumpWork >= 200000 || pumpCost < 0 || pumpCost > 16000)
       throw new IllegalArgumentException("Invalid pump work");
     duration = Math.max(1, tag.getInt("Duration"));

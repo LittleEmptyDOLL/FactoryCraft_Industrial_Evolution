@@ -59,13 +59,9 @@ public final class FluidGameTests {
   }
 
   private static void source(GameTestHelper h, int x, int y, int z) {
-    var pos = h.absolutePos(new BlockPos(x, y, z));
-    var level = h.getLevel();
-    level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
-    for (var d : Direction.Plane.HORIZONTAL)
-      if (level.getBlockState(pos.relative(d)).isAir())
-        level.setBlockAndUpdate(pos.relative(d), Blocks.STONE.defaultBlockState());
-    level.setBlockAndUpdate(pos, Blocks.WATER.defaultBlockState());
+    var p = put(h, FluidKind.PIPE, x, y, z);
+    p.localCell()
+        .restore(new FluidKey(water(1)), 1000); // Declared finite input, not world generation.
   }
 
   @GameTest(template = "empty", timeoutTicks = 300)
@@ -119,12 +115,7 @@ public final class FluidGameTests {
     put(h, FluidKind.PIPE, 5, 2, 4);
     put(h, FluidKind.PIPE, 6, 2, 4);
     var tank = put(h, FluidKind.TANK, 8, 2, 5);
-    factorycraft.multiblock.StructurePlacement.place(
-        h.getLevel(),
-        h.absolutePos(new BlockPos(3, 2, 7)),
-        Content.FACTORY.get(FactoryKind.GENERATOR).get().defaultBlockState());
-    ((MachineBlockEntity) h.getLevel().getBlockEntity(h.absolutePos(new BlockPos(3, 2, 7))))
-        .items.setStackInSlot(8, new ItemStack(Items.COAL));
+    FinitePowerFixture.place(h.getLevel(), h.absolutePos(new BlockPos(3, 2, 7)), Direction.NORTH);
     factorycraft.multiblock.StructurePlacement.place(
         h.getLevel(),
         h.absolutePos(new BlockPos(5, 2, 7)),
@@ -132,8 +123,10 @@ public final class FluidGameTests {
     h.succeedWhen(
         () ->
             h.assertTrue(
-                tank.cell().amount() >= 1000 && pump.power.getEnergyStored() > 0,
-                "natural source has not reached the tank through powered pipes"));
+                FluidSimulation.view(tank).amount() == 1000
+                    && pump.cell().amount() == 0
+                    && pump.power.getEnergyStored() > 0,
+                "finite source has not reached the destination segment through powered pipes"));
   }
 
   @GameTest(template = "empty", timeoutTicks = 120)

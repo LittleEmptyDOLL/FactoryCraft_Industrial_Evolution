@@ -1,7 +1,6 @@
 package factorycraft.modules;
 
 import factorycraft.blockentity.MachineBlockEntity;
-import factorycraft.blocks.FactoryKind;
 import factorycraft.simulation.modules.ModuleEffects;
 import java.util.List;
 import net.minecraft.core.*;
@@ -52,21 +51,13 @@ public final class MachineModules {
   public MachineModules(MachineBlockEntity machine) {
     this.machine = machine;
     items =
-        new ItemStackHandler(
-            machine.kind().supportsModules()
-                ? (machine.kind() == FactoryKind.REFINERY
-                        || machine.kind() == FactoryKind.CHEMICAL_PLANT
-                    ? 3
-                    : 2)
-                : 0) {
+        new ItemStackHandler(machine.kind().moduleSlots()) {
           public int getSlotLimit(int slot) {
             return 1;
           }
 
           public boolean isItemValid(int slot, ItemStack stack) {
-            return machine.kind().supportsModules()
-                && stack.getItem() instanceof ModuleItem m
-                && (machine.kind() != FactoryKind.PUMPJACK || m.kind.productivity == 0);
+            return machine.kind().supportsModules() && stack.getItem() instanceof ModuleItem;
           }
 
           protected void onContentsChanged(int slot) {
@@ -184,7 +175,7 @@ public final class MachineModules {
         throw new IllegalArgumentException("Module slot count does not match machine");
       items.deserializeNBT(registry, state.getCompound("Items"));
     }
-    fraction = Math.clamp(state.getInt("Fraction"), 0, 9999);
+    fraction = Math.clamp(state.getInt("Fraction"), 0, 39999);
     credit = Math.clamp(state.getInt("Credit"), 0, 19999);
     productiveRemainder = Math.clamp(state.getInt("ProductiveRemainder"), 0, 71999);
     recipe = state.getString("Recipe");

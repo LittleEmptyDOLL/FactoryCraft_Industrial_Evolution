@@ -2,22 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "III",
-    "GPG",
-    "IRI"
+    "IGI",
+    "CGC",
+    "III"
   ],
   "key": {
     "I": {
-      "item": "minecraft:iron_ingot"
+      "item": "factorycraft:iron_plate"
     },
     "G": {
       "item": "factorycraft:iron_gear"
     },
-    "P": {
-      "item": "minecraft:iron_pickaxe"
-    },
-    "R": {
-      "item": "minecraft:redstone"
+    "C": {
+      "item": "factorycraft:electronic_circuit"
     }
   },
   "result": {

@@ -1,5 +1,10 @@
 # Petroleum and mixed processing — 0.25.0
 
+## 0.26.0 active production corrections
+
+Oil percentage yield/depletion and all schema-4 physical/nozzle/BOTH/mirrored channels are retained. Pumpjack uses 90 kW = 12 FE/active tick with saved /10000 energy residue and reserved cycle cost; its two slots now also accept productivity, with saved fluid-bonus residue independently of the oil-point base generated counter. Refinery/chemical power is 56/28 FE/t; fluid outputs now receive earned productivity with complete bonus-volume reservation. Three Solid Fuel recipes consume native 200/100/200 mB gas/light/heavy oil for one fuel (20 base work ticks), under Oil Processing. The battery demonstration explicitly selects sulfur/acid/battery so Auto cannot use the same gas for Solid Fuel. Assembler 3 uses existing Assembler 2 physical channels with speed 1.25/four modules; sixteen actual inputs are shared by all assembler tiers. Water supply is a real Offshore Pump; electric Pump never generates from a world block. Base recipe timing is separate from .5/.75/1.25 machine speed. Earlier rates/progression below are historical; current exact inputs and remaining gaps are in docs/FACTORIO_PARITY_AUDIT.md.
+
+
 Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. Reference: [Factorio 2.1.24 resources](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/entity/resources.lua), [recipes](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/recipe.lua), [Pumpjack](https://wiki.factorio.com/Pumpjack). Only numeric mechanics were consulted; no third-party code/art is shipped. **Breaking release: no pre-0.25 FactoryCraft migration.** Old diagnostic evidence is retained, never reset.
 
 ## Production balance (all fluid columns in native mB)

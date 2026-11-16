@@ -81,7 +81,7 @@ public final class AdvancedPetroleumGameTests {
         5,
         () -> {
           advancedInput(r);
-          r.power.restore(4000);
+          r.power.restore(6600);
         });
     h.runAfterDelay(
         130,
@@ -100,14 +100,14 @@ public final class AdvancedPetroleumGameTests {
         5,
         () -> {
           advancedInput(r);
-          r.power.restore(4000);
+          r.power.restore(6600);
           r.petroleum().cells.get(4).restore(new FluidKey(PetroleumFluids.HEAVY.stack(1)), 39900);
         });
     h.runAfterDelay(
         35,
         () -> {
           h.assertTrue(
-              r.power.getEnergyStored() == 4000
+              r.power.getEnergyStored() == 6600
                   && r.petroleum().cells.get(0).amount() == 1000
                   && r.petroleum().data.get(0) == 0,
               "third-output backpressure spent resources");
@@ -117,9 +117,9 @@ public final class AdvancedPetroleumGameTests {
         60,
         () -> {
           h.assertTrue(
-              r.power.getEnergyStored() == 4000 && r.petroleum().cells.get(1).amount() == 500,
+              r.power.getEnergyStored() == 6600 && r.petroleum().cells.get(1).amount() == 500,
               "wrong third-output fluid spent resources");
-          r.petroleum().cells.get(4).drain(40000, false);
+          r.petroleum().cells.get(4).drain(66000, false);
         });
     h.runAfterDelay(
         185,
@@ -137,7 +137,7 @@ public final class AdvancedPetroleumGameTests {
         5,
         () -> {
           advancedInput(r);
-          r.power.restore(300);
+          r.power.restore(560);
         });
     h.runAfterDelay(
         40,
@@ -148,7 +148,7 @@ public final class AdvancedPetroleumGameTests {
                   && r.petroleum().cells.get(4).amount() == 0
                   && r.power.getEnergyStored() == 0,
               "partial refining spent inputs or lost progress");
-          r.power.restore(2700);
+          r.power.restore(5040);
         });
     h.runAfterDelay(
         155,
@@ -169,7 +169,7 @@ public final class AdvancedPetroleumGameTests {
         5,
         () -> {
           advancedInput(r);
-          r.power.restore(3000);
+          r.power.restore(5600);
         });
     h.runAfterDelay(
         140,
@@ -345,8 +345,7 @@ public final class AdvancedPetroleumGameTests {
             var m = machines.get(i);
             var r = recipe(h, ids.get(i));
             h.assertTrue(
-                m.power.getEnergyStored() == 10000 - r.energy() * r.ticks(),
-                ids.get(i) + " FE mismatch");
+                m.power.getEnergyStored() == 10000 - 28 * r.ticks(), ids.get(i) + " FE mismatch");
             for (int f = 0; f < r.fluids().size(); f++)
               h.assertTrue(
                   m.petroleum().cells.get(f).amount() == 0,
@@ -399,7 +398,7 @@ public final class AdvancedPetroleumGameTests {
               m.items.getStackInSlot(4).is(item("battery"))
                   && m.items.getStackInSlot(4).getCount() == 1
                   && m.petroleum().cells.get(0).amount() == 0
-                  && m.power.getEnergyStored() == 2400,
+                  && m.power.getEnergyStored() == 1760,
               "unblocked battery failed exact conversion");
           h.succeed();
         });
@@ -413,7 +412,7 @@ public final class AdvancedPetroleumGameTests {
         5,
         () -> {
           advancedInput(r);
-          r.power.restore(3000);
+          r.power.restore(5600);
           select(r, "advanced_oil_processing");
         });
     h.runAfterDelay(

@@ -6,6 +6,7 @@ import factorycraft.blocks.*;
 import factorycraft.circuits.*;
 import factorycraft.multiblock.StructurePlacement;
 import factorycraft.registry.Content;
+import factorycraft.simulation.circuits.*;
 import java.util.*;
 import net.minecraft.core.*;
 import net.minecraft.gametest.framework.*;
@@ -121,7 +122,7 @@ public final class CircuitGameTests {
   @GameTest(template = "empty", timeoutTicks = 100)
   public static void unavailableSourceImmediatelyQuarantinesThenRestoresBus(GameTestHelper h) {
     var a = node(h, FactoryKind.CONSTANT, 4, 5, Direction.NORTH);
-    var b = node(h, FactoryKind.CIRCUIT_CONTROLLER, 8, 5, Direction.NORTH);
+    var b = node(h, FactoryKind.DECIDER, 8, 5, Direction.NORTH);
     h.runAfterDelay(
         5,
         () -> {
@@ -160,84 +161,61 @@ public final class CircuitGameTests {
     var armPos = h.absolutePos(new BlockPos(8, 3, 5));
     h.getLevel()
         .setBlockAndUpdate(
-            armPos,
-            Content.FACTORY
-                .get(FactoryKind.FAST_INSERTER)
-                .get()
-                .defaultBlockState()
-                .setValue(FactoryBlock.FACING, Direction.NORTH));
+            armPos, Content.FACTORY.get(FactoryKind.FAST_INSERTER).get().defaultBlockState());
     var arm = (InserterBlockEntity) h.getLevel().getBlockEntity(armPos);
     var source = chest(h, arm.sourcePosition());
     var target = chest(h, arm.targetPosition());
     source.setItem(0, new ItemStack(Items.RAW_IRON, 32));
-    var reader = node(h, FactoryKind.CIRCUIT_READER, 9, 4, Direction.WEST);
-    var controller = node(h, FactoryKind.CIRCUIT_CONTROLLER, 9, 5, Direction.WEST);
-    h.runAfterDelay(
-        5,
-        () -> {
-          program(h, controller, 1, 8);
-          link(h, reader, 0, controller, 0, 0);
-        });
+    var sensor = DirectGateFixture.sensor(target, 1);
+    var gate =
+        DirectGateFixture.gate(
+            arm, SignalKey.item("minecraft:raw_iron"), SignalMath.Compare.LESS, 8, 1);
+    DirectGateFixture.wire(sensor, gate, 0);
     h.runAfterDelay(15, () -> arm.power.restore(1000));
     h.runAfterDelay(
         170,
         () -> {
           h.assertTrue(
               count(target) == 8 && count(source) == 24 && arm.held().isEmpty(),
-              "feedback lost/overshot items: " + count(target));
-          h.assertTrue(
-              arm.circuitBinding != null && !controller.gate, "device was not bound/disabled");
-        });
-    h.runAfterDelay(
-        180,
-        () -> {
+              "direct feedback lost/overshot items");
+          h.assertTrue(!CircuitBinding.allowed(arm), "threshold did not close device");
           int fe = arm.power.getEnergyStored(), phase = arm.phase();
           for (int i = 0; i < 50; i++) arm.tick();
           h.assertTrue(
               arm.power.getEnergyStored() == fe && arm.phase() == phase,
-              "closed gate billed or advanced arm");
-          controller.onChunkUnloaded();
-          h.assertTrue(!CircuitBinding.allowed(arm), "unloaded controller opened device");
+              "closed direct gate billed/advanced");
+          CircuitSimulation.remove(sensor);
+          h.assertTrue(!CircuitBinding.allowed(arm), "unknown sensor opened device");
           h.succeed();
         });
   }
 
   @GameTest(template = "empty", timeoutTicks = 120)
   public static void missingReaderInventoryFailsClosedEvenForZeroEqualsZero(GameTestHelper h) {
-    var reader = node(h, FactoryKind.CIRCUIT_READER, 5, 5, Direction.NORTH);
-    var gate = node(h, FactoryKind.CIRCUIT_CONTROLLER, 9, 5, Direction.NORTH);
-    var p = gate.targetPosition();
+    var armPos = h.absolutePos(new BlockPos(9, 3, 5));
     h.getLevel()
         .setBlockAndUpdate(
-            p, Content.FACTORY.get(FactoryKind.FAST_INSERTER).get().defaultBlockState());
-    var arm = (InserterBlockEntity) h.getLevel().getBlockEntity(p);
+            armPos, Content.FACTORY.get(FactoryKind.FAST_INSERTER).get().defaultBlockState());
+    var arm = (InserterBlockEntity) h.getLevel().getBlockEntity(armPos);
+    var chest = chest(h, h.absolutePos(new BlockPos(5, 3, 5)));
+    var sensor = DirectGateFixture.sensor(chest, 1);
+    var gate =
+        DirectGateFixture.gate(
+            arm, SignalKey.item("minecraft:raw_iron"), SignalMath.Compare.EQUAL, 0, 1);
+    DirectGateFixture.wire(sensor, gate, 0);
+    CircuitSimulation.remove(sensor);
     h.runAfterDelay(
-        5,
+        20,
         () -> {
-          program(h, gate, 2, 0);
-          link(h, reader, 0, gate, 0, 0);
+          h.assertTrue(!CircuitBinding.allowed(arm), "missing inventory was valid zero");
+          CircuitSimulation.add(sensor);
         });
     h.runAfterDelay(
-        25,
+        45,
         () -> {
-          h.assertTrue(
-              !gate.gate && !CircuitBinding.allowed(arm),
-              "missing inventory was treated as valid zero");
-          chest(h, reader.targetPosition());
-        });
-    h.runAfterDelay(
-        50,
-        () -> {
-          h.assertTrue(
-              gate.gate && CircuitBinding.allowed(arm),
-              "empty real inventory did not enable equality");
-          h.getLevel().removeBlock(reader.targetPosition(), false);
-        });
-    h.runAfterDelay(
-        75,
-        () -> {
-          h.assertTrue(
-              !gate.gate && !CircuitBinding.allowed(arm), "removed inventory stayed ready");
+          h.assertTrue(CircuitBinding.allowed(arm), "real empty inventory failed equality");
+          CircuitSimulation.remove(sensor);
+          h.assertTrue(!CircuitBinding.allowed(arm), "unavailable source remained ready");
           h.succeed();
         });
   }
@@ -288,83 +266,47 @@ public final class CircuitGameTests {
             .defaultBlockState()
             .setValue(FluidDeviceBlock.FACING, Direction.EAST));
     var pump = (FluidBlockEntity) h.getLevel().getBlockEntity(pp);
-    var tp = pp.east(2).south();
-    StructurePlacement.place(
-        h.getLevel(),
-        tp,
-        Content.FLUID_BLOCKS.get(factorycraft.fluids.FluidKind.TANK).get().defaultBlockState());
-    var tank = (FluidBlockEntity) h.getLevel().getBlockEntity(tp);
     var a = node(h, FactoryKind.CONSTANT, 4, 7, Direction.NORTH);
-    var b = node(h, FactoryKind.CIRCUIT_CONTROLLER, 8, 6, Direction.NORTH);
+    var gate = DirectGateFixture.gate(pump, SignalKey.A, SignalMath.Compare.GREATER, 0, 1);
+    DirectGateFixture.wire(a.circuit(true), gate, 0);
     h.runAfterDelay(
         5,
         () -> {
           program(h, a, 0, 0);
-          program(h, b, 0, 0);
-          link(h, a, 0, b, 0, 0);
-        });
-    h.runAfterDelay(
-        15,
-        () -> {
-          factorycraft.fluids.FluidSimulation.manual(
-              () ->
-                  h.getLevel()
-                      .getCapability(
-                          net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
-                          pump.inputNozzle(),
-                          Direction.WEST)
-                      .fill(
-                          new net.neoforged.neoforge.fluids.FluidStack(
-                              net.minecraft.world.level.material.Fluids.WATER, 500),
-                          net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
-                              .EXECUTE));
+          pump.localCell()
+              .restore(
+                  new factorycraft.fluids.FluidKey(
+                      new net.neoforged.neoforge.fluids.FluidStack(
+                          net.minecraft.world.level.material.Fluids.WATER, 1)),
+                  500);
           pump.power.restore(4000);
+          h.getLevel()
+              .setBlockAndUpdate(
+                  pp.east(),
+                  Content.FLUID_BLOCKS
+                      .get(factorycraft.fluids.FluidKind.PIPE)
+                      .get()
+                      .defaultBlockState());
         });
     h.runAfterDelay(
-        30,
+        35,
         () -> {
           h.assertTrue(
-              pump.cell().amount() == 500
-                  && tank.cell().amount() == 0
-                  && pump.power.getEnergyStored() == 4000,
-              "disabled pump moved or billed");
+              pump.cell().amount() == 500 && pump.power.getEnergyStored() == 4000,
+              "closed pump moved/billed finite fluid");
           program(h, a, 0, 1);
         });
     h.runAfterDelay(
-        110,
+        75,
         () -> {
+          var sink = (FluidBlockEntity) h.getLevel().getBlockEntity(pp.east());
           h.assertTrue(
-              tank.cell().amount() == 500
-                  && pump.cell().amount() == 0
+              pump.cell().amount() + sink.cell().amount() == 500
+                  && sink.cell().amount() > 0
                   && pump.power.getEnergyStored() < 4000,
-              "enabled finite pump failed");
-          program(h, a, 0, 0);
-        });
-    h.runAfterDelay(
-        125,
-        () -> {
-          factorycraft.fluids.FluidSimulation.manual(
-              () ->
-                  h.getLevel()
-                      .getCapability(
-                          net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
-                          pump.inputNozzle(),
-                          Direction.WEST)
-                      .fill(
-                          new net.neoforged.neoforge.fluids.FluidStack(
-                              net.minecraft.world.level.material.Fluids.WATER, 400),
-                          net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
-                              .EXECUTE));
-          pump.power.restore(100);
-        });
-    h.runAfterDelay(
-        145,
-        () -> {
-          h.assertTrue(
-              pump.cell().amount() == 400
-                  && tank.cell().amount() == 500
-                  && pump.power.getEnergyStored() == 100,
-              "reclosed pump lost volume or billed");
+              "direct pump gate failed conservation/resume");
+          a.onChunkUnloaded();
+          h.assertTrue(!CircuitBinding.allowed(pump), "unknown source enabled pump");
           h.succeed();
         });
   }
@@ -560,19 +502,13 @@ public final class CircuitGameTests {
   public static void explicitControllerBindingAndOwnedHandSurviveDiskReload(GameTestHelper h) {
     var level = h.getLevel();
     var p = new BlockPos(15119, 70, 15119);
-    var c = p.west();
+    var c = p.west(3);
     level.getChunkAt(p);
     level.getChunkAt(c);
     boolean fresh = level.getBlockState(p).isAir() && level.getBlockState(c).isAir();
     if (fresh) {
       StructurePlacement.place(
-          level,
-          c,
-          Content.FACTORY
-              .get(FactoryKind.CIRCUIT_CONTROLLER)
-              .get()
-              .defaultBlockState()
-              .setValue(FactoryBlock.FACING, Direction.EAST));
+          level, c, Content.FACTORY.get(FactoryKind.CONSTANT).get().defaultBlockState());
       level.setBlockAndUpdate(
           p, Content.FACTORY.get(FactoryKind.FAST_INSERTER).get().defaultBlockState());
       var arm = (InserterBlockEntity) level.getBlockEntity(p);
@@ -582,32 +518,35 @@ public final class CircuitGameTests {
       arm.loadWithComponents(tag, level.registryAccess());
       arm.hand.setStackInSlot(0, new ItemStack(Items.DIAMOND));
       arm.power.restore(731);
-      CircuitBinding.set(arm, new CircuitBinding(c, node.assembly().identity()));
+      var gate = DirectGateFixture.gate(arm, SignalKey.A, SignalMath.Compare.GREATER, 0, 1);
+      DirectGateFixture.wire(node.circuit(true), gate, 0);
       arm.setChanged();
       node.setChanged();
     }
     h.assertTrue(
         level.getBlockEntity(p) instanceof InserterBlockEntity
             && level.getBlockEntity(c) instanceof CircuitNodeBlockEntity,
-        "partial binding checkpoint; refusing refill");
+        "partial direct binding checkpoint; refusing reset");
     var arm = (InserterBlockEntity) level.getBlockEntity(p);
     var node = (CircuitNodeBlockEntity) level.getBlockEntity(c);
+    var direct = arm.circuit(false);
     h.assertTrue(
-        new CircuitBinding(c, node.assembly().identity()).equals(arm.circuitBinding)
+        direct != null
+            && direct.settings().gate()
+            && direct.links.contains(new CircuitLink(c, node.assembly().identity(), 0, 0, 0))
             && arm.held().is(Items.DIAMOND)
             && arm.held().getCount() == 1
             && arm.power.getEnergyStored() == 731
             && !arm.enabled()
             && !CircuitBinding.allowed(arm),
-        "binding/hand/FE disk ledger changed");
+        "direct wire/hand/FE disk ledger changed");
     arm.onChunkUnloaded();
     node.onChunkUnloaded();
-    level.getChunkAt(p).setUnsaved(true);
-    level.getChunkAt(c).setUnsaved(true);
+    for (var cell : List.of(p, c)) level.getChunkAt(cell).setUnsaved(true);
     System.out.println(
         "FACTORYCRAFT_CIRCUIT_BINDING_DISK: "
             + (fresh ? "SEEDED" : "VERIFIED")
-            + " UUID binding diamond=1 FE=731 disabled");
+            + " direct UUID wire, one diamond, 731 FE, disabled");
     h.succeed();
   }
 }

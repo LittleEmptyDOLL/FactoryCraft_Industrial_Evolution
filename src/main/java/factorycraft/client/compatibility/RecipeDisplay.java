@@ -120,7 +120,7 @@ public record RecipeDisplay(
               List.of(),
               List.of(),
               r.ticks(),
-              20,
+              8,
               net.minecraft.network.chat.Component.translatable(
                           "technology." + h.id().getNamespace() + "." + h.id().getPath())
                       .getString()

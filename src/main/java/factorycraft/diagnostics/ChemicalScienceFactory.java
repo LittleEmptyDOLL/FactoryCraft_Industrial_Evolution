@@ -8,7 +8,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 
@@ -37,9 +36,7 @@ public final class ChemicalScienceFactory {
     for (int x : new int[] {7, 8, 14})
       FactoryCommands.machine(level, origin.offset(x, 0, 3), FactoryKind.BELT, Direction.EAST);
     var output = chest(level, origin.offset(16, 0, 3));
-    FactoryCommands.machine(level, origin.offset(4, 0, 8), FactoryKind.GENERATOR, Direction.NORTH)
-        .items
-        .setStackInSlot(8, new ItemStack(Items.COAL, 8));
+    SteamPlant.build(level, origin.offset(4, 0, 8), 64);
     for (int x : new int[] {2, 9})
       FactoryCommands.machine(
           level, origin.offset(x, 0, 0), FactoryKind.MEDIUM_POLE, Direction.NORTH);

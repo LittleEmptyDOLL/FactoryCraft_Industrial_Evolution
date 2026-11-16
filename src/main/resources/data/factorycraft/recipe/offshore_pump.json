@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:fluid_pipe"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:offshore_pump",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 10
+}

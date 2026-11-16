@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:electric_drill",
+    "count": 1
+  },
+  "ticks": 40,
+  "energy": 10
+}

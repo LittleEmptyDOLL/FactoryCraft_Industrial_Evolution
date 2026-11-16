@@ -271,7 +271,7 @@ public final class TieredSplitterGameTests {
           unlock(h, scope, "logistics_2");
         });
     h.runAfterDelay(
-        110,
+        135,
         () -> {
           h.assertTrue(
               m.items.getStackInSlot(4).is(item("fast_splitter"))
@@ -279,7 +279,7 @@ public final class TieredSplitterGameTests {
                   && m.items.getStackInSlot(0).isEmpty()
                   && m.items.getStackInSlot(1).isEmpty()
                   && m.items.getStackInSlot(2).isEmpty()
-                  && m.power.getEnergyStored() == 4040,
+                  && m.power.getEnergyStored() == 4200,
               "fast splitter input/result/FE ledger failed");
           h.succeed();
         });
@@ -332,7 +332,7 @@ public final class TieredSplitterGameTests {
                   && m.items.getStackInSlot(1).isEmpty()
                   && m.items.getStackInSlot(2).isEmpty()
                   && m.petroleum().cells.get(0).amount() == 0
-                  && m.power.getEnergyStored() == 3400,
+                  && m.power.getEnergyStored() == 3920,
               "express splitter item/fluid/FE ledger failed");
           h.succeed();
         });

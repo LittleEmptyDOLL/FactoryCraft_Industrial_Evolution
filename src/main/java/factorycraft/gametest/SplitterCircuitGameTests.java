@@ -7,6 +7,7 @@ import factorycraft.circuits.*;
 import factorycraft.logistics.*;
 import factorycraft.multiblock.*;
 import factorycraft.registry.Content;
+import factorycraft.simulation.circuits.*;
 import java.util.*;
 import net.minecraft.core.*;
 import net.minecraft.gametest.framework.*;
@@ -128,13 +129,14 @@ public final class SplitterCircuitGameTests {
   public static void allSplitterTiersPauseEveryLaneAndCloseImmediatelyOnUnknownInput(
       GameTestHelper h) {
     var belts = new ArrayList<BeltBlockEntity>();
-    var gates = new ArrayList<CircuitNodeBlockEntity>();
+    var gates = new ArrayList<CircuitAttachment>();
     var sources = new ArrayList<CircuitNodeBlockEntity>();
     for (int i = 0; i < 3; i++) {
       var p = h.absolutePos(new BlockPos(4 + 8 * i, 3, 5));
       belts.add(split(h, i, p));
       gates.add(
-          CircuitGameTests.node(h, FactoryKind.CIRCUIT_CONTROLLER, 3 + 8 * i, 5, Direction.EAST));
+          DirectGateFixture.gate(
+              belts.get(i), SignalKey.A, SignalMath.Compare.GREATER, 0, 1 << (i + 1)));
       sources.add(CircuitGameTests.node(h, FactoryKind.CONSTANT, 4 + 8 * i, 9, Direction.NORTH));
     }
     h.runAfterDelay(
@@ -142,7 +144,7 @@ public final class SplitterCircuitGameTests {
         () -> {
           for (int i = 0; i < 3; i++) {
             CircuitGameTests.program(h, sources.get(i), 0, 0);
-            CircuitGameTests.link(h, sources.get(i), 0, gates.get(i), 0, i + 1);
+            DirectGateFixture.wire(sources.get(i).circuit(true), gates.get(i), i + 1);
           }
         });
     h.runAfterDelay(
@@ -150,7 +152,10 @@ public final class SplitterCircuitGameTests {
         () -> {
           for (var b : belts) {
             h.assertTrue(
-                b.circuitBinding != null && !b.circuitRunning(), "closed splitter not bound");
+                b.circuit(false) != null
+                    && b.circuit(false).settings().gate()
+                    && !b.circuitRunning(),
+                "closed splitter not bound");
             seed(b);
           }
         });
@@ -202,25 +207,24 @@ public final class SplitterCircuitGameTests {
     var p = h.absolutePos(new BlockPos(5, 3, 5));
     var b = split(h, 0, p);
     var a = CircuitGameTests.node(h, FactoryKind.CONSTANT, 10, 8, Direction.NORTH);
-    var gate = CircuitGameTests.node(h, FactoryKind.CIRCUIT_CONTROLLER, 7, 5, Direction.WEST);
-    h.runAfterDelay(
-        5,
-        () -> {
-          CircuitGameTests.program(h, a, 0, 0);
-          CircuitGameTests.link(h, a, 0, gate, 0, 3);
-        });
+    var gate = DirectGateFixture.gate(b, SignalKey.A, SignalMath.Compare.GREATER, 0, 8);
+    DirectGateFixture.wire(a.circuit(true), gate, 3);
+    h.runAfterDelay(5, () -> CircuitGameTests.program(h, a, 0, 0));
     h.runAfterDelay(
         25,
         () -> {
           h.assertTrue(
-              b.circuitBinding != null
-                  && !b.circuitRunning()
-                  && gate.targetPosition().equals(b.trackPosition(1)),
-              "part did not control whole splitter");
-          h.getLevel().destroyBlock(gate.getBlockPos(), true);
+              CircuitAccess.at(h.getLevel(), b.trackPosition(1)) == gate && !b.circuitRunning(),
+              "physical part did not address the sole direct gate");
+          h.getLevel().destroyBlock(a.getBlockPos(), true);
+          h.assertTrue(!b.circuitRunning(), "deleted source opened nonzero condition");
+          factorycraft.diagnostics.CircuitFactory.configure(
+              gate,
+              factorycraft.diagnostics.CircuitFactory.settings(false, false, List.of(), 8, 0),
+              gate.program());
+          b.refreshCircuitControl();
           h.assertTrue(
-              b.circuitBinding == null && b.circuitRunning(),
-              "destroyed controller left stale stop");
+              b.circuitRunning(), "disabling direct condition did not restore unbound operation");
           h.succeed();
         });
   }
@@ -230,11 +234,10 @@ public final class SplitterCircuitGameTests {
       GameTestHelper h) {
     var p = h.absolutePos(new BlockPos(5, 3, 5));
     var b = split(h, 2, p);
-    var gate = CircuitGameTests.node(h, FactoryKind.CIRCUIT_CONTROLLER, 4, 5, Direction.EAST);
+    var gate = DirectGateFixture.gate(b, SignalKey.A, SignalMath.Compare.GREATER, 0, 1);
     h.runAfterDelay(
         5,
         () -> {
-          CircuitBinding.set(b, new CircuitBinding(gate.getBlockPos(), gate.assembly().identity()));
           h.assertTrue(
               b.configureSplitter(
                   new SplitterSettings(
@@ -275,7 +278,8 @@ public final class SplitterCircuitGameTests {
           h.assertTrue(stack.useOn(ctx).consumesAction(), "portable placement failed");
           var copy = (BeltBlockEntity) h.getLevel().getBlockEntity(plan.anchor());
           h.assertTrue(
-              copy.circuitBinding == null
+              copy.circuit(false) != null
+                  && copy.circuit(false).links.isEmpty()
                   && copy.splitterSettings()
                       .equals(
                           new SplitterSettings(
@@ -283,7 +287,7 @@ public final class SplitterCircuitGameTests {
                               1,
                               net.minecraft.resources.ResourceLocation.withDefaultNamespace(
                                   "raw_iron")))
-                  && copy.circuitRunning()
+                  && !copy.circuitRunning()
                   && positions(copy).size() == 16
                   && !copy.assembly().identity().equals(identity),
               "portable cargo/identity/control changed");
@@ -337,76 +341,67 @@ public final class SplitterCircuitGameTests {
     var level = h.getLevel();
     for (int tier = 0; tier < 3; tier++) {
       var p = new BlockPos(17015 + tier * 48, 70, 17015);
-      var c = p.south();
       var a = p.south(4);
       var cells = new ArrayList<>(MachineProfile.SPLITTER.cells(p, Direction.NORTH));
-      cells.add(c);
       cells.add(a);
       for (var cell : cells) level.getChunkAt(cell);
       boolean fresh = cells.stream().allMatch(cell -> level.getBlockState(cell).isAir());
       if (fresh) {
         var b = split(h, tier, p);
         StructurePlacement.place(
-            level,
-            c,
-            Content.FACTORY.get(FactoryKind.CIRCUIT_CONTROLLER).get().defaultBlockState());
-        StructurePlacement.place(
             level, a, Content.FACTORY.get(FactoryKind.CONSTANT).get().defaultBlockState());
-        var controller = (CircuitNodeBlockEntity) level.getBlockEntity(c);
         var source = (CircuitNodeBlockEntity) level.getBlockEntity(a);
-        for (int color = 0; color < 4; color++) {
-          source.links.add(new CircuitLink(c, controller.assembly().identity(), 0, 0, color));
-          controller.links.add(new CircuitLink(a, source.assembly().identity(), 0, 0, color));
-        }
-        CircuitBinding.set(b, new CircuitBinding(c, controller.assembly().identity()));
+        var gate = DirectGateFixture.gate(b, SignalKey.A, SignalMath.Compare.GREATER, 0, 15);
+        for (int color = 0; color < 4; color++)
+          DirectGateFixture.wire(source.circuit(true), gate, color);
         seed(b);
         source.setChanged();
-        controller.setChanged();
+        b.setChanged();
       }
       h.assertTrue(
           level.getBlockEntity(p) instanceof BeltBlockEntity
-              && level.getBlockEntity(c) instanceof CircuitNodeBlockEntity
               && level.getBlockEntity(a) instanceof CircuitNodeBlockEntity,
-          "partial gated fixture; refusing refill");
+          "partial direct splitter fixture; refusing reseed");
       var b = (BeltBlockEntity) level.getBlockEntity(p);
-      var controller = (CircuitNodeBlockEntity) level.getBlockEntity(c);
       var source = (CircuitNodeBlockEntity) level.getBlockEntity(a);
+      var gate = b.circuit(false);
       h.assertTrue(
-          new CircuitBinding(c, controller.assembly().identity()).equals(b.circuitBinding)
+          gate != null
+              && gate.settings().gate()
               && !b.circuitRunning()
               && positions(b)
                   .equals(List.of(96, 72, 48, 24, 96, 72, 48, 24, 96, 72, 48, 24, 96, 72, 48, 24)),
-          "gated cargo/binding disk values changed");
+          "direct paused cargo disk values changed");
       for (int lane = 0; lane < 4; lane++)
-        for (int item = 0; item < 4; item++)
+        for (int i = 0; i < 4; i++)
           h.assertTrue(
               b.lane(lane)
                   .carriers()
-                  .get(item)
+                  .get(i)
                   .value
-                  .is(item % 2 == 0 ? Items.RAW_IRON : Items.RAW_COPPER),
-              "gated cargo item identity changed");
+                  .is(i % 2 == 0 ? Items.RAW_IRON : Items.RAW_COPPER),
+              "disk cargo item identity changed");
       for (int color = 0; color < 4; color++)
         h.assertTrue(
-            source.links.contains(new CircuitLink(c, controller.assembly().identity(), 0, 0, color))
-                && controller.links.contains(
+            source.links.contains(new CircuitLink(p, gate.identity(), 0, 0, color))
+                && gate.links.contains(
                     new CircuitLink(a, source.assembly().identity(), 0, 0, color)),
-            "color/UUID link lost");
+            "direct color/UUID lost");
       for (var part : b.assembly().positions())
         h.assertTrue(
             level.getBlockEntity(part) instanceof CasingBlockEntity partBe
                 && partBe.boundTo(p, b.assembly().identity()),
-            "splitter part identity changed");
-      b.onChunkUnloaded();
-      controller.onChunkUnloaded();
-      source.onChunkUnloaded();
-      for (var cell : cells) level.getChunkAt(cell).setUnsaved(true);
+            "disk part ownership changed");
+      for (var cell : cells) {
+        level.getBlockEntity(cell).onChunkUnloaded();
+        level.getChunkAt(cell).setUnsaved(true);
+      }
       System.out.println(
           "FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: "
               + (fresh ? "SEEDED" : "VERIFIED")
               + " tier="
               + (tier + 1)
-              + " 16 carriers, binding, four colors");
+              + " 16 carriers, direct four-color wires");
     }
     h.succeed();
   }

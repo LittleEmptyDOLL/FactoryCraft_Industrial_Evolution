@@ -273,7 +273,7 @@ public final class ResearchGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 220)
+  @GameTest(template = "empty", timeoutTicks = 350)
   public static void actualOwnedAssemblerWaitsForTeamUnlock(GameTestHelper h) {
     var pos = h.absolutePos(new BlockPos(4, 2, 4));
     StructurePlacement.place(
@@ -302,7 +302,7 @@ public final class ResearchGameTests {
           for (int i = 0; i < 10; i++) ledger.completeUnit(tech, () -> {});
         });
     h.runAfterDelay(
-        190,
+        310,
         () -> {
           h.assertTrue(
               machine.items.getStackInSlot(4).is(Content.SCIENCE_GREEN.get())

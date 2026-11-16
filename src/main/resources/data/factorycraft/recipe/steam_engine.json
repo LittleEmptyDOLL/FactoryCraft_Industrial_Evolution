@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 8
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:fluid_pipe"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:steam_engine",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 10
+}

@@ -83,15 +83,14 @@ public final class AssemblyV4GameTests {
         () -> {
           int fe = engine.engine.energy();
           long fluids =
-              supply.cell().amount()
+              10L * supply.cell().amount()
                   + steam.cell().amount()
-                  + boiler.water.amount()
+                  + 10L * boiler.water.amount()
                   + boiler.steam.amount()
                   + engine.steam.amount();
           h.assertTrue(fe > 0, "BOTH intake stalled live steam production");
           h.assertTrue(
-              6 * fluids + 5L * fe + engine.engine.residue() == 15000,
-              "physical boiler/engine line lost or duplicated fluid/FE");
+              8 * fluids + fe == 200000, "physical boiler/engine line lost or duplicated fluid/FE");
           h.succeed();
         });
   }

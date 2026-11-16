@@ -465,7 +465,7 @@ public final class ElectricInserterGameTests {
                   && m.items.getStackInSlot(0).isEmpty()
                   && m.items.getStackInSlot(1).isEmpty()
                   && m.items.getStackInSlot(2).isEmpty()
-                  && m.power.getEnergyStored() == 1880,
+                  && m.power.getEnergyStored() == 1800,
               "actuator manufacture material/FE ledger failed");
           h.succeed();
         });

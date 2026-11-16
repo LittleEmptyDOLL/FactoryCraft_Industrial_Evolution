@@ -11,7 +11,6 @@ import net.minecraft.core.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,7 +27,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  */
 @EventBusSubscriber(modid = FactoryCraft.ID)
 public final class FluidSimulation {
-  public static final int PUMP_RATE = FluidUnits.PUMP_PER_TICK, PUMP_FE = 20;
+  public static final int PUMP_RATE = FluidUnits.PUMP_PER_TICK, PUMP_FE = 4;
   private static final boolean PROFILE =
       System.getProperty("factorycraft.fluidBenchmark.fixture") != null;
   private static final Map<Level, State> STATES = new IdentityHashMap<>();
@@ -109,7 +108,7 @@ public final class FluidSimulation {
                 .getChunkNow(ChunkPos.getX(cp), ChunkPos.getZ(cp));
         if (chunk != null) info.chunks.computeIfAbsent(cp, k -> new ChunkRef(chunk)).members++;
       }
-      for (var next : l.neighbors) if (next.be.kind() == FluidKind.PUMP) info.pumps.add(next);
+      for (var next : l.neighbors) if (next.be.kind().boundary()) info.pumps.add(next);
       info.dirtyTick = Long.MIN_VALUE;
     }
 
@@ -122,7 +121,7 @@ public final class FluidSimulation {
         if (ref != null && --ref.members == 0) info.chunks.remove(cp);
       }
       for (var pump : l.neighbors)
-        if (pump.be.kind() == FluidKind.PUMP) {
+        if (pump.be.kind().boundary()) {
           boolean still = false;
           for (var other : pump.neighbors)
             if (other != l && other.node != null && other.node.segment() == group) {
@@ -322,12 +321,12 @@ public final class FluidSimulation {
         0,
         c.amount(),
         c.capacity(),
-        be.kind() == FluidKind.PUMP ? 1 : 0,
+        be.kind().boundary() ? 1 : 0,
         0,
         1,
         1,
         1,
-        be.kind() == FluidKind.PUMP && be.simulationAvailable() ? 1 : 0,
+        be.kind().boundary() && be.simulationAvailable() ? 1 : 0,
         c.key());
   }
 
@@ -383,7 +382,7 @@ public final class FluidSimulation {
       maxY = Math.max(maxY, cell.getY());
       maxZ = Math.max(maxZ, cell.getZ());
     }
-    if (be.kind() != FluidKind.PUMP) {
+    if (!be.kind().boundary()) {
       l.node =
           s.network.add(
               new PipelineNetwork.Site(
@@ -472,9 +471,7 @@ public final class FluidSimulation {
     }
     for (var previous : List.copyOf(link.neighbors))
       if (!expected.contains(previous)) {
-        if (!previous.removed
-            && link.be.kind() != FluidKind.PUMP
-            && previous.be.kind() != FluidKind.PUMP) {
+        if (!previous.removed && !link.be.kind().boundary() && !previous.be.kind().boundary()) {
           s.network.disconnect(link.node, previous.node);
         }
         link.neighbors.remove(previous);
@@ -484,7 +481,7 @@ public final class FluidSimulation {
     for (var next : expected)
       if (link.neighbors.add(next)) {
         next.neighbors.add(link);
-        if (link.be.kind() != FluidKind.PUMP && next.be.kind() != FluidKind.PUMP) {
+        if (!link.be.kind().boundary() && !next.be.kind().boundary()) {
           s.network.connect(link.node, next.node, expected.size() == 1);
         }
         wake(s, next);
@@ -495,7 +492,7 @@ public final class FluidSimulation {
       var info = s.groups.get(link.node.segment());
       if (info != null) {
         info.pumps.removeIf(p -> p.removed);
-        for (var next : link.neighbors) if (next.be.kind() == FluidKind.PUMP) info.pumps.add(next);
+        for (var next : link.neighbors) if (next.be.kind().boundary()) info.pumps.add(next);
       }
     }
     wake(s, link);
@@ -532,7 +529,7 @@ public final class FluidSimulation {
   }
 
   private static void wake(State s, Link link) {
-    if (!link.removed && link.be.kind() == FluidKind.PUMP && !link.queued) {
+    if (!link.removed && link.be.kind().boundary() && !link.queued) {
       link.queued = true;
       s.pumps.addLast(link);
     }
@@ -639,68 +636,115 @@ public final class FluidSimulation {
   }
 
   private static boolean pump(State s, Link link) {
+    if (link.be.kind() == FluidKind.OFFSHORE) return offshore(s, link);
     if (!eligible(s, link) || !powered(s, link)) return false;
     var be = link.be;
     var cell = be.localCell();
-    var input = neighbor(s, be, true);
-    var output = neighbor(s, be, false);
+    int external = foreignTransfer(s, link);
     var from =
-        input == null
-            ? null
-            : hydraulic(
-                input.be, be.inputNozzle().relative(be.facing().getOpposite()), be.facing());
+        FluidConnections.output(
+            s.level, be.inputNozzle().relative(be.facing().getOpposite()), be.facing());
     var to =
-        output == null
-            ? null
-            : hydraulic(
-                output.be, be.outputNozzle().relative(be.facing()), be.facing().getOpposite());
+        FluidConnections.input(
+            s.level,
+            be.outputNozzle().relative(be.facing()),
+            be.facing().getOpposite(),
+            cell.key());
     var intake = hydraulic(be, be.inputNozzle(), be.facing().getOpposite());
     var outlet = hydraulic(be, be.outputNozzle(), be.facing());
     int out = to == null ? 0 : outlet.transferTo(to, PUMP_RATE, true);
     int in = from == null ? 0 : Math.min(PUMP_RATE, from.outputLimit(PUMP_RATE));
     if (from != null && (from.key() == null || cell.amount() > out && !cell.accepts(from.key())))
       in = 0;
-    boolean source = false;
-    if (from == null) {
-      var p = be.inputNozzle().relative(be.facing().getOpposite());
-      source =
-          s.level.hasChunkAt(p)
-              && s.level.getBlockState(p).is(Blocks.WATER)
-              && s.level.getFluidState(p).isSource();
-      if (source) {
-        if (link.water == null) link.water = new FluidKey(new FluidStack(Fluids.WATER, 1));
-        if (cell.amount() == out || cell.accepts(link.water)) in = PUMP_RATE;
-      }
-    }
     in = Math.min(in, cell.space() + out);
-    if (out == 0 && in > 0) in = intake.inputLimit(source ? link.water : from.key(), in);
+    if (out == 0 && in > 0) in = intake.inputLimit(from.key(), in);
     if (out == 0 && in == 0) {
       // Sub-mB pressure credit needs future ticks even when no volume mutation can wake us.
       boolean inputCredit =
           cell.space() > 0
-              && ((source && intake.accepts(link.water))
-                  || (from != null
-                      && from.key() != null
-                      && from.amount() > 0
-                      && cell.accepts(from.key())
-                      && intake.accepts(from.key())));
+              && ((from != null
+                  && from.key() != null
+                  && from.amount() > 0
+                  && cell.accepts(from.key())
+                  && intake.accepts(from.key())));
       boolean outputCredit =
           cell.amount() > 0 && to != null && to.space() > 0 && to.accepts(cell.key());
       if (inputCredit || outputCredit) wake(s, link);
-      return false;
+      return external > 0;
     }
     pay(s, link);
     int moved = 0;
     if (out > 0) moved += outlet.transferTo(to, out, false);
     if (!link.removed && be.loaded() && in > 0) {
-      if (source) {
-        int added = intake.fill(link.water, in, false);
-        s.worldWater += added;
-        moved += added;
-      } else if (from != null) moved += from.transferTo(intake, in, false);
+      if (from != null) moved += from.transferTo(intake, in, false);
     }
     s.pumped += moved;
-    return moved > 0;
+    return moved > 0 || external > 0;
+  }
+
+  private static net.neoforged.neoforge.fluids.capability.IFluidHandler foreign(
+      Level level, BlockPos pos, Direction side) {
+    if (!level.hasChunkAt(pos) || FluidConnections.endpoint(level, pos) != null) return null;
+    return level.getCapability(
+        net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK, pos, side);
+  }
+
+  private static int foreignTransfer(State s, Link link) {
+    var be = link.be;
+    var f = be.facing();
+    int moved = 0;
+    var input = foreign(s.level, be.inputNozzle().relative(f.getOpposite()), f);
+    var output = foreign(s.level, be.outputNozzle().relative(f), f.getOpposite());
+    if (input != null || output != null) wake(s, link);
+    if (input != null)
+      moved +=
+          net.neoforged.neoforge.fluids.FluidUtil.tryFluidTransfer(
+                  be.structurePort(be.inputNozzle(), f.getOpposite()), input, PUMP_RATE, true)
+              .getAmount();
+    if (output != null)
+      moved +=
+          net.neoforged.neoforge.fluids.FluidUtil.tryFluidTransfer(
+                  output, be.structurePort(be.outputNozzle(), f), PUMP_RATE, true)
+              .getAmount();
+    s.pumped += moved;
+    return moved;
+  }
+
+  private static boolean offshore(State s, Link link) {
+    if (!eligible(s, link)) return false;
+    var be = link.be;
+    // Keep an active source checking its two local shore contacts, including removal/reload.
+    wake(s, link);
+    if (!factorycraft.circuits.CircuitBinding.allowed(be)
+        || !OffshorePlacement.invalid(s.level, be.getBlockPos(), be.facing()).isEmpty())
+      return false;
+    if (link.water == null) link.water = new FluidKey(new FluidStack(Fluids.WATER, 1));
+    var cell = be.localCell();
+    int made =
+        be.waterTickAvailable() && cell.accepts(link.water) ? Math.min(600, cell.space()) : 0;
+    if (made > 0) {
+      int amount = made;
+      if (!FluidCell.commitBatch(
+          List.of(new FluidCell.Mutation<>(cell, link.water, cell.amount() + made)),
+          () -> {
+            be.recordWater(amount);
+            s.worldWater += amount;
+          },
+          false)) throw new IllegalStateException("Reserved offshore water changed");
+    }
+    var outPos = be.outputNozzle();
+    var to =
+        FluidConnections.input(
+            s.level, outPos.relative(be.facing()), be.facing().getOpposite(), cell.key());
+    int moved = to == null ? 0 : be.hydraulic(outPos, be.facing()).transferTo(to, 600, false);
+    var external = foreign(s.level, outPos.relative(be.facing()), be.facing().getOpposite());
+    if (external != null)
+      moved +=
+          net.neoforged.neoforge.fluids.FluidUtil.tryFluidTransfer(
+                  external, be.structurePort(outPos, be.facing()), 600, true)
+              .getAmount();
+    s.pumped += moved;
+    return made > 0 || moved > 0;
   }
 
   public record Metrics(

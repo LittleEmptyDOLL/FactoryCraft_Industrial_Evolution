@@ -1,63 +1,32 @@
-# Steam power — 0.25.0
+# Steam power — 0.26.0
 
-Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. The thermal chain uses an automatic 3×2 boiler and 3×5 engine (both height 2). One item forms each entire structure. Physical INPUT/OUTPUT/BOTH connections follow machine_layouts.json independently of the controller; see PETROLEUM.md and MACHINE_DIMENSIONS.md.
+Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. Reference: Factorio 2.1.24 normal-quality prototypes ([power production](https://wiki.factorio.com/Power_production), [boiler](https://wiki.factorio.com/Boiler), [offshore pump](https://wiki.factorio.com/Offshore_pump)). One Factorio fluid unit is **10 native mB**, one second is 20 Minecraft ticks. External FluidStacks are never multiplied again.
 
-## Balance
-
-| Device | Input | Output | Limit / behavior |
+| Device | Full-load input per MC tick | Full-load output per MC tick | Reference |
 |---|---|---|---|
-| Boiler | 2000 mB water; 20 fueled working ticks | 2000 mB steam | one 1-second batch at 20 TPS; pauses without input/fuel/full result space |
-| Steam engine | up to 100 mB steam per tick | 6 FE / 5 mB, up to 120 FE/t | 16000 FE buffer; retains fractional FE when the buffer blocks |
-| Thermal fluid ports | descriptor-defined input/output/BOTH faces | finite cell transfers | 40000-mB buffer-derived nominal 120000 mB/t, bounded by segment pressure; each cell 40000 mB |
+| Offshore Pump | Two valid loaded shoreline water contacts; no FE/fuel | Up to 600 mB water | 1200 Factorio water/s |
+| Boiler | 3 mB water + 20 native smelting-fuel ticks | 30 mB steam | 6 water/s, 60 steam/s, 1800 kW |
+| Steam Engine | Up to 15 mB steam | Up to 120 FE | 30 steam/s, 900 kW |
+| Electric Pump | Already held fluid + 4 FE on an active tick | Directed transfer, nominal ceiling 600 mB/t before pressure | 30 kW; **never a world-water source** |
 
-A boiler uses vanilla NeoForge smelting fuel durations, burning one stored fuel tick per successful work tick. One coal (1600 fuel ticks) processes 160000 mB water into steam; an engine can convert that to **192000 gross FE**. Pump power and other consumers reduce net available energy. This balance is a documented Minecraft FE approximation, not a literal Factorio joule conversion. The old coal generator still gives up to 80 FE per working fuel tick. Ambient cooling, steam temperature-dependent power, heat pipes and nuclear turbines are not simulated. Steam's fluid type has a nominal 438 K / 165 °C label; it is not an independent temperature field.
+Thus **one boiler supplies two engines** at full load; one Offshore Pump's water rate supplies **200 boilers**. Water/steam volumes are deliberately unequal. A thermal ledger uses water-equivalent mass (`10 × remaining water + remaining steam + consumed steam`) or energy (`80 × remaining water + 8 × remaining steam + generated FE`), not the sum of fluid volumes.
 
-Input is consumed only at batch completion after output space is checked again. Partial progress and unspent fuel ticks persist; unavailable inputs or blocked output pause both progress and fuel use. A changed recipe definition starts its own progress. Heat already used for previous work is not refunded when definitions change. Container fuels retain their crafting remainder (e.g. empty lava bucket); automation can remove that remainder. Stacked container fuels are not overwritten.
+## Heat and FE adaptation
 
-The engine uses an exact integer numerator: each consumed mB adds six fifths of an FE. The remainder 0–4 is persisted with energy, chunks and portable items, including an otherwise empty engine. No fraction is discarded and no work is inferred from elapsed offline time. From 20000 mB without extraction it fills to 16000 FE, keeps remainder 4/5 FE and 6666 mB steam; extracting two FE admits exactly one further mB and restores a full buffer with zero remainder. The invariant is `5 × (stored + delivered FE) + remainder + 6 × remaining steam = 6 × initial steam`. Oversized saved FE remains drainable and generation pauses until space exists. No external FE input is accepted.
+The common scale is **7.5 kW per FE/t**. A native Minecraft smelting-fuel tick represents **4.5 kJ** of burner heat. Over one Minecraft tick, a 90-kW furnace spends one fuel tick, a 150-kW Burner Mining Drill spends 5/3 fuel ticks, and a 1800-kW boiler spends 20. The drill persists thirds; electrical work persists integer division remainders. Coal's native 1600 ticks therefore represent 7.2 MJ here, rather than pretending native Minecraft coal has Factorio's 4-MJ fuel value. Solid Fuel burns for 4800 native ticks, exactly three coals. Fuel-container remainders are retained and can be unloaded normally.
 
-The 200-Factorio-unit/second boiler and FE conversion retain FactoryCraft's existing thermal timing/fuel adaptation, not literal Factorio thermal joules. Only fluid quantities scale by ten; gross FE per coal is unchanged. Physical BOTH ports still use descriptor-defined pressure exchange; a finite test supply must contain enough water to reach the 2000-mB recipe threshold after pressure balancing.
+One coal operates a continuously supplied boiler for 80 MC ticks: **240 mB water → 2400 mB steam → 19200 gross FE**. Fuel cannot directly generate electricity. Coal Generator, its recipe, registration and config have been removed.
 
-## Building and interacting
+The canonical boiling datapack recipe is one complete 1-tick conversion. Fuel, input/output reservation and progress are committed before observers. Blocked steam space, missing water, unloaded parts and disabled logical conditions do not burn heat. Heat already consumed belongs to completed work; remaining heat and all buffers travel in the single portable machine item. Arbitrary slower datapack boiling recipes still retain their own partial progress and serialized recipe identity.
 
-1. Supply water to the boiler's rear. Its top arrow points toward the front steam outlet. Put fuel in its GUI slot or insert it through the NeoForge item capability using an inserter/hopper. A boiler needs fuel, not electricity.
-2. Connect steam pipes to the boiler's front, then the engine's rear. Thermal machines actively pull/push adjacent FactoryCraft fluid cells; connected passive pipes share segments as described in FLUIDS.md. Wrong fluids/components cannot overwrite a stored cell. Pumps are directional boundaries. No world chunks are forced.
-3. Connect poles by actual copper wires and intersect their square supply area with the engine/consumer foundations (see [ELECTRICITY.md](ELECTRICITY.md), current 0.20 rules). It supplies the same graph as coal generators; generated FE can also be extracted through the standard NeoForge capability. No automatic push into external FE blocks is included.
-4. The electric water pump needs a bootstrap source. Start it from the coal generator; once steam generation is operating, remove that generator if desired. The engine can then sustain the pump while powering a basic factory. The dedicated GameTest uses only a finite 400-FE starting charge and proves subsequent pump/furnace operation without any coal generator.
-5. Right-click for volume/fuel/progress/FE; a factory wrench rotates. Side fluid ports accept buckets through standard NeoForge interaction. Plain steam has a bucket; native buckets cannot retain fluid components, so component-bearing steam refuses bucket transfer without draining it. Use portable tanks or component-aware fluid containers for those stacks. Actual empty-bucket interaction also protects component-bearing water/other fluids in FactoryCraft blocks. Steam stays container-only: no steam world block or infinite source generation. Only descriptor-defined physical ports work, including BOTH ports with separate channels. Arbitrary casing and unsided capability access are blocked; use the guarded canister recovery UI for maintenance.
-6. Breaking a machine returns one item retaining its sole fuel inventory, unspent fuel heat, progress/recipe identity, fluids/components and generated FE. Placing it restores state. Empty machines stack normally. Creative breaking follows vanilla no-drop behavior. No extra inventory drops duplicate the portable contents.
+The Steam Engine owns a **16000-FE Minecraft buffer**. It may charge that finite buffer without a network load; when full it consumes no steam. Subsequent generation follows exported demand, using only whole 8-FE / 1-mB quanta. Small deficits retain buffer headroom until a full quantum fits; no fractional FE or steam is discarded. Distribution uses the existing explicit pole graph; external FE extraction accesses the same owned energy. This finite initial charge is an explicit Minecraft capability adaptation, not Factorio's exact zero-storage generator behavior. Temperature is a 165°C fluid-type label, not a dynamic thermodynamic field.
 
-Survival recipes are unlocked by acquiring iron, including for existing saves. Boiler: 5 iron plates, 2 pipes, vanilla furnace, gear. Engine: 4 iron plates, 2 gears, 2 pipes, copper plate. See `craft_boiler.json` and `craft_steam_engine.json` for exact crafting grids.
+## Physical placement
 
-`/factorycraft steamworks` requires a loaded empty 30×8×13 area beside the player. It builds enclosed water, electric pump, pipes, boiler with eight coal, engine, poles, a bootstrap generator with eight coal and a furnace with eight raw iron. It does not directly fill steam/output plates. `/factorycraft power` reports the shared grid. The generator may be removed after the engine starts; `/factorycraft waterworks` and old factory examples remain available.
+A Boiler is 3×2, with two water BOTH ports and one forward steam output. The Engine is 3×5, with steam BOTH ports at both ends. Parts delegate only the actual physical port/side/channel to the single controller; water and steam never form one passive segment. Vertical heights and the original models are Minecraft adaptations.
 
-## Datapack boiling recipes
+Offshore Pump is a separate **2×1×1** structure. Facing points toward its dry output. Both base cells require solid upward support immediately below; immediately behind each support cell must be a full vanilla water source with clear air above. This is the documented two-contact 3D shoreline rule, without an invented minimum lake area. Placement preview and the server share the check. No floating, diagonal or remote source satisfies it. The water blocks remain in the world. If either contact/support becomes invalid or unloaded, production stops; already owned water is retained. The owner saves its cumulative generated-water counter and last source tick, preventing repeated production within the same world tick after reconstruction/portable placement. Maximum generation is also bounded by its 4000-mB buffer space.
 
-`data/<namespace>/recipe/<name>.json`:
+`/factorycraft steamworks` builds a real Offshore → Boiler → **two Engines** demonstration, fueled with declared coal and no injected FE/working fluids. Other normal-world industrial demonstrations use the same real steam plant. Native legacy transport/control tests use an explicitly test-only engine with finite 40000-mB precharge where energy bootstrap is not their invariant. `ReleaseV26GameTests.coldBootstrap` is independent of that shortcut: it tests real shoreline water, heat, two engines, explicit poles, finite ore, automatic ore→plates→gears→chest, all three assemblers and oil-point→refining.
 
-```json
-{
-  "type": "factorycraft:boiling",
-  "input": {"fluid": "minecraft:water", "amount": 2000},
-  "result": {"id": "factorycraft:steam", "amount": 2000},
-  "ticks": 20
-}
-```
-
-Input uses NeoForge `SizedFluidIngredient.FLAT_CODEC`; fluid tags/custom fluid ingredients are supported by that codec. Output uses the native FluidStack codec, including optional components. Amounts are 1–40000 mB and duration 1–72000 ticks; oversized recipes are rejected at decode. Matching is automatic, ordered by recipe ID; this first fluid machine has no manual recipe selector. Definition caches refresh at most once per 20 ticks. A canonical codec-encoded definition is stored with progress, preserving identity across server restarts and preventing work from an edited definition being reused.
-
-Boiling handles one counted fluid input/output with fuel heat. Mixed item/fluid chemistry, advanced refining and production modules are implemented separately; see PETROLEUM.md. The 0.25 recipe schema intentionally does not migrate older FactoryCraft formats. Thermal module effects and temperature physics are not introduced.
-
-![Boiler in the actual client](docs/screenshots/boiler-0.4.0.png)
-
-![Steam engine in the actual client](docs/screenshots/steam-engine-0.4.0.png)
-
-## Evidence and limits
-
-See VALIDATION.md for commands/results. Independent tests cover atomic conversion callbacks, no-fuel/no-input/backpressure, exact progress restoration, changed definitions, FE quanta/overflow and complete material/fuel/energy ledgers. Dedicated tests exercise real fluid/item/FE APIs, buckets, fuel remainders, actual portable item placement, rotation/unload guards, codec round-trips, partial reconstruction, finite pipe transport and source-water-powered production. A detached two-chunk fixture verifies exact saved fuel/progress/fluids/FE in separate JVMs; this is not natural player-distance unload coverage.
-
-The machines currently use ordinary server BE tickers with two precomputed neighbor positions, canonical chunk checks, per-boiler recipe caches and changed-state synchronization every five ticks at most. There is no global world scan or off-thread world access. Large active thermal factories, two real clients, other-mod interoperability and temperature physics are not benchmarked. Existing full-factory regression tests contain no thermal load. Actual basic/advanced petroleum, chemistry and module chains remain mandatory native tests. No subsequent feature work starts automatically.
-
-## Fluid segment integration (0.24.0)
-
-Boiler/engine recipe quantities, fuel and 12-FE steam quanta are unchanged. Water/steam channels remain sole machine-owned buffers; physical BOTH water ports propagate water filters to adjacent passive segments, while steam has its separate channel/filter. Conflicting bidirectional fluids do not merge. Pipes and tanks use the same segment owner for active ports and circuits. Pump rate is now 60 mB/t at normal pressure (20 FE/working tick); source-water remains an explicit Minecraft feature. See FLUIDS.md and VALIDATION.md.
+Current validation evidence is in [VALIDATION.md](VALIDATION.md). Pre-0.26 snapshots are archived and are not migrated or overwritten.

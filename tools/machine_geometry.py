@@ -7,7 +7,7 @@ import json,math,random,re
 def generate(root,write,png):
  source=(root.parents[2]/'src/main/java/factorycraft/multiblock/MachineProfile.java').read_text()
  dimensions={name:(int(w),int(h),int(d)) for name,w,h,d in re.findall(r'\("([a-z0-9_]+)",\s*(\d+),\s*(\d+),\s*(\d+)\)',source)}
- palette={'shell':(72,87,101),'steel':(145,160,167),'dark':(23,32,41),'teal':(46,136,146),'orange':(196,107,47),'red':(161,62,51),'yellow':(218,174,51),'glass':(35,72,85),'hazard':(219,174,46),'inlet':(44,132,215),'outlet':(226,135,52),'outlet3':(226,135,52),'bidi':(55,176,157),'indicator_off':(36,60,63),'indicator_on':(72,230,163),'flame':(249,125,36),'belt':(156,120,43),'piston':(121,144,153)}
+ palette={'shell':(72,87,101),'steel':(145,160,167),'dark':(23,32,41),'teal':(46,136,146),'orange':(196,107,47),'red':(161,62,51),'yellow':(218,174,51),'glass':(35,72,85),'hazard':(219,174,46),'inlet':(44,132,215),'outlet':(226,135,52),'outlet3':(226,135,52),'bidi':(55,176,157),'indicator_off':(36,60,63),'indicator_on':(72,230,163),'green':(62,151,83),'flame':(249,125,36),'belt':(156,120,43),'piston':(121,144,153)}
  for name,color in palette.items():
   frames=4 if name in ['flame','belt','piston'] else 2 if name=='indicator_on' else 1
   rng=random.Random('unified-'+name);canvas=[]
@@ -61,8 +61,8 @@ def generate(root,write,png):
     box((xx[0],.3,z-.195),(xx[1],.7,z+.195),mat)
   if name in json.loads((root/'factorycraft/pole_geometry.json').read_text()):
    boxes.extend(json.loads((root/'factorycraft/pole_geometry.json').read_text())[name]['boxes'])
-  elif name in ['constant_combinator','arithmetic_combinator','decider_combinator','selector_combinator','circuit_reader','circuit_controller']:
-   trim={'constant_combinator':'yellow','arithmetic_combinator':'teal','decider_combinator':'orange','selector_combinator':'inlet','circuit_reader':'inlet','circuit_controller':'red'}[name]
+  elif name in ['constant_combinator','arithmetic_combinator','decider_combinator','selector_combinator']:
+   trim={'constant_combinator':'yellow','arithmetic_combinator':'teal','decider_combinator':'orange','selector_combinator':'inlet'}[name]
    box((.05,0,.05),(w-.05,.15,d-.05),'dark');box((.12,.15,.12),(w-.12,.44,d-.12),trim)
    box((.22,.44,.22),(w-.22,.48,d-.22),'glass')
    for z in [.12,d-.12]:
@@ -97,6 +97,14 @@ def generate(root,write,png):
     box((.12,1.68,.4),(.4,1.94,2.6),'teal');box((2.6,1.68,.4),(2.88,1.94,2.6),'teal')
     box((1.18,1.3,1.18),(1.82,1.92,1.82),'orange')
     for a,b in [((1.34,.35,1.34),(1.66,1.65,1.66)),((.66,.60,1.38),(2.34,.76,1.62)),((1.38,.60,.66),(1.62,.76,2.34))]:box(a,b,'steel',parts)
+   elif name=='burner_mining_drill':
+    box((.18,.34,.18),(1.82,.62,1.82),'orange')
+    for x in [.16,1.64]:
+     for z in [.16,1.64]:box((x,.34,z),(x+.2,1.8,z+.2),'steel')
+    box((.25,1.65,.25),(1.75,1.9,1.75),'shell')
+    box((1.36,.65,1.25),(1.77,1.55,1.8),'dark')
+    box((.84,.35,.84),(1.16,1.65,1.16),'steel',parts)
+    box((.5,.65,.87),(1.5,.8,1.13),'orange',parts)
    elif name=='electric_furnace':
     box((.25,.34,.25),(2.75,2.5,2.75),'orange' if name=='electric_furnace' else 'red')
     box((.42,2.5,.42),(2.58,2.79,2.58),'dark')
@@ -114,14 +122,17 @@ def generate(root,write,png):
     column(w-.45,d-.45,.22,h-.20,h-.02,'steel')
     if name=='steel_furnace':
      for yy in [.5,1.5,2.35]: box((.10,yy,.10),(w-.10,yy+.12,d-.10),'dark')
-   elif name in ['assembling_machine','assembling_machine_2']:
+   elif name in ['assembling_machine','assembling_machine_2','assembling_machine_3']:
     box((.27,.34,.27),(2.73,.75,2.73),'teal');box((.45,.75,.45),(2.55,.85,2.55),'steel')
     for x in [.16,2.64]:
      for z in [.16,2.64]:box((x,.34,z),(x+.2,2.88,z+.2),'steel')
     box((.15,2.55,.15),(2.85,2.96,2.85),'teal');box((.55,.85,.55),(2.45,1.02,2.45),'hazard')
     box((.85,1.65,.85),(2.15,1.93,2.15),'steel',parts);box((1.34,1.93,1.34),(1.66,2.58,1.66),'orange',parts)
-    if name=='assembling_machine_2':
+    if name!='assembling_machine':
      box((.35,1.05,2.65),(.75,2.4,2.95),'inlet');box((2.25,1.05,2.65),(2.65,2.4,2.95),'inlet')
+    if name=='assembling_machine_3':
+     box((.16,2.55,.16),(2.84,2.95,2.84),'green')
+     for x in [.45,2.25]:box((x,.85,2.6),(x+.25,2.4,2.9),'green')
    elif name=='beacon':
     box((.4,.34,.4),(2.6,1.1,2.6),'shell')
     box((1.25,1.1,1.25),(1.75,2.85,1.75),'steel')
@@ -135,11 +146,6 @@ def generate(root,write,png):
     box((.35,2.45,.35),(2.65,2.8,2.65),'teal')
     for x in [.8,1.8]:column(x,1.5,.25,.9,2.2,'glass')
     box((.65,1.3,1.12),(2.35,1.42,1.88),'orange',parts)
-   elif name=='coal_generator':
-    box((.3,.34,.35),(2.7,2.35,2.65),'shell');box((.48,.55,.18),(2.52,2.1,.36),'dark')
-    for x in [.5,2.5]:column(x,2.42,.23,2.2,2.98,'steel')
-    box((.4,2.35,.45),(2.6,2.62,2.15),'yellow')
-    box((.8,1.1,.13),(2.2,1.3,.24),'steel',parts);box((1.4,.5,.13),(1.6,1.9,.24),'steel',parts)
    elif name=='pumpjack':
     box((.35,.34,.4),(2.65,.85,2.6),'teal')
     for x in [.5,2.28]:box((x,.7,1.25),(x+.22,2.85,1.65),'steel')
@@ -171,6 +177,12 @@ def generate(root,write,png):
     for y in [.55,1.55,2.45]:
      box((.23,y,.65),(2.77,y+.09,2.35),'steel');box((.65,y,.23),(2.35,y+.09,2.77),'steel')
     box((1.32,.65,.18),(1.68,2.25,.28),'glass');box((1.2,2.88,1.2),(1.8,3,1.8),'bidi')
+   elif name=='offshore_pump':
+    box((.15,.3,.15),(1.85,.6,.85),'teal')
+    for x in [.4,1.4]:
+     column(x,.65,.23,.35,.9,'steel')
+     box((x-.16,.35,.75),(x+.16,.65,.99),'inlet')
+    box((.65,.6,.2),(1.3,.98,.75),'orange')
    elif name=='electric_pump':
     box((.18,.34,.3),(.82,.77,1.7),'teal');box((.26,.77,.4),(.74,.96,.98),'shell')
     box((.32,.44,.18),(.68,.67,.62),'piston')
