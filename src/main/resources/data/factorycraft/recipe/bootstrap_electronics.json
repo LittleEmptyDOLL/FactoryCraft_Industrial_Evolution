@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [],
+  "packs": {},
+  "units": 10,
+  "ticks": 1,
+  "trigger": "craft:factorycraft:copper_plate",
+  "unlocks": [
+    "factorycraft:copper_wire",
+    "factorycraft:electronic_circuit",
+    "factorycraft:lab",
+    "factorycraft:inserter",
+    "factorycraft:electric_pole"
+  ],
+  "x": 0,
+  "y": 1
+}

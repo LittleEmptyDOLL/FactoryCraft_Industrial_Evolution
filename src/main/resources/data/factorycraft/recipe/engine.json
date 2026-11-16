@@ -2,18 +2,17 @@
   "type": "factorycraft:research",
   "prerequisites": [
     "factorycraft:steel_processing",
-    "factorycraft:logistics"
+    "factorycraft:logistic_science"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1
   },
-  "units": 20,
-  "ticks": 60,
-  "repeatable": false,
+  "units": 100,
+  "ticks": 300,
   "unlocks": [
     "factorycraft:engine_unit"
   ],
-  "x": 2,
+  "x": 1,
   "y": 2
 }

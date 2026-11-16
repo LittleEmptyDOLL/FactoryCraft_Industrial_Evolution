@@ -51,7 +51,13 @@ public final class PetroleumGameTests {
                   .get()
                   .defaultBlockState()
                   .setValue(FactoryBlock.FACING, Direction.EAST));
-    return (MachineBlockEntity) h.getLevel().getBlockEntity(pos);
+    var machine = (MachineBlockEntity) h.getLevel().getBlockEntity(pos);
+    if (machine.researchScope().equals("unavailable"))
+      machine.bindResearch(ResearchGameTests.personal(h, "petroleum27-" + pos));
+    if (!machine.researchScope().isEmpty())
+      for (String tech : java.util.List.of("oil_processing", "plastics", "sulfur_processing"))
+        ResearchTestSupport.grant(h.getLevel(), machine.researchScope(), tech);
+    return machine;
   }
 
   private static OilDepositBlockEntity deposit(GameTestHelper h, int x, int z) {
@@ -334,6 +340,9 @@ public final class PetroleumGameTests {
     h.runAfterDelay(
         5,
         () -> {
+          h.assertTrue(
+              c.petroleum().selectRecipe(ResourceLocation.parse("factorycraft:sulfur")),
+              "sulfur recipe selection");
           c.petroleum().cells.get(0).fill(new FluidKey(PetroleumFluids.GAS.stack(1)), 300, false);
           c.petroleum()
               .cells

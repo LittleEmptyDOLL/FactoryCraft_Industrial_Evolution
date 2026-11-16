@@ -7,14 +7,19 @@ public final class FurnaceWork {
   public record Charge(int energy, int remainder) {}
 
   public static Charge charge(int energyMultiplier, int remainder) {
-    if (energyMultiplier < 2000 || energyMultiplier > 100000 || remainder < 0 || remainder >= UNIT)
-      throw new IllegalArgumentException("Invalid furnace power state");
+    if (energyMultiplier < 2000
+        || energyMultiplier > factorycraft.simulation.modules.ModuleEffects.MAX_ENERGY
+        || remainder < 0
+        || remainder >= UNIT) throw new IllegalArgumentException("Invalid furnace power state");
     int total = ELECTRIC_FE * energyMultiplier + remainder;
     return new Charge(total / UNIT, total % UNIT);
   }
 
   public static int budget(int baseSpeed, int speedMultiplier) {
-    if (baseSpeed < 1 || baseSpeed > 2 || speedMultiplier < 2000 || speedMultiplier > 50000)
+    if (baseSpeed < 1
+        || baseSpeed > 2
+        || speedMultiplier < 2000
+        || speedMultiplier > factorycraft.simulation.modules.ModuleEffects.MAX_SPEED)
       throw new IllegalArgumentException("Invalid furnace speed");
     return baseSpeed * speedMultiplier;
   }

@@ -1,22 +1,25 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "III",
-    "GCG",
-    "III"
-  ],
-  "key": {
-    "I": {
-      "item": "factorycraft:iron_plate"
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 9
     },
-    "G": {
-      "item": "factorycraft:iron_gear"
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 5
     },
-    "C": {
-      "item": "factorycraft:electronic_circuit"
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 3
     }
-  },
+  ],
   "result": {
     "id": "factorycraft:assembling_machine",
     "count": 1

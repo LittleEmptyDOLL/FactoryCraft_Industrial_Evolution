@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:automation_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1
+  },
+  "units": 25,
+  "ticks": 200,
+  "unlocks": [
+    "factorycraft:electric_drill"
+  ],
+  "x": 8,
+  "y": 0
+}

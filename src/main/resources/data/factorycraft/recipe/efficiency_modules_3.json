@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:efficiency_modules_2",
+    "factorycraft:agricultural_science_pack"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:space_science_pack": 1,
+    "factorycraft:agricultural_science_pack": 1
+  },
+  "units": 300,
+  "ticks": 1200,
+  "unlocks": [
+    "factorycraft:efficiency_module_3"
+  ],
+  "x": 5,
+  "y": 4
+}

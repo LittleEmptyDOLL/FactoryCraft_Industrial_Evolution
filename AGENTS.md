@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.26.1, GitHub issue #6
+## Active task — 0.27.0, GitHub issue #7
+
+* Canonical Factorio 2.1.24 with Space Age ENABLED (user clarification 17 November supersedes original base-only scope): twelve stable science identities/physical capacity, no fake late science production. Lab twelve distinct science slots (initial seven plus five future planetary packs) plus two singleton module slots, 8 FE/t base and exact paid speed/productivity work; per-team atomic research and per-lab saved partial/bonus credit.
+* All nine speed/efficiency/productivity modules, canonical Space Age recipes/effects/technology costs. Tier 2 requires genuine space science; tier 3 includes tungsten carbide /biter egg /spoilage identities and real offworld research gates. Replace lab_efficiency with six finite research-speed levels; retain missing late dependencies as visible fail-closed gates. Preserve starter bootstrap and prevent unresearched handcraft bypasses.
+* Retain all 429 native cases and thirty finite chains, previous disk markers and diagnostic worlds; add v0270 fixtures and independent-JVM checks. Changed GUI requires real EN/RU client checks and affected optional-mod profile. Full factory/MIXED/large-pipe checks stay CI; query CI once after normal authorized main push and report pending honestly.
+* No additional machines/science factories or offworld production/quality gameplay, rail/robots/construction/worldgen or lift redesign. Future primary space science comes from platforms; an additional later Satellite route gives 1000 packs on a Space Age-cost rocket. No satellite work now. Old formats need no migration; current-format ownership and exact components remain mandatory.
+
+## Previous task — 0.26.1, GitHub issue #6
 
 * Shore-normal Offshore: 1×2, land controller/outlet and one identity-only intake above unchanged real source water. No support under intake, no FE/fuel; keep 600 mB/t /4000 mB/source tick and owner ledgers.
 * Both drills actively push their owned pending products to one real front contact, preserving components, sided handlers/belt headway, finite ore/work/energy. Bounded no-receiver fallback blocks; no infinite item entities.

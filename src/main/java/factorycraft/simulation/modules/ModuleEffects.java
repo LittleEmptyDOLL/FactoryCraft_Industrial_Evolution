@@ -2,12 +2,12 @@ package factorycraft.simulation.modules;
 
 /** Integer basis points; energy rounds upward per active tick, never free work at empty FE. */
 public record ModuleEffects(int speed, int energy, int productivity) {
-  public static final int UNIT = 10000;
+  public static final int UNIT = 10000, MAX_SPEED = 1_000_000, MAX_ENERGY = 10_000_000;
   public static final ModuleEffects NONE = new ModuleEffects(UNIT, UNIT, 0);
 
   public ModuleEffects {
-    speed = Math.clamp(speed, 2000, 50000);
-    energy = Math.clamp(energy, 2000, 100000);
+    speed = Math.clamp(speed, 2000, MAX_SPEED);
+    energy = Math.clamp(energy, 2000, MAX_ENERGY);
     productivity = Math.clamp(productivity, 0, 10000);
   }
 
@@ -16,11 +16,12 @@ public record ModuleEffects(int speed, int energy, int productivity) {
   public Step plan(int baseEnergy, int baseStep, int remaining, int fraction) {
     if (baseEnergy < 0 || baseStep < 1 || remaining < 1 || fraction < 0 || fraction >= UNIT)
       throw new IllegalArgumentException("Invalid work");
-    int ticks = Math.min(baseStep, remaining), raw = fraction + speed * ticks;
-    int work = Math.min(remaining, raw / UNIT);
+    int ticks = Math.min(baseStep, remaining);
+    long raw = fraction + (long) speed * ticks;
+    int work = (int) Math.min(remaining, raw / UNIT);
     int cost =
         (int) Math.min(Integer.MAX_VALUE, ((long) baseEnergy * ticks * energy + UNIT - 1) / UNIT);
-    return new Step(work, work == remaining ? 0 : raw % UNIT, cost);
+    return new Step(work, work == remaining ? 0 : (int) (raw % UNIT), cost);
   }
 
   /** Factorio 2.0 normal-quality transmission: 1.5 / sqrt(active beacons). */

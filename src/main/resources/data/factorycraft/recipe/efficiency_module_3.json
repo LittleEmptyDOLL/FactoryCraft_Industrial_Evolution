@@ -1,0 +1,40 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:efficiency_module_2"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:processing_unit"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:spoilage"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:efficiency_module_3",
+    "count": 1
+  },
+  "ticks": 1200,
+  "energy": 10,
+  "categories": [
+    "crafting",
+    "electromagnetics"
+  ]
+}

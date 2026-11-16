@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "factorycraft.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CraftingMenuMixin",
+    "CraftingSlotMixin",
+    "CountedResultSlotMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

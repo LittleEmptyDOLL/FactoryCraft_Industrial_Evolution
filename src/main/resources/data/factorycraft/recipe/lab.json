@@ -1,0 +1,30 @@
+{
+  "type": "factorycraft:processing",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:transport_belt"
+      },
+      "count": 4
+    }
+  ],
+  "result": {
+    "id": "factorycraft:lab",
+    "count": 1
+  },
+  "machine": "assembling_machine",
+  "ticks": 40,
+  "energy": 10
+}

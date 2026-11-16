@@ -9,9 +9,17 @@ import net.minecraft.server.level.ServerPlayer;
 public final class InserterResearch {
   private static void finish(ResearchCatalog catalog, ResearchLedger ledger, ResourceLocation id) {
     if (ledger.level(id.toString()) > 0) return;
-    var e = catalog.entry(id);
+    var e = catalog.definition(id);
     if (e == null) throw new IllegalStateException("Missing technology " + id);
-    for (var parent : e.recipe().prerequisites()) finish(catalog, ledger, parent);
+    for (var parent : e.recipe().prerequisites())
+      if (catalog.definition(parent) != null) finish(catalog, ledger, parent);
+    if (catalog.disabled(id)) {
+      // This method is reachable only through the explicitly creative diagnostic command.
+      var levels = new java.util.HashMap<>(ledger.levels());
+      levels.put(id.toString(), 1);
+      ledger.restore(ledger.selected(), levels, ledger.progress());
+      return;
+    }
     if (!ledger.select(e.logic())) throw new IllegalStateException("Unavailable research " + id);
     for (int i = 0; i < e.recipe().units(); i++)
       if (!ledger.completeUnit(e.logic(), () -> {}))

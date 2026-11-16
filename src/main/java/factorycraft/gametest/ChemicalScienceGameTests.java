@@ -287,7 +287,7 @@ public final class ChemicalScienceGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 240)
+  @GameTest(template = "empty", timeoutTicks = 800)
   public static void twoLabsSpendOnlyOneSetOfThreePacksForLastBlueUnit(GameTestHelper h) {
     var scope = ResearchGameTests.personal(h, "last-blue");
     var catalog = ResearchCatalog.get(h.getLevel());
@@ -296,7 +296,7 @@ public final class ChemicalScienceGameTests {
     ledger.restore(
         tech.id(),
         Map.of(id("chemical_science").toString(), 1, id("automation_2").toString(), 1),
-        Map.of(tech.id(), new ResearchLedger.Progress(tech.signature(), 49)));
+        Map.of(tech.id(), new ResearchLedger.Progress(tech.signature(), tech.cost(0) - 1)));
     var labs = new ArrayList<LabBlockEntity>();
     for (int x : new int[] {3, 9}) {
       var p = h.absolutePos(new BlockPos(x, 2, 4));
@@ -313,11 +313,11 @@ public final class ChemicalScienceGameTests {
             lab.items.setStackInSlot(0, new ItemStack(Content.SCIENCE_RED.get()));
             lab.items.setStackInSlot(1, new ItemStack(Content.SCIENCE_GREEN.get()));
             lab.items.setStackInSlot(2, new ItemStack(Content.SCIENCE_BLUE.get()));
-            lab.power.restore(3000);
+            lab.power.restore(6000);
           }
         });
     h.runAfterDelay(
-        155,
+        655,
         () -> {
           h.assertTrue(ledger.level(tech.id()) == 1, "three-pack technology did not complete");
           for (int slot = 0; slot < 3; slot++)

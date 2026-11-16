@@ -6,11 +6,12 @@
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1,
-    "factorycraft:chemical_science_pack": 1
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:production_science_pack": 1
   },
   "units": 400,
   "ticks": 600,
   "unlocks": [],
-  "x": 11,
+  "x": 7,
   "y": 5
 }

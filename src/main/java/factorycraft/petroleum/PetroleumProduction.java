@@ -249,6 +249,9 @@ public final class PetroleumProduction {
           oil.changed();
         },
         false)) throw new IllegalStateException("Reserved oil output changed");
+    if (machine.getLevel() instanceof net.minecraft.server.level.ServerLevel server)
+      factorycraft.research.ResearchTriggers.record(
+          server, machine.researchScope(), "mine:factorycraft:crude_oil", 1);
     return true;
   }
 

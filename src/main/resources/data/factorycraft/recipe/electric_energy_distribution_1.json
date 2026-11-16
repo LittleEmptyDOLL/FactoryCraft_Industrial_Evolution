@@ -2,7 +2,7 @@
   "type": "factorycraft:research",
   "prerequisites": [
     "factorycraft:steel_processing",
-    "factorycraft:automation"
+    "factorycraft:logistic_science"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
@@ -15,5 +15,5 @@
     "factorycraft:big_electric_pole"
   ],
   "x": 4,
-  "y": 6
+  "y": 0
 }

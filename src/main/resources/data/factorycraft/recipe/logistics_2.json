@@ -2,17 +2,20 @@
   "type": "factorycraft:research",
   "prerequisites": [
     "factorycraft:logistics",
-    "factorycraft:electronics"
+    "factorycraft:logistic_science"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1
   },
-  "units": 40,
-  "ticks": 60,
+  "units": 200,
+  "ticks": 600,
   "unlocks": [
-    "factorycraft:fast_splitter"
+    "factorycraft:fast_transport_belt",
+    "factorycraft:fast_underground_belt",
+    "factorycraft:fast_splitter",
+    "factorycraft:fast_conveyor_lift"
   ],
-  "x": 2,
+  "x": 4,
   "y": 4
 }

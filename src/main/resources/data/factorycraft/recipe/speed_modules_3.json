@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:speed_modules_2",
+    "factorycraft:metallurgic_science_pack"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:space_science_pack": 1,
+    "factorycraft:metallurgic_science_pack": 1
+  },
+  "units": 2000,
+  "ticks": 1200,
+  "unlocks": [
+    "factorycraft:speed_module_3"
+  ],
+  "x": 5,
+  "y": 1
+}

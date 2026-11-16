@@ -436,6 +436,42 @@ public final class Content {
           () ->
               new factorycraft.modules.ModuleItem(
                   factorycraft.modules.ModuleItem.Kind.PRODUCTIVITY, new Item.Properties()));
+  public static final DeferredItem<factorycraft.modules.ModuleItem> SPEED_MODULE_2 =
+      ITEMS.register(
+          "speed_module_2",
+          () ->
+              new factorycraft.modules.ModuleItem(
+                  factorycraft.modules.ModuleItem.Kind.SPEED, 2, new Item.Properties()));
+  public static final DeferredItem<factorycraft.modules.ModuleItem> SPEED_MODULE_3 =
+      ITEMS.register(
+          "speed_module_3",
+          () ->
+              new factorycraft.modules.ModuleItem(
+                  factorycraft.modules.ModuleItem.Kind.SPEED, 3, new Item.Properties()));
+  public static final DeferredItem<factorycraft.modules.ModuleItem> EFFICIENCY_MODULE_2 =
+      ITEMS.register(
+          "efficiency_module_2",
+          () ->
+              new factorycraft.modules.ModuleItem(
+                  factorycraft.modules.ModuleItem.Kind.EFFICIENCY, 2, new Item.Properties()));
+  public static final DeferredItem<factorycraft.modules.ModuleItem> EFFICIENCY_MODULE_3 =
+      ITEMS.register(
+          "efficiency_module_3",
+          () ->
+              new factorycraft.modules.ModuleItem(
+                  factorycraft.modules.ModuleItem.Kind.EFFICIENCY, 3, new Item.Properties()));
+  public static final DeferredItem<factorycraft.modules.ModuleItem> PRODUCTIVITY_MODULE_2 =
+      ITEMS.register(
+          "productivity_module_2",
+          () ->
+              new factorycraft.modules.ModuleItem(
+                  factorycraft.modules.ModuleItem.Kind.PRODUCTIVITY, 2, new Item.Properties()));
+  public static final DeferredItem<factorycraft.modules.ModuleItem> PRODUCTIVITY_MODULE_3 =
+      ITEMS.register(
+          "productivity_module_3",
+          () ->
+              new factorycraft.modules.ModuleItem(
+                  factorycraft.modules.ModuleItem.Kind.PRODUCTIVITY, 3, new Item.Properties()));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeaconBlockEntity>>
       BEACON =
           ENTITIES.register(
@@ -447,12 +483,39 @@ public final class Content {
       MODULE_MENU =
           MENUS.register(
               "modules", () -> IMenuTypeExtension.create(factorycraft.modules.ModuleMenu::new));
+  public static final DeferredHolder<
+          RecipeSerializer<?>, RecipeSerializer<factorycraft.recipes.CountedCraftingRecipe>>
+      COUNTED_CRAFTING_SERIALIZER =
+          SERIALIZERS.register(
+              "counted_crafting", factorycraft.recipes.CountedCraftingRecipe.Serializer::new);
   public static final DeferredItem<Item> SCIENCE_BLUE =
       ITEMS.registerSimpleItem("chemical_science_pack");
   public static final DeferredItem<Item> SCIENCE_RED =
       ITEMS.registerSimpleItem("automation_science_pack");
   public static final DeferredItem<Item> SCIENCE_GREEN =
       ITEMS.registerSimpleItem("logistic_science_pack");
+  public static final DeferredItem<Item> SCIENCE_MILITARY =
+      ITEMS.registerSimpleItem("military_science_pack");
+  public static final DeferredItem<Item> SCIENCE_PRODUCTION =
+      ITEMS.registerSimpleItem("production_science_pack");
+  public static final DeferredItem<Item> SCIENCE_UTILITY =
+      ITEMS.registerSimpleItem("utility_science_pack");
+  public static final DeferredItem<Item> SCIENCE_SPACE =
+      ITEMS.registerSimpleItem("space_science_pack");
+  public static final DeferredItem<Item> SCIENCE_METALLURGIC =
+      ITEMS.registerSimpleItem("metallurgic_science_pack");
+  public static final DeferredItem<Item> SCIENCE_AGRICULTURAL =
+      ITEMS.registerSimpleItem("agricultural_science_pack");
+  public static final DeferredItem<Item> SCIENCE_ELECTROMAGNETIC =
+      ITEMS.registerSimpleItem("electromagnetic_science_pack");
+  public static final DeferredItem<Item> SCIENCE_CRYOGENIC =
+      ITEMS.registerSimpleItem("cryogenic_science_pack");
+  public static final DeferredItem<Item> SCIENCE_PROMETHIUM =
+      ITEMS.registerSimpleItem("promethium_science_pack");
+  public static final DeferredItem<Item> TUNGSTEN_CARBIDE =
+      ITEMS.registerSimpleItem("tungsten_carbide");
+  public static final DeferredItem<Item> BITER_EGG = ITEMS.registerSimpleItem("biter_egg");
+  public static final DeferredItem<Item> SPOILAGE = ITEMS.registerSimpleItem("spoilage");
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LabBlockEntity>> LAB =
       ENTITIES.register(
           "lab",

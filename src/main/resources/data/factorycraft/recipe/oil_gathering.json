@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:fluid_handling"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:pumpjack"
+  ],
+  "x": 1,
+  "y": 4
+}

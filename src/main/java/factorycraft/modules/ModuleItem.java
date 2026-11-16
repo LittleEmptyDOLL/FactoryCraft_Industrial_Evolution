@@ -6,23 +6,24 @@ import net.minecraft.world.item.*;
 
 public final class ModuleItem extends Item {
   public enum Kind {
-    SPEED(2000, 5000, 0),
-    EFFICIENCY(0, -3000, 0),
-    PRODUCTIVITY(-500, 4000, 400);
-    public final int speed, energy, productivity;
-
-    Kind(int speed, int energy, int productivity) {
-      this.speed = speed;
-      this.energy = energy;
-      this.productivity = productivity;
-    }
+    SPEED,
+    EFFICIENCY,
+    PRODUCTIVITY
   }
 
   public final Kind kind;
+  public final factorycraft.simulation.modules.ModuleProfile profile;
 
   public ModuleItem(Kind kind, Properties properties) {
+    this(kind, 1, properties);
+  }
+
+  public ModuleItem(Kind kind, int tier, Properties properties) {
     super(properties);
     this.kind = kind;
+    this.profile =
+        factorycraft.simulation.modules.ModuleProfile.of(
+            factorycraft.simulation.modules.ModuleProfile.Family.valueOf(kind.name()), tier);
   }
 
   public void appendHoverText(
@@ -30,6 +31,11 @@ public final class ModuleItem extends Item {
     super.appendHoverText(stack, context, lines, flag);
     lines.add(
         Component.translatable(
-            "tooltip.factorycraft.module_" + kind.name().toLowerCase(java.util.Locale.ROOT)));
+            "tooltip.factorycraft.module_values",
+            profile.speed() / 100.0,
+            profile.energy() / 100.0,
+            profile.productivity() / 100.0));
+    if (kind == Kind.EFFICIENCY)
+      lines.add(Component.translatable("tooltip.factorycraft.module_minimum"));
   }
 }

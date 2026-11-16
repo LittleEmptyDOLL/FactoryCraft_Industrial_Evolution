@@ -2,7 +2,6 @@
   "type": "factorycraft:research",
   "prerequisites": [
     "factorycraft:circuit_networks",
-    "factorycraft:electronics",
     "factorycraft:chemical_science"
   ],
   "packs": {
@@ -10,11 +9,11 @@
     "factorycraft:logistic_science_pack": 1,
     "factorycraft:chemical_science_pack": 1
   },
-  "units": 100,
+  "units": 50,
   "ticks": 600,
   "unlocks": [
     "factorycraft:selector_combinator"
   ],
-  "x": 6,
-  "y": 6
+  "x": 4,
+  "y": 3
 }

@@ -50,7 +50,7 @@ public final class ResearchNetwork {
 
   @SubscribeEvent
   public static void register(RegisterPayloadHandlersEvent event) {
-    var r = event.registrar("1");
+    var r = event.registrar("0.27.0");
     r.playToClient(State.TYPE, State.CODEC, (p, c) -> c.enqueueWork(() -> clientState = p));
     r.playToServer(
         Select.TYPE,
@@ -68,7 +68,7 @@ public final class ResearchNetwork {
         || !menu.stillValid(player)
         || player.isSpectator()) return false;
     var e = ResearchCatalog.get(player.level()).entry(p.technology);
-    if (e == null || e.recipe().sandboxOnly()) return false;
+    if (e == null || e.recipe().sandboxOnly() || !e.recipe().trigger().isEmpty()) return false;
     var data = ResearchData.get(player.server);
     boolean selected = data.team(menu.lab.scope()).select(e.logic());
     if (selected) data.setDirty();

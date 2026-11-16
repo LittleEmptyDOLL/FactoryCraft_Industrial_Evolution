@@ -1,20 +1,20 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:modules",
-    "factorycraft:advanced_electronics_2"
+    "factorycraft:advanced_electronics_2",
+    "factorycraft:production_science_pack"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1,
-    "factorycraft:chemical_science_pack": 1
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:production_science_pack": 1
   },
-  "units": 40,
-  "ticks": 120,
-  "repeatable": false,
+  "units": 75,
+  "ticks": 600,
   "unlocks": [
     "factorycraft:beacon"
   ],
-  "x": 5,
-  "y": 3
+  "x": 3,
+  "y": 2
 }

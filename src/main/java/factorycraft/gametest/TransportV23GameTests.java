@@ -220,7 +220,7 @@ public final class TransportV23GameTests {
   @GameTest(template = "empty", batch = "transport_v0230")
   public static void capacityTwoRequiresBothEarlierCapacityAndBonusSeven(GameTestHelper h) {
     var id = ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, "transport_belt_capacity_2");
-    var e = factorycraft.research.ResearchCatalog.get(h.getLevel()).entry(id);
+    var e = factorycraft.research.ResearchCatalog.get(h.getLevel()).definition(id);
     var ledger = new factorycraft.simulation.research.ResearchLedger();
     h.assertTrue(e.recipe().sandboxOnly(), "late stack research exposed early");
     ledger.restore("", Map.of("factorycraft:transport_belt_capacity_1", 1), Map.of());

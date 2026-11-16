@@ -632,9 +632,9 @@ public final class ModuleGameTests {
           var ledger = data.team(scope);
           var tech =
               factorycraft.research.ResearchCatalog.get(h.getLevel())
-                  .entry(ResourceLocation.fromNamespaceAndPath("factorycraft", "modules"))
+                  .entry(ResourceLocation.fromNamespaceAndPath("factorycraft", "speed_modules_1"))
                   .logic();
-          ledger.restore("", Map.of("factorycraft:automation_2", 1), Map.of());
+          ResearchTestSupport.grant(h.getLevel(), scope, "modules");
           h.assertTrue(ledger.select(tech), "module prerequisites rejected");
           for (int n = 0; n < tech.units(); n++) ledger.completeUnit(tech, () -> {});
           data.setDirty();

@@ -309,7 +309,11 @@ public final class TieredSplitterGameTests {
                   && m.power.getEnergyStored() == 5000
                   && m.petroleum().cells.get(0).amount() == 800,
               "locked express manufacture spent resources");
-          unlock(h, scope, "logistics_3");
+          h.assertTrue(
+              ResearchCatalog.get(h.getLevel()).disabled(id("logistics_3")),
+              "express research lost its genuine future science gate");
+          // Explicit creative manufacturing fixture after proving survival remains locked.
+          m.bindResearch("");
           m.petroleum().cells.get(0).restore(new FluidKey(PetroleumFluids.LUBRICANT.stack(1)), 790);
         });
     h.runAfterDelay(

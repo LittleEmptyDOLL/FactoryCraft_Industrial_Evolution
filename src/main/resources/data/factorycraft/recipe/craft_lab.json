@@ -1,25 +1,25 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "CCC",
-    "GAG",
-    "PPP"
-  ],
-  "key": {
-    "C": {
-      "item": "factorycraft:electronic_circuit"
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 10
     },
-    "G": {
-      "item": "factorycraft:iron_gear"
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
     },
-    "A": {
-      "item": "factorycraft:assembling_machine"
-    },
-    "P": {
-      "item": "factorycraft:iron_plate"
+    {
+      "ingredient": {
+        "item": "factorycraft:transport_belt"
+      },
+      "count": 4
     }
-  },
+  ],
   "result": {
     "id": "factorycraft:lab",
     "count": 1

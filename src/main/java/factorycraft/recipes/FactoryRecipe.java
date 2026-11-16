@@ -12,8 +12,18 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
 public record FactoryRecipe(
-    String machine, List<CountedIngredient> inputs, ItemStack result, int ticks, int energy)
+    String machine,
+    List<CountedIngredient> inputs,
+    ItemStack result,
+    int ticks,
+    int energy,
+    List<String> categories)
     implements Recipe<FactoryInput> {
+  public FactoryRecipe(
+      String machine, List<CountedIngredient> inputs, ItemStack result, int ticks, int energy) {
+    this(machine, inputs, result, ticks, energy, List.of());
+  }
+
   public FactoryRecipe {
     if (machine == null
         || machine.isBlank()
@@ -25,7 +35,11 @@ public record FactoryRecipe(
         || ticks < 1
         || ticks > 72000
         || energy < 0
-        || energy > 100000) throw new IllegalArgumentException("Invalid factory recipe bounds");
+        || energy > 100000
+        || categories.size() > 8
+        || categories.stream().anyMatch(c -> c.length() > 64 || !c.matches("[a-z0-9_-]+")))
+      throw new IllegalArgumentException("Invalid factory recipe bounds");
+    categories = List.copyOf(categories);
     inputs = List.copyOf(inputs);
     result = result.copy();
   }
@@ -60,7 +74,11 @@ public record FactoryRecipe(
                           .forGetter(FactoryRecipe::inputs),
                       ItemStack.CODEC.fieldOf("result").forGetter(FactoryRecipe::result),
                       Codec.intRange(1, 72000).fieldOf("ticks").forGetter(FactoryRecipe::ticks),
-                      Codec.intRange(0, 100000).fieldOf("energy").forGetter(FactoryRecipe::energy))
+                      Codec.intRange(0, 100000).fieldOf("energy").forGetter(FactoryRecipe::energy),
+                      Codec.string(1, 64)
+                          .listOf(0, 8)
+                          .optionalFieldOf("categories", List.of())
+                          .forGetter(FactoryRecipe::categories))
                   .apply(i, FactoryRecipe::new));
 
   /**
@@ -131,8 +149,13 @@ public record FactoryRecipe(
               inputs.add(
                   new CountedIngredient(
                       Ingredient.CONTENTS_STREAM_CODEC.decode(b), b.readVarInt()));
-            return new FactoryRecipe(
-                machine, inputs, ItemStack.STREAM_CODEC.decode(b), b.readVarInt(), b.readVarInt());
+            var result = ItemStack.STREAM_CODEC.decode(b);
+            int ticks = b.readVarInt(), energy = b.readVarInt(), count = b.readVarInt();
+            if (count < 0 || count > 8)
+              throw new IllegalArgumentException("Invalid recipe categories");
+            var categories = new java.util.ArrayList<String>(count);
+            for (int i = 0; i < count; i++) categories.add(b.readUtf(64));
+            return new FactoryRecipe(machine, inputs, result, ticks, energy, categories);
           }
 
           @Override
@@ -146,6 +169,8 @@ public record FactoryRecipe(
             ItemStack.STREAM_CODEC.encode(b, recipe.result);
             b.writeVarInt(recipe.ticks);
             b.writeVarInt(recipe.energy);
+            b.writeVarInt(recipe.categories.size());
+            for (var category : recipe.categories) b.writeUtf(category, 64);
           }
         };
 

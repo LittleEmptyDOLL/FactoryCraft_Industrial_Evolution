@@ -25,8 +25,22 @@ public record TechnologyRecipe(
     List<ResourceLocation> unlocks,
     int x,
     int y,
-    boolean sandboxOnly)
+    boolean sandboxOnly,
+    String trigger)
     implements Recipe<FactoryInput> {
+  public TechnologyRecipe(
+      List<ResourceLocation> parents,
+      Map<ResourceLocation, Integer> packs,
+      int units,
+      int ticks,
+      boolean repeatable,
+      List<ResourceLocation> unlocks,
+      int x,
+      int y,
+      boolean sandboxOnly) {
+    this(parents, packs, units, ticks, repeatable, unlocks, x, y, sandboxOnly, "");
+  }
+
   public TechnologyRecipe(
       List<ResourceLocation> parents,
       Map<ResourceLocation, Integer> packs,
@@ -41,8 +55,14 @@ public record TechnologyRecipe(
 
   public TechnologyRecipe {
     if (prerequisites.size() > 16
-        || packs.isEmpty()
-        || packs.size() > 4
+        || (packs.isEmpty() && trigger.isEmpty())
+        || (!trigger.isEmpty()
+            && (!packs.isEmpty()
+                || repeatable
+                || !trigger.matches("(?:craft|mine):[a-z0-9_.-]+:[a-z0-9_./-]+")
+                || trigger.length() > 256))
+        || packs.size() > SciencePacks.COUNT
+        || !SciencePacks.IDS.containsAll(packs.keySet())
         || packs.values().stream().anyMatch(n -> n < 1 || n > 64)
         || units < 1
         || units > 100000
@@ -50,9 +70,9 @@ public record TechnologyRecipe(
         || ticks > 72000
         || unlocks.size() > 64
         || x < 0
-        || x > 32
+        || x > 4096
         || y < 0
-        || y > 32) throw new IllegalArgumentException("Invalid technology bounds");
+        || y > 4096) throw new IllegalArgumentException("Invalid technology bounds");
     prerequisites = List.copyOf(prerequisites);
     packs = Map.copyOf(packs);
     unlocks = List.copyOf(unlocks);
@@ -78,11 +98,14 @@ public record TechnologyRecipe(
                           .listOf(0, 64)
                           .optionalFieldOf("unlocks", List.of())
                           .forGetter(TechnologyRecipe::unlocks),
-                      Codec.intRange(0, 32).fieldOf("x").forGetter(TechnologyRecipe::x),
-                      Codec.intRange(0, 32).fieldOf("y").forGetter(TechnologyRecipe::y),
+                      Codec.intRange(0, 4096).fieldOf("x").forGetter(TechnologyRecipe::x),
+                      Codec.intRange(0, 4096).fieldOf("y").forGetter(TechnologyRecipe::y),
                       Codec.BOOL
                           .optionalFieldOf("sandbox_only", false)
-                          .forGetter(TechnologyRecipe::sandboxOnly))
+                          .forGetter(TechnologyRecipe::sandboxOnly),
+                      Codec.string(0, 256)
+                          .optionalFieldOf("trigger", "")
+                          .forGetter(TechnologyRecipe::trigger))
                   .apply(i, TechnologyRecipe::new));
 
   public boolean matches(FactoryInput input, Level level) {
@@ -126,7 +149,7 @@ public record TechnologyRecipe(
             var parents = new ArrayList<ResourceLocation>();
             for (int n = count(b, 16); n > 0; n--) parents.add(b.readResourceLocation());
             var packs = new HashMap<ResourceLocation, Integer>();
-            for (int n = count(b, 4); n > 0; n--) {
+            for (int n = count(b, SciencePacks.COUNT); n > 0; n--) {
               var id = b.readResourceLocation();
               if (packs.put(id, b.readVarInt()) != null)
                 throw new IllegalArgumentException("Duplicate science pack");
@@ -144,7 +167,8 @@ public record TechnologyRecipe(
                 unlocks,
                 b.readVarInt(),
                 b.readVarInt(),
-                b.readBoolean());
+                b.readBoolean(),
+                b.readUtf(256));
           }
 
           public void encode(RegistryFriendlyByteBuf b, TechnologyRecipe t) {
@@ -163,6 +187,7 @@ public record TechnologyRecipe(
             b.writeVarInt(t.x);
             b.writeVarInt(t.y);
             b.writeBoolean(t.sandboxOnly);
+            b.writeUtf(t.trigger, 256);
           }
         };
 

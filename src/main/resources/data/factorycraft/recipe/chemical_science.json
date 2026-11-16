@@ -1,19 +1,18 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:engine",
-    "factorycraft:batteries"
+    "factorycraft:electronics",
+    "factorycraft:sulfur_processing"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1
   },
-  "units": 30,
-  "ticks": 80,
-  "repeatable": false,
+  "units": 75,
+  "ticks": 200,
   "unlocks": [
     "factorycraft:chemical_science_pack"
   ],
-  "x": 3,
+  "x": 2,
   "y": 2
 }

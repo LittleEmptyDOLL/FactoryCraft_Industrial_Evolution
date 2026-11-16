@@ -1,15 +1,17 @@
 {
   "type": "factorycraft:research",
-  "prerequisites": [],
+  "prerequisites": [
+    "factorycraft:automation_science"
+  ],
   "packs": {
     "factorycraft:automation_science_pack": 1
   },
   "units": 10,
-  "ticks": 40,
-  "repeatable": false,
+  "ticks": 200,
   "unlocks": [
-    "factorycraft:logistic_science_pack"
+    "factorycraft:assembling_machine",
+    "factorycraft:long_inserter"
   ],
   "x": 0,
-  "y": 0
+  "y": 3
 }

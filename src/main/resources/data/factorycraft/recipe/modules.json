@@ -1,19 +1,15 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:automation_2"
+    "factorycraft:electronics"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1
   },
-  "units": 30,
-  "ticks": 60,
-  "repeatable": false,
-  "unlocks": [
-    "factorycraft:speed_module",
-    "factorycraft:efficiency_module"
-  ],
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [],
   "x": 3,
-  "y": 3
+  "y": 0
 }

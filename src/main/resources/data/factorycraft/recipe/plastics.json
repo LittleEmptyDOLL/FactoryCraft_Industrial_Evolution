@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:oil_processing"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 200,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:plastic"
+  ],
+  "x": 1,
+  "y": 6
+}

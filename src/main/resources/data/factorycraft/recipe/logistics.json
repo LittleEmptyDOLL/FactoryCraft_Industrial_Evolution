@@ -1,16 +1,18 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:automation"
+    "factorycraft:automation_science"
   ],
   "packs": {
-    "factorycraft:automation_science_pack": 1,
-    "factorycraft:logistic_science_pack": 1
+    "factorycraft:automation_science_pack": 1
   },
-  "units": 15,
-  "ticks": 60,
-  "repeatable": false,
-  "unlocks": [],
-  "x": 1,
-  "y": 0
+  "units": 20,
+  "ticks": 300,
+  "unlocks": [
+    "factorycraft:underground_belt",
+    "factorycraft:splitter",
+    "factorycraft:conveyor_lift"
+  ],
+  "x": 0,
+  "y": 6
 }

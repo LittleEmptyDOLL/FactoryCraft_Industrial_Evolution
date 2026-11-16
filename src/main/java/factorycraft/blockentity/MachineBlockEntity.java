@@ -43,6 +43,10 @@ public final class MachineBlockEntity extends FactoryBlockEntity
   private boolean loaded;
   private String researchScope = "";
 
+  public String researchScope() {
+    return researchScope;
+  }
+
   public void bindResearch(String scope) {
     researchScope = scope;
     setChanged();
@@ -648,6 +652,9 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       }
       remainder.shrink(insert);
     }
+    if (!simulate && level instanceof net.minecraft.server.level.ServerLevel server)
+      factorycraft.research.ResearchTriggers.crafted(
+          server, researchScope, stack, stack.getCount() - remainder.getCount());
     return remainder;
   }
 

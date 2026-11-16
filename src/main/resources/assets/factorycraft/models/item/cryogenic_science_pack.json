@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "factorycraft:item/cryogenic_science_pack"
+  }
+}

@@ -339,7 +339,10 @@ public final class CircuitDevices {
           continue;
         }
         var entry = ResearchCatalog.get(level).entry(request.technology);
-        if (entry == null || entry.recipe().sandboxOnly() || !ledger.available(entry.logic())) {
+        if (entry == null
+            || entry.recipe().sandboxOnly()
+            || !entry.recipe().trigger().isEmpty()
+            || !ledger.available(entry.logic())) {
           iterator.remove();
           continue;
         }

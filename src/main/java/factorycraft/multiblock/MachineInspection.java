@@ -93,8 +93,17 @@ public final class MachineInspection {
       var c = factorycraft.fluids.FluidSimulation.view(f);
       if (c.amount() > 0 && c.key() != null)
         fluids.add(c.key().stack((int) Math.min(Integer.MAX_VALUE, c.amount())));
-    } else if (be instanceof LabBlockEntity lab) energy = lab.power.getEnergyStored();
-    else if (be instanceof BeaconBlockEntity b) energy = b.power.getEnergyStored();
+    } else if (be instanceof LabBlockEntity lab) {
+      energy = lab.power.getEnergyStored();
+      for (int i = 0; i < 2; i++)
+        if (!lab.modules.getStackInSlot(i).isEmpty()) {
+          var entry = new CompoundTag();
+          entry.putInt("Slot", factorycraft.research.SciencePacks.COUNT + i);
+          entry.put("Stack", lab.modules.getStackInSlot(i).copy().save(registry));
+          list.add(entry);
+        }
+      tag.putInt("Progress", lab.progress());
+    } else if (be instanceof BeaconBlockEntity b) energy = b.power.getEnergyStored();
     else if (be instanceof InserterBlockEntity arm && arm.electric())
       energy = arm.power.getEnergyStored();
     if (energy >= 0) tag.putInt("Energy", energy);

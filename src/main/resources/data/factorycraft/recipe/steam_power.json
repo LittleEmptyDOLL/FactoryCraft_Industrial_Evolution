@@ -1,0 +1,15 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [],
+  "packs": {},
+  "units": 50,
+  "ticks": 1,
+  "trigger": "craft:factorycraft:iron_plate",
+  "unlocks": [
+    "factorycraft:offshore_pump",
+    "factorycraft:boiler",
+    "factorycraft:steam_engine"
+  ],
+  "x": 0,
+  "y": 2
+}

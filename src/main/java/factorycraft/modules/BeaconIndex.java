@@ -17,7 +17,7 @@ public final class BeaconIndex {
   private static final Map<Level, State> STATES = new IdentityHashMap<>();
 
   private static final class State {
-    final Map<Long, Set<MachineBlockEntity>> machines = new HashMap<>();
+    final Map<Long, Set<FactoryBlockEntity>> machines = new HashMap<>();
     final Map<Long, Set<BeaconBlockEntity>> buckets = new HashMap<>();
     final Set<BeaconBlockEntity> beacons = new LinkedHashSet<>();
     List<BeaconBlockEntity> snapshot = List.of();
@@ -27,14 +27,14 @@ public final class BeaconIndex {
     return BlockPos.asLong(p.getX() >> 4, p.getY() >> 4, p.getZ() >> 4);
   }
 
-  public static void add(MachineBlockEntity machine) {
-    if (!machine.kind().supportsModules()) return;
+  public static void add(FactoryBlockEntity machine) {
+    if (machine instanceof MachineBlockEntity m && !m.kind().supportsModules()) return;
     var s = STATES.computeIfAbsent(machine.getLevel(), l -> new State());
     s.machines.computeIfAbsent(bucket(machine.getBlockPos()), k -> new HashSet<>()).add(machine);
-    machine.modules.dirty = true;
+    dirty(machine);
   }
 
-  public static void remove(MachineBlockEntity machine) {
+  public static void remove(FactoryBlockEntity machine) {
     var s = STATES.get(machine.getLevel());
     if (s != null) {
       var set = s.machines.get(bucket(machine.getBlockPos()));
@@ -81,10 +81,10 @@ public final class BeaconIndex {
     var s = STATES.get(beacon.getLevel());
     if (s == null) return;
     for (long key : around(beacon.getBlockPos()))
-      for (var m : s.machines.getOrDefault(key, Set.of())) m.modules.dirty = true;
+      for (var m : s.machines.getOrDefault(key, Set.of())) dirty(m);
   }
 
-  public static List<BeaconBlockEntity> nearby(MachineBlockEntity machine) {
+  public static List<BeaconBlockEntity> nearby(FactoryBlockEntity machine) {
     var s = STATES.get(machine.getLevel());
     if (s == null || s.beacons.isEmpty()) return List.of();
     var result = new ArrayList<BeaconBlockEntity>();
@@ -93,15 +93,21 @@ public final class BeaconIndex {
     return List.copyOf(result);
   }
 
-  private static boolean covers(BeaconBlockEntity beacon, MachineBlockEntity machine) {
+  private static boolean covers(BeaconBlockEntity beacon, FactoryBlockEntity machine) {
     var mp = MachineProfile.of(machine.getBlockState());
-    var p = machine.getBlockPos();
+    var anchor = machine.getBlockPos();
+    var p = mp.origin(anchor, mp.facing(machine.getBlockState()));
     var q =
         mp.offset(
-            p, mp.facing(machine.getBlockState()), mp.layout.width() - 1, 0, mp.layout.depth() - 1);
-    var b = beacon.getBlockPos();
+            anchor,
+            mp.facing(machine.getBlockState()),
+            mp.layout.width() - 1,
+            0,
+            mp.layout.depth() - 1);
+    var anchorB = beacon.getBlockPos();
     var bp = MachineProfile.BEACON;
-    var c = bp.offset(b, bp.facing(beacon.getBlockState()), 2, 0, 2);
+    var b = bp.origin(anchorB, bp.facing(beacon.getBlockState()));
+    var c = bp.offset(anchorB, bp.facing(beacon.getBlockState()), 2, 0, 2);
     return Math.abs(b.getY() - p.getY()) <= 3
         && Math.min(p.getX(), q.getX()) <= Math.max(b.getX(), c.getX()) + 3
         && Math.max(p.getX(), q.getX()) >= Math.min(b.getX(), c.getX()) - 3
@@ -123,6 +129,11 @@ public final class BeaconIndex {
   @SubscribeEvent
   public static void unload(LevelEvent.Unload event) {
     STATES.remove(event.getLevel());
+  }
+
+  private static void dirty(FactoryBlockEntity owner) {
+    if (owner instanceof MachineBlockEntity m) m.modules.dirty = true;
+    else if (owner instanceof LabBlockEntity lab) lab.beaconDirty = true;
   }
 
   private BeaconIndex() {}

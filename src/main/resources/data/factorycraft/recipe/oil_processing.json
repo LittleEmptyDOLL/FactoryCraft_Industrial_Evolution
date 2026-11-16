@@ -1,24 +1,18 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:logistics"
+    "factorycraft:oil_gathering"
   ],
-  "packs": {
-    "factorycraft:automation_science_pack": 1,
-    "factorycraft:logistic_science_pack": 1
-  },
-  "units": 20,
-  "ticks": 80,
-  "repeatable": false,
+  "packs": {},
+  "units": 1,
+  "ticks": 1,
+  "trigger": "mine:factorycraft:crude_oil",
   "unlocks": [
-    "factorycraft:advanced_oil_processing",
-    "factorycraft:heavy_oil_cracking",
-    "factorycraft:light_oil_cracking",
-    "factorycraft:lubricant",
-    "factorycraft:solid_fuel_from_petroleum_gas",
-    "factorycraft:solid_fuel_from_light_oil",
-    "factorycraft:solid_fuel_from_heavy_oil"
+    "factorycraft:oil_refinery",
+    "factorycraft:chemical_plant",
+    "factorycraft:basic_oil_processing",
+    "factorycraft:solid_fuel_from_petroleum_gas"
   ],
-  "x": 2,
-  "y": 0
+  "x": 1,
+  "y": 5
 }

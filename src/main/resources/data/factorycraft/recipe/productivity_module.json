@@ -20,5 +20,9 @@
     "count": 1
   },
   "ticks": 300,
-  "energy": 10
+  "energy": 10,
+  "categories": [
+    "crafting",
+    "electromagnetics"
+  ]
 }

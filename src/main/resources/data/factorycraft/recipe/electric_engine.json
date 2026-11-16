@@ -1,20 +1,18 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:chemical_science",
-    "factorycraft:automation_2"
+    "factorycraft:lubricant_research"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1,
     "factorycraft:chemical_science_pack": 1
   },
-  "units": 40,
-  "ticks": 100,
-  "repeatable": false,
+  "units": 50,
+  "ticks": 600,
   "unlocks": [
     "factorycraft:electric_engine_unit"
   ],
-  "x": 4,
-  "y": 3
+  "x": 2,
+  "y": 5
 }

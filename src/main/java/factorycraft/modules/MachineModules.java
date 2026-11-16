@@ -75,9 +75,9 @@ public final class MachineModules {
     for (int s = 0; s < items.getSlots(); s++)
       if (items.getStackInSlot(s).getItem() instanceof ModuleItem item) {
         installed = true;
-        localSpeed += item.kind.speed;
-        localEnergy += item.kind.energy;
-        localProductivity += item.kind.productivity;
+        localSpeed += item.profile.speed();
+        localEnergy += item.profile.energy();
+        localProductivity += item.profile.productivity();
       }
   }
 
@@ -174,6 +174,11 @@ public final class MachineModules {
       if (state.getCompound("Items").getInt("Size") != items.getSlots())
         throw new IllegalArgumentException("Module slot count does not match machine");
       items.deserializeNBT(registry, state.getCompound("Items"));
+      for (int slot = 0; slot < items.getSlots(); slot++)
+        if (!items.getStackInSlot(slot).isEmpty()
+            && (!items.isItemValid(slot, items.getStackInSlot(slot))
+                || items.getStackInSlot(slot).getCount() != 1))
+          throw new IllegalArgumentException("Invalid module inventory");
     }
     fraction = Math.clamp(state.getInt("Fraction"), 0, 39999);
     credit = Math.clamp(state.getInt("Credit"), 0, 19999);

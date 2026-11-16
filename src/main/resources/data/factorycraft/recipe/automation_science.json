@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:steam_power",
+    "factorycraft:bootstrap_electronics"
+  ],
+  "packs": {},
+  "units": 1,
+  "ticks": 1,
+  "trigger": "craft:factorycraft:lab",
+  "unlocks": [
+    "factorycraft:automation_science_pack"
+  ],
+  "x": 0,
+  "y": 0
+}

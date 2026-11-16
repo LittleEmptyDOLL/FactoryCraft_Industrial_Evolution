@@ -27,13 +27,21 @@ public final class ResearchFactory {
         new ItemStack(
             BuiltInRegistries.ITEM.get(
                 ResourceLocation.fromNamespaceAndPath("factorycraft", "iron_gear")),
-            20));
+            64));
     chest.setItem(
         1,
         new ItemStack(
             BuiltInRegistries.ITEM.get(
                 ResourceLocation.fromNamespaceAndPath("factorycraft", "copper_plate")),
-            20));
+            64));
+    chest.setItem(
+        2,
+        new ItemStack(
+            BuiltInRegistries.ITEM.get(ResourceLocation.parse("factorycraft:iron_gear")), 16));
+    chest.setItem(
+        3,
+        new ItemStack(
+            BuiltInRegistries.ITEM.get(ResourceLocation.parse("factorycraft:copper_plate")), 16));
     FactoryCommands.machine(level, o.offset(4, 0, 1), FactoryKind.INSERTER, Direction.SOUTH);
     FactoryCommands.machine(level, o.offset(6, 0, 3), FactoryKind.INSERTER, Direction.EAST);
     FactoryCommands.machine(level, o.offset(7, 0, 3), FactoryKind.BELT, Direction.EAST);
@@ -46,9 +54,10 @@ public final class ResearchFactory {
     var lab = (LabBlockEntity) level.getBlockEntity(controller);
     lab.bind(scope);
     var ledger = ResearchData.get(level.getServer()).team(scope);
+    factorycraft.gametest.ResearchTestSupport.bootstrap(level, scope);
     ledger.select(
         ResearchCatalog.get(level)
-            .entry(ResourceLocation.fromNamespaceAndPath("factorycraft", "automation"))
+            .entry(ResourceLocation.fromNamespaceAndPath("factorycraft", "logistic_science"))
             .logic());
     ResearchData.get(level.getServer()).setDirty();
     SteamPlant.build(level, o.offset(4, 0, 8), 64);

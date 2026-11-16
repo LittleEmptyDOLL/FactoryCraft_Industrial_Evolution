@@ -489,7 +489,16 @@ public final class DirectCircuitGameTests {
           h.assertTrue(
               ledger.selected().equals("factorycraft:automation") && a.output.get(technology) == 1,
               "next available team research not selected/read");
-          ledger.restore("factorycraft:logistics", Map.of("factorycraft:automation", 1), Map.of());
+          ledger.restore(
+              "factorycraft:logistics",
+              Map.of(
+                  "factorycraft:automation",
+                  1,
+                  "factorycraft:automation_science",
+                  1,
+                  "factorycraft:plastics",
+                  1),
+              Map.of());
           ResearchData.get(h.getLevel().getServer()).setDirty();
         });
     h.runAfterDelay(
@@ -691,7 +700,16 @@ public final class DirectCircuitGameTests {
     var sources = new ArrayList<CircuitNodeBlockEntity>();
     var level = h.getLevel();
     var ledger = ResearchData.get(level.getServer()).team(scope);
-    ledger.restore("", Map.of("factorycraft:automation", 1), Map.of());
+    ledger.restore(
+        "",
+        Map.of(
+            "factorycraft:automation",
+            1,
+            "factorycraft:automation_science",
+            1,
+            "factorycraft:plastics",
+            1),
+        Map.of());
     ResearchData.get(level.getServer()).setDirty();
     for (int i = 0; i < 2; i++) {
       var pos = h.absolutePos(new BlockPos(4 + 6 * i, 3, 5));
@@ -741,7 +759,19 @@ public final class DirectCircuitGameTests {
                       SignalKey.Type.TECHNOLOGY, "factorycraft:transport_belt_capacity_1"),
                   1000));
         });
-    h.runAfterDelay(45, () -> ledger.restore("", Map.of("factorycraft:automation", 1), Map.of()));
+    h.runAfterDelay(
+        45,
+        () ->
+            ledger.restore(
+                "",
+                Map.of(
+                    "factorycraft:automation",
+                    1,
+                    "factorycraft:automation_science",
+                    1,
+                    "factorycraft:plastics",
+                    1),
+                Map.of()));
     h.runAfterDelay(
         60,
         () -> {
@@ -752,7 +782,16 @@ public final class DirectCircuitGameTests {
             var n = lab.circuit(false);
             configure(h, n, settings(false, false, List.of(), 1, 0), n.program());
           }
-          ledger.restore("", Map.of("factorycraft:automation", 1), Map.of());
+          ledger.restore(
+              "",
+              Map.of(
+                  "factorycraft:automation",
+                  1,
+                  "factorycraft:automation_science",
+                  1,
+                  "factorycraft:plastics",
+                  1),
+              Map.of());
         });
     h.runAfterDelay(
         85,

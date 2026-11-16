@@ -105,6 +105,7 @@ public record RecipeDisplay(
     }
     for (var h : manager.getAllRecipesFor(Content.RESEARCH.get())) {
       var r = h.value();
+      if (!r.trigger().isEmpty()) continue;
       var packs =
           r.packs().entrySet().stream()
               .sorted(Map.Entry.comparingByKey())

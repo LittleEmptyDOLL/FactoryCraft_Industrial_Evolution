@@ -1,0 +1,22 @@
+{
+  "reference": "wube/factorio-data 2.1.24",
+  "configuration": "Space Age enabled; normal quality",
+  "module_categories": [
+    "crafting",
+    "electromagnetics"
+  ],
+  "deferred_inputs": [
+    "factorycraft:tungsten_carbide",
+    "factorycraft:biter_egg",
+    "factorycraft:spoilage"
+  ],
+  "deferred_input_policy": "Identity-only items without survival sources or spoilage gameplay. Genuine offworld research/materials remain required.",
+  "space_science_future": {
+    "primary": "space platform asteroid-derived production",
+    "additional_extension": {
+      "satellite_packs_per_launch": 1000,
+      "rocket_cost": "Space Age"
+    },
+    "implemented": false
+  }
+}

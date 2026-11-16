@@ -97,7 +97,7 @@ public final class BeaconBlockEntity extends FactoryBlockEntity
     for (int s = 0; s < 2; s++)
       if (modules.getStackInSlot(s).getItem() instanceof ModuleItem item
           && item.kind != ModuleItem.Kind.PRODUCTIVITY)
-        sum += speed ? item.kind.speed : item.kind.energy;
+        sum += speed ? item.profile.speed() : item.profile.energy();
     return sum;
   }
 
@@ -224,7 +224,16 @@ public final class BeaconBlockEntity extends FactoryBlockEntity
 
   protected void loadAdditional(CompoundTag tag, HolderLookup.Provider r) {
     super.loadAdditional(tag, r);
-    if (tag.contains("Modules")) modules.deserializeNBT(r, tag.getCompound("Modules"));
+    if (tag.contains("Modules")) {
+      if (tag.getCompound("Modules").getInt("Size") != 2)
+        throw new IllegalArgumentException("Invalid beacon module slots");
+      modules.deserializeNBT(r, tag.getCompound("Modules"));
+      for (int slot = 0; slot < 2; slot++)
+        if (!modules.getStackInSlot(slot).isEmpty()
+            && (!modules.isItemValid(slot, modules.getStackInSlot(slot))
+                || modules.getStackInSlot(slot).getCount() != 1))
+          throw new IllegalArgumentException("Invalid beacon module stack");
+    }
     power.restore(tag.getInt("Energy"));
     assembly.load(tag);
     paid = false;

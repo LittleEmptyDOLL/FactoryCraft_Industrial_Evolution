@@ -59,14 +59,16 @@ public final class ResearchGameTests {
                   null,
                   null,
                   uuid);
+        ResearchTestSupport.bootstrap(h.getLevel(), "ftb:" + uuid);
         return "ftb:" + uuid;
       } catch (ReflectiveOperationException e) {
         throw new IllegalStateException("FTB Teams QA setup failed", e);
       }
+    ResearchTestSupport.bootstrap(h.getLevel(), "player:" + uuid);
     return "player:" + uuid;
   }
 
-  @GameTest(template = "empty", timeoutTicks = 650)
+  @GameTest(template = "empty", timeoutTicks = 1200)
   public static void poweredLabsShareUnitsAndSpendExactlyOnePackPerUnit(GameTestHelper h) {
     var scope = personal(h, "shared");
     var a = lab(h, 3, scope);
@@ -83,7 +85,7 @@ public final class ResearchGameTests {
           b.power.restore(16000);
         });
     h.runAfterDelay(
-        460,
+        1060,
         () -> {
           h.assertTrue(
               data.team(scope).level(id("automation").toString()) == 1,
@@ -98,7 +100,7 @@ public final class ResearchGameTests {
         });
   }
 
-  @GameTest(template = "empty", timeoutTicks = 160)
+  @GameTest(template = "empty", timeoutTicks = 360)
   public static void labPausesWithoutEnergyAndWhenAPartIsUnavailable(GameTestHelper h) {
     var scope = personal(h, "pause");
     var lab = lab(h, 4, scope);
@@ -132,7 +134,7 @@ public final class ResearchGameTests {
               });
         });
     h.runAfterDelay(
-        120,
+        300,
         () -> {
           h.assertTrue(
               data.team(scope)
@@ -155,6 +157,7 @@ public final class ResearchGameTests {
     var team = board.addPlayerTeam(name);
     board.addPlayerToTeam(a.getScoreboardName(), team);
     String scope = ResearchTeams.resolve(a).orElseThrow();
+    ResearchTestSupport.bootstrap(h.getLevel(), scope);
     h.assertTrue(scope.equals("vanilla:" + name), "vanilla team not selected");
     var data = ResearchData.get(h.getLevel().getServer());
     var tech = ResearchCatalog.get(h.getLevel()).entry(id("automation")).logic();
@@ -181,9 +184,9 @@ public final class ResearchGameTests {
             && catalog.allowed(scope, id("iron_gear"), h.getLevel()),
         "bootstrap/legacy gating incorrect");
     var ledger = ResearchData.get(h.getLevel().getServer()).team(scope);
-    var tech = catalog.entry(id("automation")).logic();
+    var tech = catalog.entry(id("logistic_science")).logic();
     ledger.select(tech);
-    for (int i = 0; i < 10; i++) ledger.completeUnit(tech, () -> {});
+    for (int i = 0; i < tech.units(); i++) ledger.completeUnit(tech, () -> {});
     h.assertTrue(
         catalog.allowed(scope, id("logistic_science_pack"), h.getLevel()),
         "completed research did not unlock production");
@@ -218,17 +221,17 @@ public final class ResearchGameTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty", timeoutTicks = 3600)
+  @GameTest(template = "empty", timeoutTicks = 21000)
   public static void automatedScienceLineActuallyUnlocksLogisticPacks(GameTestHelper h) {
     var scope = personal(h, "automatic");
     var o = h.absolutePos(new BlockPos(1, 2, 1));
     factorycraft.diagnostics.ResearchFactory.build(h.getLevel(), o, scope);
     h.runAfterDelay(
-        3200,
+        20000,
         () -> {
           var ledger = ResearchData.get(h.getLevel().getServer()).team(scope);
           h.assertTrue(
-              ledger.level(id("automation").toString()) == 1
+              ledger.level(id("logistic_science").toString()) == 1
                   && ResearchCatalog.get(h.getLevel())
                       .allowed(scope, id("logistic_science_pack"), h.getLevel()),
               "automatic science did not unlock technology");
@@ -244,6 +247,8 @@ public final class ResearchGameTests {
         5,
         () -> {
           lab.items.setStackInSlot(0, new ItemStack(Content.SCIENCE_RED.get(), 7));
+          lab.modules.setStackInSlot(0, new ItemStack(Content.SPEED_MODULE_2.get()));
+          lab.modules.setStackInSlot(1, new ItemStack(Content.PRODUCTIVITY_MODULE_3.get()));
           lab.power.restore(7312);
           var old = lab.assembly().identity();
           h.getLevel().destroyBlock(lab.assembly().positions().getLast(), true);
@@ -267,6 +272,8 @@ public final class ResearchGameTests {
               restored.scope().equals(scope)
                   && restored.items.getStackInSlot(0).getCount() == 7
                   && restored.power.getEnergyStored() == 7312
+                  && restored.modules.getStackInSlot(0).is(Content.SPEED_MODULE_2.get())
+                  && restored.modules.getStackInSlot(1).is(Content.PRODUCTIVITY_MODULE_3.get())
                   && !old.equals(restored.assembly().identity()),
               "portable lab lost state or identity");
           h.succeed();
@@ -297,9 +304,9 @@ public final class ResearchGameTests {
               machine.items.getStackInSlot(4).isEmpty() && machine.power.getEnergyStored() == 5000,
               "locked production spent resources");
           var ledger = ResearchData.get(h.getLevel().getServer()).team(scope);
-          var tech = ResearchCatalog.get(h.getLevel()).entry(id("automation")).logic();
+          var tech = ResearchCatalog.get(h.getLevel()).entry(id("logistic_science")).logic();
           ledger.select(tech);
-          for (int i = 0; i < 10; i++) ledger.completeUnit(tech, () -> {});
+          for (int i = 0; i < tech.units(); i++) ledger.completeUnit(tech, () -> {});
         });
     h.runAfterDelay(
         310,
@@ -320,6 +327,7 @@ public final class ResearchGameTests {
     }
     var player = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(h.getLevel());
     var scope = ResearchTeams.resolve(player).orElseThrow();
+    ResearchTestSupport.bootstrap(h.getLevel(), scope);
     var lab = lab(h, 4, scope);
     for (var cell : MachineProfile.LAB.cells(lab.getBlockPos(), Direction.NORTH))
       h.getLevel().getBlockEntity(cell).onLoad();
@@ -361,6 +369,7 @@ public final class ResearchGameTests {
     for (var cell : cells) h.getLevel().getChunkAt(cell);
     String scope = "player:7f50a122-b81a-4333-9741-b864fd067821";
     var data = ResearchData.get(h.getLevel().getServer());
+    ResearchTestSupport.bootstrap(h.getLevel(), scope);
     var tech = ResearchCatalog.get(h.getLevel()).entry(id("automation")).logic();
     if (h.getLevel().getBlockEntity(pos) == null) {
       StructurePlacement.place(

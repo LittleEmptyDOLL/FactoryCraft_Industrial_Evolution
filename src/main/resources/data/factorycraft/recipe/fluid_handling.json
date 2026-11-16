@@ -1,18 +1,19 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:modules"
+    "factorycraft:automation_2",
+    "factorycraft:engine"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1
   },
   "units": 50,
-  "ticks": 600,
-  "repeatable": false,
+  "ticks": 300,
   "unlocks": [
-    "factorycraft:productivity_module"
+    "factorycraft:fluid_tank",
+    "factorycraft:electric_pump"
   ],
-  "x": 5,
-  "y": 2
+  "x": 1,
+  "y": 3
 }

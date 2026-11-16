@@ -1,19 +1,23 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:logistics_2",
-    "factorycraft:chemical_science"
+    "factorycraft:production_science_pack",
+    "factorycraft:lubricant_research"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1,
     "factorycraft:logistic_science_pack": 1,
-    "factorycraft:chemical_science_pack": 1
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:production_science_pack": 1
   },
-  "units": 60,
-  "ticks": 60,
+  "units": 300,
+  "ticks": 300,
   "unlocks": [
-    "factorycraft:express_splitter"
+    "factorycraft:express_transport_belt",
+    "factorycraft:express_underground_belt",
+    "factorycraft:express_splitter",
+    "factorycraft:express_conveyor_lift"
   ],
-  "x": 3,
-  "y": 4
+  "x": 4,
+  "y": 5
 }

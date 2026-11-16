@@ -1,7 +1,7 @@
 {
   "type": "factorycraft:research",
   "prerequisites": [
-    "factorycraft:automation"
+    "factorycraft:automation_science"
   ],
   "packs": {
     "factorycraft:automation_science_pack": 1
@@ -9,9 +9,8 @@
   "units": 30,
   "ticks": 300,
   "unlocks": [
-    "factorycraft:long_inserter",
     "factorycraft:fast_inserter"
   ],
-  "x": 2,
+  "x": 3,
   "y": 5
 }

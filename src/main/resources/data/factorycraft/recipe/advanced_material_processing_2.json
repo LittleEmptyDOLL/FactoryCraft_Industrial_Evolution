@@ -11,10 +11,9 @@
   },
   "units": 250,
   "ticks": 600,
-  "repeatable": false,
   "unlocks": [
     "factorycraft:electric_furnace"
   ],
-  "x": 0,
+  "x": 3,
   "y": 4
 }

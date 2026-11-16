@@ -1,0 +1,22 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:chemical_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 75,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:advanced_oil_processing",
+    "factorycraft:heavy_oil_cracking",
+    "factorycraft:light_oil_cracking",
+    "factorycraft:solid_fuel_from_heavy_oil",
+    "factorycraft:solid_fuel_from_light_oil"
+  ],
+  "x": 2,
+  "y": 3
+}
