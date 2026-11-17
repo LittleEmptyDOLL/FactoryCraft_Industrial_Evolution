@@ -16,7 +16,17 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active task — 0.27.0, GitHub issue #7
+## Active milestone — 0.28.0, GitHub issue #8
+
+* Factorio 2.1.24 WITH Space Age, normal quality. Implement the military-science production chain, server-owned weapons/ammunition, armor and defenses; preserve twelve science identities, all 0.27 tests, three lifts and four circuit colors. No 0.29 work.
+* A partial magazine is an exact component-bearing resource, never a fresh full magazine. Extract one magazine before consuming a round; loaded ammunition has exactly one persisted owner. Simulation, transport, recipe upgrades, death, unload and portable state must not refill ammunition.
+* Combat respects authoritative cooldowns, line of sight, loaded chunks, teams/PvP and friendly creatures. New defenses reuse complete guarded multiblocks and physical fluid ports. No per-bullet entities for hitscan or global turret/entity scan.
+* Use fresh v0280 diagnostic worlds and separate-JVM checkpoints. Retain v0270 evidence. Validate changed production/combat/ownership paths, actual client and affected optional integrations; full factory/MIXED stays CI. Publish only locally checked functionality and never describe an incomplete issue as the completed 0.28 release.
+
+* Current evidence: 245 JUnit, 467 native passes in both dependency profiles, all 440 baseline cases and thirty old chains retained. Distinct V0280 magazine/oil/buffer checkpoints verify between JVMs; actual EN/RU clients, source recipes and saved resource ledgers are recorded in validation/v0280. Audio and multiplayer playthrough remain unverified. Future sessions must preserve these checkpoints and cases; do not infer pending CI success from local checks.
+* Flame turret owns separate 1000-mB pass-through/private boxes: 25 mB/t internal fill, 2 mB/attack, 250 mB priming. Never expose the private fuel box through BOTH ports or infer per-tick consumption from the four-source-tick cooldown. Shared profile/layout geometry and guarded controller/part menus remain authoritative.
+
+## Previous task — 0.27.0, GitHub issue #7
 
 * Canonical Factorio 2.1.24 with Space Age ENABLED (user clarification 17 November supersedes original base-only scope): twelve stable science identities/physical capacity, no fake late science production. Lab twelve distinct science slots (initial seven plus five future planetary packs) plus two singleton module slots, 8 FE/t base and exact paid speed/productivity work; per-team atomic research and per-lab saved partial/bonus credit.
 * All nine speed/efficiency/productivity modules, canonical Space Age recipes/effects/technology costs. Tier 2 requires genuine space science; tier 3 includes tungsten carbide /biter egg /spoilage identities and real offworld research gates. Replace lab_efficiency with six finite research-speed levels; retain missing late dependencies as visible fail-closed gates. Preserve starter bootstrap and prevent unresearched handcraft bypasses.

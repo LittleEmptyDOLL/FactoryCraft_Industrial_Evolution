@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:physical_projectile_damage_1",
+    "factorycraft:logistic_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 200,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 20,
+  "y": 2
+}

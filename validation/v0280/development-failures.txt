@@ -1,0 +1,14 @@
+v0280-final3-native:
+[08:04:40] [Server thread/ERROR] [minecraft/LogTestReporter]: controllerandpartopenonecanonicalturretmenu failed at 14596460, -60, -6683250! physical controller/part did not open canonical menu: BlockPos{x=14596464, y=-58, z=-6683245}
+[08:05:07] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 1m 41s
+v0280-final4-native:
+[08:06:48] [Server thread/ERROR] [minecraft/LogTestReporter]: controllerandpartopenonecanonicalturretmenu failed at -6508375, -60, 442217! Cannot invoke "io.netty.channel.Channel.attr(io.netty.util.AttributeKey)" because the return value of "net.minecraft.network.Connection.channel()" is null
+[08:07:14] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 1m 40s
+v0280-publish-validation:
+[10:55:53] [Server thread/ERROR] [minecraft/LogTestReporter]: partialmagazinescannotberefilledbymanufacturingandmilitarybillisoriginal failed at -14089976, -60, -11791964! handcraft consumed portable fluid
+[10:56:23] [Server thread/INFO] [minecraft/GameTestServer]: 1 required tests failed :(
+BUILD FAILED in 2m 2s
+
+The last failed pipe assertion inspected the display-only ShapelessRecipe ingredient projection. The final test executes CountedCraftingRecipe.matches with complete valid and resource-bearing invalid inputs; no recipe predicate was weakened. Raw logs remain in /tmp, alongside the older archived diagnostic worlds.

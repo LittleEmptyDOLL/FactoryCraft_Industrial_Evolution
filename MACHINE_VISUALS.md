@@ -1,3 +1,7 @@
+## 0.28.0 combat geometry
+
+Three original turret bases are chunk-baked per physical cell, with independent server-confirmed pivot/elevation/recoil heads. `turret_bases.json` is generated from the same base boxes for cached physical collision, avoiding a full-cuboid muzzle obstruction. Heads are decorative collision-free geometry. Weapons use original explicit 3D box meshes with context-specific first-person glove/forearm geometry, server-shot recoil and third-person holding; no third-party assets. Explicit mesh parents must be `minecraft:block/block`, not the generated-item parent that ignores elements. EN/RU actual client evidence is in validation/v0280.
+
 ## 0.26.1 local geometry corrections
 
 Offshore mesh now extends along local Z: inland pump at front and grated blue intake on the rear water-overhang part; the only output nozzle shares the controller's actual inland fluid port. Both drills have a front chute at local x=width/2, aligned with the server delivery target; even-width Burner uses front-right. Small Pole's shared post/crossbeam/insulators and wire endpoint occupy three cells; generated chunk mesh, collision and item models use the same geometry resource. Original FactoryCraft graphics only.

@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:flamethrower",
+    "count": 1
+  }
+}

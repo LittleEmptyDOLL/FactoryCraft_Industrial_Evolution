@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:refined_flammables_1"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:military_science_pack": 1
+  },
+  "units": 200,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 18,
+  "y": 4
+}

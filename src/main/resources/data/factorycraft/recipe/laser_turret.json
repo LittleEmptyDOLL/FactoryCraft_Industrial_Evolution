@@ -1,0 +1,33 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 20
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 20
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:battery"
+      },
+      "count": 12
+    }
+  ],
+  "result": {
+    "id": "factorycraft:laser_turret",
+    "count": 1
+  },
+  "ticks": 400,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

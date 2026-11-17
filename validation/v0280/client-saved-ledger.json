@@ -1,0 +1,61 @@
+{
+  "world": "FactoryCraft0280-Optional-QA",
+  "proof": "Read-only saved Anvil/NBT after normal client Save and Quit; creative finite QA inputs, not a survival benchmark.",
+  "flame": {
+    "private_mB": 916,
+    "pipe_mB": 0,
+    "shots": 42
+  },
+  "laser": {
+    "FE": 0,
+    "shots": 1,
+    "shotResidue_J": 125,
+    "idleResidue_fifths": 1
+  },
+  "weapons": [
+    {
+      "slot": 0,
+      "id": "factorycraft:pistol",
+      "count": 1,
+      "loaded_rounds": 0
+    },
+    {
+      "slot": 3,
+      "id": "factorycraft:submachine_gun",
+      "count": 1,
+      "loaded_rounds": 2
+    },
+    {
+      "slot": 4,
+      "id": "factorycraft:shotgun",
+      "count": 1,
+      "loaded_rounds": 9
+    },
+    {
+      "slot": 5,
+      "id": "factorycraft:combat_shotgun",
+      "count": 1,
+      "loaded_rounds": 9
+    },
+    {
+      "slot": 6,
+      "id": "factorycraft:rocket_launcher",
+      "count": 1,
+      "loaded_rounds": 0
+    },
+    {
+      "slot": 7,
+      "id": "factorycraft:flamethrower",
+      "count": 1,
+      "loaded_rounds": 26
+    }
+  ],
+  "unloaded_partial_magazines": [
+    {
+      "slot": 14,
+      "id": "factorycraft:firearm_magazine",
+      "count": 1,
+      "rounds": 5
+    }
+  ]
+}

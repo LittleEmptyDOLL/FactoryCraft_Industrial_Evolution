@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:automation_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1
+  },
+  "units": 10,
+  "ticks": 300,
+  "unlocks": [
+    "factorycraft:submachine_gun",
+    "factorycraft:shotgun",
+    "factorycraft:shotgun_shell"
+  ],
+  "x": 18,
+  "y": 0
+}

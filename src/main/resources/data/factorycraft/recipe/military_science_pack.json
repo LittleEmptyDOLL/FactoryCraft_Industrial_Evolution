@@ -1,0 +1,38 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:piercing_rounds_magazine"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:grenade"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:stone_wall"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:military_science_pack",
+    "count": 2
+  },
+  "ticks": 200,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

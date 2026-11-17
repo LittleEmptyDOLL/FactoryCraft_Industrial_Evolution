@@ -1,0 +1,470 @@
+[
+  {
+    "kind": "ammo-damage",
+    "category": "bullet",
+    "modifier": 0.1,
+    "technology": "factorycraft:physical_projectile_damage_1"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "gun-turret",
+    "modifier": 0.1,
+    "technology": "factorycraft:physical_projectile_damage_1"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "shotgun-shell",
+    "modifier": 0.1,
+    "technology": "factorycraft:physical_projectile_damage_1"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "bullet",
+    "modifier": 0.1,
+    "technology": "factorycraft:physical_projectile_damage_2"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "gun-turret",
+    "modifier": 0.1,
+    "technology": "factorycraft:physical_projectile_damage_2"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "shotgun-shell",
+    "modifier": 0.1,
+    "technology": "factorycraft:physical_projectile_damage_2"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "bullet",
+    "modifier": 0.1,
+    "technology": "factorycraft:weapon_shooting_speed_1"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "shotgun-shell",
+    "modifier": 0.1,
+    "technology": "factorycraft:weapon_shooting_speed_1"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "bullet",
+    "modifier": 0.2,
+    "technology": "factorycraft:weapon_shooting_speed_2"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "shotgun-shell",
+    "modifier": 0.2,
+    "technology": "factorycraft:weapon_shooting_speed_2"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "grenade",
+    "modifier": 0.25,
+    "technology": "factorycraft:stronger_explosives_1"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "bullet",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_3"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "gun-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "shotgun-shell",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "bullet",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_4"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "gun-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "shotgun-shell",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "bullet",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_5"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "gun-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "shotgun-shell",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "cannon-shell",
+    "modifier": 0.9,
+    "technology": "factorycraft:physical_projectile_damage_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "bullet",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_6"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "gun-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:physical_projectile_damage_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "shotgun-shell",
+    "modifier": 0.4,
+    "technology": "factorycraft:physical_projectile_damage_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "cannon-shell",
+    "modifier": 1.3,
+    "technology": "factorycraft:physical_projectile_damage_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "grenade",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_2"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "landmine",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_2"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "rocket",
+    "modifier": 0.3,
+    "technology": "factorycraft:stronger_explosives_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "grenade",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "landmine",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "rocket",
+    "modifier": 0.4,
+    "technology": "factorycraft:stronger_explosives_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "grenade",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "landmine",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "rocket",
+    "modifier": 0.5,
+    "technology": "factorycraft:stronger_explosives_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "grenade",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "landmine",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "rocket",
+    "modifier": 0.6,
+    "technology": "factorycraft:stronger_explosives_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "grenade",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "landmine",
+    "modifier": 0.2,
+    "technology": "factorycraft:stronger_explosives_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "flamethrower",
+    "modifier": 0.2,
+    "technology": "factorycraft:refined_flammables_1"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "flamethrower-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:refined_flammables_1"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "flamethrower",
+    "modifier": 0.2,
+    "technology": "factorycraft:refined_flammables_2"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "flamethrower-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:refined_flammables_2"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "flamethrower",
+    "modifier": 0.2,
+    "technology": "factorycraft:refined_flammables_3"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "flamethrower-turret",
+    "modifier": 0.2,
+    "technology": "factorycraft:refined_flammables_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "flamethrower",
+    "modifier": 0.3,
+    "technology": "factorycraft:refined_flammables_4"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "flamethrower-turret",
+    "modifier": 0.3,
+    "technology": "factorycraft:refined_flammables_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "flamethrower",
+    "modifier": 0.3,
+    "technology": "factorycraft:refined_flammables_5"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "flamethrower-turret",
+    "modifier": 0.3,
+    "technology": "factorycraft:refined_flammables_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "flamethrower",
+    "modifier": 0.4,
+    "technology": "factorycraft:refined_flammables_6"
+  },
+  {
+    "kind": "turret-attack",
+    "category": "flamethrower-turret",
+    "modifier": 0.4,
+    "technology": "factorycraft:refined_flammables_6"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "laser",
+    "modifier": 0.2,
+    "technology": "factorycraft:laser_weapons_damage_1"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "laser",
+    "modifier": 0.2,
+    "technology": "factorycraft:laser_weapons_damage_2"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "laser",
+    "modifier": 0.3,
+    "technology": "factorycraft:laser_weapons_damage_3"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "laser",
+    "modifier": 0.4,
+    "technology": "factorycraft:laser_weapons_damage_4"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "laser",
+    "modifier": 0.5,
+    "technology": "factorycraft:laser_weapons_damage_5"
+  },
+  {
+    "kind": "ammo-damage",
+    "category": "laser",
+    "modifier": 0.7,
+    "technology": "factorycraft:laser_weapons_damage_6"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "bullet",
+    "modifier": 0.2,
+    "technology": "factorycraft:weapon_shooting_speed_3"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "shotgun-shell",
+    "modifier": 0.2,
+    "technology": "factorycraft:weapon_shooting_speed_3"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "rocket",
+    "modifier": 0.5,
+    "technology": "factorycraft:weapon_shooting_speed_3"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "bullet",
+    "modifier": 0.3,
+    "technology": "factorycraft:weapon_shooting_speed_4"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "shotgun-shell",
+    "modifier": 0.3,
+    "technology": "factorycraft:weapon_shooting_speed_4"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "rocket",
+    "modifier": 0.7,
+    "technology": "factorycraft:weapon_shooting_speed_4"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "bullet",
+    "modifier": 0.3,
+    "technology": "factorycraft:weapon_shooting_speed_5"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "shotgun-shell",
+    "modifier": 0.4,
+    "technology": "factorycraft:weapon_shooting_speed_5"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "cannon-shell",
+    "modifier": 0.8,
+    "technology": "factorycraft:weapon_shooting_speed_5"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "rocket",
+    "modifier": 0.9,
+    "technology": "factorycraft:weapon_shooting_speed_5"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "bullet",
+    "modifier": 0.4,
+    "technology": "factorycraft:weapon_shooting_speed_6"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "shotgun-shell",
+    "modifier": 0.4,
+    "technology": "factorycraft:weapon_shooting_speed_6"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "cannon-shell",
+    "modifier": 1.5,
+    "technology": "factorycraft:weapon_shooting_speed_6"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "rocket",
+    "modifier": 1.3,
+    "technology": "factorycraft:weapon_shooting_speed_6"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.1,
+    "technology": "factorycraft:laser_shooting_speed_1"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.2,
+    "technology": "factorycraft:laser_shooting_speed_2"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.3,
+    "technology": "factorycraft:laser_shooting_speed_3"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.3,
+    "technology": "factorycraft:laser_shooting_speed_4"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.4,
+    "technology": "factorycraft:laser_shooting_speed_5"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.4,
+    "technology": "factorycraft:laser_shooting_speed_6"
+  },
+  {
+    "kind": "gun-speed",
+    "category": "laser",
+    "modifier": 0.5,
+    "technology": "factorycraft:laser_shooting_speed_7"
+  }
+]

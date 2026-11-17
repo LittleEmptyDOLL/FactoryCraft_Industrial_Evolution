@@ -1,0 +1,33 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 15
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "tag": "minecraft:planks"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:shotgun",
+    "count": 1
+  }
+}

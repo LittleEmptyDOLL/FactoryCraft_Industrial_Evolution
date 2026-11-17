@@ -470,6 +470,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     var input = new FactoryInput(items);
     RecipeHolder<FactoryRecipe> chosen = null;
     for (var r : recipes()) {
+      if (selected.isEmpty() && r.value().categories().contains("military")) continue;
       if (!selected.isEmpty() && !selected.equals(r.id().toString())) continue;
       if (!activeRecipe.isEmpty() && progress > 0 && !activeRecipe.equals(r.id().toString()))
         continue;

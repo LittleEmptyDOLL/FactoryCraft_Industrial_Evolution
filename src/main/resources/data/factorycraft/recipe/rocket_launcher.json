@@ -1,0 +1,33 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:rocket_launcher",
+    "count": 1
+  },
+  "ticks": 200,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

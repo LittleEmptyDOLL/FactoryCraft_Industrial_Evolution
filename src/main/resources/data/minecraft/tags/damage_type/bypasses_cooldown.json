@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "factorycraft:physical",
+    "factorycraft:explosion",
+    "factorycraft:fire",
+    "factorycraft:laser"
+  ]
+}

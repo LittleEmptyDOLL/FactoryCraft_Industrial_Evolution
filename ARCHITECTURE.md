@@ -1,4 +1,15 @@
-## Authoritative 0.27.0 Space Age clarification (17 November 2026)
+## 0.28 turret resource transactions
+
+The flame controller separately owns a 1000-mB pass-through box and a 1000-mB private fuel buffer; physical BOTH ports expose only the former, internal atomic transfer is capped at 25 mB/t. Fuel costs 2 mB per source attack, not per source tick. Each component-bearing volume is saved once. Turret ticks defer inventory/aim notifications until magazine removal, round debit, clock and paid-shot counter are committed, avoiding observable half-transactions. Menus and optional Jade resolve the same sole owner from controllers and parts.
+
+## 0.28 military subsystem
+
+`combat` owns server weapon dispatch, exact component-sensitive magazine ownership, target policy, projectiles, saved non-entity flame flight/field/sticker simulation, source armor and sole-owner turrets. `simulation.combat` contains the allocation-free fractional shot clock and flat/percentage resistance math. Native `factorycraft:combat` recipes carry bounded synced weapon/turret profiles; native processing/chemistry/research recipes provide the actual military industry. Ammo capacity/damage have bounded item-component extension points.
+
+Turrets extend the existing FactoryKind/IndustrialAssembly/physical-port/capability/PowerGrid paths. No second energy/fluid/transport kernel exists. Static turret base meshes also define cached collision; moving heads are client-only. Gun container components and the turret's separate loaded magazine are exclusive persisted owners. Blast/projectile callbacks follow committed debits. Flame SavedData stores effects/flight state without owning additional ammo/oil; stun metadata belongs to the affected entity. Existing resource ledgers, four circuit colors and three lift tiers remain intact. See COMBAT.md for exact adaptation limits.
+
+
+## Authoritative Space Age progression
 
 Factorio 2.1.24 **with Space Age enabled** is the final progression model; this release implements only the pre-space subset. Tier-2 modules require space science; tier 3 preserves real planet input identities and original offworld research. `FactoryRecipe.categories` preserves bounded crafting/electromagnetics metadata in JSON/network for future valid machine routing; current crafting machines remain valid. There are no new planet factories or quality mechanics. Lab schema 3 already has twelve fixed, independently filtered science slots plus two modules; the seven initial identities retain indices. Future Space Science primarily uses platforms; an additional later Satellite launch yields 1000 packs using Space Age rocket costs. No source is implemented now.
 

@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:military",
+    "factorycraft:steel_processing"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1
+  },
+  "units": 30,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:heavy_armor"
+  ],
+  "x": 22,
+  "y": 0
+}

@@ -42,7 +42,10 @@ public enum FactoryKind {
   CONSTANT("constant_combinator", 0),
   ARITHMETIC("arithmetic_combinator", 0),
   DECIDER("decider_combinator", 0),
-  SELECTOR("selector_combinator", 0);
+  SELECTOR("selector_combinator", 0),
+  GUN_TURRET("gun_turret", 0),
+  LASER_TURRET("laser_turret", 0),
+  FLAME_TURRET("flamethrower_turret", 0);
   public final String id;
   public final int beltTier;
 
@@ -53,6 +56,10 @@ public enum FactoryKind {
 
   public factorycraft.simulation.power.PoleSpec poleType() {
     return factorycraft.simulation.power.PoleSpec.byId(id);
+  }
+
+  public boolean turret() {
+    return this == GUN_TURRET || this == LASER_TURRET || this == FLAME_TURRET;
   }
 
   public boolean pole() {

@@ -1,3 +1,7 @@
+# Turret profiles — 0.28.0
+
+Gun and Laser: width2 × depth2 × height2. Flamethrower: width2 × depth3 × height2. All use controller local `(1,0,0)`, the existing centered placement plan, one automatic structure/item and guarded identity-only parts. Flame BOTH ports occupy local `(0,0,2)/west` and `(1,0,2)/east`; the same transforms drive physical fluid routing and visible nozzles. Heights are Minecraft adaptations; horizontal footprints follow Factorio.
+
 # 0.26.1 placement corrections
 
 Offshore Pump is **1 wide × 2 deep × 1 high** along FACING: local `(0,0,0)` is the land-supported controller/inland output; local `(0,0,1)` is an identity-only intake hanging above source water. Original Factorio anchor is land next to water; this two-cell protrusion is a Minecraft adaptation. All rotations share the same transform/preview/validation. No support is required beneath the intake. Land and water surfaces must be at the same block elevation; stepped shores need a suitable ledge, not remote extraction.

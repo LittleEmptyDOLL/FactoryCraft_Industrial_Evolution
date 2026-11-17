@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:stone_wall_research",
+    "factorycraft:military_2"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:gate"
+  ],
+  "x": 25,
+  "y": 0
+}

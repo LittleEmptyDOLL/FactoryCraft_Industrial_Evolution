@@ -1,0 +1,11 @@
+{
+  "category": "laser",
+  "ammunition": "",
+  "cooldown": 40,
+  "range": 24,
+  "damage": 20,
+  "pellets": 1,
+  "spread": 0,
+  "energy": 800000,
+  "type": "factorycraft:combat"
+}

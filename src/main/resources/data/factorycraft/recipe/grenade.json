@@ -1,0 +1,27 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:coal"
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:grenade",
+    "count": 1
+  },
+  "ticks": 160,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:shotgun_shell",
+    "count": 1
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:chemical_science",
+    "factorycraft:military_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:military_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:piercing_shotgun_shell"
+  ],
+  "x": 20,
+  "y": 0
+}

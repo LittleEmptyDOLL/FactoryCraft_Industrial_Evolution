@@ -19,7 +19,7 @@ public final class CountedCraftingRecipe extends ShapelessRecipe {
     super("", CraftingBookCategory.MISC, result, ingredients(inputs));
     if (inputs.isEmpty()
         || inputs.size() > 9
-        || inputs.stream().anyMatch(i -> i.count() < 1 || i.count() > 64)
+        || inputs.stream().anyMatch(i -> i.count() < 1 || i.count() > 576)
         || result.isEmpty()
         || result.getCount() > result.getMaxStackSize())
       throw new IllegalArgumentException("Invalid counted handcraft");
@@ -41,6 +41,7 @@ public final class CountedCraftingRecipe extends ShapelessRecipe {
   }
 
   public int[] plan(CraftingInput input) {
+    if (inputs.stream().anyMatch(i -> i.count() > 64)) return extendedPlan(input);
     var seen = new boolean[inputs.size()];
     int[] counts = new int[input.size()];
     for (int slot = 0; slot < input.size(); slot++) {
@@ -60,6 +61,27 @@ public final class CountedCraftingRecipe extends ShapelessRecipe {
       counts[slot] = inputs.get(match).count();
     }
     for (boolean present : seen) if (!present) return null;
+    return counts;
+  }
+
+  private int[] extendedPlan(CraftingInput input) {
+    int[] remaining = inputs.stream().mapToInt(FactoryRecipe.CountedIngredient::count).toArray();
+    int[] counts = new int[input.size()];
+    for (int slot = 0; slot < input.size(); slot++) {
+      var stack = input.getItem(slot);
+      if (stack.isEmpty()) continue;
+      if (!stack.getCraftingRemainingItem().isEmpty()) return null;
+      int match = -1;
+      for (int i = 0; i < inputs.size(); i++)
+        if (inputs.get(i).ingredient().test(stack)) {
+          if (match >= 0) return null;
+          match = i;
+        }
+      if (match < 0 || remaining[match] == 0) return null;
+      counts[slot] = Math.min(stack.getCount(), remaining[match]);
+      remaining[match] -= counts[slot];
+    }
+    for (int n : remaining) if (n != 0) return null;
     return counts;
   }
 

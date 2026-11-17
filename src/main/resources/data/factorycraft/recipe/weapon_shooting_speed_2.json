@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:weapon_shooting_speed_1",
+    "factorycraft:logistic_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 200,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 22,
+  "y": 2
+}

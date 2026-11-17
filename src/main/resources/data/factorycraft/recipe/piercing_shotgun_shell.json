@@ -1,0 +1,38 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:shotgun_shell"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:piercing_shotgun_shell",
+    "count": 2
+  },
+  "ticks": 160,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

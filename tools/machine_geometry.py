@@ -61,6 +61,14 @@ def generate(root,write,png):
     box((xx[0],.3,z-.195),(xx[1],.7,z+.195),mat)
   if name in json.loads((root/'factorycraft/pole_geometry.json').read_text()):
    boxes.extend(json.loads((root/'factorycraft/pole_geometry.json').read_text())[name]['boxes'])
+  elif name in ['gun_turret','laser_turret','flamethrower_turret']:
+   trim={'gun_turret':'yellow','laser_turret':'teal','flamethrower_turret':'orange'}[name]
+   box((.07,0,.07),(w-.07,.28,d-.07),'dark');box((.2,.28,.2),(w-.2,.55,d-.2),trim)
+   column(w/2,d/2,.5,.55,1.25,'steel')
+   box((w/2-.42,1.15,d/2-.36),(w/2+.42,1.65,d/2+.48),trim,parts)
+   box((w/2-.10,1.3,.02),(w/2+.10,1.48,d/2-.15),'dark',parts)
+   box((w/2-.15,1.28,.01),(w/2+.15,1.5,.14),'red' if name=='laser_turret' else 'steel',parts)
+   if name=='flamethrower_turret':column(w/2,d-.5,.3,.4,1.2,'orange')
   elif name in ['constant_combinator','arithmetic_combinator','decider_combinator','selector_combinator']:
    trim={'constant_combinator':'yellow','arithmetic_combinator':'teal','decider_combinator':'orange','selector_combinator':'inlet'}[name]
    box((.05,0,.05),(w-.05,.15,d-.05),'dark');box((.12,.15,.12),(w-.12,.44,d-.12),trim)
@@ -216,4 +224,5 @@ def generate(root,write,png):
   write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'':{'model':'factorycraft:block/machine_shell'}}})
  for casing in ['machine_casing','refinery_casing']:write(f'assets/factorycraft/blockstates/{casing}.json',{'variants':{'':{'model':'factorycraft:block/machine_shell'}}})
  write('assets/factorycraft/models/block/machine_shell.json',{'parent':'minecraft:block/block','loader':'factorycraft:machine','textures':textures,'machines':specs})
+ write('factorycraft/turret_bases.json',{p['profile']:p['boxes'] for p in specs if p['profile'] in ['gun_turret','laser_turret','flamethrower_turret']})
  return moving

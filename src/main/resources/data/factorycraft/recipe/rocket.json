@@ -1,0 +1,27 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:explosives"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:rocket",
+    "count": 1
+  },
+  "ticks": 80,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

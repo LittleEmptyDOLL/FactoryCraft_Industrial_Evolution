@@ -1,0 +1,17 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:laser_weapons_damage_3"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:military_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 400,
+  "ticks": 1200,
+  "unlocks": [],
+  "x": 18,
+  "y": 5
+}

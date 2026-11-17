@@ -78,7 +78,12 @@ public final class MachineInspection {
     tag.put("Items", list);
     var fluids = new ArrayList<FluidStack>();
     int energy = -1;
-    if (be instanceof MachineBlockEntity m) {
+    if (be instanceof factorycraft.combat.TurretBlockEntity turret) {
+      energy = turret.laser() ? turret.power.getEnergyStored() : -1;
+      if (turret.oil.amount() > 0) fluids.add(turret.oil.key().stack(turret.oil.amount()));
+      if (turret.pipeOil.amount() > 0)
+        fluids.add(turret.pipeOil.key().stack(turret.pipeOil.amount()));
+    } else if (be instanceof MachineBlockEntity m) {
       energy = m.power.getEnergyStored();
       if (m.petroleum() != null)
         for (int i = 0; i < m.petroleum().cells.size(); i++) fluids.add(m.petroleum().stored(i));

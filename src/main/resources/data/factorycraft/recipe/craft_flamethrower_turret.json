@@ -1,0 +1,38 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 30
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 15
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fluid_pipe"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:engine_unit"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:flamethrower_turret",
+    "count": 1
+  }
+}

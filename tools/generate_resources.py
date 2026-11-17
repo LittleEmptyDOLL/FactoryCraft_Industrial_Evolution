@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible original industrial pixel assets and first-factory datapack content (stdlib only)."""
+"""Reproducible original industrial pixel assets and first-factory datapack content (combat mesh generation additionally requires Pillow)."""
 from pathlib import Path
 import json, random, zlib, struct, gzip
 ROOT=Path(__file__).resolve().parents[1]/'src/main/resources'
@@ -1044,3 +1044,7 @@ for locale,ru in [('en_us',False),('ru_ru',True)]:
  for name in ['burner_mining_drill','electric_drill']:
   data['tooltip.factorycraft.'+name]=data.get('tooltip.factorycraft.'+name,'')+(' Автовыгрузка через передний желоб; при заполнении буфера остановка.' if ru else ' Automatic front-chute output; stops when pending buffer is full.')
  write(str(path.relative_to(ROOT)),data)
+
+# Preserve the active military overlays when rebuilding the complete resource set.
+import runpy
+runpy.run_path(str(Path(__file__).with_name("generate_combat_resources.py")), run_name="__main__")

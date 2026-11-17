@@ -22,6 +22,7 @@ public final class AssemblyAccess {
 
   public static IItemHandler items(AssemblyOwner owner, Direction side) {
     var be = owner.factoryEntity();
+    if (be instanceof factorycraft.combat.TurretBlockEntity turret) return turret.inventory();
     if (be instanceof BeaconBlockEntity beacon) return beacon.inventory();
     if (be instanceof LabBlockEntity lab) return lab.inventory();
     if (be instanceof MachineBlockEntity m) return m.automation(side);
@@ -32,15 +33,17 @@ public final class AssemblyAccess {
 
   public static IEnergyStorage energy(AssemblyOwner owner) {
     var be = owner.factoryEntity();
-    return be instanceof BeaconBlockEntity beacon
-        ? beacon.energy
-        : be instanceof LabBlockEntity lab
-            ? lab.energy
-            : be instanceof MachineBlockEntity m
-                ? m.energyPort
-                : be instanceof ThermalBlockEntity t
-                    ? t.energyPort
-                    : be instanceof FluidBlockEntity f ? f.energyPort : null;
+    return be instanceof factorycraft.combat.TurretBlockEntity turret
+        ? turret.energy
+        : be instanceof BeaconBlockEntity beacon
+            ? beacon.energy
+            : be instanceof LabBlockEntity lab
+                ? lab.energy
+                : be instanceof MachineBlockEntity m
+                    ? m.energyPort
+                    : be instanceof ThermalBlockEntity t
+                        ? t.energyPort
+                        : be instanceof FluidBlockEntity f ? f.energyPort : null;
   }
 
   public static IFluidHandler fluid(AssemblyOwner owner, BlockPos physical, Direction side) {

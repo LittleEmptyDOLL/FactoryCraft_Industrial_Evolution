@@ -558,10 +558,203 @@ public final class Content {
     return Arrays.stream(kinds).map(k -> FACTORY.get(k).get()).toArray(Block[]::new);
   }
 
+  public static final DeferredHolder<
+          net.minecraft.core.component.DataComponentType<?>,
+          net.minecraft.core.component.DataComponentType<Long>>
+      SHOT_TIME =
+          COMPONENTS.register(
+              "shot_time",
+              () ->
+                  net.minecraft.core.component.DataComponentType.<Long>builder()
+                      .persistent(com.mojang.serialization.Codec.LONG)
+                      .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.VAR_LONG)
+                      .build());
+  public static final DeferredHolder<
+          net.minecraft.core.component.DataComponentType<?>,
+          net.minecraft.core.component.DataComponentType<Integer>>
+      AMMO_ROUNDS =
+          COMPONENTS.register(
+              "ammo_rounds",
+              () ->
+                  net.minecraft.core.component.DataComponentType.<Integer>builder()
+                      .persistent(com.mojang.serialization.Codec.intRange(0, 1000))
+                      .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.VAR_INT)
+                      .build());
+  public static final DeferredHolder<
+          net.minecraft.core.component.DataComponentType<?>,
+          net.minecraft.core.component.DataComponentType<Integer>>
+      AMMO_CAPACITY =
+          COMPONENTS.register(
+              "ammo_capacity",
+              () ->
+                  net.minecraft.core.component.DataComponentType.<Integer>builder()
+                      .persistent(com.mojang.serialization.Codec.intRange(1, 1000))
+                      .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.VAR_INT)
+                      .build());
+  public static final DeferredHolder<
+          net.minecraft.core.component.DataComponentType<?>,
+          net.minecraft.core.component.DataComponentType<Double>>
+      AMMO_DAMAGE =
+          COMPONENTS.register(
+              "ammo_damage",
+              () ->
+                  net.minecraft.core.component.DataComponentType.<Double>builder()
+                      .persistent(com.mojang.serialization.Codec.doubleRange(.001, 10000))
+                      .networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.DOUBLE)
+                      .build());
+  public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS =
+      DeferredRegister.create(Registries.ARMOR_MATERIAL, FactoryCraft.ID);
+  public static final DeferredHolder<ArmorMaterial, ArmorMaterial> FACTORY_ARMOR =
+      ARMOR_MATERIALS.register(
+          "industrial",
+          () ->
+              new ArmorMaterial(
+                  Map.of(),
+                  0,
+                  net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON,
+                  () -> Ingredient.EMPTY,
+                  List.of(
+                      new ArmorMaterial.Layer(
+                          net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                              FactoryCraft.ID, "industrial"))),
+                  0,
+                  0));
+  public static final DeferredBlock<Block> STONE_WALL =
+      BLOCKS.register(
+          "stone_wall",
+          () ->
+              new WallBlock(
+                  BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICK_WALL).strength(8)));
+  public static final DeferredBlock<Block> GATE =
+      BLOCKS.register(
+          "gate",
+          () ->
+              new factorycraft.combat.AutomaticGateBlock(
+                  BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                      .strength(8)
+                      .noOcclusion()));
+  public static final DeferredHolder<
+          BlockEntityType<?>, BlockEntityType<factorycraft.combat.GateBlockEntity>>
+      GATE_ENTITY =
+          ENTITIES.register(
+              "gate",
+              () ->
+                  BlockEntityType.Builder.of(factorycraft.combat.GateBlockEntity::new, GATE.get())
+                      .build(null));
+  public static final DeferredBlock<Block> LAND_MINE =
+      BLOCKS.register(
+          "land_mine",
+          () ->
+              new factorycraft.combat.LandMineBlock(
+                  BlockBehaviour.Properties.of().strength(.5f).noOcclusion()));
+  public static final DeferredHolder<
+          BlockEntityType<?>, BlockEntityType<factorycraft.combat.LandMineBlockEntity>>
+      LAND_MINE_ENTITY =
+          ENTITIES.register(
+              "land_mine",
+              () ->
+                  BlockEntityType.Builder.of(
+                          factorycraft.combat.LandMineBlockEntity::new, LAND_MINE.get())
+                      .build(null));
+
+  static {
+    ITEMS.registerSimpleBlockItem("stone_wall", STONE_WALL);
+    ITEMS.registerSimpleBlockItem("gate", GATE);
+    ITEMS.registerSimpleBlockItem("land_mine", LAND_MINE);
+    ITEMS.register(
+        "light_armor",
+        () ->
+            new factorycraft.combat.FactoryArmorItem(FACTORY_ARMOR, false, new Item.Properties()));
+    ITEMS.register(
+        "heavy_armor",
+        () -> new factorycraft.combat.FactoryArmorItem(FACTORY_ARMOR, true, new Item.Properties()));
+  }
+
+  public static final DeferredHolder<
+          BlockEntityType<?>, BlockEntityType<factorycraft.combat.TurretBlockEntity>>
+      TURRET =
+          ENTITIES.register(
+              "turret",
+              () ->
+                  BlockEntityType.Builder.of(
+                          factorycraft.combat.TurretBlockEntity::new,
+                          blocks(
+                              FactoryKind.GUN_TURRET,
+                              FactoryKind.LASER_TURRET,
+                              FactoryKind.FLAME_TURRET))
+                      .build(null));
+  public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.combat.TurretMenu>>
+      TURRET_MENU =
+          MENUS.register(
+              "turret", () -> IMenuTypeExtension.create(factorycraft.combat.TurretMenu::new));
+  public static final DeferredHolder<RecipeType<?>, RecipeType<factorycraft.combat.CombatProfile>>
+      COMBAT_TYPE = RECIPE_TYPES.register("combat", () -> new RecipeType<>() {});
+  public static final DeferredHolder<
+          RecipeSerializer<?>, factorycraft.combat.CombatProfile.Serializer>
+      COMBAT_SERIALIZER =
+          SERIALIZERS.register("combat", factorycraft.combat.CombatProfile.Serializer::new);
+  public static final DeferredRegister<net.minecraft.world.entity.EntityType<?>> MOBILE_ENTITIES =
+      DeferredRegister.create(Registries.ENTITY_TYPE, FactoryCraft.ID);
+  public static final DeferredHolder<
+          net.minecraft.world.entity.EntityType<?>,
+          net.minecraft.world.entity.EntityType<factorycraft.combat.CombatProjectile>>
+      COMBAT_PROJECTILE =
+          MOBILE_ENTITIES.register(
+              "combat_projectile",
+              () ->
+                  net.minecraft.world.entity.EntityType.Builder
+                      .<factorycraft.combat.CombatProjectile>of(
+                          factorycraft.combat.CombatProjectile::new,
+                          net.minecraft.world.entity.MobCategory.MISC)
+                      .sized(.25f, .25f)
+                      .clientTrackingRange(8)
+                      .updateInterval(1)
+                      .build("factorycraft:combat_projectile"));
+
+  static {
+    for (String name :
+        List.of(
+            "pistol",
+            "submachine_gun",
+            "shotgun",
+            "combat_shotgun",
+            "rocket_launcher",
+            "flamethrower"))
+      ITEMS.register(
+          name, () -> new factorycraft.combat.FirearmItem(name, new Item.Properties().stacksTo(1)));
+    ITEMS.register(
+        "firearm_magazine",
+        () -> new factorycraft.combat.MagazineItem("bullet", 10, 5, new Item.Properties()));
+    ITEMS.register(
+        "piercing_rounds_magazine",
+        () -> new factorycraft.combat.MagazineItem("bullet", 10, 8, new Item.Properties()));
+    ITEMS.register(
+        "shotgun_shell",
+        () -> new factorycraft.combat.MagazineItem("shotgun-shell", 10, 8, new Item.Properties()));
+    ITEMS.register(
+        "piercing_shotgun_shell",
+        () ->
+            new factorycraft.combat.MagazineItem(
+                "shotgun-shell", 10, 12, 18, new Item.Properties()));
+    ITEMS.register(
+        "rocket",
+        () -> new factorycraft.combat.MagazineItem("rocket", 1, 200, new Item.Properties()));
+    ITEMS.register(
+        "explosive_rocket",
+        () -> new factorycraft.combat.MagazineItem("rocket", 1, 50, new Item.Properties()));
+    ITEMS.register(
+        "flamethrower_ammo",
+        () -> new factorycraft.combat.MagazineItem("fire", 100, 1, new Item.Properties()));
+    ITEMS.registerSimpleItem("explosives", new Item.Properties());
+    ITEMS.register("grenade", () -> new factorycraft.combat.GrenadeItem(new Item.Properties()));
+  }
+
   public static void register(IEventBus bus) {
     factorycraft.thermal.SteamFluids.register(bus);
     factorycraft.petroleum.PetroleumFluids.register(bus);
+    ARMOR_MATERIALS.register(bus);
     COMPONENTS.register(bus);
+    MOBILE_ENTITIES.register(bus);
     factorycraft.worldgen.ResourceTerrain.register(bus);
     FEATURES.register(bus);
     BLOCKS.register(bus);
@@ -575,6 +768,16 @@ public final class Content {
   }
 
   private static void capabilities(RegisterCapabilitiesEvent e) {
+    e.registerBlockEntity(
+        Capabilities.ItemHandler.BLOCK, TURRET.get(), (be, side) -> be.inventory());
+    e.registerBlockEntity(
+        Capabilities.EnergyStorage.BLOCK,
+        TURRET.get(),
+        (be, side) -> be.laser() ? be.energy : null);
+    e.registerBlockEntity(
+        Capabilities.FluidHandler.BLOCK,
+        TURRET.get(),
+        (be, side) -> factorycraft.multiblock.MachineFluidAccess.port(be, be.getBlockPos(), side));
     e.registerBlockEntity(
         factorycraft.circuits.CircuitAccess.CAPABILITY,
         MACHINE.get(),

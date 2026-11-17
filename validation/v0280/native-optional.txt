@@ -1,0 +1,85 @@
+		Architectury 13.0.8 (architectury)
+		EMI 1.1.24+1.21.1+neoforge (emi)
+		FactoryCraft: Industrial Evolution 0.28.0 (factorycraft)
+		FTB Library 2101.1.37 (ftblibrary)
+		FTB Teams 2101.1.12 (ftbteams)
+		Jade 15.10.6+neoforge (jade)
+		Just Enough Items 19.21.1.248 (jei)
+[08:18:50] [Server thread/INFO] [FTB Teams/]: loaded team data: 0 known players, 169 teams total
+FACTORYCRAFT_ELLIPSOID_MAX_SLICE: owners=14051 volume=279571 nanos=94260501 chunksWritten=1
+FACTORYCRAFT_ELLIPSOID_251_DISK: VERIFYING 00ad00e450d3c3cc8ea59adccc2a52dad6017cce14de637dd9fdcfdc36757939
+FACTORYCRAFT_RESOURCE_DISK: VERIFIED exact finite stock, FE, progress, output and cross-chunk identity
+FACTORYCRAFT_RESEARCH_DISK: VERIFIED exact team units, lab packs/FE and identity
+FACTORYCRAFT_CIRCUIT_BINDING_DISK: VERIFIED direct UUID wire, one diamond, 731 FE, disabled
+FACTORYCRAFT_PETROLEUM_DISK: VERIFIED exact resources, depleted reserve and four-chunk identity
+FACTORYCRAFT_TIERED_SORTING: VERIFIED 32 iron + 32 copper per tier from real source chests
+FACTORYCRAFT_SPLITTER_DISK: VERIFIED four lanes, positions and part identity
+FACTORYCRAFT_MULTIBLOCK_DISK: VERIFIED controller and 26 casing identities across four chunks
+FACTORYCRAFT_ADVANCED_OIL_DISK: VERIFIED all five cells, components, FE, progress, recipe and four-chunk identity
+FACTORYCRAFT_TRANSPORT_DISK: VERIFIED exact 160 items, metric coordinates, routes and sole owners
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=1 16 carriers, direct four-color wires
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=2 16 carriers, direct four-color wires
+FACTORYCRAFT_SPLITTER_CIRCUIT_DISK: VERIFIED tier=3 16 carriers, direct four-color wires
+FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED exact resources, progress and owner identity; mirror=false
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED fast_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED long_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_ACTUATOR_DISK: VERIFIED bulk_inserter phase=2 FE=731 typed hand and settings
+FACTORYCRAFT_TRANSPORT_FACTORY: VERIFIED 32 iron + 32 copper through curves, slope, virtual underground and lift
+FACTORYCRAFT_CHEMICAL_SCIENCE_DISK: VERIFIED exact partial recipe, items, native components, canister, FE and part identity
+FACTORYCRAFT_CHEMICAL_SCIENCE_LINE: VERIFIED six engines -> four blue packs; complete component/belt/hand ledger
+FACTORYCRAFT_PETROCHEMISTRY_LINE: VERIFIED delivered=8, ledger={generated_oil=81997, sulfuric_acid=6400, heavy_oil=7500, sulfur=30, light_oil=13500, battery=8, crude_oil=51997, water=191000}
+FACTORYCRAFT_ASSEMBLY_V4_DISK: VERIFIED exact resources, progress and owner identity; mirror=true
+FACTORYCRAFT_THERMAL_DISK: VERIFIED exact fuel/progress/fluids/FE across chunks
+FACTORYCRAFT_TIERED_SPLITTER_DISK: VERIFIED fast_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_TIERED_SPLITTER_DISK: VERIFIED express_splitter sixteen exact carriers, settings and cross-chunk identity
+FACTORYCRAFT_INSERTER_FACTORY: VERIFIED pole-fed fast/long/filter finite inventories
+FACTORYCRAFT_FLUID_CIRCUIT_DISK: VERIFIED direct four-color native 731 mB, exact components and owner
+FACTORYCRAFT_VEIN_DISK: VERIFIED generated stock across server processes
+FACTORYCRAFT_CIRCUIT_DISK: VERIFIED 7 -> ADD 3 -> 10 reciprocal UUID ports
+FACTORYCRAFT_AUTOMATIC_DISK: VERIFIED generated identity and inventory across four chunks
+FACTORYCRAFT_MODULE_DISK_V2: VERIFIED exact inventory, fraction, credit, FE and ownership
+FACTORYCRAFT_FLUID_DISK: VERIFIED 8000 mB and components across four chunks
+FACTORYCRAFT_SPLITTER_CONTROL_DISK: VERIFIED exact settings, 16 carriers and cross-chunk identity
+FACTORYCRAFT_SORTING_FACTORY: VERIFIED two real inputs -> 32 iron left / 32 copper right
+FACTORYCRAFT_MODULE_FACTORY: VERIFIED 50 plates -> 26 gears; 20 plates -> 10 gears with a powered beacon
+FACTORYCRAFT_SEGMENT_DISK: VERIFIED 3943 mB grade=24 owners=[0d940daa-986d-47f6-913d-0c2c8344b056, 1ae30e0f-46ea-433e-9c7a-b7aef6577e6b, 3857c88f-377f-49e0-b045-55edaa0c89e9, 709ba673-8e4b-47f6-929b-405fe9829cfe]
+FACTORYCRAFT_V0280_BUFFER_DISK: VERIFIED 251 private + 749 distinct typed mB
+FACTORYCRAFT_V0280_DISK: VERIFIED exact 3-round pistol, 23 turret rounds and 137 typed mB
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED burner_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED long_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED fast_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED bulk_inserter
+FACTORYCRAFT_INSERTER_V21_DISK: VERIFIED stack_inserter
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 2
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 3
+FACTORYCRAFT_STACK_V21_DISK: VERIFIED 4
+FACTORYCRAFT_TYPED_FEEDBACK_DISK: VERIFIED three typed outputs including INT_MIN, reciprocal blue feedback ports; detached diagnostic state
+FACTORYCRAFT_DIRECT_CIRCUIT_DISK: VERIFIED typed INT_MIN, unknown ID, chest 23 diamonds, blue links, independent masks
+FACTORYCRAFT_POWER_V20_DISK: VERIFIED reciprocal UUID wire, 731 FE / 3 diamonds
+FACTORYCRAFT_V0270_DISK: VERIFIED twelve component packs, two modules, two partial definitions, FE and bonus
+FACTORYCRAFT_TERRAIN_PROFILE: mode=0 legacy0250=true owners=1487 deep=926 chunks=16 nanos=18851613 allocated=7352664
+FACTORYCRAFT_TERRAIN_PROFILE: mode=0 legacy0250=false owners=2518 deep=1051 chunks=16 nanos=6702198 allocated=2625392
+FACTORYCRAFT_TERRAIN_PROFILE: mode=1 legacy0250=true owners=2966 deep=2044 chunks=16 nanos=18388429 allocated=7404616
+FACTORYCRAFT_TERRAIN_PROFILE: mode=1 legacy0250=false owners=1600 deep=672 chunks=16 nanos=4867171 allocated=2098352
+FACTORYCRAFT_TERRAIN_PROFILE: mode=2 legacy0250=true owners=1249 deep=868 chunks=16 nanos=10835817 allocated=5756608
+FACTORYCRAFT_TERRAIN_PROFILE: mode=2 legacy0250=false owners=1175 deep=400 chunks=16 nanos=3305516 allocated=1865536
+FACTORYCRAFT_TERRAIN_PROFILE: mode=3 legacy0250=true owners=1330 deep=912 chunks=16 nanos=5543288 allocated=3741248
+FACTORYCRAFT_TERRAIN_PROFILE: mode=3 legacy0250=false owners=2021 deep=873 chunks=16 nanos=4809156 allocated=2512632
+FACTORYCRAFT_TERRAIN_PROFILE: mode=4 legacy0250=true owners=2158 deep=1637 chunks=16 nanos=8269410 allocated=7506264
+FACTORYCRAFT_TERRAIN_PROFILE: mode=4 legacy0250=false owners=2123 deep=1193 chunks=16 nanos=4464136 allocated=2450144
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING stone_furnace
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING steel_furnace
+FACTORYCRAFT_FURNACE_251_DISK: VERIFYING electric_furnace
+FACTORYCRAFT_V0260_DISK: VERIFIED source, heat/steam/FE, mining target UUID, thirds and ASM3 components/fractions across JVM
+FACTORYCRAFT_SMELTING_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_OIL_YIELD_DISK: VERIFYING existing checkpoint
+FACTORYCRAFT_TERRAIN_SNAPSHOT_DISK: VERIFIED existing chunk attachment
+FACTORYCRAFT_V0261_DISK: VERIFIED source/pending components/fuel/transport/third pole cell across JVM
+FACTORYCRAFT_V0280_CHAIN: 18 finite ore -> smelting -> 2 magazines -> 2 piercing magazines + 2 grenades + 4 walls -> 4 military packs -> 4 research units; finite coal/FE consumed
+[08:20:11] [Server thread/INFO] [minecraft/GameTestServer]: All 467 required tests passed :)
+[08:20:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[08:20:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:20:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:20:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+BUILD SUCCESSFUL in 1m 39s

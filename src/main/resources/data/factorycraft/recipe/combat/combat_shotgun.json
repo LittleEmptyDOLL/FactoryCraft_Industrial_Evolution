@@ -1,0 +1,11 @@
+{
+  "category": "shotgun-shell",
+  "ammunition": "shotgun-shell",
+  "cooldown": 30,
+  "range": 15,
+  "damage": 1.5,
+  "pellets": 12,
+  "spread": 0.2,
+  "energy": 0,
+  "type": "factorycraft:combat"
+}

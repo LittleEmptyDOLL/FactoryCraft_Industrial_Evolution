@@ -1,0 +1,6 @@
+> Task :compileJava
+> Task :compileTestJava UP-TO-DATE
+> Task :testClasses UP-TO-DATE
+> Task :test
+> Task :build
+BUILD SUCCESSFUL in 1m 57s

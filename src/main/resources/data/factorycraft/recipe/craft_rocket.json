@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:explosives"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "factorycraft:rocket",
+    "count": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "category": "bullet",
+  "ammunition": "bullet",
+  "cooldown": 15,
+  "range": 15,
+  "damage": 1,
+  "pellets": 1,
+  "spread": 0,
+  "energy": 0,
+  "type": "factorycraft:combat"
+}

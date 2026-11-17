@@ -1,0 +1,15 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 4
+    }
+  ],
+  "result": {
+    "id": "factorycraft:firearm_magazine",
+    "count": 1
+  }
+}

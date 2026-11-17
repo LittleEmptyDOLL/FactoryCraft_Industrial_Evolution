@@ -1,0 +1,15 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "minecraft:stone_bricks"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:stone_wall",
+    "count": 1
+  }
+}

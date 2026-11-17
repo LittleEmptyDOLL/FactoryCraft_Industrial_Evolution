@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 4
+    }
+  ],
+  "result": {
+    "id": "factorycraft:firearm_magazine",
+    "count": 1
+  },
+  "ticks": 20,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

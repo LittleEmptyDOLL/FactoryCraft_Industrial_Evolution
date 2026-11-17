@@ -73,6 +73,14 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   protected VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+    if (kind.turret()
+        || kind.casing()
+            && java.util.Set.of(
+                    factorycraft.multiblock.MachineProfile.GUN_TURRET,
+                    factorycraft.multiblock.MachineProfile.LASER_TURRET,
+                    factorycraft.multiblock.MachineProfile.FLAME_TURRET)
+                .contains(s.getValue(PROFILE)))
+      return factorycraft.combat.TurretGeometry.shape(s, l, p);
     if (kind.casing() && s.getValue(PROFILE).splitter()) return box(0, 0, 0, 16, 3, 16);
     if (kind.belt() || kind == FactoryKind.TRANSPORT_PART) {
       // Collision/path notifications also occur while ticket holders are being removed.
@@ -99,6 +107,7 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+    if (kind.turret()) return new factorycraft.combat.TurretBlockEntity(p, s);
     if (kind.circuit()) return new factorycraft.circuits.CircuitNodeBlockEntity(p, s);
     if (kind == FactoryKind.TRANSPORT_PART) return new TransportPartBlockEntity(p, s);
     if (kind == FactoryKind.BEACON) return new factorycraft.blockentity.BeaconBlockEntity(p, s);
@@ -131,6 +140,7 @@ public final class FactoryBlock extends BaseEntityBlock {
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
       Level l, BlockState s, BlockEntityType<T> t) {
     if (l.isClientSide) return null;
+    if (kind.turret()) return createTickerHelper(t, Content.TURRET.get(), (a, b, c, d) -> d.tick());
     if (kind == FactoryKind.TRANSPORT_PART)
       return createTickerHelper(t, Content.TRANSPORT_PART.get(), (a, b, c, d) -> d.tick());
     if (kind == FactoryKind.LAB)
@@ -171,7 +181,9 @@ public final class FactoryBlock extends BaseEntityBlock {
       pole.showInfo(player);
       return InteractionResult.SUCCESS;
     }
-    if (l.getBlockEntity(p) instanceof factorycraft.blockentity.BeaconBlockEntity beacon)
+    if (l.getBlockEntity(p) instanceof factorycraft.combat.TurretBlockEntity turret)
+      factorycraft.multiblock.MachineInteraction.open(turret, player, p);
+    else if (l.getBlockEntity(p) instanceof factorycraft.blockentity.BeaconBlockEntity beacon)
       factorycraft.multiblock.MachineInteraction.open(beacon, player, p);
     else if (l.getBlockEntity(p) instanceof LabBlockEntity lab) {
       if (factorycraft.research.ResearchTeams.member(player, lab.scope()))
@@ -221,6 +233,11 @@ public final class FactoryBlock extends BaseEntityBlock {
     if (level.isClientSide || !(placer instanceof Player player)) return;
     var scope = factorycraft.research.ResearchTeams.resolve(player).orElse("unavailable");
     var be = level.getBlockEntity(pos);
+    if (be instanceof factorycraft.combat.TurretBlockEntity turret) {
+      turret.scope = scope;
+      turret.owner = player.getUUID();
+      turret.sync();
+    }
     if (be instanceof PoleBlockEntity pole) pole.requestAutoConnections();
     if (be instanceof InserterBlockEntity arm && arm.scope().isEmpty()) arm.bindResearch(scope);
     if (be instanceof LabBlockEntity lab && lab.scope().isEmpty()) lab.bind(scope);

@@ -1,0 +1,11 @@
+{
+  "category": "fire",
+  "ammunition": "fire",
+  "cooldown": 1,
+  "range": 15,
+  "damage": 2,
+  "pellets": 1,
+  "spread": 0.2,
+  "energy": 0,
+  "type": "factorycraft:combat"
+}

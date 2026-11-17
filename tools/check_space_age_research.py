@@ -53,11 +53,11 @@ for level,units in [(1,2000),(2,3000)]:
     assert tech['packs']==packs(['automation','logistic','chemical','production','utility','space','agricultural'])
     assert tech['prerequisites']==(['factorycraft:stack_inserter'] if level==1 else ['factorycraft:transport_belt_capacity_1','factorycraft:inserter_capacity_bonus_7'])
 assert not (ROOT / 'lab_efficiency.json').exists()
-future = {'military','production','utility','space','metallurgic','agricultural','electromagnetic','cryogenic','promethium'}
+future = {'production','utility','space','metallurgic','agricultural','electromagnetic','cryogenic','promethium'}
 for path in ROOT.glob('*.json'):
     d = json.loads(path.read_text())
     outputs = [d.get('result', {})] + d.get('results', [])
     for result in outputs:
         if isinstance(result, dict):
             assert result.get('id') not in ({'factorycraft:' + n + '_science_pack' for n in future} | {'factorycraft:tungsten_carbide','factorycraft:biter_egg','factorycraft:spoilage'}), path
-print('SPACE_AGE_0270_REFERENCE: nine module recipes/technologies, six finite research speeds, Automation 3, categories and no fake future science: PASS')
+print('SPACE_AGE_MODULE_REFERENCE: nine module recipes/technologies, six finite research speeds, Automation 3, categories and no fake future science: PASS')

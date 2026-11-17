@@ -290,7 +290,8 @@ public final class ResearchV27GameTests {
     h.assertTrue(
         h.getLevel().getRecipeManager().byKey(id("lab_efficiency")).isEmpty(),
         "invented lab technology retained");
-    for (int i = 3; i < SciencePacks.COUNT; i++) {
+    // 0.28 adds the genuine military chain; the other late sciences remain unavailable.
+    for (int i = 4; i < SciencePacks.COUNT; i++) {
       var pack = SciencePacks.IDS.get(i);
       for (var recipe : h.getLevel().getRecipeManager().getRecipes())
         h.assertTrue(

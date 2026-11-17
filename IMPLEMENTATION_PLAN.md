@@ -1,8 +1,16 @@
+# FactoryCraft 0.28.0 / issue #8
+
+Implemented source-audited reachable military science, exact ammunition ownership, six server-owned weapons, source armor, gun/laser/flame turrets, walls/gates/mines, finite research upgrades and original basic3D/animation. Existing transport/fluid/power/production/research cores are reused. New military recipes require explicit assembler choice so old factories retain autodetection behavior. Late sciences stay genuine locked dependencies.
+
+Validation:245 JUnit,467 no-optional native /467 optional native, old440cases/thirty chains retained, new finite military line and exact V0280 separate-JVM magazine/oil/two-buffer checkpoints. Actual EN/RU graphical checks, source recipe viewing, saved client ledgers and failure/limitation details: validation/v0280. Full factory/MIXED/large-pipe remain CI; no TPS claim. Publish checked main normally, preserve concurrent work, query CI once and stop.
+
+**Next session:** respond to the next separately authorized issue; do not start0.29 automatically. Basic combat art can receive later detail without changing source resource accounting. Do not implement late science/space/vehicles/biters/Quality merely to unlock metadata.
+
 ## Completed implementation: 0.27.0 / updated issue #7
 
 Canonical progression is **Factorio 2.1.24 with Space Age enabled**, user clarification 17 November. Lab has twelve stable science slots +two modules; all nine module profiles, exact SA materials/categories/tech gates, finite research speed and paid scientific productivity. Source checks and new SA-specific worlds replace the superseded base-only development checks without deleting their evidence. No late science production, planets, quality or rockets implemented. Local evidence: 240 JUnit, complete 440-case native suites in both dependency profiles, independent-JVM checkpoint proofs and real EN/RU clients. Full/MIXED/large-pipe checks remain GitHub Actions; see validation/v0270/README.md.
 
-Next task remains the separately authorized military/industrial milestone; do not begin automatically. Future Space Science primarily comes from platforms, with an additional Satellite alternative (1000 packs /Space Age-cost rocket), implemented only in the later rocket milestone.
+The military/industrial milestone is implemented above; further work requires a separate request. Future Space Science primarily comes from platforms, with an additional Satellite alternative (1000 packs /Space Age-cost rocket), implemented only in the later rocket milestone.
 
 
 # FactoryCraft: Industrial Evolution — implementation plan

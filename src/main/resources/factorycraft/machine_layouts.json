@@ -498,6 +498,55 @@
         0
       ],
       "ports": []
+    },
+    "gun_turret": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "laser_turret": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": []
+    },
+    "flamethrower_turret": {
+      "controller": [
+        1,
+        0,
+        0
+      ],
+      "ports": [
+        {
+          "name": "oil_left",
+          "at": [
+            0,
+            0,
+            2
+          ],
+          "face": "west",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        },
+        {
+          "name": "oil_right",
+          "at": [
+            1,
+            0,
+            2
+          ],
+          "face": "east",
+          "mode": "BOTH",
+          "input": 0,
+          "output": 0
+        }
+      ]
     }
   }
 }

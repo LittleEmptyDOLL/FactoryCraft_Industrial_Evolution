@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:explosives_research",
+    "factorycraft:flammables",
+    "factorycraft:military_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:military_science_pack": 1
+  },
+  "units": 120,
+  "ticks": 300,
+  "unlocks": [
+    "factorycraft:rocket_launcher",
+    "factorycraft:rocket"
+  ],
+  "x": 22,
+  "y": 1
+}

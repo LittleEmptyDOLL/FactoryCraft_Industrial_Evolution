@@ -44,6 +44,7 @@ public final class PetroleumProduction {
       List<Integer> volumes) {}
 
   private List<Cached> recipes = List.of();
+  private final Set<ResourceLocation> explicitOnly = new HashSet<>();
 
   public PetroleumProduction(MachineBlockEntity machine) {
     this.machine = machine;
@@ -269,12 +270,14 @@ public final class PetroleumProduction {
           || machine.kind() == FactoryKind.ASSEMBLER_3
               && holder.value().machine().equals(FactoryKind.ADVANCED_ASSEMBLER.id))
         candidates.add(holder);
+    explicitOnly.clear();
     // Tier two also executes the original dry definitions with their native IDs/gates.
     // Projection never registers duplicate recipes or changes the old assembler's data.
     if (machine.kind().assembler())
       for (var holder : manager.getAllRecipesFor(Content.PROCESSING.get())) {
         var recipe = holder.value();
         if (!recipe.machine().equals(FactoryKind.ASSEMBLER.id)) continue;
+        if (recipe.categories().contains("military")) explicitOnly.add(holder.id());
         var result = recipe.result();
         // Original processing results may span several output slots.
         if (result.isEmpty() || result.getCount() > 4 * result.getMaxStackSize()) continue;
@@ -445,6 +448,7 @@ public final class PetroleumProduction {
     int chosenRate = 0, chosenBatches = 1;
     for (int i = 0; i < recipes.size(); i++) {
       var cached = recipes.get(i);
+      if (selectedId.isEmpty() && explicitOnly.contains(cached.holder.id())) continue;
       if (!selectedId.isEmpty() && !selectedId.equals(cached.holder.id().toString())) continue;
       var recipe = cached.holder.value();
       boolean matches = true;

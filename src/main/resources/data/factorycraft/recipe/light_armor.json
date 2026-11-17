@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 40
+    }
+  ],
+  "result": {
+    "id": "factorycraft:light_armor",
+    "count": 1
+  },
+  "ticks": 60,
+  "energy": 10,
+  "categories": [
+    "military"
+  ]
+}

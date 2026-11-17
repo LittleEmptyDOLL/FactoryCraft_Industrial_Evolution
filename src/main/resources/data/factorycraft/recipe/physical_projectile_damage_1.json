@@ -1,0 +1,14 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:military"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 19,
+  "y": 2
+}

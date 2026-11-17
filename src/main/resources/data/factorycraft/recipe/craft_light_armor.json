@@ -1,0 +1,15 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 40
+    }
+  ],
+  "result": {
+    "id": "factorycraft:light_armor",
+    "count": 1
+  }
+}

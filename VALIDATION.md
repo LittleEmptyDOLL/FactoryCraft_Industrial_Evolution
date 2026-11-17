@@ -1,3 +1,17 @@
+## 0.28.0 — military industry, weapons and defense (17 November 2026)
+
+Source: Factorio2.1.24 **with Space Age**, normal quality. Final local build: **245 JUnit, zero failures/errors**; all240 old tests retained. Native no-optional runtime: **467 required passes**; actual FTB Teams/EMI/JEI/Jade runtime: **467 passes**, including the finite steam→grid→laser test. All440 old cases and thirty prior finite production chains stay mandatory. Separate JVMs verify exact partial magazines, turret state,137typed mB and the new251private +749component-distinct pass-through mB checkpoint without reseeding.
+
+A new finite military line produces four actual packs from18ore, smelting, magazines/piercing rounds/grenades/walls and declared finite additional stock, then physically feeds a laboratory for four units. All six player weapons and three turrets use real server debits; cover, armor/laser separation, mines/stun, replay, water rejection, physical ports and sole-owner portable state have native checks. The military overlay uses23source-derived manufacturing recipes and55finite technologies, with actual late science gates. Ammo Data Components persist without refills; resource-bearing portable pipes are rejected by turret manufacturing/handcraft recipes. Updated code contains no new runtime generator or water source.
+
+Actual EN/RU clients cover weapons, holding/recoil, turret menus/Jade, physical oil ports, gates/mines, recipe display, research search and normal save/reopen. Read-only saved NBT confirms 1000 mB = 916 remaining +42×2 spent, one paid laser shot and a five-round unloaded magazine. Audio output and real multiplayer remain unverified.
+
+Detailed commands, extracted logs, graphical checks, preserved failures and limitations: [validation/v0280/README.md](validation/v0280/README.md). Original low-detail3D art is a functional first pass. Minecraft HP, block destruction and bounded/collapsed ground-fire adaptations are explicit in COMBAT.md. No terrain blast/ignition engine, full military block HP, mass-combat capacity, multiplayer playthrough or complete Space Age implementation is claimed. Full factory/MIXED/10000-pipe and hosted repeats remain CI; pending CI is not a passed check. No0.29 work.
+
+Historical validation follows with its original version scope.
+
+---
+
 ## 0.27.0 — Space Age-aligned research (17 November 2026)
 
 Reference is Factorio 2.1.24 **with Space Age enabled**, following the updated issue #7. Final local build: **240 JUnit, zero failures/errors**. Complete native suites: **440 required passes** without optional mods and with FTB Teams /EMI /JEI /Jade; all 429 previous cases and thirty finite chains remain required. Independent JVMs verify both V0261 and new twelve-science/two-module V0270 resource checkpoints, including exact partial/FE/productivity residues.

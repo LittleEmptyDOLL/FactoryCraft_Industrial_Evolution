@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:flamethrower_research"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:military_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 25,
+  "y": 3
+}

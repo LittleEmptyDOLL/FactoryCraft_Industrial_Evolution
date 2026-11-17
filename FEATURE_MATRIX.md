@@ -1,4 +1,19 @@
-# Feature matrix — 0.27.0
+# Feature matrix — 0.28.0
+
+## 0.28.0 military stage
+
+| Feature | State |
+|---|---|
+| Genuine grey science / magazines / grenades / walls / chemistry and research gates | Implemented; finite ore-to-lab native chain |
+| Six player firearms, partial component-exact magazines, saved projectiles/flame effects | Implemented; late Combat Shotgun remains source-gated |
+| Gun / laser / flame turrets, power/oil/ammo supply, one-item multiblocks | Implemented; Minecraft block hardness/destruction; no separate Factorio block-HP engine |
+| Light/heavy armor, walls, force-aware gates, armed/stunning mines | Implemented |
+| Source finite bullet/shooting/explosive/flame/laser upgrades | Implemented; genuine missing late sciences remain locked |
+| Original 3D gun/glove meshes and turret/player animations | Basic functional art; final polish deferred |
+| Vehicles, biters/raids, artillery, uranium, infinite/offworld combat research | Planned; excluded from 0.28 |
+
+See COMBAT.md and VALIDATION.md for actual checks and adaptations. Historical milestone tables below do not override this section.
+
 
 ## 0.27.0 research infrastructure
 

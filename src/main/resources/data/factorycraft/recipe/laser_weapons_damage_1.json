@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:laser",
+    "factorycraft:military_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:military_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 23,
+  "y": 4
+}

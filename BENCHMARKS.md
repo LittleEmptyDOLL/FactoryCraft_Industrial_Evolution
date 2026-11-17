@@ -1,3 +1,11 @@
+# 0.28.0 — bounded combat kernel profile
+
+New isolated `CombatKernelBenchmark`: 1,200,000 cadence requests per round, six source periods, repeated-use pressure, damage resistance, ten warmups and 21 measured rounds; Java21. This measures only the new pure kernel, not Minecraft tick time or TPS. Result: 39,248 accepted shots/round; median **0.359ms**, p95 **2.424ms**, p99/max **3.533ms**, mean **48 allocated bytes/round**. Tail samples are materially slower than the median and are reported, not discarded. No comparable combat subsystem existed in 0.27; no speedup is claimed. Hardware-independent cadence/replay/count and resistance assertions are in JUnit. Raw output: [validation/v0280/combat-kernel.txt](validation/v0280/combat-kernel.txt).
+
+Actual native combat tests exercise loaded hostile acquisition, paid firing, projectiles/fire, finite manufacturing and saved owners. The complete factory/MIXED/10000-pipe measurement and restart jobs remain GitHub Actions; their isolated defaults now use v0280 paths so they do not overwrite prior diagnostic evidence. No massive-combat capacity claim is made.
+
+---
+
 # Release 0.26.1 — bounded transport/chute liveness
 
 This patch changes shore geometry, drill output and ticket-transition scheduling, not belt speed/headway, pipeline hydraulics or energy/recipe balance. A real dedicated SMOKE measure/restart is required locally; full/MIXED/10000-pipe jobs remain CI. No 0.26.0-to-0.26.1 TPS improvement is claimed. Per-event readiness uses the cached physical chunk index; ordinary content motion does not rebuild whole geometry or topology.
