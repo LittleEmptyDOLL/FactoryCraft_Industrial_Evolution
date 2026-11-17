@@ -1,3 +1,11 @@
+## 0.30 railway ownership and static geometry
+
+`simulation.rail` defines sixteen endpoint families, metric cubic/smoothstep paths, sampled frames, voxel footprints and UUID-oriented explicit adjacency. `rail.RailwayData` is the dimension-local sole owner of component-exact paid materials and canonical curves. Physical `rail_bed` cells contain only versioned nonowning identities/mesh/collision projections; they have no independent loot, item, ticker or resource store. Early unload revokes availability without deleting saved graph edges. Reload checks actual canonical parts and rebuilds stale projections from the owner.
+
+`RailPlan` is shared by preview and server. Transactions validate the entire bed/vehicle envelope, supports, chunks, border, collisions, claims and exact inventory before publishing one saved claim. A custom all-voxel protection event replaces the generic item wrapper's second late placement transaction; cancellation rolls back before payment. Demolition retires the claim before refunds/callbacks. Short connected approaches are discovered through explicit endpoint links, never arbitrary proximity. Unrelated at-grade crossings are rejected, raised crossings remain independent.
+
+Client geometry is clipped per cell and baked into ordinary chunks with cached quads; preview mesh/footprint are cached separately. Only changed tracking projections are sent. No train simulation, per-rail Entity or global per-tick railway traversal exists. See [RAILWAYS.md](RAILWAYS.md) for geometry/progression adaptations and current limits.
+
 ## 0.29 owned solar/nuclear systems
 
 `simulation.nuclear` contains independent exact charge/solar/heat/RNG kernels. `nuclear` adapters compose existing canonical assemblies, physical port guards, menus and persisted controller inventories. No technical part owns FE, heat, fuel, fluids or recipes. Seven new equipment profiles share layout/placement transforms and original cell-baked geometry; only centrifuge/turbine moving parts use client animation.

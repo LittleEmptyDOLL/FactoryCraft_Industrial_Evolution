@@ -1,3 +1,21 @@
+# 0.30.0 — bounded railway foundation profiles
+
+Two distinct measurements, neither a factory TPS result. No equivalent railway kernel existed in0.29, so no before/after speedup claim.
+
+* Pure Java21 graph/metric profile:100/1000/4000 connected8-block edges; 1000 warmup queries then10000 measured directed-successor queries per size. Every run asserts no read-only rebuild; local remove/rejoin increments only two revisions. Quiet run after closing Minecraft: [raw](validation/v0300/rail-kernel.txt). First100-edge round still includes JIT effects; sizes are not a scaling comparison. Earlier run concurrent with native GameTests is retained as `rail-kernel-contended.txt` and excluded from the table.
+
+| Edges | Setup ms | Query p50 µs | p95 µs | p99 µs | Max µs | Local remove/rejoin µs |
+|---|---:|---:|---:|---:|---:|---:|
+|100|103.126|0.831|12.349|20.481|261.535|125.985|
+|1000|335.014|0.440|0.551|1.091|98.165|26.098|
+|4000|779.639|0.160|0.171|0.201|23.504|51.896|
+
+* Native Minecraft profile:128 physical two-tile edges, four sequential placements per scheduled tick, finite128-rail inventory, real protection/parts/owner writes, exact128 refund,10000 no-rebuild queries. Passing base JVM: mean placement1.058ms, p50 0.607ms, p95 3.191ms, p99 5.428ms, max15.098ms. The optional-mod repeat measured mean1.291ms, p50 0.868ms, p95 2.042ms, p99 22.669ms, max23.705ms: its much worse tail is retained and must not be hidden by the base mean. Other GameTests share the process; no clients were connected, so packet throughput/full-server tick isolation is not measured. Chunk forcing belongs only to this bounded diagnostic fixture and is released, never to runtime railway code.
+
+Initial development profiling failures are retained: unrelated short-piece envelope handling was fixed through explicit graph approaches; same-tick unordered GameTest callbacks were replaced by sequential batches. Final profile does not skip claims or conservation. Hosted full factory/MIXED/large-pipe jobs remain separate CI checks.
+
+---
+
 # 0.29.0 — bounded heat ownership profile
 
 New subsystem; no before/after speedup or factory TPS claim. Pure-Java `HeatNetworkBenchmark` uses 128/1024/4096 stores, five warmups then five reported rounds per size, 1000 steps/round and at most 2048 physical-edge operations/step. Every run asserts exact heat conservation. Raw data: [validation/v0290/heat-kernel.txt](validation/v0290/heat-kernel.txt).

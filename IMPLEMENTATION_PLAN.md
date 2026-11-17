@@ -1,3 +1,18 @@
+# Active0.30.0 /issue#10 — Railway Foundation
+
+1. Audit Factorio2.1.24 sixteen connection directions/source bills and Create geometry/topology separation; no assets/code copied.
+2. Pure metric cubic3D geometry, arc-length sampling, grade/radius/frame/voxel envelope; stable oriented-edge graph and explicit junctions, collision classification.
+3. Saved segment/material ledger +identity-only physical bed projections, event-driven loaded membership; atomic protected two-click rail planner and exact demolition refund.
+4. Cached original rail meshes, shared client/server validation, ghost/cost/reason, endpoint editing/continuation and narrow diagnostics.
+5. Source rail/stick recipes and Railway gate; pure/native/independent-JVM and bounded graph profiling; real EN/RU examples. Preserve all old cases/diagnostics.
+6. Publish checked main only. Report actual subset/limits and pending CI; no trains/signals/0.31 work.
+
+Implemented functional foundation subset: geometry/explicit graph, protected placement and refunds, canonical saved claims/nonowning projections, cached original3D/ghost and source progression. Final build280JUnit, base504native including separate-JVM reload and optional504native pass. Actual EN/RU clients verify geometry/planner/restore/Jade/viewer. Evidence, preserved failures and limitations are recorded in validation/v0300.
+
+**Known remaining railway work:** literal A/B footprint fidelity, optional at-grade diamonds, player mid-edge splitting/movable blades and elevated progression resolution. Future train work requires a new request. Do not automatically start0.31 or polish0.28. Preserve all current diagnostic worlds/verified archives.
+
+---
+
 # Active 0.29.0 / issue #9
 
 1. Extend existing explicit power topology with storage endpoints and a deterministic tertiary settlement phase; preserve generator/consumer ownership and existing adapters. Implement source daylight curve and exact charge/discharge limits.

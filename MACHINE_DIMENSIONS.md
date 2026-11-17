@@ -1,3 +1,7 @@
+## Railway scale (0.30)
+
+Rail endpoints are block-centered, visible bed width 2 blocks, gauge ±0.72 and ordinary technical strip 3 cells. The future carriage envelope is a conservative sampled 3×7×4 body; curved/diagonal sweeps can exceed a straight strip. Rails are thin clipped geometry, not three full solid blocks. Foundations stay player blocks. Minimum horizontal radius 13; eased grade at most 1:4. Details/limits: [RAILWAYS.md](RAILWAYS.md).
+
 ## 0.29 equipment (X×Z×Y)
 
 Solar 3×3×1; Accumulator 2×2×2; Centrifuge 3×3×3; Reactor 5×5×4; Heat Pipe 1×1×1; Heat Exchanger 3×2×2; Steam Turbine 3×5×3. Source footprints, Minecraft-authored heights. Controllers use center/front base cells, independently of item placement anchors. The exchanger's rear-center heat contact is distinct from its side water/front steam ports; reactor has twelve horizontal heat contacts, three per face. Heat pipes also support vertical contacts as a 3D adaptation.

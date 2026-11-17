@@ -1,0 +1,202 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "metal": "factorycraft:block/rail_metal",
+    "sleepers": "factorycraft:block/rail_sleepers",
+    "particle": "factorycraft:block/rail_metal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        1,
+        3
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sleepers"
+        },
+        "down": {
+          "texture": "#sleepers"
+        },
+        "north": {
+          "texture": "#sleepers"
+        },
+        "south": {
+          "texture": "#sleepers"
+        },
+        "east": {
+          "texture": "#sleepers"
+        },
+        "west": {
+          "texture": "#sleepers"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        5
+      ],
+      "to": [
+        16,
+        1,
+        7
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sleepers"
+        },
+        "down": {
+          "texture": "#sleepers"
+        },
+        "north": {
+          "texture": "#sleepers"
+        },
+        "south": {
+          "texture": "#sleepers"
+        },
+        "east": {
+          "texture": "#sleepers"
+        },
+        "west": {
+          "texture": "#sleepers"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        9
+      ],
+      "to": [
+        16,
+        1,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sleepers"
+        },
+        "down": {
+          "texture": "#sleepers"
+        },
+        "north": {
+          "texture": "#sleepers"
+        },
+        "south": {
+          "texture": "#sleepers"
+        },
+        "east": {
+          "texture": "#sleepers"
+        },
+        "west": {
+          "texture": "#sleepers"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        13
+      ],
+      "to": [
+        16,
+        1,
+        15
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sleepers"
+        },
+        "down": {
+          "texture": "#sleepers"
+        },
+        "north": {
+          "texture": "#sleepers"
+        },
+        "south": {
+          "texture": "#sleepers"
+        },
+        "east": {
+          "texture": "#sleepers"
+        },
+        "west": {
+          "texture": "#sleepers"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        1,
+        0
+      ],
+      "to": [
+        4,
+        3,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#metal"
+        },
+        "down": {
+          "texture": "#metal"
+        },
+        "north": {
+          "texture": "#metal"
+        },
+        "south": {
+          "texture": "#metal"
+        },
+        "east": {
+          "texture": "#metal"
+        },
+        "west": {
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        12,
+        1,
+        0
+      ],
+      "to": [
+        14,
+        3,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#metal"
+        },
+        "down": {
+          "texture": "#metal"
+        },
+        "north": {
+          "texture": "#metal"
+        },
+        "south": {
+          "texture": "#metal"
+        },
+        "east": {
+          "texture": "#metal"
+        },
+        "west": {
+          "texture": "#metal"
+        }
+      }
+    }
+  ]
+}

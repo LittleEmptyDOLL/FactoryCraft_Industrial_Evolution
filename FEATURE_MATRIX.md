@@ -1,3 +1,16 @@
+## 0.30 Railway Foundation — implemented subset
+
+| Feature | State / limit |
+|---|---|
+| One Rail item, source Railway/stick/rail progression | Implemented; cobblestone is existing stone adaptation |
+| Centered two-block bed, sixteen headings, radius ≥13, S-curves, smooth 3D slopes | Implemented; variable cubic connectors, not fixed source A/B footprints |
+| Explicit UUID/directed graph, endpoint turnouts, separate overpasses | Implemented; unrelated same-level diamonds rejected; no player mid-edge split or movable blades |
+| Protected atomic two-point planner, continuation, editable ghost, exact refund | Implemented; supports required at endpoints; independent player bridge supports |
+| Saved ownership, chunk quarantine/rejoin, native static mesh | Implemented; cells own no paid items; no inert-track tickers |
+| Trains, signals, stations, routing/reservations | Deferred; outside issue #10 scope |
+
+Validation and graphical acceptance evidence are listed in [validation/v0300](validation/v0300). This is a functional foundation, not a claim of literal Factorio rail-template parity or a complete railway game.
+
 # Feature matrix — 0.29.0
 
 | New feature | State |

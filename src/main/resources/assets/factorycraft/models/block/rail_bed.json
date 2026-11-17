@@ -1,0 +1,9 @@
+{
+  "loader": "factorycraft:rail",
+  "textures": {
+    "bed": "factorycraft:block/rail_ballast",
+    "metal": "factorycraft:block/rail_metal",
+    "sleepers": "factorycraft:block/rail_sleepers",
+    "particle": "factorycraft:block/rail_ballast"
+  }
+}

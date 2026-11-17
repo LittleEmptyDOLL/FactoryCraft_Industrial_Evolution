@@ -50,7 +50,7 @@ public final class ResearchNetwork {
 
   @SubscribeEvent
   public static void register(RegisterPayloadHandlersEvent event) {
-    var r = event.registrar("0.29.0");
+    var r = event.registrar("0.30.0");
     r.playToClient(State.TYPE, State.CODEC, (p, c) -> c.enqueueWork(() -> clientState = p));
     r.playToServer(
         Select.TYPE,

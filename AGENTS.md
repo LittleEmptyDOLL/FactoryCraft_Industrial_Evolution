@@ -16,7 +16,16 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active milestone — 0.29.0, GitHub issue #9
+## Active milestone — 0.30.0, GitHub issue #10
+
+* Implement railway foundation only: centered two-block bed/three-block technical corridor, Factorio 2.x sixteen connection headings, >=13-block horizontal radius, smooth 3D grades, explicit junction topology, protected atomic planner placement/removal, sole saved material owner and cached client geometry. No trains/signals/stops/robots or 0.28 polish.
+* Preserve 260 JUnit/487 native and thirty finite chains, all existing checkpoints, three lifts and four wire colors. New v0300 worlds only; verified lossless archiving is allowed for closed evidence. No resetting/reseeding failures.
+* Validate all touched bed/clearance voxels, loaded chunks, permissions, entities and real inventory cost before commit. No neighboring-block replacement to reserve a corridor. Persist exactly one refund claim per segment; render/parts own no materials. Unloaded edges retain identity but are unavailable to traversal.
+* Source Factorio2.1.24+Space Age numerical bills/gates; Create1.21.1 is an implementation reference only, no code/art dependency. Document deviations and genuinely incomplete features. Build, geometry/graph/native/current-format independent JVM and actual EN/RU client checks precede main publication; full heavy CI remains separate. User explicitly permits a tested working subset if the complete milestone cannot safely finish, but never label it complete.
+
+* Current0.30 local evidence: final280JUnit/504base native/504FTB+EMI+JEI+Jade native; base independent-JVM exact UUID/material reload; actual EN/RU clients and retained scene ledger. Preserve v0300 QA/optional and verified dev2 archive, all failure logs/manifests. Remaining A/B template fidelity, diamonds, mid-edge split/movable blades and elevated progression resolution are explicit limits, not completed work. Full six-job CI is reported separately. No next milestone is authorized.
+
+## Previous milestone — 0.29.0, GitHub issue #9
 
 * Factorio 2.1.24 with Space Age, normal quality. Solar/tertiary accumulators, finite acid-mined uranium and actual mine trigger, sampled/persisted centrifuge, fuel cells, reactor heat network/exchanger/hot-steam turbine. No 0.30 or 0.28 visual polish; 0.28 remains pending the user's gameplay/visual review.
 * Preserve 245 JUnit /467 native baseline, thirty finite chains, old V0280 fixtures, three lifts and four wire colors. New v0290 worlds only, never reset/refill failed evidence. Archive closed worlds only after byte-for-byte verification when disk space requires it.

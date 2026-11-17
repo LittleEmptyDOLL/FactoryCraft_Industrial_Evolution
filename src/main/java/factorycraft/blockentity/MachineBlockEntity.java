@@ -517,7 +517,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       if (selected.isEmpty()
           && (r.value().categories().contains("military")
               || r.value().categories().contains("nuclear")
-              || r.value().categories().contains("nuclear_construction"))) continue;
+              || r.value().categories().contains("nuclear_construction")
+              || r.value().categories().contains("railway"))) continue;
       if (!selected.isEmpty() && !selected.equals(r.id().toString())) continue;
       if (!activeRecipe.isEmpty() && progress > 0 && !activeRecipe.equals(r.id().toString()))
         continue;

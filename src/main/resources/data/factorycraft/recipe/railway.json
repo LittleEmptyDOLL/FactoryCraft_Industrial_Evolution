@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:logistics_2",
+    "factorycraft:engine"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 75,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:rail",
+    "factorycraft:iron_stick"
+  ],
+  "x": 8,
+  "y": 3
+}

@@ -1,3 +1,15 @@
+# 0.30.0 — Railway Foundation (issue #10)
+
+Base dedicated native run: **504/504required tests pass**, preserving all487previous cases and thirty finite production chains. Final build succeeds with **280JUnit, zero skipped/failed/error**, including20new geometry/graph cases and260baseline tests. Exact separate-JVM rail reload verifies original UUID, metric length,19component-bearing paid rails and idempotent nonowning parts. Targeted cases exercise real source crafting/gates, claim/inventory rollback, item wrapper protection, canonical unload/rejoin, branch/overpass/clearance and exact demolition. See [validation/v0300/README.md](validation/v0300/README.md) for executed commands, complete compressed logs, preserved development failures and archive manifests.
+
+Actual new EN client scene checks: parallel station-ready tracks, curve/S-bend, explicit turnout, eased ramp/independent overpass, blocked/cleared tunnel, machine scale and selected-start MISS. Static native meshes and cost/status ghost were observed. Optional native504/504pass with real FTB Teams/EMI/JEI/Jade. Actual RU optional client reopened the same13-edge/219-rail scene; Jade/name/inspection and actual source crafting+assembler viewer were checked. Retained EMI development catalog warnings remain documented. Final build/JUnit details are recorded in the evidence directory.
+
+Bounded native128-edge profile: mean placement1.058ms, p99 5.428ms, max15.098ms, exact128rail claim/refund,10000queries without topology rebuild. Pure100/1000/4000-edge profile is separate; raw data/limits in [BENCHMARKS.md](BENCHMARKS.md). No TPS improvement or full-factory performance claim. Hosted six-job CI remains separate; do not wait/poll or call pending jobs passed.
+
+Functional foundation subset and deviations: variable cubics rather than fixed Factorio A/B footprints; metric curved/sloped pricing; no at-grade diamonds, player mid-edge splits or movable blades; unified Minecraft elevation with later progression resolution. No trains/signals/stops or next milestone. These limits are explicit in [RAILWAYS.md](RAILWAYS.md).
+
+---
+
 # 0.29.0 — solar, exact storage and finite uranium/nuclear heat
 
 Reference: Factorio 2.1.24 **with Space Age enabled**; Java21 /Minecraft1.21.1 /NeoForge21.1.252. `./gradlew build`: **260 JUnit, zero failures/errors/skips**, preserving all245 old tests. Native no-optional suite: **487/487 required passes**, then **487/487 in an independent JVM on the same untouched world**, preserving467 baseline cases and thirty finite production chains. Exact V0290 charge/lease, paid RNG/escrow, acid, fuel, heat and hot-steam checkpoints verify alongside older checkpoints. Source recipe/technology audits pass.

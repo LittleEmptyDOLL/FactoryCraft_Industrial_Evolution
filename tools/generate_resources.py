@@ -1051,3 +1051,6 @@ runpy.run_path(str(Path(__file__).with_name("generate_combat_resources.py")), ru
 
 # 0.29 nuclear/solar overlay remains the final authority for its source costs and ports.
 exec(compile((Path(__file__).parent/"generate_nuclear_resources.py").read_text(),str(Path(__file__).parent/"generate_nuclear_resources.py"),"exec"))
+
+# Railway is a scoped final overlay; it never changes earlier machine artwork.
+runpy.run_path(str(Path(__file__).with_name("generate_rail_resources.py")), run_name="__main__")

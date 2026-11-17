@@ -1,3 +1,11 @@
+## 0.30.0 — Railway Foundation
+
+- Add one source-gated Rail item and Iron Stick recipes, sixteen Factorio 2.x endpoint families, metric smooth 3D cubic rails, radius/grade validation and explicit endpoint turnout graph.
+- Add protected transactional two-click placement, continuation/direction editing, cached visible ghost geometry and exact component-bearing material refunds.
+- Persist canonical UUID edges/material claims separately from nonowning static cell meshes; quarantine unloaded geometry and restore unchanged saved identities.
+- Add original ballast/sleeper/raised-metal models, EN/RU controls and railway diagnostics. Preserve all old production/energy/combat mechanisms, three lifts and four circuit colors.
+- Document variable-curve pricing, endpoint-only switches, rejected at-grade diamonds, bridge-support rules and remaining Space Age progression resolution in RAILWAYS.md.
+
 ## 0.27.0 — Space Age-aligned pre-space research
 
 - Canonical reference is Factorio 2.1.24 with Space Age enabled; late source variants remain legitimately gated.

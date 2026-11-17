@@ -1,3 +1,9 @@
+## 0.30 railway foundation audit
+
+Reference: pinned Factorio 2.1.24 base/Space Age prototypes and FFF-377. Source bills: Rail2 = Stone1 + Iron Stick1 + Steel1 (0.5s); Stick2 = Iron Plate1 (0.5s); Railway75 red/green ×30s, Logistics2+Engine. Existing cobblestone supplies stone. Sixteen cardinal/diagonal/1:2 headings and minimum radius13 are enforced. Numeric checks: `tools/check_rail_reference.py`.
+
+**Minecraft adaptations:** block-centered two-block bed/three-cell corridor; variable cubic connectors instead of fixed A/B footprints; curved/sloped cost ceil(metric length/2), whereas source A/B entities cost3; smooth 1:4 3D slopes and one unified elevation type. Bridges require existing endpoint foundations, with independently player-built structural supports. Conservative 3×7×4 swept clearance. Endpoint-only explicit turnouts; unrelated same-level diamonds are refused, overpasses stay independent. Movable blades, mid-edge splitting, trains/signals/stops are not implemented. Space Age elevated infrastructure progression remains unresolved rather than introducing fabricated early gates. Three lifts/four logical colors remain approved extensions. This is a tested foundation subset, not full rail parity.
+
 ## 0.29 solar/nuclear audit
 
 Pinned numeric source: Wube 2.1.24 + Space Age (`tools/nuclear_reference.json`). Source bills/times/gates, solar peak, battery capacity/rates/priority, uranium mining acid/time, one categorical isotope result, reactor fuel/neighbors/capacities, exchanger 10 MW and turbine 5.82 MW are implemented. Late enrichment/reprocessing and weapons remain genuinely closed.

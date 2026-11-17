@@ -1,0 +1,45 @@
+# Railway Foundation — 0.30.0 / issue #10 — functional foundation subset
+
+Reference: Factorio2.1.24 **with Space Age enabled**. Numeric source reviewed: `base/prototypes/entity/trains.lua`, base recipe/technology definitions; half-diagonal bounding half-length2.236, source A/B cost3, source rail and stick recipes and Railway75 red/green×30s. Create1.21.1 `TrackPlacement` and `TrackGraph` were studied for separate endpoint geometry, cached planning, stable adjacency and change-based sync. No Create code, models/textures or dependency is imported. No rolling stock, trains/entities, signals/stops/schedules or robots.
+
+## Geometry and coordinates
+
+One horizontal tile =one block. An integer endpoint names a base cell; its centerline is `(x+.5,y+.125,z+.5)`. The visible ballast bed is2blocks wide, rails at±.72; ordinary cardinal paths touch a3-cell technical strip. This is **thin** physical geometry, not three solid cubes. It never replaces a neighboring solid block. Each occupied cell gets only the clipped local bed/rail/sleeper geometry and collision. End supports remain original blocks; minute eased-slope underside fragments are clipped at the two foundation cells.
+
+Sixteen endpoint heading families: cardinal, diagonal and `(1:2)/(2:1)` half diagonals, with rotations/reflections. Horizontal cubic handles are selected deterministically and checked for forward monotonicity and minimum radius13. Arc length uses a1024-step deterministic table with interpolated inverse lookup. Height uses smoothstep with zero endpoint grade, maximum1:4 and128-block maximum arc length; vertical rise is limited24blocks. Tangent/side/up-normal and reverse samples are explicit future bogie APIs. No block-step teleporting or separate elevated-rail item/technology exists.
+
+**Geometry adaptation:** these are variable Minecraft cubic connectors with Factorio2.x endpoint families/radius, not literal fixed-footprint Factorio A/B entity templates or Factorio1.1 curves. Curves/S-bends/slopes can use shapes between the original discrete templates. Source straight pricing is retained: two cardinal tiles /two diagonal tiles cost1rail, a `(2,4)` half-diagonal costs2. Variable curved/inclined sections cost `ceil(arcLength/2)`, so their price is a documented Minecraft adaptation rather than a claim that every source A/B piece costs its original3items.
+
+## Topology, switches and crossings
+
+A saved segment has a UUID and stable `Directed(UUID, reverse)` traversal identity. Node identity includes integer position and tangent axis, never just proximity. Only explicit compatible endpoints join. A turnout is one endpoint shared by incoming, straight and tangent-continuous branching curves; its outgoing alternatives are graph edges, not random minecart choices. Reverse traversal exposes the legitimate incoming route without an automatic U-turn. Up to8local segments share a physical cell.
+
+Unrelated same-level crossings are **explicit placement conflicts** in this foundation. They do not create a hidden junction. A shared-endpoint turnout permits its local24-block conflict envelope; future train reservations must treat the whole turnout as conflicting. Short straight approach edges within8blocks are allowed only through actual graph connectivity, so consecutive two-tile pieces do not collide with their own future carriage envelope. Unrelated nearby tracks receive no exemption. A geometric overpass with sufficient separation stays disconnected. At-grade diamonds/crossover primitives and movable switch blades are not implemented. Mid-edge splitting is not yet a player action: build a junction at a chosen segment endpoint; demolition/rejoin edits that edge without changing siblings.
+
+## Placement and protection
+
+Hold the single Rail item. First right-click selects an endpoint and initial tangent (look direction or an existing end); second click commits a route. Walk between ends; no runtime forced chunks. After success selection continues from the new end. R cycles goal direction, X reverses start, C or sneak-use cancels. Existing endpoints resolve tangent alignment deterministically against look direction. Middle-of-edge clicks refuse ambiguous connections.
+
+Shared `RailPlan` checks every touched bed and future-clearance voxel, border/build height, loaded chunks, solid endpoint foundations and physical entity collision. Future full-sized carriage clearance is conservatively a3×7×4body sampled at quarter-block intervals, using horizontal tangent-aligned AABB sweeps; diagonal/curve clearance may exceed the nominal straight3-cell strip. Both endpoint supports are exempt from the tiny abutment clip, never replaced. Intermediate spans may be unsupported: structural bridge supports are player-built, not free generated foundations. Tunnels must be excavated first; placement never deletes terrain/fluids/plants.
+
+Server additionally checks real research/material availability, adventure/build permissions and a NeoForge multi-place protection event over **all touched voxels**, including unchanged clearance. Ordinary subsequent block placement is also refused inside a reserved carriage envelope. World writes are staged; cancellation or changed inventory rolls back before charging. Materials are component-exact stacks, not just an item count. Cost is escrowed once into the saved segment after revalidation. Preview cannot predict another mod's server-only claims; the final authority can reject a green geometric preview.
+
+Wrench or break targets one nearest segment in the clicked cell. Removal checks permissions across that segment and requires loaded touched chunks. The saved refund claim retires before modifying projections or handing materials back; repeat deletion returns nothing. Environmental replacement retires affected claims once; late orphan projections disappear when their chunk loads. Technical parts have no block item, independent loot or inventory.
+
+## Persistence and rendering
+
+`RailwayData` is dimension-local SavedData, schema1: endpoint/control definition, UUID and exactly one list of paid native component-bearing ItemStacks per segment. Runtime indexes map physical cells/chunks to edge IDs; graph edits touch incident endpoints. Tracks have no tickers or per-tick global traversal. Saved topology persists independently of loaded availability. Early chunk-unload events quarantine live membership; reload is idempotent and retains IDs. Availability additionally requires all swept chunks loaded. No world access occurs on worker threads.
+
+`RailCellBlockEntity` stores identity-only membership, compact nonowning edge descriptors, local collision and immutable mesh projection. It never stores Paid/Items/FE. Projection versions may rebuild rendering/collision from the canonical saved curve without creating resources. Native tracking BlockEntity packets synchronize changes/initial chunks; no all-world graph broadcast. Client keeps bounded curve projections and weak per-cell baked-quad cache. Models render in ordinary compiled chunks, not through per-rail entities/BERs or per-frame topology searches.
+
+`/factorycraft rail` reports edge/node counts, revision, loaded availability and actual owned rail-item totals. Empty-hand right-click reports segment ID, metric length, endpoint degree and availability. Current APIs are ready for later station edge points, directed path search, switch reservations and bogie sampling; none of those later game systems is simulated here.
+
+## Recipes and progression
+
+Source Railway:75 red+green units×30s, Logistics2+Engine. Iron Plate1→Iron Stick2 (0.5s), then Stone1+Iron Stick1+Steel1→Rail2 (0.5s). Stone maps to existing Minecraft cobblestone from FactoryCraft stone deposits. Native counted handcraft retains original item amounts; assembler timing uses existing machine speed/FE conventions. Rails/sticks require explicit assembler selection so they cannot steal inputs from existing automatic gear factories. Sticks allow productivity as in source; rails do not.
+
+The unified 3D rail can change elevation under Railway as an explicit Minecraft adaptation. No fake early source Elevated Rail/Ramp/Support research is registered. A later progression pass must resolve Space Age elevated infrastructure unlocks without splitting this geometric rail type; no future technology/resource is fabricated now.
+
+## Verification
+
+Final local build280JUnit;504base native/504optional native, exact separate-JVM owner reload, actual EN/RU scenes and bounded profiles pass as recorded in VALIDATION.md and validation/v0300. Full hosted regression remains CI; no two-user remote graphical session was executed. Registration or compilation is not a claim that all issue#10 acceptance scenarios passed. Existing0.29 production/heat/energy/combat tests and old diagnostic worlds remain mandatory and preserved. No0.31 work.

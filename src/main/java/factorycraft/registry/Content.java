@@ -801,6 +801,7 @@ public final class Content {
               "uranium_processing", factorycraft.nuclear.UraniumRecipe.Serializer::new);
 
   public static void register(IEventBus bus) {
+    factorycraft.rail.RailContent.init();
     factorycraft.thermal.SteamFluids.register(bus);
     factorycraft.nuclear.HotSteam.register(bus);
     factorycraft.petroleum.PetroleumFluids.register(bus);
