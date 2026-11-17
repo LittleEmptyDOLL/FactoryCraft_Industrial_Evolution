@@ -1,3 +1,13 @@
+## 0.29 source-reachable solar and nuclear progression
+
+New numeric definitions are pinned in `tools/nuclear_reference.json` from Wube **2.1.24 with Space Age**. Solar Energy: 250 red+green ×30 s, after steel/logistic science. Accumulators: 150 red+green ×30 s, Distribution 1 + Battery. Concrete: 250 red+green ×30 s, Advanced Material Processing + Automation 2. Uranium Mining: 100 red+green+blue ×30 s, Chemical Science + Concrete. Actual acid-assisted uranium extraction triggers Uranium Processing; Nuclear Power costs 800 red+green+blue ×30 s.
+
+Concrete is made in a fluid-capable assembler: 5 native stone-brick blocks +1 raw iron +1000 mB water →10 FactoryCraft concrete, 10 s base. The Minecraft translations are `minecraft:stone_bricks` and `minecraft:raw_iron`; vanilla concrete is not a substitute. Centrifuge retains 100 concrete +50 steel +100 advanced circuits +100 gears /4 s; Reactor retains 500 each concrete/steel/advanced circuits/copper /8 s. A controller-owned 32-slot construction escrow accumulates ordinary stacks, preserves exact components across packing, and charges no FE before the complete bill is owned. Return-materials action retains any remainder that does not fit the player inventory. No 500-item ItemStack or compressed ingredient is serialized. The 2000-item reactor bill requires an assembler because Minecraft's nine-cell handcraft cannot express it.
+
+Uranium processing: 10 ore /12 s, speed 1, 350 kW (140/3 FE/t), two module slots. One categorical paid roll yields U-235 (0.7%) or U-238 (99.3%). Saved ore escrow/RNG serial/pending choice/work/FE/productivity cannot be rerolled through inspection or blocking. Fuel: 10 iron +1 U-235 +19 U-238 →10 cells /10 s. Probability is not replaced by a guaranteed early U-235 recipe.
+
+Kovarex and fuel reprocessing are visible genuine future definitions, closed by Production Science (plus Rocket Fuel for Kovarex); no active enrichment/reprocessing recipes. No uranium ammunition/nuclear weapons, Quality, late science production, railway or rocket progression is opened. Existing Minecraft inventory stack sizes, active-work FE buffers and handcraft timing conventions remain explicit adaptations.
+
 # Production progression — 0.28.0
 
 ## 0.28 military progression

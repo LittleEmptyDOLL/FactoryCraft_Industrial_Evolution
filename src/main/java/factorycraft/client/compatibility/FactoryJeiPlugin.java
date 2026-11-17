@@ -32,7 +32,8 @@ public final class FactoryJeiPlugin implements IModPlugin {
             "oil_refinery",
             "chemical_plant",
             "boiler",
-            "lab")) {
+            "lab",
+            "centrifuge")) {
       var c = new Category(machine, helper);
       categories.put(machine, c);
       registration.addRecipeCategories(c);
@@ -165,7 +166,7 @@ public final class FactoryJeiPlugin implements IModPlugin {
         double mouseY) {
       var font = Minecraft.getInstance().font;
       graphics.drawString(
-          font, recipe.ticks() + " t / " + recipe.energy() + " FE/t", 2, 60, 0xffffff, false);
+          font, recipe.ticks() + " t / " + recipe.powerLabel(), 2, 60, 0xffffff, false);
       var lines = recipe.noteLines();
       for (int line = 0; line < lines.size(); line++)
         graphics.drawString(font, lines.get(line), 2, 74 + line * 9, 0xffffff, false);

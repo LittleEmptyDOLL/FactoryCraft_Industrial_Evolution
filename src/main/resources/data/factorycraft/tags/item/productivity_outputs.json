@@ -19,6 +19,9 @@
     "factorycraft:battery",
     "factorycraft:solid_fuel",
     "factorycraft:military_science_pack",
-    "factorycraft:explosives"
+    "factorycraft:explosives",
+    "factorycraft:uranium_fuel_cell",
+    "factorycraft:uranium_235",
+    "factorycraft:uranium_238"
   ]
 }

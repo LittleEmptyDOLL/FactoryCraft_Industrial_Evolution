@@ -1,3 +1,9 @@
+## 0.29 solar/nuclear audit
+
+Pinned numeric source: Wube 2.1.24 + Space Age (`tools/nuclear_reference.json`). Source bills/times/gates, solar peak, battery capacity/rates/priority, uranium mining acid/time, one categorical isotope result, reactor fuel/neighbors/capacities, exchanger 10 MW and turbine 5.82 MW are implemented. Late enrichment/reprocessing and weapons remain genuinely closed.
+
+Explicit adaptations: 375 J/FE and 10 mB/source fluid unit; 20 Minecraft TPS; original 3D heights/vertical heat contacts; finite rectangular pole coverage/loaded ownership; center sky probe and Minecraft half-day solar curve; conservative bounded discrete heat equalization (not identical source gradient); native inventory stacks/assembler-only 2000-item reactor construction; native stone-bricks/raw-iron ingredients; paid-work FE buffers/handcraft conventions. New exchanger preserves 1:1 water/hot steam, while the explicitly grandfathered old boiler preserves 3:30 cold steam. Temperature-distinct 500°C steam substitutes for a general thermal-fluid refactor. RNG matches probabilities, not Factorio's random sequence. No full Quality, enrichment, reprocessing, uranium weapons or offworld resources are claimed.
+
 # Factorio parity audit — 0.28.0
 
 ## 0.28.0 military audit

@@ -18,7 +18,8 @@ public final class CircuitAccess {
           CircuitAttachment.class);
 
   public static boolean supported(BlockEntity be) {
-    return be instanceof factorycraft.circuits.CircuitNodeBlockEntity
+    return be instanceof factorycraft.nuclear.NuclearOwner
+        || be instanceof factorycraft.circuits.CircuitNodeBlockEntity
         || be instanceof InserterBlockEntity
         || be instanceof BeltBlockEntity
         || be instanceof MachineBlockEntity

@@ -1,0 +1,7 @@
+{
+  "type": "factorycraft:uranium_processing",
+  "ore": 10,
+  "ticks": 240,
+  "energy_numerator": 140,
+  "energy_denominator": 3
+}

@@ -32,8 +32,12 @@ public final class MachineFluidAccess {
 
   public static FluidCell<FluidKey> cell(FactoryBlockEntity be, int channel) {
     if (channel < 0) return null;
+    if (be instanceof factorycraft.nuclear.NuclearOwner device) return device.cell(channel);
     if (be instanceof factorycraft.combat.TurretBlockEntity turret)
       return channel == 0 && turret.flame() ? turret.pipeOil : null;
+    if (be instanceof MachineBlockEntity drill
+        && drill.kind() == factorycraft.blocks.FactoryKind.DRILL)
+      return channel == 0 ? drill.miningAcid : null;
     if (be instanceof MachineBlockEntity m && m.petroleum() != null)
       return channel < m.petroleum().cells.size() ? m.petroleum().cells.get(channel) : null;
     if (be instanceof ThermalBlockEntity t)
@@ -95,8 +99,13 @@ public final class MachineFluidAccess {
 
   public static boolean accepts(FactoryBlockEntity be, int channel, FluidKey key) {
     if (key == null) return false;
+    if (be instanceof factorycraft.nuclear.NuclearOwner device) return device.accepts(channel, key);
     if (be instanceof factorycraft.combat.TurretBlockEntity turret)
       return channel == 0 && turret.accepts(key);
+    if (be instanceof MachineBlockEntity drill
+        && drill.kind() == factorycraft.blocks.FactoryKind.DRILL)
+      return channel == 0
+          && key.stack(1).getFluid() == factorycraft.petroleum.PetroleumFluids.ACID.source.get();
     if (be instanceof ThermalBlockEntity t) {
       if (channel == 1) return key.stack(1).getFluidType() == SteamFluids.TYPE.get();
       return t.kind() == ThermalKind.BOILER

@@ -1,3 +1,13 @@
+# 0.29.0 — solar, exact storage and finite uranium/nuclear heat
+
+Reference: Factorio 2.1.24 **with Space Age enabled**; Java21 /Minecraft1.21.1 /NeoForge21.1.252. `./gradlew build`: **260 JUnit, zero failures/errors/skips**, preserving all245 old tests. Native no-optional suite: **487/487 required passes**, then **487/487 in an independent JVM on the same untouched world**, preserving467 baseline cases and thirty finite production chains. Exact V0290 charge/lease, paid RNG/escrow, acid, fuel, heat and hot-steam checkpoints verify alongside older checkpoints. Source recipe/technology audits pass.
+
+Finite production proof consumes900 real uranium ore and90000mBacid,90 paid random cycles, actual source fuel-cell ingredients, reactor fuel/heat, finite water, hot steam and turbine output into an isolated gear consumer. Bootstrap uses actual coal/Offshore/boiler/engine hardware; no injected isotope, FE or hot steam. Hardware/research fixture prerequisites and deterministic diagnostic RNG seed are explicit, not a full survival playthrough or guaranteed yield. See [validation/v0290/README.md](validation/v0290/README.md) for commands, ledgers, retained failures and evidence.
+
+Actual base client verifies original one-item seven-device placement/models/menus, solar charging through substation, blocked/free previews and MISS. Actual RU client confirms Jade temperature/fuel/charge, reactor fuel heating, zero night solar, saved5MJ battery and corrected EMI probability/energy/research display. The FTB Teams/EMI/JEI/Jade dedicated profile also passes487/487. A separate JEI-only client verifies the recipe, and a real hand-placed heat/fluid line converts1000mB water into618mB turbine consumption plus382mB retained steam, with exact9.7MJ enthalpy. Bounded heat data are in BENCHMARKS.md; no TPS improvement is claimed and a29.741ms tail remains reported. Full factory/MIXED/large-pipe and hosted compatibility/restart repeats remain GitHub Actions; pending checks are not passed checks. 0.28 gameplay/visual review remains separately pending the user. No0.30 work.
+
+---
+
 ## 0.28.0 — military industry, weapons and defense (17 November 2026)
 
 Source: Factorio2.1.24 **with Space Age**, normal quality. Final local build: **245 JUnit, zero failures/errors**; all240 old tests retained. Native no-optional runtime: **467 required passes**; actual FTB Teams/EMI/JEI/Jade runtime: **467 passes**, including the finite steam→grid→laser test. All440 old cases and thirty prior finite production chains stay mandatory. Separate JVMs verify exact partial magazines, turret state,137typed mB and the new251private +749component-distinct pass-through mB checkpoint without reseeding.

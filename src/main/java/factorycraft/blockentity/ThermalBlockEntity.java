@@ -25,7 +25,7 @@ import net.neoforged.neoforge.items.*;
 
 /** Canonical fuel, progress, water, steam and FE. All ports recheck loaded chunk ownership. */
 public final class ThermalBlockEntity extends FactoryBlockEntity
-    implements factorycraft.multiblock.AssemblyOwner, MenuProvider, GridGenerator {
+    implements factorycraft.multiblock.AssemblyOwner, MenuProvider, GridSupply {
   public static final int
       FLUID_CAPACITY = factorycraft.simulation.fluids.FluidUnits.MACHINE_CAPACITY,
       PORT_RATE = factorycraft.simulation.fluids.FluidUnits.boundaryRate(FLUID_CAPACITY);
@@ -100,7 +100,12 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
         }
 
         public int extractEnergy(int n, boolean simulate) {
-          return available() && generatesElectricity() ? engine.extract(n, simulate) : 0;
+          if (!available() || !generatesElectricity()) return 0;
+          if (!factorycraft.energy.PowerGrid.managed(ThermalBlockEntity.this))
+            return engine.extract(n, simulate);
+          int whole = (int) Math.min(Math.max(0L, n), supplyAvailable() / 15);
+          if (!simulate && whole > 0) takeSupply(whole * 15L);
+          return whole;
         }
 
         public int getEnergyStored() {
@@ -161,6 +166,52 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
 
   public IFluidHandler structurePort(BlockPos pos, Direction side) {
     return factorycraft.multiblock.MachineFluidAccess.port(this, pos, side);
+  }
+
+  private int gridResidue, gridUsed;
+  private long gridTick = Long.MIN_VALUE;
+
+  public int supplyPriority() {
+    return 1;
+  }
+
+  public boolean supplyReady() {
+    return available()
+        && generatesElectricity()
+        && factorycraft.circuits.CircuitBinding.allowed(this);
+  }
+
+  private void gridLease() {
+    if (gridTick != level.getGameTime()) {
+      gridTick = level.getGameTime();
+      gridUsed = 0;
+    }
+  }
+
+  public long supplyAvailable() {
+    if (!supplyReady()) return 0;
+    gridLease();
+    return Math.min(1800 - gridUsed, (long) engine.energy() * 15 + gridResidue);
+  }
+
+  public long takeSupply(long requested) {
+    int n = (int) Math.min(Math.max(0, requested), supplyAvailable());
+    int extract = Math.max(0, (n - gridResidue + 14) / 15);
+    if (engine.extract(extract, false) != extract)
+      throw new IllegalStateException("Engine reservation");
+    gridResidue += extract * 15 - n;
+    gridUsed += n;
+    changed();
+    return n;
+  }
+
+  public void refundSupply(long rejected) {
+    if (rejected < 0 || rejected > gridUsed) throw new IllegalArgumentException("Engine refund");
+    gridUsed -= (int) rejected;
+    gridResidue += (int) rejected;
+    engine.restore(engine.energy() + gridResidue / 15, engine.residue());
+    gridResidue %= 15;
+    changed();
   }
 
   public boolean generatesElectricity() {
@@ -263,7 +314,7 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     } else {
       int made = engine.generate(acceptsSteam(steam.key()));
       int delivered =
-          engine.energy() > 0 && PowerGrid.hasDemand(this)
+          !PowerGrid.managed(this) && engine.energy() > 0 && PowerGrid.hasDemand(this)
               ? PowerGrid.distribute(this, Math.min(120, engine.energy()))
               : 0;
       engine.extract(delivered, false);
@@ -460,6 +511,11 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     tag.put("Items", items.serializeNBT(r));
     tag.putInt("Energy", engine.energy());
     tag.putInt("EnergyResidue", engine.residue());
+    if (gridResidue != 0) tag.putInt("GridResidue", gridResidue);
+    if (gridUsed != 0) {
+      tag.putLong("GridTick", gridTick);
+      tag.putInt("GridUsed", gridUsed);
+    }
     tag.putInt("Fuel", boiler.fuel());
     tag.putInt("Progress", boiler.progress());
     tag.putString("BoilingRecipe", boiler.recipe());
@@ -476,6 +532,11 @@ public final class ThermalBlockEntity extends FactoryBlockEntity
     steam.restore(output.isEmpty() ? null : new FluidKey(output), output.getAmount());
     items.deserializeNBT(r, tag.getCompound("Items"));
     engine.restore(Math.max(0, tag.getInt("Energy")), tag.getInt("EnergyResidue"));
+    gridResidue = tag.getInt("GridResidue");
+    gridTick = tag.contains("GridTick") ? tag.getLong("GridTick") : Long.MIN_VALUE;
+    gridUsed = tag.getInt("GridUsed");
+    if (gridResidue < 0 || gridResidue >= 15 || gridUsed < 0 || gridUsed > 1800)
+      throw new IllegalArgumentException("Grid energy residue");
     boiler.restore(
         Math.max(0, tag.getInt("Fuel")),
         Math.max(0, tag.getInt("Progress")),

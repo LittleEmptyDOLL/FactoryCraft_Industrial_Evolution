@@ -1,3 +1,19 @@
+## 0.29 nuclear heat and temperature-distinct steam
+
+25-J quanta preserve the existing 375 J/FE scale. Reactor: 5×5×4, 40 MW base, +100% for each active loaded cardinal reactor exactly five horizontal blocks away on the same foundation level. One cell burns for 4000 Minecraft ticks (200 s, 8 GJ base); an ongoing burn continues and records wasted heat at the 1000°C cap. New fuel starts only below the cap, with space for one spent cell. Neighbor snapshots precede burning, so iteration order does not manufacture bonuses.
+
+Heat Pipe: 1×1×1; Exchanger: 3×2×2; Turbine: 3×5×3 (X×Z×Y). Reactor heat capacity is 10 MJ/°C; pipe/exchanger capacity 1 MJ/°C, measured above 15°C. Physical contacts form a cached loaded-only graph. Actual burning, neighbor bonuses and heat transfer additionally require normally running block ticks at the controller; a retained FULL chunk is not permission to simulate. Exact equalization transfers conserve every quantum, with per-owner per-tick limits of 10/1/2 GW respectively; local topology work is limited to 32 owners and 2048 edge visits per tick. This conservative discrete transfer algorithm and six-direction pipe contacts are Minecraft adaptations, not a claim to identical Factorio heat gradients.
+
+Exchanger draws at most 10 MW above 500°C, converting **one native mB water into one native mB 500°C steam**. Each hot mB owns 9700 J (388 quanta); sub-mB boiling credit is saved. Thus nominal throughput is 51.546… mB/t, at the existing 1:10 native fluid-unit scaling. No conversion from cold steam exists.
+
+| Steam | Enthalpy per native mB | Consumer ceiling |
+|---|---:|---:|
+| Existing 165°C `steam` | 3000 J /8 FE | Engine: 15 mB/t →120 FE/t |
+| 500°C `hot_steam` | 9700 J /388 quanta | Turbine: 30 mB/t →776 FE/t (5.82 MW) |
+| 165°C in turbine | actual 3000 J | 30 mB/t →240 FE/t (1.8 MW) |
+
+The expressly retained **legacy boiler 3 water →30 cold steam** adaptation remains unchanged. It is not applied to the new exchanger. Distinct steam fluid types cannot mix or enter the wrong engine; components propagate from water into hot steam. Turbines retain finite owned generator charge, with a shared grid/external output quota and same-tick production lease. There is no general temperature-fluid system or condensation recipe in this milestone.
+
 # Steam power — 0.26.1
 
 Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21. Reference: Factorio 2.1.24 normal-quality prototypes ([power production](https://wiki.factorio.com/Power_production), [boiler](https://wiki.factorio.com/Boiler), [offshore pump](https://wiki.factorio.com/Offshore_pump)). One Factorio fluid unit is **10 native mB**, one second is 20 Minecraft ticks. External FluidStacks are never multiplied again.

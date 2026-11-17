@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "factorycraft:block/uranium_ore"
+    }
+  }
+}

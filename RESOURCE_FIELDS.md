@@ -1,3 +1,9 @@
+## 0.29 finite uranium
+
+Uranium uses the existing deterministic irregular full ellipsoid, vertical radius 5–8, canonical terrain anchor and replaceable-natural-solids rules. Separate restart-required defaults: candidate spacing 24 chunks, horizontal radius 6–12, per-cell reserve 500–3000. These are explicit Minecraft rarity/richness adaptations, not literal Wube autoplace parity. Existing iron/copper/coal/stone settings are unchanged. No generation into water, air, structures or unavailable decorating chunks.
+
+Only Electric Mining Drill extracts uranium: source mining time 2 s, drill speed 0.5, **100 native mB sulfuric acid per base extraction**. No acid, valid output reservation or power means no paid work/depletion. Mining productivity is an earned additional output without another base extraction/acid debit, as in the source model. Hand/burner/creative inventories do not emit the mine-entity research event. Real extraction is atomic with acid and finite tile ownership and records the team-scoped uranium-processing trigger. The established directed chute feeds the centrifuge or other compatible item handlers without mandatory inserters.
+
 Mining chutes touch the **near lane** of perpendicular belts; parallel/antiparallel belts use the right lane. This differs from inserters and does not change belt direction, headway, stack height or the inserter rule. All four rotations have pure tests; all three speeds have native perpendicular-output cases. The parallel client deck remains unchanged. Reference: [original result drop vector](https://lua-api.factorio.com/latest/prototypes/MiningDrillPrototype.html#vector_to_place_result), [Factorio Access tutorial on physical drop lanes](https://github.com/Factorio-Access/FactorioAccess/blob/main/docs/tutorial-transcript.md).
 
 ## 0.26.1 drill delivery

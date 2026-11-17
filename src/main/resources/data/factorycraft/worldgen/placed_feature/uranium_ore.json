@@ -1,0 +1,8 @@
+{
+  "feature": "factorycraft:uranium_ore",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:battery"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:accumulator",
+    "count": 1
+  }
+}

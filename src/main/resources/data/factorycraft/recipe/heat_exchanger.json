@@ -1,0 +1,38 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 100
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fluid_pipe"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 10
+    }
+  ],
+  "result": {
+    "id": "factorycraft:heat_exchanger",
+    "count": 1
+  },
+  "ticks": 60,
+  "energy": 10,
+  "categories": [
+    "nuclear_construction"
+  ]
+}

@@ -11,7 +11,8 @@ public final class PowerTopology<T> {
   public enum Kind {
     POLE,
     SOURCE,
-    CONSUMER
+    CONSUMER,
+    STORAGE
   }
 
   @FunctionalInterface
@@ -31,6 +32,8 @@ public final class PowerTopology<T> {
     private boolean alive = true;
     private long visited;
     private Route<T> route;
+    private boolean demandStale, queued;
+    private int dispatchCursor, storageCursor;
 
     private Node(
         T value, PowerPoint p, PowerFootprint bounds, PoleSpec pole, Kind kind, Receiver receiver) {
@@ -68,6 +71,8 @@ public final class PowerTopology<T> {
     final IdentityHashMap<Node<T>, Integer> poleGroups = new IdentityHashMap<>();
     final IdentityHashMap<Node<T>, int[]> memberships = new IdentityHashMap<>();
     final Map<Integer, List<Node<T>>> consumers = new HashMap<>();
+    final Map<Integer, LinkedHashSet<Node<T>>> hungry = new HashMap<>();
+    final Map<Integer, List<Node<T>>> stores = new HashMap<>();
     final Map<Integer, int[]> counts = new HashMap<>();
     final Set<Integer> disabled = new HashSet<>();
     int networks;
@@ -83,6 +88,7 @@ public final class PowerTopology<T> {
   private Node<T> first;
   private final ArrayDeque<Node<T>> detachedToClean = new ArrayDeque<>();
   private Snapshot<T> snapshot = new Snapshot<>();
+  private final ArrayDeque<Node<T>> demandQueue = new ArrayDeque<>();
   private Builder builder;
   private int verticalReach, lastWork, edgeCount;
   private long revision, published, rebuilds, restarts, candidateChecks, scanSerial;
@@ -126,6 +132,7 @@ public final class PowerTopology<T> {
     if (first != null) first.previous = n;
     first = n;
     nodes.put(value, n);
+    if (kind == Kind.CONSUMER) changed(value);
     positions.put(point, n);
     revision++;
     return n;
@@ -140,6 +147,15 @@ public final class PowerTopology<T> {
     if (n == null) return;
     for (var peer : List.copyOf(n.edges)) unlink(n, peer);
     n.alive = false;
+    for (int root : groups(n)) {
+      var hungry = snapshot.hungry.get(root);
+      if (hungry != null) hungry.remove(n);
+    }
+    if (builder != null)
+      for (int root : builder.result.memberships.getOrDefault(n, EMPTY)) {
+        var hungry = builder.result.hungry.get(root);
+        if (hungry != null) hungry.remove(n);
+      }
     positions.remove(n.point, n);
     if (n.previous == null) first = n.next;
     else n.previous.next = n.next;
@@ -326,6 +342,95 @@ public final class PowerTopology<T> {
     return available - left;
   }
 
+  /** Dirty only when an owned buffer or availability changes, not a whole-factory tick scan. */
+  public void changed(T value) {
+    var n = nodes.get(value);
+    if (n == null || n.kind != Kind.CONSUMER) return;
+    n.demandStale = true;
+    if (!n.queued) {
+      n.queued = true;
+      demandQueue.addLast(n);
+    }
+  }
+
+  public boolean demandPending() {
+    return !demandQueue.isEmpty();
+  }
+
+  public int refreshDemand(int budget) {
+    int work = 0;
+    while (work < budget && !demandQueue.isEmpty()) {
+      var n = demandQueue.removeFirst();
+      n.queued = false;
+      if (n.alive && n.demandStale) refreshDemand(n.value);
+      work++;
+    }
+    return work;
+  }
+
+  public void refreshDemand(T value) {
+    var n = nodes.get(value);
+    if (n == null || n.kind != Kind.CONSUMER) return;
+    boolean needs = n.alive && n.receiver.receive(Integer.MAX_VALUE, true) > 0;
+    n.demandStale = false;
+    refreshIn(snapshot, n, needs);
+    if (builder != null) refreshIn(builder.result, n, needs);
+  }
+
+  private void refreshIn(Snapshot<T> target, Node<T> n, boolean needs) {
+    for (int root : target.memberships.getOrDefault(n, EMPTY)) {
+      var set = target.hungry.computeIfAbsent(root, k -> new LinkedHashSet<>());
+      if (needs) set.add(n);
+      else set.remove(n);
+    }
+  }
+
+  public T nextHungry(T supply) {
+    var source = nodes.get(supply);
+    if (source == null || !source.alive) return null;
+    var roots = groups(source);
+    for (int i = 0; i < roots.length; i++) {
+      int root = roots[Math.floorMod(source.dispatchCursor++, roots.length)];
+      if (!snapshot.valid(root)) continue;
+      var set = snapshot.hungry.get(root);
+      if (set == null || set.isEmpty()) continue;
+      var n = set.iterator().next();
+      set.remove(n);
+      if (n.alive) {
+        set.add(n);
+        return n.value;
+      }
+    }
+    return null;
+  }
+
+  public int storageCount(T supply) {
+    var source = nodes.get(supply);
+    if (source == null || !source.alive) return 0;
+    int count = 0;
+    for (int root : groups(source))
+      if (snapshot.valid(root)) count += snapshot.stores.getOrDefault(root, List.of()).size();
+    return count;
+  }
+
+  public T nextStorage(T supply) {
+    var source = nodes.get(supply);
+    if (source == null || !source.alive) return null;
+    int count = storageCount(supply);
+    if (count == 0) return null;
+    int index = Math.floorMod(source.storageCursor++, count);
+    for (int root : groups(source)) {
+      if (!snapshot.valid(root)) continue;
+      var stores = snapshot.stores.getOrDefault(root, List.of());
+      if (index < stores.size()) {
+        var n = stores.get(index);
+        return n.alive ? n.value : null;
+      }
+      index -= stores.size();
+    }
+    return null;
+  }
+
   private final class Pole {
     final Node<T> node;
     final int index;
@@ -498,12 +603,28 @@ public final class PowerTopology<T> {
       int i = 0;
       for (int root : deviceGroups) {
         membership[i++] = root;
-        result.counts.computeIfAbsent(root, k -> new int[3])[device.kind == Kind.SOURCE ? 1 : 2]++;
+        if (device.kind != Kind.STORAGE)
+          result
+              .counts
+              .computeIfAbsent(root, k -> new int[3])[device.kind == Kind.SOURCE ? 1 : 2]++;
         if (device.kind == Kind.CONSUMER)
           result.consumers.computeIfAbsent(root, k -> new ArrayList<>()).add(device);
       }
       Arrays.sort(membership);
+      // A battery is assigned to one actual grid. Coverage overlap must never bridge grids.
+      if (device.kind == Kind.STORAGE && membership.length > 1)
+        membership = new int[] {membership[0]};
       result.memberships.put(device, membership);
+      if (device.kind == Kind.STORAGE)
+        for (int root : membership) {
+          result.stores.computeIfAbsent(root, k -> new ArrayList<>()).add(device);
+          result.counts.computeIfAbsent(root, k -> new int[3])[2]++;
+        }
+      if (device.kind == Kind.CONSUMER
+          && device.alive
+          && device.receiver.receive(Integer.MAX_VALUE, true) > 0)
+        for (int root : membership)
+          result.hungry.computeIfAbsent(root, k -> new LinkedHashSet<>()).add(device);
       query = null;
       index++;
     }

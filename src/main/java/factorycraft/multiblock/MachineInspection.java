@@ -83,7 +83,47 @@ public final class MachineInspection {
       if (turret.oil.amount() > 0) fluids.add(turret.oil.key().stack(turret.oil.amount()));
       if (turret.pipeOil.amount() > 0)
         fluids.add(turret.pipeOil.key().stack(turret.pipeOil.amount()));
+    } else if (be instanceof factorycraft.nuclear.NuclearOwner nuclear) {
+      var port = nuclear.energyPort();
+      if (port != null) energy = port.getEnergyStored();
+      for (int c = 0; c < 2; c++) {
+        var cell = nuclear.cell(c);
+        if (cell != null && cell.amount() > 0) fluids.add(cell.key().stack(cell.amount()));
+      }
+      if (nuclear instanceof factorycraft.nuclear.HeatOwner)
+        tag.putInt("Temperature", nuclear.metrics()[2]);
+      if (nuclear instanceof factorycraft.nuclear.ReactorBlockEntity reactor) {
+        tag.putInt("FuelTicks", reactor.burnTicks);
+        tag.putInt("ActiveNeighbors", reactor.neighbors);
+        if (!reactor.burning().isEmpty()) {
+          var entry = new CompoundTag();
+          entry.putInt("Slot", 128);
+          entry.put("Stack", reactor.burning().save(registry));
+          list.add(entry);
+        }
+      }
+      if (nuclear instanceof factorycraft.nuclear.ElectricDeviceBlockEntity e && e.panel())
+        tag.putInt("GenerationW", e.metrics()[0] * 500);
     } else if (be instanceof MachineBlockEntity m) {
+      if (m.miningAcid != null && m.miningAcid.amount() > 0)
+        fluids.add(m.miningAcid.key().stack(m.miningAcid.amount()));
+      if (m.uraniumWork != null && !m.uraniumWork.escrow.isEmpty()) {
+        var e = new CompoundTag();
+        e.putInt("Slot", 64);
+        e.put("Stack", m.uraniumWork.escrow.save(registry));
+        list.add(e);
+      }
+      if (m.construction.ownsMaterials())
+        for (int slot = 0; slot < m.construction.escrow.getSlots(); slot++) {
+          var stack = m.construction.escrow.getStackInSlot(slot);
+          if (!stack.isEmpty()) {
+            var e = new CompoundTag();
+            e.putInt("Slot", 65 + slot);
+            e.put("Stack", stack.save(registry));
+            list.add(e);
+          }
+        }
+
       energy = m.power.getEnergyStored();
       if (m.petroleum() != null)
         for (int i = 0; i < m.petroleum().cells.size(); i++) fluids.add(m.petroleum().stored(i));

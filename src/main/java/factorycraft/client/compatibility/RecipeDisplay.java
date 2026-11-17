@@ -22,6 +22,16 @@ public record RecipeDisplay(
     int ticks,
     int energy,
     String note) {
+  public String powerLabel() {
+    var level = Minecraft.getInstance().level;
+    if (level != null) {
+      var r = level.getRecipeManager().byKey(id).map(h -> h.value()).orElse(null);
+      if (r instanceof factorycraft.nuclear.UraniumRecipe u)
+        return u.energyNumerator() + "/" + u.energyDenominator() + " FE/t";
+    }
+    return energy + " FE/t";
+  }
+
   public List<net.minecraft.util.FormattedCharSequence> noteLines() {
     return Minecraft.getInstance()
         .font
@@ -89,6 +99,23 @@ public record RecipeDisplay(
               r.energy(),
               ""));
     }
+    for (var h : manager.getAllRecipesFor(Content.URANIUM_PROCESSING.get())) {
+      var r = h.value();
+      all.add(
+          new RecipeDisplay(
+              h.id(),
+              "centrifuge",
+              List.of(List.of(factorycraft.nuclear.NuclearItems.stack("uranium_ore", r.ore()))),
+              List.of(),
+              List.of(
+                  factorycraft.nuclear.NuclearItems.stack("uranium_235", 1),
+                  factorycraft.nuclear.NuclearItems.stack("uranium_238", 1)),
+              List.of(),
+              r.ticks(),
+              r.energyNumerator() / r.energyDenominator(),
+              net.minecraft.network.chat.Component.translatable("gui.factorycraft.uranium_chance")
+                  .getString()));
+    }
     for (var h : manager.getAllRecipesFor(Content.BOILING.get())) {
       var r = h.value();
       all.add(
@@ -151,7 +178,9 @@ public record RecipeDisplay(
                 display.outputs,
                 display.ticks,
                 display.energy,
-                net.minecraft.network.chat.Component.translatable("gui.factorycraft.needs_research")
+                (display.note.isEmpty() ? "" : display.note + "\n")
+                    + net.minecraft.network.chat.Component.translatable(
+                            "gui.factorycraft.needs_research")
                         .getString()
                     + ": "
                     + String.join(" / ", required)));

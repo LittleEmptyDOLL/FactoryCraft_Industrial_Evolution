@@ -1,0 +1,33 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:concrete"
+      },
+      "count": 100
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 50
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 100
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 100
+    }
+  ],
+  "result": {
+    "id": "factorycraft:centrifuge",
+    "count": 1
+  }
+}

@@ -73,6 +73,22 @@ final class FactoryJadeClient {
             }
           }
           if (!row.isEmpty()) tooltip.add(row);
+          if (snapshot.contains("GenerationW"))
+            tooltip.add(
+                Component.translatable(
+                    "gui.factorycraft.solar_output", snapshot.getInt("GenerationW"), 60000));
+          if (snapshot.contains("Temperature"))
+            tooltip.add(
+                Component.translatable(
+                    "gui.factorycraft.nuclear_temperature",
+                    String.format(
+                        java.util.Locale.ROOT, "%.1f", snapshot.getInt("Temperature") / 1000.0)));
+          if (snapshot.contains("FuelTicks"))
+            tooltip.add(
+                Component.translatable(
+                    "gui.factorycraft.nuclear_fuel",
+                    snapshot.getInt("FuelTicks"),
+                    snapshot.getInt("ActiveNeighbors")));
           if (snapshot.contains("Energy"))
             tooltip.add(
                 Component.translatable(

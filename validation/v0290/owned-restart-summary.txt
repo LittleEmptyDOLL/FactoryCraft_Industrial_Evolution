@@ -1,0 +1,5 @@
+FACTORYCRAFT_V0290_DISK: VERIFIED battery 123457q; centrifuge paid17/roll1; acid137; fuel3999; heat/hot steam exact
+FACTORYCRAFT_V0290_CHAIN: 900 real finite uranium +90000 mB acid; 90 paid categorical cycles(seed817); actual iron+U235+19U238 ->10 cells; fueled reactor ->physical heat pipe ->finite water exchanger ->500C steam ->turbine ->isolated electrical gear; bootstrap <=192 coal, no isotope/FE/hot-steam injection
+FACTORYCRAFT_V0290_HEAT_PROFILE: 128 physical pipes; conserved=39400000q; edge visits=3632; graph CPU ns=5407306
+[14:01:09] [Server thread/INFO] [minecraft/GameTestServer]: All 487 required tests passed :)
+BUILD SUCCESSFUL in 2m 17s

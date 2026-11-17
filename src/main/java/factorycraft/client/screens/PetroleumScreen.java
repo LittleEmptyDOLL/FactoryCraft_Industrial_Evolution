@@ -19,6 +19,13 @@ public final class PetroleumScreen extends AbstractContainerScreen<PetroleumMenu
 
   protected void init() {
     super.init();
+    if (menu.machine.kind().assembler())
+      addRenderableWidget(
+          Button.builder(
+                  Component.translatable("gui.factorycraft.return_construction"),
+                  b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 98))
+              .bounds(leftPos + 18, topPos + 110, 70, 18)
+              .build());
     if (menu.machine.kind().processing() || menu.machine.kind() == FactoryKind.PUMPJACK)
       addRenderableWidget(
           Button.builder(

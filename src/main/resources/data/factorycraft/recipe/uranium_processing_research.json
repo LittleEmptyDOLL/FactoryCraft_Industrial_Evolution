@@ -1,0 +1,16 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:uranium_mining"
+  ],
+  "packs": {},
+  "units": 1,
+  "ticks": 1,
+  "unlocks": [
+    "factorycraft:centrifuge",
+    "factorycraft:uranium_processing"
+  ],
+  "x": 40,
+  "y": 5,
+  "trigger": "mine:factorycraft:uranium_ore"
+}

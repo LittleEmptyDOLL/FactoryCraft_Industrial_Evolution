@@ -1,3 +1,19 @@
+# 0.29.0 — bounded heat ownership profile
+
+New subsystem; no before/after speedup or factory TPS claim. Pure-Java `HeatNetworkBenchmark` uses 128/1024/4096 stores, five warmups then five reported rounds per size, 1000 steps/round and at most 2048 physical-edge operations/step. Every run asserts exact heat conservation. Raw data: [validation/v0290/heat-kernel.txt](validation/v0290/heat-kernel.txt).
+
+| Stores | Per-run p50 range, µs/step | p99 range, µs/step | Mean range, µs/step | Maximum observed |
+|---|---:|---:|---:|---:|
+|128|0.842–0.971|1.542–1.732|1.008–1.259|0.186 ms|
+|1024|4.897–6.900|22.413–44.295|5.539–35.253|29.724 ms|
+|4096|9.744–9.874|27.671–58.286|10.241–40.522|29.741 ms|
+
+Tails are much slower than medians; scheduling/GC is not isolated, and the slow samples are retained. The budget caps visits, not wall-clock latency. Hardware-independent tests assert conservation, shared quotas and no topology rebuild from ordinary content/demand events rather than CPU-specific time thresholds.
+
+A separate native-world case places 128 actual heat pipes and checks 39400000 quanta across 30 logical ticks. Heat graph counters: 3632 visits, accumulated 7.266 ms in first JVM /5.407 ms in second. Other diagnostic heat owners remain loaded; this is not an isolated whole-server tick measurement. Long finite uranium production uses accelerated logical ticks solely to validate scarcity/energy and must not be used as performance evidence. Full factory/MIXED/large-pipe and hosted repeats remain CI.
+
+---
+
 # 0.28.0 — bounded combat kernel profile
 
 New isolated `CombatKernelBenchmark`: 1,200,000 cadence requests per round, six source periods, repeated-use pressure, damage resistance, ten warmups and 21 measured rounds; Java21. This measures only the new pure kernel, not Minecraft tick time or TPS. Result: 39,248 accepted shots/round; median **0.359ms**, p95 **2.424ms**, p99/max **3.533ms**, mean **48 allocated bytes/round**. Tail samples are materially slower than the median and are reported, not discarded. No comparable combat subsystem existed in 0.27; no speedup is claimed. Hardware-independent cadence/replay/count and resistance assertions are in JUnit. Raw output: [validation/v0280/combat-kernel.txt](validation/v0280/combat-kernel.txt).

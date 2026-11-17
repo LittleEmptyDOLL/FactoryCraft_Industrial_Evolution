@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:production_science",
+    "factorycraft:uranium_processing_research",
+    "factorycraft:rocket_fuel"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:production_science_pack": 1
+  },
+  "units": 1500,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 44,
+  "y": 5
+}

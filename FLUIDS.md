@@ -1,3 +1,11 @@
+## 0.29 physical uranium/nuclear boundaries
+
+Existing 1 source unit =10 native mB, pooled ownership, pressure quotas, machine layouts and old ports remain authoritative. New Electric Drill acid box is 2000 mB, with left/right/rear BOTH contacts sharing only its acid channel. A consuming drill fills through the physical pressure-limited boundary; it does not equalize its small private buffer to the percentage of a large passive tank network. This prevents the observed 99-mB starvation with acid still available.
+
+Exchanger has two side BOTH water contacts on the rear row, one front hot-steam output and one rear heat contact; turbine has front/rear BOTH steam contacts. Rotations use the same descriptors for server caps, native pipes and visible nozzles. New nuclear input boxes pull real fluid using the physical pressure quota; balanced output transfer preserves BOTH pass-through without undoing the preceding productive conversion. Water, hot steam and cold steam never share a private box or passive segment. All new ports require the current complete loaded owner UUID.
+
+`hot_steam`/`flowing_hot_steam` are temperature-distinct 500°C identities with an original fluid presentation; no world source block. New heating uses 1:1 water/steam mB and 9700 J/mB. The old boiler's explicit 3:30 cold-steam ledger is retained separately. No machine-output identity or components are silently replaced. Passive storage capacities remain the **current** 1000-mB pipes /250000-mB tanks, not the pre-0.25 16000-mB tank value.
+
 ## 0.26.1 shoreline correction
 
 Offshore Pump is now one land controller plus one rear intake **over** the source, with one inland output; see STEAM_POWER.md / MACHINE_DIMENSIONS.md. Six-direction segment hydraulics, 1:10 units, source rate/buffer, component identity and transfer-only electric Pump are unchanged. No mandatory lake-size rule or source deletion. Supported MC shore has water and land surfaces at the same elevation. New evidence uses v0261 worlds; old parallel-shore fixtures are archived, never migrated/reset.

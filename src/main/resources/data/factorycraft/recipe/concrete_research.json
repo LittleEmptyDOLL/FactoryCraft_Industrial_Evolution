@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:advanced_material_processing",
+    "factorycraft:automation_2"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 250,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:concrete"
+  ],
+  "x": 36,
+  "y": 5
+}

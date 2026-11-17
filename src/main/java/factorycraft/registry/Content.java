@@ -312,7 +312,8 @@ public final class Content {
                               FactoryKind.REFINERY,
                               FactoryKind.CHEMICAL_PLANT,
                               FactoryKind.ADVANCED_ASSEMBLER,
-                              FactoryKind.ASSEMBLER_3))
+                              FactoryKind.ASSEMBLER_3,
+                              FactoryKind.CENTRIFUGE))
                       .build(null));
   public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PoleBlockEntity>> POLE =
       ENTITIES.register(
@@ -749,8 +750,59 @@ public final class Content {
     ITEMS.register("grenade", () -> new factorycraft.combat.GrenadeItem(new Item.Properties()));
   }
 
+  public static final DeferredHolder<
+          BlockEntityType<?>, BlockEntityType<factorycraft.nuclear.NuclearOwner>>
+      NUCLEAR =
+          ENTITIES.register(
+              "nuclear",
+              () ->
+                  BlockEntityType.Builder.of(
+                          (pos, state) ->
+                              switch (((FactoryBlock) state.getBlock()).kind) {
+                                case NUCLEAR_REACTOR ->
+                                    new factorycraft.nuclear.ReactorBlockEntity(pos, state);
+                                case HEAT_PIPE, HEAT_EXCHANGER ->
+                                    new factorycraft.nuclear.HeatDeviceBlockEntity(pos, state);
+                                default ->
+                                    new factorycraft.nuclear.ElectricDeviceBlockEntity(pos, state);
+                              },
+                          Arrays.stream(FactoryKind.values())
+                              .filter(FactoryKind::nuclear)
+                              .map(k -> FACTORY.get(k).get())
+                              .toArray(Block[]::new))
+                      .build(null));
+  public static final DeferredHolder<MenuType<?>, MenuType<factorycraft.nuclear.NuclearMenu>>
+      NUCLEAR_MENU =
+          MENUS.register(
+              "nuclear", () -> IMenuTypeExtension.create(factorycraft.nuclear.NuclearMenu::new));
+  public static final DeferredBlock<Block> CONCRETE =
+      BLOCKS.register(
+          "concrete",
+          () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).strength(2)));
+
+  static {
+    ITEMS.registerSimpleBlockItem("concrete", CONCRETE);
+  }
+
+  public static final DeferredItem<Item> URANIUM_ORE_ITEM = ITEMS.registerSimpleItem("uranium_ore");
+
+  static {
+    for (var name :
+        List.of("uranium_235", "uranium_238", "uranium_fuel_cell", "depleted_uranium_fuel_cell"))
+      ITEMS.registerSimpleItem(name);
+  }
+
+  public static final DeferredHolder<RecipeType<?>, RecipeType<factorycraft.nuclear.UraniumRecipe>>
+      URANIUM_PROCESSING = RECIPE_TYPES.register("uranium_processing", () -> new RecipeType<>() {});
+  public static final DeferredHolder<
+          RecipeSerializer<?>, RecipeSerializer<factorycraft.nuclear.UraniumRecipe>>
+      URANIUM_SERIALIZER =
+          SERIALIZERS.register(
+              "uranium_processing", factorycraft.nuclear.UraniumRecipe.Serializer::new);
+
   public static void register(IEventBus bus) {
     factorycraft.thermal.SteamFluids.register(bus);
+    factorycraft.nuclear.HotSteam.register(bus);
     factorycraft.petroleum.PetroleumFluids.register(bus);
     ARMOR_MATERIALS.register(bus);
     COMPONENTS.register(bus);
@@ -837,6 +889,18 @@ public final class Content {
         Capabilities.FluidHandler.ITEM,
         (stack, context) -> factorycraft.items.FluidCanisterItem.handler(stack),
         FLUID_CANISTER.get());
+    e.registerBlockEntity(
+        factorycraft.circuits.CircuitAccess.CAPABILITY,
+        NUCLEAR.get(),
+        (be, ctx) -> factorycraft.circuits.CircuitAccess.own(be, true));
+    e.registerBlockEntity(
+        Capabilities.ItemHandler.BLOCK, NUCLEAR.get(), (be, side) -> be.automation());
+    e.registerBlockEntity(
+        Capabilities.EnergyStorage.BLOCK, NUCLEAR.get(), (be, side) -> be.energyPort());
+    e.registerBlockEntity(
+        Capabilities.FluidHandler.BLOCK,
+        NUCLEAR.get(),
+        (be, side) -> factorycraft.multiblock.MachineFluidAccess.port(be, be.getBlockPos(), side));
     e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, LAB.get(), (be, side) -> be.inventory());
     e.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LAB.get(), (be, side) -> be.energy);
     e.registerBlockEntity(

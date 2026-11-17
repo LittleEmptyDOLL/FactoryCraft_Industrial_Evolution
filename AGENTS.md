@@ -16,7 +16,17 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active milestone — 0.28.0, GitHub issue #8
+## Active milestone — 0.29.0, GitHub issue #9
+
+* Factorio 2.1.24 with Space Age, normal quality. Solar/tertiary accumulators, finite acid-mined uranium and actual mine trigger, sampled/persisted centrifuge, fuel cells, reactor heat network/exchanger/hot-steam turbine. No 0.30 or 0.28 visual polish; 0.28 remains pending the user's gameplay/visual review.
+* Preserve 245 JUnit /467 native baseline, thirty finite chains, old V0280 fixtures, three lifts and four wire colors. New v0290 worlds only, never reset/refill failed evidence. Archive closed worlds only after byte-for-byte verification when disk space requires it.
+* Heat and FE use exact fixed-point ownership, no double claims or duplicated buffers in parts. Only real sulfuric acid enables uranium work; output reservation precedes depletion/acid/FE. Centrifuge RNG is sampled once for actual paid work, persisted and never rerolled by inspection or blockage.
+* Reactor cells burn at source time even if heat is capped; adjacent loaded reactor bonuses never create extra fuel. Preserve legacy 165C 3-water:30-steam ledger; distinct 500C steam cannot fuel a cold engine or be generated from cold steam. Accumulators are tertiary, not an independent-network bridge.
+* Source costs/gates only; enrichment/reprocessing/uranium weapons remain blocked by genuine late prerequisites. Validate current-format independent-JVM records, real EN/RU clients and affected optional runtime. Full factory/MIXED/large-pipe remain CI; publish checked main normally and query CI once. Do not claim a partial milestone complete.
+
+* 0.29 local evidence:260JUnit;487 base native +487 independent-JVM reload +487 optional FTB/EMI/JEI/Jade native passes. Exact new checkpoints, finite uranium-to-isolated-consumer chain and actual EN/RU solar/storage/reactor/Jade/viewer checks are in validation/v0290. Final UI-only string/model corrections were rebuilt and graphically rechecked. Preserve passing v0290-owned and v0290-optional plus current QA/archives; no reseeding. Full CI is reported separately, never inferred. Nuclear heat advances only canonical block-ticking owners, never merely FULL-loaded chunks.
+
+## Previous milestone — 0.28.0, GitHub issue #8
 
 * Factorio 2.1.24 WITH Space Age, normal quality. Implement the military-science production chain, server-owned weapons/ammunition, armor and defenses; preserve twelve science identities, all 0.27 tests, three lifts and four circuit colors. No 0.29 work.
 * A partial magazine is an exact component-bearing resource, never a fresh full magazine. Extract one magazine before consuming a round; loaded ammunition has exactly one persisted owner. Simulation, transport, recipe upgrades, death, unload and portable state must not refill ammunition.

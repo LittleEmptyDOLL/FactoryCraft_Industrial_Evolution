@@ -1,3 +1,7 @@
+## 0.29 energy observations
+
+New nuclear/electric owners expose the existing four-color contact and read-only state/contents. Accumulator ENERGY is integer external FE and PROGRESS is charge percent; reactor progress is remaining fuel ticks. Nuclear private fluids, paid uranium ore escrow and construction materials are read from their sole owners. Centrifuge recipe-result reading reports only its already sampled paid outcome, never two guaranteed isotope products. Reactor fuel burning is not turned into a demand/circuit-throttled process. Unloaded owners return unavailable data. No wire colors, signal graph or selector behavior changed.
+
 # Логические сети — 0.22.0, Factorio 2.1
 
 Серверная схема использует прежний `CircuitGraph` и `CircuitSimulation`, расширенные типизированными разреженными наборами сигналов. Красный, зелёный, синий и белый цвета независимы. Это логические провода, они не передают FE и не соединяют электрические сети.

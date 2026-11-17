@@ -1,0 +1,32 @@
+{
+  "type": "factorycraft:chemistry",
+  "machine": "assembling_machine_2",
+  "items": [
+    {
+      "ingredient": {
+        "item": "minecraft:stone_bricks"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:raw_iron"
+      },
+      "count": 1
+    }
+  ],
+  "fluids": [
+    {
+      "fluid": "minecraft:water",
+      "amount": 1000
+    }
+  ],
+  "results": [
+    {
+      "id": "factorycraft:concrete",
+      "count": 10
+    }
+  ],
+  "ticks": 200,
+  "energy": 20
+}

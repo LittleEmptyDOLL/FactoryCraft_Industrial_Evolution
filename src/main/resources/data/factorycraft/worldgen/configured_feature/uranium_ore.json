@@ -1,0 +1,20 @@
+{
+  "type": "factorycraft:resource_patch",
+  "config": {
+    "state": {
+      "Name": "factorycraft:uranium_ore"
+    },
+    "salt": 351923,
+    "use_world_settings": true,
+    "vein": {
+      "min_radius": 6,
+      "max_radius": 12,
+      "min_stock": 500,
+      "max_stock": 3000,
+      "spacing_chunks": 24,
+      "min_depth": 5,
+      "max_depth": 8,
+      "noise": 0.12
+    }
+  }
+}

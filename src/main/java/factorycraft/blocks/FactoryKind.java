@@ -45,7 +45,14 @@ public enum FactoryKind {
   SELECTOR("selector_combinator", 0),
   GUN_TURRET("gun_turret", 0),
   LASER_TURRET("laser_turret", 0),
-  FLAME_TURRET("flamethrower_turret", 0);
+  FLAME_TURRET("flamethrower_turret", 0),
+  SOLAR_PANEL("solar_panel", 0),
+  ACCUMULATOR("accumulator", 0),
+  CENTRIFUGE("centrifuge", 0),
+  NUCLEAR_REACTOR("nuclear_reactor", 0),
+  HEAT_PIPE("heat_pipe", 0),
+  HEAT_EXCHANGER("heat_exchanger", 0),
+  STEAM_TURBINE("steam_turbine", 0);
   public final String id;
   public final int beltTier;
 
@@ -56,6 +63,15 @@ public enum FactoryKind {
 
   public factorycraft.simulation.power.PoleSpec poleType() {
     return factorycraft.simulation.power.PoleSpec.byId(id);
+  }
+
+  public boolean nuclear() {
+    return this == SOLAR_PANEL
+        || this == ACCUMULATOR
+        || this == NUCLEAR_REACTOR
+        || this == HEAT_PIPE
+        || this == HEAT_EXCHANGER
+        || this == STEAM_TURBINE;
   }
 
   public boolean turret() {
@@ -174,6 +190,7 @@ public enum FactoryKind {
       case ASSEMBLER -> 10;
       case ADVANCED_ASSEMBLER -> 20;
       case ASSEMBLER_3 -> 50;
+      case CENTRIFUGE -> 47;
       case LAB -> 8;
       case BEACON -> 64;
       case FURNACE -> 24;
@@ -188,7 +205,7 @@ public enum FactoryKind {
     return switch (this) {
       case ASSEMBLER_3 -> 4;
       case DRILL, REFINERY, CHEMICAL_PLANT -> 3;
-      case FURNACE, ADVANCED_ASSEMBLER, PUMPJACK, LAB, BEACON -> 2;
+      case FURNACE, ADVANCED_ASSEMBLER, PUMPJACK, LAB, BEACON, CENTRIFUGE -> 2;
       default -> 0;
     };
   }
@@ -198,7 +215,8 @@ public enum FactoryKind {
   }
 
   public boolean processing() {
-    return furnace()
+    return this == CENTRIFUGE
+        || furnace()
         || this == ASSEMBLER
         || this == ADVANCED_ASSEMBLER
         || this == ASSEMBLER_3
@@ -211,6 +229,6 @@ public enum FactoryKind {
   }
 
   public boolean machine() {
-    return drill() || furnace() || this == ASSEMBLER || petroleum();
+    return drill() || furnace() || this == ASSEMBLER || petroleum() || this == CENTRIFUGE;
   }
 }

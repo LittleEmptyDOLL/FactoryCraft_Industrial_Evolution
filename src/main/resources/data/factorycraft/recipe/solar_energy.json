@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:steel_processing",
+    "factorycraft:logistic_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 250,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:solar_panel"
+  ],
+  "x": 32,
+  "y": 5
+}

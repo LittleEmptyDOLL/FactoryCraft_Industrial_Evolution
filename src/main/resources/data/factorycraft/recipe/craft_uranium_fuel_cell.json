@@ -1,0 +1,27 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:uranium_235"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:uranium_238"
+      },
+      "count": 19
+    }
+  ],
+  "result": {
+    "id": "factorycraft:uranium_fuel_cell",
+    "count": 10
+  }
+}

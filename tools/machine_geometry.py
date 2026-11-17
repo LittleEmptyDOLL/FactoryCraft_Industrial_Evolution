@@ -61,6 +61,41 @@ def generate(root,write,png):
     box((xx[0],.3,z-.195),(xx[1],.7,z+.195),mat)
   if name in json.loads((root/'factorycraft/pole_geometry.json').read_text()):
    boxes.extend(json.loads((root/'factorycraft/pole_geometry.json').read_text())[name]['boxes'])
+  elif name=='solar_panel':
+   for x in [.18,2.65]:
+    for z in [.18,2.65]:box((x,.02,z),(x+.16,.6,z+.16),'steel')
+   box((.07,.57,.07),(2.93,.67,2.93),'steel')
+   for x in range(6):
+    for z in range(6):box((.13+x*.46,.675,.13+z*.46),(.54+x*.46,.71,.54+z*.46),'glass')
+  elif name=='accumulator':
+   box((.08,0,.08),(1.92,.2,1.92),'dark')
+   for x in [.52,1.48]:
+    for z in [.52,1.48]:column(x,z,.38,.2,1.6,'teal');column(x,z,.25,1.6,1.78,'steel')
+   box((.34,1.79,.4),(1.66,1.88,.55),'red');box((.34,1.79,1.35),(1.66,1.88,1.5),'steel')
+  elif name=='centrifuge':
+   box((.08,0,.08),(2.92,.3,2.92),'dark');column(1.5,1.5,1.20,.3,2.05,'teal')
+   column(1.5,1.5,.98,2.05,2.24,'steel')
+   for x in [.45,1.22,2.0]:box((x,2.25,1.1),(x+.45,2.55,1.9),'green',parts)
+   box((.3,.5,.06),(.8,1.25,.28),'orange');box((1.25,.54,.04),(1.75,.72,.12),'indicator')
+  elif name=='nuclear_reactor':
+   box((.08,0,.08),(4.92,.3,4.92),'dark');column(2.5,2.5,1.85,.3,3.12,'shell')
+   column(2.5,2.5,1.9,1.0,1.18,'orange');column(2.5,2.5,1.9,2.25,2.43,'orange')
+   column(2.5,2.5,1.6,3.12,3.5,'steel');box((2.12,3.5,2.12),(2.88,3.95,2.88),'green')
+   for t in [.5,2.5,4.5]:
+    box((t-.20,.28,.001),(t+.20,.68,.55),'orange');box((t-.20,.28,4.45),(t+.20,.68,4.999),'orange')
+    box((.001,.28,t-.20),(.55,.68,t+.20),'orange');box((4.45,.28,t-.20),(4.999,.68,t+.20),'orange')
+  elif name=='heat_pipe':
+   box((.25,.25,.25),(.75,.75,.75),'orange')
+   for a,b in [((0,.37,.37),(1,.63,.63)),((.37,0,.37),(.63,1,.63)),((.37,.37,0),(.63,.63,1))]:box(a,b,'steel')
+  elif name=='heat_exchanger':
+   box((.08,0,.12),(2.92,.28,1.88),'dark');box((.38,.28,.28),(2.62,1.36,1.65),'orange')
+   for x in [.52,.88,1.24,1.60,1.96,2.32]:box((x,1.36,.36),(x+.08,1.58,1.55),'steel')
+   box((1.30,.28,1.5),(1.70,.68,1.999),'orange')
+  elif name=='steam_turbine':
+   box((.08,0,.08),(2.92,.3,4.92),'dark');column(1.5,2.5,1.08,.3,2.2,'teal')
+   for z in [.8,1.4,2.0,2.6,3.2,3.8]:box((.3,.4,z),(2.7,.54,z+.1),'steel')
+   box((1.1,1.0,.20),(1.9,1.8,1.4),'steel')
+   box((1.12,1.38,.52),(1.88,1.44,.62),'orange',parts);box((1.47,1.0,.52),(1.53,1.82,.62),'orange',parts)
   elif name in ['gun_turret','laser_turret','flamethrower_turret']:
    trim={'gun_turret':'yellow','laser_turret':'teal','flamethrower_turret':'orange'}[name]
    box((.07,0,.07),(w-.07,.28,d-.07),'dark');box((.2,.28,.2),(w-.2,.55,d-.2),trim)
@@ -224,5 +259,6 @@ def generate(root,write,png):
   write(f'assets/factorycraft/blockstates/{name}.json',{'variants':{'':{'model':'factorycraft:block/machine_shell'}}})
  for casing in ['machine_casing','refinery_casing']:write(f'assets/factorycraft/blockstates/{casing}.json',{'variants':{'':{'model':'factorycraft:block/machine_shell'}}})
  write('assets/factorycraft/models/block/machine_shell.json',{'parent':'minecraft:block/block','loader':'factorycraft:machine','textures':textures,'machines':specs})
+ write('factorycraft/nuclear_bases.json',{p['profile']:p['boxes'] for p in specs if p['profile'] in ['solar_panel','accumulator','centrifuge','nuclear_reactor','heat_pipe','heat_exchanger','steam_turbine']})
  write('factorycraft/turret_bases.json',{p['profile']:p['boxes'] for p in specs if p['profile'] in ['gun_turret','laser_turret','flamethrower_turret']})
  return moving

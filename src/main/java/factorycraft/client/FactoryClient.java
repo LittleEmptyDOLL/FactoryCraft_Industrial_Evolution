@@ -37,7 +37,14 @@ public final class FactoryClient {
           && p != factorycraft.multiblock.MachineProfile.PUMP
           && !p.splitter()
           && !p.circuit()
-          && p.poleType() == null)
+          && p.poleType() == null
+          && !java.util.Set.of(
+                  factorycraft.multiblock.MachineProfile.SOLAR_PANEL,
+                  factorycraft.multiblock.MachineProfile.ACCUMULATOR,
+                  factorycraft.multiblock.MachineProfile.NUCLEAR_REACTOR,
+                  factorycraft.multiblock.MachineProfile.HEAT_PIPE,
+                  factorycraft.multiblock.MachineProfile.HEAT_EXCHANGER)
+              .contains(p))
         event.register(
             net.minecraft.client.resources.model.ModelResourceLocation.standalone(
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
@@ -47,6 +54,7 @@ public final class FactoryClient {
   @SubscribeEvent
   public static void menus(RegisterMenuScreensEvent e) {
     factorycraft.circuits.CircuitNetwork.clientReceiver = CircuitVisuals::receive;
+    e.register(Content.NUCLEAR_MENU.get(), factorycraft.client.screens.NuclearScreen::new);
     e.register(Content.TURRET_MENU.get(), factorycraft.client.screens.TurretScreen::new);
     e.register(Content.LOGIC_MENU.get(), factorycraft.client.screens.LogicScreen::new);
     e.register(Content.CIRCUIT_MENU.get(), factorycraft.client.screens.CircuitScreen::new);
@@ -64,22 +72,25 @@ public final class FactoryClient {
   @SubscribeEvent
   public static void fluidExtensions(
       net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
-    event.registerFluidType(
-        new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
-          public net.minecraft.resources.ResourceLocation getStillTexture() {
-            return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
-                FactoryCraft.ID, "block/steam");
-          }
+    for (boolean hot : new boolean[] {false, true})
+      event.registerFluidType(
+          new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
+            public net.minecraft.resources.ResourceLocation getStillTexture() {
+              return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                  FactoryCraft.ID, "block/steam");
+            }
 
-          public net.minecraft.resources.ResourceLocation getFlowingTexture() {
-            return getStillTexture();
-          }
+            public net.minecraft.resources.ResourceLocation getFlowingTexture() {
+              return getStillTexture();
+            }
 
-          public int getTintColor() {
-            return 0xffd4e8ed;
-          }
-        },
-        factorycraft.thermal.SteamFluids.TYPE.get());
+            public int getTintColor() {
+              return hot ? 0xffffc68a : 0xffd4e8ed;
+            }
+          },
+          hot
+              ? factorycraft.nuclear.HotSteam.TYPE.get()
+              : factorycraft.thermal.SteamFluids.TYPE.get());
   }
 
   @SubscribeEvent
@@ -115,6 +126,7 @@ public final class FactoryClient {
     e.registerBlockEntityRenderer(Content.LAB.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.MACHINE.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.THERMAL.get(), MachineAnimationRenderer::new);
+    e.registerBlockEntityRenderer(Content.NUCLEAR.get(), MachineAnimationRenderer::new);
     e.registerBlockEntityRenderer(Content.BELT.get(), BeltRenderer::new);
     e.registerBlockEntityRenderer(Content.INSERTER.get(), InserterRenderer::new);
   }

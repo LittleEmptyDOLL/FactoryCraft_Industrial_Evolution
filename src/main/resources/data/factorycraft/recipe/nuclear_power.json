@@ -1,0 +1,22 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:uranium_processing_research"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 800,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:nuclear_reactor",
+    "factorycraft:heat_exchanger",
+    "factorycraft:heat_pipe",
+    "factorycraft:steam_turbine",
+    "factorycraft:uranium_fuel_cell"
+  ],
+  "x": 42,
+  "y": 5
+}

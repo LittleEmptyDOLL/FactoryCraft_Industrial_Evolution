@@ -40,7 +40,26 @@ public final class MachineBlockEntity extends FactoryBlockEntity
 
   public final factorycraft.modules.MachineModules modules =
       new factorycraft.modules.MachineModules(this);
+  public final factorycraft.simulation.fluids.FluidCell<factorycraft.fluids.FluidKey> miningAcid =
+      kind() == FactoryKind.DRILL
+          ? new factorycraft.simulation.fluids.FluidCell<>(2000, this::markPetroleumState)
+          : null;
+  public final factorycraft.nuclear.ConstructionWork construction =
+      new factorycraft.nuclear.ConstructionWork(this);
+
+  public ItemStack nuclearOutput(ItemStack stack, boolean simulate) {
+    return output(stack, simulate);
+  }
+
   private boolean loaded;
+  public final factorycraft.nuclear.UraniumWork uraniumWork =
+      kind() == FactoryKind.CENTRIFUGE ? new factorycraft.nuclear.UraniumWork(this) : null;
+
+  public void nuclearProgress(int value, int total) {
+    progress = value;
+    duration = total;
+  }
+
   private String researchScope = "";
 
   public String researchScope() {
@@ -121,8 +140,12 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         @Override
         public boolean isItemValid(int s, ItemStack stack) {
           if (s >= 4 && s < 8) return false;
+          if (kind() == FactoryKind.CENTRIFUGE)
+            return s < 4 && factorycraft.nuclear.NuclearItems.is(stack, "uranium_ore");
           if (s == 8) return kind().burner() && burnTime(stack) > 0;
-          return kind().processing();
+          return kind() == FactoryKind.CENTRIFUGE
+              ? factorycraft.nuclear.NuclearItems.is(stack, "uranium_ore")
+              : kind().processing();
         }
       };
   public final PowerBuffer power = new PowerBuffer(16000, this::markPersistentState);
@@ -273,6 +296,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         || !loaded()
         || !factorycraft.multiblock.AssemblyAccess.ready(this)
         || !kind().processing()) return false;
+    if (construction.ownsMaterials() && (id == null || !id.toString().equals(selectedRecipeId())))
+      return false;
     if (petroleum != null) return petroleum.selectRecipe(id);
     if (id != null && (!recipeAllowed(id) || recipes().stream().noneMatch(r -> r.id().equals(id))))
       return false;
@@ -429,6 +454,15 @@ public final class MachineBlockEntity extends FactoryBlockEntity
 
   public void tick() {
     if (!loaded()) return;
+    if (construction.handles()) {
+      boolean worked =
+          factorycraft.multiblock.AssemblyAccess.ready(this)
+              && factorycraft.fluids.FluidConnections.canonical(this)
+              && factorycraft.circuits.CircuitBinding.allowed(this)
+              && construction.tick();
+      setActive(worked);
+      return;
+    }
     if (petroleum != null) {
       boolean worked = petroleum.tick();
       if (petroleumAvailable()) setActive(worked);
@@ -444,6 +478,16 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       return;
     }
     if (kind().drill()) pushDrillOutput();
+    if (miningAcid != null)
+      for (var port : assembly.ports()) {
+        var from =
+            factorycraft.fluids.FluidConnections.output(
+                level, port.adjacent(), port.side().getOpposite());
+        if (from != null
+            && from.amount() > 0
+            && factorycraft.multiblock.MachineFluidAccess.accepts(this, 0, from.key()))
+          from.transferTo(miningAcid, 6000, false);
+      }
     boolean worked;
     if (kind().furnace() || kind().assembler()) {
       furnaceBudget =
@@ -456,7 +500,7 @@ public final class MachineBlockEntity extends FactoryBlockEntity
         if (!produce()) break;
         worked = true;
       }
-    } else worked = kind().drill() ? mine() : produce();
+    } else worked = uraniumWork != null ? uraniumWork.tick() : kind().drill() ? mine() : produce();
     if (worked && level.getGameTime() % 20 == 0) sync();
     setActive(worked);
   }
@@ -470,7 +514,10 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     var input = new FactoryInput(items);
     RecipeHolder<FactoryRecipe> chosen = null;
     for (var r : recipes()) {
-      if (selected.isEmpty() && r.value().categories().contains("military")) continue;
+      if (selected.isEmpty()
+          && (r.value().categories().contains("military")
+              || r.value().categories().contains("nuclear")
+              || r.value().categories().contains("nuclear_construction"))) continue;
       if (!selected.isEmpty() && !selected.equals(r.id().toString())) continue;
       if (!activeRecipe.isEmpty() && progress > 0 && !activeRecipe.equals(r.id().toString()))
         continue;
@@ -743,6 +790,8 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     return be instanceof ResourceDepositBlockEntity deposit
             && deposit.available()
             && deposit.remaining() > 0
+            && (kind() != FactoryKind.BURNER_DRILL
+                || deposit.resourceBlock().kind != factorycraft.resources.ResourceKind.URANIUM)
         ? deposit.resourceBlock().kind.result()
         : ItemStack.EMPTY;
   }
@@ -795,6 +844,16 @@ public final class MachineBlockEntity extends FactoryBlockEntity
     var deposit =
         (ResourceDepositBlockEntity) factorycraft.fluids.FluidConnections.at(level, oreTarget);
     var result = oreResult(oreTarget);
+    boolean uranium = deposit.resourceBlock().kind == factorycraft.resources.ResourceKind.URANIUM;
+    duration = uranium ? 40 : 20;
+    if (uranium
+        && (!recipeAllowed(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                    "factorycraft", "uranium_ore"))
+            || miningAcid == null
+            || miningAcid.amount() < 100
+            || !factorycraft.multiblock.MachineFluidAccess.accepts(this, 0, miningAcid.key())))
+      return false;
     var effects = modules.effects();
     int work = kind().workQuarters() * effects.speed(),
         next = progress + (miningPhase + work) / 40000;
@@ -833,10 +892,27 @@ public final class MachineBlockEntity extends FactoryBlockEntity
       markPersistentState();
       if (progress >= duration) {
         // The current canonical tile is debited once; productivity is an explicit earned bonus.
-        output(batch, false);
-        if (!deposit.extractAccepted()) throw new IllegalStateException("Reserved ore disappeared");
-        progress -= duration;
-        miningCredit %= 10000;
+        Runnable commit =
+            () -> {
+              output(batch, false);
+              progress -= duration;
+              miningCredit %= 10000;
+              if (!deposit.extractAccepted())
+                throw new IllegalStateException("Reserved ore disappeared");
+            };
+        if (uranium) {
+          factorycraft.simulation.fluids.FluidCell.commitBatch(
+              java.util.List.of(
+                  new factorycraft.simulation.fluids.FluidCell.Mutation<>(
+                      miningAcid, miningAcid.key(), miningAcid.amount() - 100)),
+              commit,
+              false);
+          factorycraft.research.ResearchTriggers.record(
+              (net.minecraft.server.level.ServerLevel) level,
+              researchScope,
+              "mine:factorycraft:uranium_ore",
+              1);
+        } else commit.run();
         sync();
       }
       return true;
@@ -918,6 +994,10 @@ public final class MachineBlockEntity extends FactoryBlockEntity
   protected void saveAdditional(CompoundTag t, HolderLookup.Provider r) {
     super.saveAdditional(t, r);
     modules.save(t, r);
+    construction.save(t, r);
+    if (miningAcid != null && miningAcid.amount() > 0)
+      t.put("MiningAcid", miningAcid.key().stack(miningAcid.amount()).save(r));
+    if (uraniumWork != null) uraniumWork.save(t, r);
     if (!researchScope.isEmpty()) t.putString("ResearchScope", researchScope);
     t.putInt("Schema", 2);
     t.putString("ActiveDefinition", activeDefinition);
@@ -946,6 +1026,20 @@ public final class MachineBlockEntity extends FactoryBlockEntity
   protected void loadAdditional(CompoundTag t, HolderLookup.Provider r) {
     super.loadAdditional(t, r);
     modules.load(t, r);
+    construction.load(t, r);
+    if (miningAcid != null) {
+      var acid =
+          net.neoforged.neoforge.fluids.FluidStack.parseOptional(r, t.getCompound("MiningAcid"));
+      if (!acid.isEmpty()
+          && (acid.getAmount() > 2000
+              || !factorycraft.multiblock.MachineFluidAccess.accepts(
+                  this, 0, new factorycraft.fluids.FluidKey(acid))))
+        throw new IllegalArgumentException("Drill acid");
+      miningAcid.restore(
+          acid.isEmpty() ? null : new factorycraft.fluids.FluidKey(acid), acid.getAmount());
+    }
+
+    if (uraniumWork != null) uraniumWork.load(t, r);
     researchScope = t.getString("ResearchScope");
     items.deserializeNBT(r, t.getCompound("Items"));
     power.restore(t.getInt("Energy"));

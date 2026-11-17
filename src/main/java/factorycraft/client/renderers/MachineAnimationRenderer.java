@@ -21,7 +21,17 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
 
   static {
     for (var p : MachineProfile.values())
-      if (p != MachineProfile.TANK && p != MachineProfile.PUMP && !p.splitter() && !p.circuit())
+      if (p != MachineProfile.TANK
+          && p != MachineProfile.PUMP
+          && !p.splitter()
+          && !p.circuit()
+          && !java.util.Set.of(
+                  MachineProfile.SOLAR_PANEL,
+                  MachineProfile.ACCUMULATOR,
+                  MachineProfile.NUCLEAR_REACTOR,
+                  MachineProfile.HEAT_PIPE,
+                  MachineProfile.HEAT_EXCHANGER)
+              .contains(p))
         MODELS.put(
             p,
             ModelResourceLocation.standalone(
@@ -77,6 +87,8 @@ public final class MachineAnimationRenderer<T extends FactoryBlockEntity & Assem
           rotate(pose, unit, 1.5, 2.65, 1.5, Axis.XP, (float) (Math.sin(phase.time * .15) * 12));
       case REFINERY -> rotate(pose, unit, 3.7, .77, .3, Axis.ZP, (float) (phase.time * 10));
       case CHEMICAL -> rotate(pose, unit, 1.5, 2.3, 1.5, Axis.YP, (float) (phase.time * 9));
+      case CENTRIFUGE -> rotate(pose, unit, 1.5, 2.25, 1.5, Axis.YP, (float) (phase.time * 14));
+      case STEAM_TURBINE -> rotate(pose, unit, 1.5, 1.4, .57, Axis.ZP, (float) (phase.time * 20));
       case ENGINE -> rotate(pose, unit, 1.5, 1, .97, Axis.ZP, (float) (phase.time * 15));
       default -> {}
     }

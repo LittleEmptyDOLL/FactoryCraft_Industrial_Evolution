@@ -277,7 +277,9 @@ public final class PetroleumProduction {
       for (var holder : manager.getAllRecipesFor(Content.PROCESSING.get())) {
         var recipe = holder.value();
         if (!recipe.machine().equals(FactoryKind.ASSEMBLER.id)) continue;
-        if (recipe.categories().contains("military")) explicitOnly.add(holder.id());
+        if ((recipe.categories().contains("military")
+            || recipe.categories().contains("nuclear")
+            || recipe.categories().contains("nuclear_construction"))) explicitOnly.add(holder.id());
         var result = recipe.result();
         // Original processing results may span several output slots.
         if (result.isEmpty() || result.getCount() > 4 * result.getMaxStackSize()) continue;

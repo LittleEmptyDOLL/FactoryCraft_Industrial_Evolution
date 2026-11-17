@@ -1048,3 +1048,6 @@ for locale,ru in [('en_us',False),('ru_ru',True)]:
 # Preserve the active military overlays when rebuilding the complete resource set.
 import runpy
 runpy.run_path(str(Path(__file__).with_name("generate_combat_resources.py")), run_name="__main__")
+
+# 0.29 nuclear/solar overlay remains the final authority for its source costs and ports.
+exec(compile((Path(__file__).parent/"generate_nuclear_resources.py").read_text(),str(Path(__file__).parent/"generate_nuclear_resources.py"),"exec"))

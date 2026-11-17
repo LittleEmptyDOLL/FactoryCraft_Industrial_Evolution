@@ -188,6 +188,7 @@ public final class CircuitAttachment {
                   || !b.structureReady()
                   || !factorycraft.simulation.BeltSimulation.tickable(b))
           || f instanceof InserterBlockEntity i && !i.ready()
+          || f instanceof factorycraft.nuclear.NuclearOwner n && !n.ready()
           || f instanceof MachineBlockEntity m && !m.loaded()
           || f instanceof FluidBlockEntity p && !p.simulationAvailable()
           || f instanceof ThermalBlockEntity t && !t.available()

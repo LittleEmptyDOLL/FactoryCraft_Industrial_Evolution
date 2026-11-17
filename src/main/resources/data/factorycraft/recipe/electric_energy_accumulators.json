@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:electric_energy_distribution_1",
+    "factorycraft:battery_research"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 150,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:accumulator"
+  ],
+  "x": 34,
+  "y": 5
+}

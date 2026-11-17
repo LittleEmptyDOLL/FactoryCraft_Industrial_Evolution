@@ -1,0 +1,38 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 50
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 50
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fluid_pipe"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 20
+    }
+  ],
+  "result": {
+    "id": "factorycraft:steam_turbine",
+    "count": 1
+  },
+  "ticks": 60,
+  "energy": 10,
+  "categories": [
+    "nuclear_construction"
+  ]
+}

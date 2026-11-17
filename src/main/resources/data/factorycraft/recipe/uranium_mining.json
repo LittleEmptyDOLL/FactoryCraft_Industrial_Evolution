@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:chemical_science",
+    "factorycraft:concrete_research"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1
+  },
+  "units": 100,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:uranium_ore"
+  ],
+  "x": 38,
+  "y": 5
+}

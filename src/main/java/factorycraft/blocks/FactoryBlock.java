@@ -73,6 +73,10 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   protected VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+    if (kind.nuclear()
+        || kind == FactoryKind.CENTRIFUGE
+        || kind.casing() && factorycraft.nuclear.NuclearGeometry.has(s.getValue(PROFILE)))
+      return factorycraft.nuclear.NuclearGeometry.shape(s, l, p);
     if (kind.turret()
         || kind.casing()
             && java.util.Set.of(
@@ -107,6 +111,12 @@ public final class FactoryBlock extends BaseEntityBlock {
 
   @Override
   public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+    if (kind.nuclear())
+      return switch (kind) {
+        case NUCLEAR_REACTOR -> new factorycraft.nuclear.ReactorBlockEntity(p, s);
+        case HEAT_PIPE, HEAT_EXCHANGER -> new factorycraft.nuclear.HeatDeviceBlockEntity(p, s);
+        default -> new factorycraft.nuclear.ElectricDeviceBlockEntity(p, s);
+      };
     if (kind.turret()) return new factorycraft.combat.TurretBlockEntity(p, s);
     if (kind.circuit()) return new factorycraft.circuits.CircuitNodeBlockEntity(p, s);
     if (kind == FactoryKind.TRANSPORT_PART) return new TransportPartBlockEntity(p, s);
@@ -140,6 +150,8 @@ public final class FactoryBlock extends BaseEntityBlock {
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
       Level l, BlockState s, BlockEntityType<T> t) {
     if (l.isClientSide) return null;
+    if (kind.nuclear())
+      return createTickerHelper(t, Content.NUCLEAR.get(), (a, b, c, d) -> d.tick());
     if (kind.turret()) return createTickerHelper(t, Content.TURRET.get(), (a, b, c, d) -> d.tick());
     if (kind == FactoryKind.TRANSPORT_PART)
       return createTickerHelper(t, Content.TRANSPORT_PART.get(), (a, b, c, d) -> d.tick());
@@ -181,7 +193,9 @@ public final class FactoryBlock extends BaseEntityBlock {
       pole.showInfo(player);
       return InteractionResult.SUCCESS;
     }
-    if (l.getBlockEntity(p) instanceof factorycraft.combat.TurretBlockEntity turret)
+    if (l.getBlockEntity(p) instanceof factorycraft.nuclear.NuclearOwner device)
+      factorycraft.multiblock.MachineInteraction.open(device, player, p);
+    else if (l.getBlockEntity(p) instanceof factorycraft.combat.TurretBlockEntity turret)
       factorycraft.multiblock.MachineInteraction.open(turret, player, p);
     else if (l.getBlockEntity(p) instanceof factorycraft.blockentity.BeaconBlockEntity beacon)
       factorycraft.multiblock.MachineInteraction.open(beacon, player, p);

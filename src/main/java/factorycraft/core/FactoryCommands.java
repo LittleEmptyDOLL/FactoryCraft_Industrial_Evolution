@@ -120,6 +120,19 @@ public final class FactoryCommands {
                                             .getInteger(c, "capacity"),
                                         com.mojang.brigadier.arguments.IntegerArgumentType
                                             .getInteger(c, "belt"))))));
+    root.then(
+        Commands.literal("heat")
+            .executes(
+                c -> {
+                  c.getSource()
+                      .sendSuccess(
+                          () ->
+                              Component.literal(
+                                  factorycraft.nuclear.HeatSimulation.statistics(
+                                      c.getSource().getLevel())),
+                          false);
+                  return 1;
+                }));
     event.getDispatcher().register(root);
   }
 

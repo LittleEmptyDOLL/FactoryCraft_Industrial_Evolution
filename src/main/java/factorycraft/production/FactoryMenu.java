@@ -63,6 +63,8 @@ public final class FactoryMenu extends AbstractContainerMenu {
 
   @Override
   public boolean clickMenuButton(Player p, int id) {
+    if (id == 98 && p.containerMenu == this && !p.isSpectator() && stillValid(p))
+      return machine.construction.returnMaterials(p);
     if (id == 99 && p.containerMenu == this && stillValid(p))
       return factorycraft.modules.ModuleMenu.open(machine, p);
     if (p.containerMenu != this || id != 0 || !stillValid(p) || p.isSpectator()) return false;

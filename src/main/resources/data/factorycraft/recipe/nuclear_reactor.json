@@ -1,0 +1,39 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:concrete"
+      },
+      "count": 500
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 500
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:advanced_circuit"
+      },
+      "count": 500
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 500
+    }
+  ],
+  "result": {
+    "id": "factorycraft:nuclear_reactor",
+    "count": 1
+  },
+  "ticks": 160,
+  "energy": 10,
+  "categories": [
+    "nuclear_construction"
+  ]
+}

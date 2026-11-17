@@ -2,6 +2,15 @@
   "replace": false,
   "values": [
     "factorycraft:iron_ore",
-    "factorycraft:copper_ore"
+    "factorycraft:copper_ore",
+    "factorycraft:solar_panel",
+    "factorycraft:accumulator",
+    "factorycraft:centrifuge",
+    "factorycraft:nuclear_reactor",
+    "factorycraft:heat_pipe",
+    "factorycraft:heat_exchanger",
+    "factorycraft:steam_turbine",
+    "factorycraft:uranium_ore",
+    "factorycraft:concrete"
   ]
 }

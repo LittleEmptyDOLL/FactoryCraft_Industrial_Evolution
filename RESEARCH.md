@@ -1,3 +1,9 @@
+## 0.29 research and sampled production
+
+Adds canonical Solar Energy, Accumulators, Concrete, Uranium Mining, the actual `mine:factorycraft:uranium_ore` trigger and Nuclear Power. `uranium_processing_research` is the research identity, distinct from the native probabilistic `uranium_processing` recipe. The virtual `uranium_ore` unlock gates drill capability, not a fabricated ore recipe. Trigger definitions carry a one-tick codec sentinel, never a paid science duration. Team namespaces/providers and saved ledgers remain unchanged.
+
+Centrifuges use existing two-slot modules/beacons and common circuit gating; paid productivity credit earns an additional separately sampled output. EMI/JEI show mutually exclusive outcomes/probabilities and exact rational FE; the native centrifuge screen remains usable without viewers. Kovarex/reprocessing keep real missing late prerequisites and do not become survival production paths.
+
 # Research — 0.28.0
 
 ## 0.28 military additions

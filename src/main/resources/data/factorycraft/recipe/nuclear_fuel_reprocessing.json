@@ -1,0 +1,18 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:nuclear_power",
+    "factorycraft:production_science"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1,
+    "factorycraft:chemical_science_pack": 1,
+    "factorycraft:production_science_pack": 1
+  },
+  "units": 50,
+  "ticks": 600,
+  "unlocks": [],
+  "x": 46,
+  "y": 5
+}

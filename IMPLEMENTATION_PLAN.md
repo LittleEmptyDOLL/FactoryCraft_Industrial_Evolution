@@ -1,3 +1,18 @@
+# Active 0.29.0 / issue #9
+
+1. Extend existing explicit power topology with storage endpoints and a deterministic tertiary settlement phase; preserve generator/consumer ownership and existing adapters. Implement source daylight curve and exact charge/discharge limits.
+2. Add rare finite uranium fields to the existing deterministic generator; physical acid input on the electric drill, exact atomic mining and source mine-entity research trigger. Add genuine concrete progression.
+3. Implement a sole-owner centrifuge with reserved persistent random outcomes and existing module effects. Add source fuel cells and high-count recipes.
+4. Add heat-buffer graph with local physical ports, conservative bounded transfers, source reactor fuel/neighbors/cap behavior, heat exchanger and separate 500C steam/turbine identity.
+5. Integrate original basic models, guarded menus/capabilities/Jade and recipe/research viewers; add pure/native/finite-chain and independent-JVM v0290 fixtures, bounded heat profile and real EN/RU checks.
+6. Update evidence and source audit. Publish only after relevant validation. Do not start 0.30; 0.28 gameplay/visual review remains the user's separate pending review.
+
+Implemented: exact solar/storage priorities, finite acid-mined uranium and mine trigger, paid categorical centrifuge, source-count construction escrow, genuine reactor/owned heat/exchanger/turbine, original basic models and guarded menus/viewers/inspection. Local build260JUnit;487 native passes without optional mods,487 independent-JVM reload passes,487 with FTB/EMI/JEI/Jade. Actual EN/RU client checks and retained failures/limits are in validation/v0290. Final client-only fixes were rebuilt; simulation checks are not inferred from compilation. No TPS speedup claim.
+
+**Next authorized work:** none. Publish the checked0.29 main and report CI once; retain v0290-owned/optional/client fixtures and all archived failures. Full factory/MIXED/large-pipe/hosted repeats remain CI. Wait for a separate request before0.30 railways.0.28 user gameplay/visual review is still independently pending.
+
+---
+
 # FactoryCraft 0.28.0 / issue #8
 
 Implemented source-audited reachable military science, exact ammunition ownership, six server-owned weapons, source armor, gun/laser/flame turrets, walls/gates/mines, finite research upgrades and original basic3D/animation. Existing transport/fluid/power/production/research cores are reused. New military recipes require explicit assembler choice so old factories retain autodetection behavior. Late sciences stay genuine locked dependencies.

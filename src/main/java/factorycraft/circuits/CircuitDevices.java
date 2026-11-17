@@ -49,7 +49,7 @@ public final class CircuitDevices {
   }
 
   public static boolean stateful(BlockEntity be) {
-    return gateable(be);
+    return gateable(be) || be instanceof factorycraft.nuclear.NuclearOwner;
   }
 
   public static boolean readable(BlockEntity be) {
@@ -113,6 +113,17 @@ public final class CircuitDevices {
       state = m.getBlockState().getValue(FactoryBlock.ACTIVE) ? 1 : 0;
       energy = m.power.getEnergyStored();
       progress = m.petroleum() == null ? m.data.get(0) : m.petroleum().data.get(0);
+    } else if (b instanceof factorycraft.nuclear.NuclearOwner device) {
+      state = device.getBlockState().getValue(FactoryBlock.ACTIVE) ? 1 : 0;
+      var port = device.energyPort();
+      energy = port == null ? 0 : port.getEnergyStored();
+      progress =
+          device instanceof factorycraft.nuclear.ReactorBlockEntity r
+              ? r.burnTicks
+              : device instanceof factorycraft.nuclear.ElectricDeviceBlockEntity e
+                      && e.accumulator()
+                  ? (int) (100 * e.battery.units() / 200000)
+                  : 0;
     } else if (b instanceof LabBlockEntity l) {
       state = l.getBlockState().getValue(FactoryBlock.ACTIVE) ? 1 : 0;
       energy = l.power.getEnergyStored();
@@ -156,6 +167,21 @@ public final class CircuitDevices {
           item(out, inv.getStackInSlot(slot));
         if (be instanceof MachineBlockEntity m && m.petroleum() != null)
           for (int i = 0; i < m.petroleum().cells.size(); i++) fluid(out, m.petroleum().stored(i));
+        if (be instanceof MachineBlockEntity m) {
+          if (m.miningAcid != null && m.miningAcid.amount() > 0)
+            fluid(out, m.miningAcid.key().stack(m.miningAcid.amount()));
+          if (m.uraniumWork != null) item(out, m.uraniumWork.escrow);
+          if (m.construction.ownsMaterials())
+            for (int slot = 0; slot < 32; slot++)
+              item(out, m.construction.escrow.getStackInSlot(slot));
+        }
+        if (be instanceof factorycraft.nuclear.NuclearOwner nuclear) {
+          for (int c = 0; c < 2; c++) {
+            var cell = nuclear.cell(c);
+            if (cell != null && cell.amount() > 0) fluid(out, cell.key().stack(cell.amount()));
+          }
+          if (nuclear instanceof factorycraft.nuclear.ReactorBlockEntity r) item(out, r.burning());
+        }
         if (be instanceof ThermalBlockEntity t) {
           fluid(out, t.contents(t.water));
           fluid(out, t.contents(t.steam));
@@ -174,6 +200,25 @@ public final class CircuitDevices {
 
   private static void recipe(
       MachineBlockEntity m, CircuitSettings settings, SignalSet.Builder out) {
+    if (m.uraniumWork != null) {
+      var recipe =
+          m.getLevel()
+              .getRecipeManager()
+              .byKey(ResourceLocation.fromNamespaceAndPath("factorycraft", "uranium_processing"))
+              .map(h -> h.value())
+              .orElse(null);
+      if (recipe instanceof factorycraft.nuclear.UraniumRecipe u) {
+        if (settings.ingredients())
+          item(out, factorycraft.nuclear.NuclearItems.stack("uranium_ore", u.ore()));
+        int choice = m.uraniumWork.roll.pending();
+        if (settings.results() && choice >= 0)
+          item(
+              out,
+              factorycraft.nuclear.NuclearItems.stack(
+                  choice == 0 ? "uranium_235" : "uranium_238", 1));
+      }
+      return;
+    }
     if (m.petroleum() != null) {
       var holder = m.petroleum().circuitRecipe();
       if (holder == null) return;

@@ -18,6 +18,13 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
   @Override
   protected void init() {
     super.init();
+    if (menu.machine.kind().assembler())
+      addRenderableWidget(
+          Button.builder(
+                  Component.translatable("gui.factorycraft.return_construction"),
+                  b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 98))
+              .bounds(leftPos + 112, topPos + 102, 78, 16)
+              .build());
     if (menu.machine.kind().supportsModules())
       addRenderableWidget(
           Button.builder(
@@ -25,7 +32,8 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
                   b -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 99))
               .bounds(leftPos + 18, topPos + 80, 73, 20)
               .build());
-    if (menu.machine.kind().processing())
+    if (menu.machine.kind().processing()
+        && menu.machine.kind() != factorycraft.blocks.FactoryKind.CENTRIFUGE)
       addRenderableWidget(
           Button.builder(
                   Component.translatable("gui.factorycraft.select"),
@@ -111,6 +119,38 @@ public final class FactoryScreen extends AbstractContainerScreen<FactoryMenu> {
             18,
             140,
             0xffc1d0d5,
+            false);
+      }
+      g.drawString(font, playerInventoryTitle, 22, 154, 0xffc1d0d5, false);
+      return;
+    }
+    if (menu.machine.kind() == factorycraft.blocks.FactoryKind.CENTRIFUGE) {
+      var recipe =
+          menu.machine
+              .getLevel()
+              .getRecipeManager()
+              .byKey(
+                  net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                      "factorycraft", "uranium_processing"))
+              .map(h -> h.value())
+              .orElse(null);
+      if (recipe instanceof factorycraft.nuclear.UraniumRecipe u) {
+        g.drawWordWrap(
+            font,
+            Component.translatable(
+                "gui.factorycraft.uranium_recipe",
+                u.ore(),
+                String.format(java.util.Locale.ROOT, "%.2f", u.ticks() / 20.0)),
+            18,
+            105,
+            170,
+            0xffc1d0d5);
+        g.drawString(
+            font,
+            Component.literal(u.energyNumerator() + "/" + u.energyDenominator() + " FE/t"),
+            18,
+            136,
+            0xff56d7d9,
             false);
       }
       g.drawString(font, playerInventoryTitle, 22, 154, 0xffc1d0d5, false);

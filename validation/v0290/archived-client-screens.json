@@ -1,0 +1,276 @@
+{
+  "archive": "/workspace/work/v0290-evidence/client-development-screens.tar.xz",
+  "sha256": "3fc41446a8a50683d615f0767b87d31b2f2d19e545d2a9fb6bbfe687288d24e9",
+  "files": [
+    {
+      "file": "battery-menu-final-ru.png",
+      "sha256": "1b0d212728347b8761ef181c2a9d0783fe744300c114cfe2131c449c084ce54d",
+      "bytes": 275825
+    },
+    {
+      "file": "exchanger-jade-ru.png",
+      "sha256": "d98680d0b9c36dca08af64540a5455d0a0ae9731d91c8cfd2c19d788500f7f77",
+      "bytes": 159572
+    },
+    {
+      "file": "teleport-check-en.png",
+      "sha256": "fe7031f81e3570ba0753a751bae6963b7e32f45b680d085409d37b8d2d1c4f8c",
+      "bytes": 159720
+    },
+    {
+      "file": "client-world-en.png",
+      "sha256": "36373818780c64edf70d6271acba475e0c0bc0cc3629f363c7e0628967d19078",
+      "bytes": 84234
+    },
+    {
+      "file": "exchanger-hot-running-en.png",
+      "sha256": "08a7d97bdaed7d2d24cab4b31275cf77b6be31ed2bfdb884291c33acdbabb83d",
+      "bytes": 138149
+    },
+    {
+      "file": "current-jei-qa.png",
+      "sha256": "8e20d7438a2781a47ca73971d1207aac37d88a9208fefb5b115e941f1e5d54f2",
+      "bytes": 249168
+    },
+    {
+      "file": "focus-debug-en.png",
+      "sha256": "c2f23107033e9b8e51ff8a55bb200852653d1967bfac02603922bb8c0ae18d54",
+      "bytes": 433169
+    },
+    {
+      "file": "solar-preview-flying-en.png",
+      "sha256": "6f980d640b4453c0acae4b37bce3d4924c11ef7e3fd32ef9b7699d6b93ed55db",
+      "bytes": 101246
+    },
+    {
+      "file": "first-solar-attempt-en.png",
+      "sha256": "2200b65deb894b3f8798ced80c80c2768213ac60c77f91041b6b43e0e1716ec4",
+      "bytes": 65027
+    },
+    {
+      "file": "release-turbine-en.png",
+      "sha256": "57e9d409c16665b82d58babf95b7b9e783ef36e70103fb451f850e52772f93ef",
+      "bytes": 340292
+    },
+    {
+      "file": "reactor-text-investigation-ru.png",
+      "sha256": "1ef8a0056abe2e89e94586d2088cb210cfd555e95180b9c0dc6111ccff98b498",
+      "bytes": 307851
+    },
+    {
+      "file": "emi-uranium-recipe-ru.png",
+      "sha256": "4a70a838ba24e6a2b4d1ec8cce8514dcbea40f3110066e4a1915bb738404ceb3",
+      "bytes": 307501
+    },
+    {
+      "file": "reactor-menu-final-ru.png",
+      "sha256": "4abd44ffb1735f36a7b1df72ba6c5077d5b4eee0611bbf25c3064814dddc0f05",
+      "bytes": 307772
+    },
+    {
+      "file": "optional-world-ru.png",
+      "sha256": "df760f186049bb5c68849d4ab4d9c77399e7b85169820e2e02b7a54b414f7ad4",
+      "bytes": 256193
+    },
+    {
+      "file": "turbine-menu-en.png",
+      "sha256": "a71a09502feff5e352636e28a9187022374d0a4293e79705b7e936c4afeab99c",
+      "bytes": 119116
+    },
+    {
+      "file": "jei-centrifuge-en.png",
+      "sha256": "d966394675288f7e5ae44e01def98bdd3f0d3dc30f07fe1c1fb4ec27fddc70af",
+      "bytes": 256007
+    },
+    {
+      "file": "battery-jade-ru.png",
+      "sha256": "85ede32e6ce250ddd8eb0d13b4f74eacae48c2ed1121ed33798c6aacc7642250",
+      "bytes": 216717
+    },
+    {
+      "file": "jei-uranium-note-final-en.png",
+      "sha256": "cfa24146a4086419e48d7c5c35736827017a0e4be1d16cac6f7aab90be4c6eb5",
+      "bytes": 179288
+    },
+    {
+      "file": "turbine-jade-ru.png",
+      "sha256": "9fab26efd5c8dd448c347d8fe3d4f96e1b3cc363408a484cc64d45ec3d6d8016",
+      "bytes": 228990
+    },
+    {
+      "file": "heat-pipe-jade-ru.png",
+      "sha256": "eeb1dee7ba13410a5c1b81e8f55c30ce5142ca14b1142de21a3b43d1695f8351",
+      "bytes": 148778
+    },
+    {
+      "file": "emi-uranium-checked-ru.png",
+      "sha256": "3c408d0437b16fce6ea07fcb0b8afcd9617091c3d6f56d8b9fd3b08d8712c018",
+      "bytes": 293769
+    },
+    {
+      "file": "jei-centrifuge-note-final-en.png",
+      "sha256": "aa43819acc834b03f19b5f9cd5b3f5b0579c97868b627d55c82561a26c1e3675",
+      "bytes": 150254
+    },
+    {
+      "file": "reactor-menu-checked-ru.png",
+      "sha256": "cace80e4e47cf0e31da669c91e45640d9d2d526590e3bc7827ff7fd2b0dd7697",
+      "bytes": 317206
+    },
+    {
+      "file": "emi-uranium-probability-final-ru.png",
+      "sha256": "6e11009ad96120fb190217766343a103e906ffc66043c3deee2d4b8f82603546",
+      "bytes": 293780
+    },
+    {
+      "file": "optional-startup-ru.png",
+      "sha256": "f041e30dedb52add10bcbafd2384e2d53a82ee5ec19664ff32b5aaf66f160f32",
+      "bytes": 20355
+    },
+    {
+      "file": "chat-debug-en.png",
+      "sha256": "c719f3bd4fa7341e22cfe4b9f6a28194722898568b70db7da991c13d740feac0",
+      "bytes": 250287
+    },
+    {
+      "file": "nuclear-physical-network-en.png",
+      "sha256": "89a337082afe0f13e1fdbba51cddb62689383d46a8cacd5be40944fc088cf7af",
+      "bytes": 287712
+    },
+    {
+      "file": "physical-heat-and-fluid-connections-en.png",
+      "sha256": "d4d44022a006f9588b0e06457cbde029d773bc1975b2f6b41e11eca3aad6c363",
+      "bytes": 297366
+    },
+    {
+      "file": "turbine-menu-final-ru.png",
+      "sha256": "7368dee2aefe343634405f3c484f1496804116015a08330790383d2d7752935a",
+      "bytes": 296700
+    },
+    {
+      "file": "exchanger-menu-final-ru.png",
+      "sha256": "a9887de10a66428155294c7e27305faf46abc5863a953443aa255456f4f80612",
+      "bytes": 265305
+    },
+    {
+      "file": "abilities-en.png",
+      "sha256": "6f980d640b4453c0acae4b37bce3d4924c11ef7e3fd32ef9b7699d6b93ed55db",
+      "bytes": 101246
+    },
+    {
+      "file": "emi-uranium-tooltip-checked-ru.png",
+      "sha256": "a4d487409aad16cf6c7ee1e88174fa1140c5803e4c2028075a34b3b3e422413f",
+      "bytes": 298013
+    },
+    {
+      "file": "solar-place-ready-en.png",
+      "sha256": "2200b65deb894b3f8798ced80c80c2768213ac60c77f91041b6b43e0e1716ec4",
+      "bytes": 65027
+    },
+    {
+      "file": "reactor-menu-en.png",
+      "sha256": "9dad1886a3d6778414ea2b7a8d3d9b0d4362b2c816ebab36e25ffedeff9ecf15",
+      "bytes": 151245
+    },
+    {
+      "file": "base-saved-title.png",
+      "sha256": "2d35a96b1b0081c3428b10e1df546ae97b90269c316b0b5d4dfb256bc903dc93",
+      "bytes": 696293
+    },
+    {
+      "file": "client-initial-en.png",
+      "sha256": "3e859317d030a42dd784038e7ec93714428d32f555dfc3f2c455bfd85d2c6427",
+      "bytes": 20916
+    },
+    {
+      "file": "jei-centrifuge-recipe-final-en.png",
+      "sha256": "f0f30a54c78d49e278cdd6534e5eb42b40993989f84097781bc5f647c7f239ef",
+      "bytes": 147057
+    },
+    {
+      "file": "heat-pipe-menu-en.png",
+      "sha256": "331a960e0968ca73a04311d43e5b81366db1b343e106052d64b11cbdd4443e24",
+      "bytes": 103871
+    },
+    {
+      "file": "jei-search-en.png",
+      "sha256": "fc45086b34860193ddd579f2f0f502d496306bbe240fa084265e279ac0ba83fe",
+      "bytes": 154963
+    },
+    {
+      "file": "solar-menu-final-ru.png",
+      "sha256": "32c26c1884c7fc7c9515b43a3feec82db18b3bb19c6384e724d0862b146405d1",
+      "bytes": 294635
+    },
+    {
+      "file": "current-placement-en.png",
+      "sha256": "2200b65deb894b3f8798ced80c80c2768213ac60c77f91041b6b43e0e1716ec4",
+      "bytes": 65027
+    },
+    {
+      "file": "reactor-jade-ru.png",
+      "sha256": "7bfe5b7e647e09ce8536788ebf7b20c223c629d6c7c6d80786a79751cfd59d66",
+      "bytes": 230414
+    },
+    {
+      "file": "jei-uranium-final-en.png",
+      "sha256": "f23e6eae822e55b125e3130231eca7856306909f521efb858bb52ffad524e59c",
+      "bytes": 176511
+    },
+    {
+      "file": "emi-uranium-tooltip-final-ru.png",
+      "sha256": "3a8dd3a6556702fd569599f7fa87797d3a6a494ada512a97c047e6f974be05e0",
+      "bytes": 298069
+    },
+    {
+      "file": "focus-en.png",
+      "sha256": "6f980d640b4453c0acae4b37bce3d4924c11ef7e3fd32ef9b7699d6b93ed55db",
+      "bytes": 101246
+    },
+    {
+      "file": "heat-pipe-menu-final-ru.png",
+      "sha256": "dfb747760f3a0024d43b2f2332faa6d768c5b87e50e3116c05804430658f2f37",
+      "bytes": 261765
+    },
+    {
+      "file": "solar-jade-ru.png",
+      "sha256": "d0024f230398e930d2d2b8a2a4508a4f006563093d5052542446745b141f96db",
+      "bytes": 208691
+    },
+    {
+      "file": "exchanger-menu-en.png",
+      "sha256": "80e7f02727d2d3021c8c0615c52ab660120e9fc110f3a83f048fe0ddf5822d80",
+      "bytes": 98057
+    },
+    {
+      "file": "solar-preview-flight2-en.png",
+      "sha256": "376c31c1585f9f5c278051ec83a7d50857bdcba97f24dcfea6ff350e550e7862",
+      "bytes": 101860
+    },
+    {
+      "file": "emi-search-uranium.png",
+      "sha256": "1a1b1e5901a031724b9d875a7f675681e60dbc8b5bafbe5500feda3339287fe1",
+      "bytes": 155172
+    },
+    {
+      "file": "emi-uranium-chance-ru.png",
+      "sha256": "22cbf1c3fffcaa8ef891133ca660f0ae528e1bcdb022895df58fa0f942f8ba2b",
+      "bytes": 305968
+    },
+    {
+      "file": "turbine-real-hot-input-en.png",
+      "sha256": "ace24ce6268ba6980376ae5809f91a2f9fa795ccc6183e7970bab45f7410b789",
+      "bytes": 140110
+    },
+    {
+      "file": "he-controller-probe.png",
+      "sha256": "8e20d7438a2781a47ca73971d1207aac37d88a9208fefb5b115e941f1e5d54f2",
+      "bytes": 249168
+    },
+    {
+      "file": "water-contact-exchanger-en.png",
+      "sha256": "00751c9235e3abcb7aaf6ca82a58cdd268159913960884ddf266c1935f1f0c7f",
+      "bytes": 138162
+    }
+  ]
+}

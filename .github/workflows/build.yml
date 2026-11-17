@@ -29,6 +29,7 @@ jobs:
         run: |
           ./gradlew build
           python tools/check_space_age_research.py
+          python tools/check_nuclear_reference.py
           mkdir -p build/combat-kernel
           javac -d build/combat-kernel src/main/java/factorycraft/simulation/combat/{ShotClock,Resistance}.java tools/CombatKernelBenchmark.java
           java -cp build/combat-kernel CombatKernelBenchmark > build/reports/combat-kernel.txt
@@ -36,7 +37,7 @@ jobs:
           javac -d build/fluid-kernel src/main/java/factorycraft/simulation/fluids/{FluidCell,FluidUnits,FluidTransport,PipelineNetwork}.java tools/FluidSegmentBenchmark.java tools/FluidTopologyProfile.java
           java -cp build/fluid-kernel FluidSegmentBenchmark > build/reports/fluid-kernel.txt
           cat build/reports/fluid-kernel.txt
-          java -cp build/fluid-kernel FluidTopologyProfile 0.28.0 > build/reports/fluid-topology.jsonl
+          java -cp build/fluid-kernel FluidTopologyProfile 0.29.0 > build/reports/fluid-topology.jsonl
           python tools/profile_resources.py > build/reports/resource-geometry.jsonl
       - name: Upload reports and artifacts
         if: always()
@@ -77,8 +78,8 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/v0280/reports/
-            run-gametest/v0280/logs/latest.log
+            run-gametest/v0290/reports/
+            run-gametest/v0290/logs/latest.log
 
   compatibility:
     name: FTB Teams, EMI, JEI and Jade compatibility
@@ -105,8 +106,8 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/v0280/reports/
-            run-gametest/v0280/logs/latest.log
+            run-gametest/v0290/reports/
+            run-gametest/v0290/logs/latest.log
 
   benchmark:
     name: Full factory benchmark and disk reload
@@ -132,7 +133,7 @@ jobs:
           name: factorycraft-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/full-v0280/reports/
+            run-benchmark/full-v0290/reports/
 
   mixed_benchmark:
     name: Mixed 3D factory, chunk unload and reload
@@ -158,7 +159,7 @@ jobs:
           name: factorycraft-mixed-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/mixed-v0280/reports/
+            run-benchmark/mixed-v0290/reports/
 
   fluid_performance:
     name: Isolated 10000-pipe server workload and restart
@@ -172,8 +173,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Real fluids and exact checkpoint
         run: |
-          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0280-ci
-          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0280-ci -PfluidMode=verify
+          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0290-ci
+          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0290-ci -PfluidMode=verify
       - name: Upload fluid evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -181,5 +182,5 @@ jobs:
           name: factorycraft-fluid-performance
           if-no-files-found: ignore
           path: |
-            run-benchmark/fluids-v0280-ci/reports/
-            run-benchmark/fluids-v0280-ci/checkpoint.json
+            run-benchmark/fluids-v0290-ci/reports/
+            run-benchmark/fluids-v0290-ci/checkpoint.json

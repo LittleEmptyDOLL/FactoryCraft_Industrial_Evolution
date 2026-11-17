@@ -114,7 +114,7 @@ public final class FactoryEmiPlugin implements EmiPlugin {
         output++;
       }
       widgets.addText(
-          Component.literal(recipe.ticks() + " t / " + recipe.energy() + " FE/t"),
+          Component.literal(recipe.ticks() + " t / " + recipe.powerLabel()),
           2,
           60,
           0xffffff,

@@ -1,0 +1,15 @@
+nodes=128 visits=127000 mean_us=1.180 p50_us=0.971 p95_us=1.082 p99_us=1.673 max_us=106.447 conserved_quanta=315200000
+nodes=128 visits=127000 mean_us=1.067 p50_us=0.851 p95_us=0.932 p99_us=1.542 max_us=82.562 conserved_quanta=315200000
+nodes=128 visits=127000 mean_us=1.008 p50_us=0.851 p95_us=1.282 p99_us=1.732 max_us=56.624 conserved_quanta=315200000
+nodes=128 visits=127000 mean_us=1.259 p50_us=0.851 p95_us=1.302 p99_us=1.683 max_us=185.814 conserved_quanta=315200000
+nodes=128 visits=127000 mean_us=1.085 p50_us=0.842 p95_us=0.952 p99_us=1.593 max_us=169.871 conserved_quanta=315200000
+nodes=1024 visits=1023000 mean_us=7.289 p50_us=6.790 p95_us=6.871 p99_us=22.413 max_us=91.856 conserved_quanta=2403400000
+nodes=1024 visits=1023000 mean_us=7.783 p50_us=6.790 p95_us=7.220 p99_us=44.295 max_us=118.805 conserved_quanta=2403400000
+nodes=1024 visits=1023000 mean_us=7.553 p50_us=6.900 p95_us=7.010 p99_us=27.781 max_us=120.838 conserved_quanta=2403400000
+nodes=1024 visits=1023000 mean_us=5.539 p50_us=4.897 p95_us=5.128 p99_us=24.896 max_us=157.603 conserved_quanta=2403400000
+nodes=1024 visits=1023000 mean_us=35.253 p50_us=4.927 p95_us=5.128 p99_us=23.795 max_us=29723.592 conserved_quanta=2403400000
+nodes=4096 visits=2048000 mean_us=40.522 p50_us=9.755 p95_us=10.225 p99_us=34.120 max_us=29740.877 conserved_quanta=9495400000
+nodes=4096 visits=2048000 mean_us=11.147 p50_us=9.775 p95_us=11.577 p99_us=57.896 max_us=154.728 conserved_quanta=9495400000
+nodes=4096 visits=2048000 mean_us=10.241 p50_us=9.744 p95_us=10.105 p99_us=27.731 max_us=65.396 conserved_quanta=9495400000
+nodes=4096 visits=2048000 mean_us=10.304 p50_us=9.835 p95_us=10.305 p99_us=27.671 max_us=81.440 conserved_quanta=9495400000
+nodes=4096 visits=2048000 mean_us=11.671 p50_us=9.874 p95_us=10.406 p99_us=58.286 max_us=732.751 conserved_quanta=9495400000

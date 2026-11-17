@@ -1,0 +1,346 @@
+{
+  "source": "https://github.com/wube/factorio-data/tree/2.1.24",
+  "variant": "Space Age enabled, normal quality; numeric data only",
+  "recipes": {
+    "solar-panel": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "steel-plate",
+          "count": 5
+        },
+        {
+          "kind": "item",
+          "name": "electronic-circuit",
+          "count": 15
+        },
+        {
+          "kind": "item",
+          "name": "copper-plate",
+          "count": 5
+        }
+      ],
+      "seconds": 10.0,
+      "result": "solar-panel",
+      "count": 1,
+      "productive": false
+    },
+    "accumulator": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "iron-plate",
+          "count": 2
+        },
+        {
+          "kind": "item",
+          "name": "battery",
+          "count": 5
+        }
+      ],
+      "seconds": 10.0,
+      "result": "accumulator",
+      "count": 1,
+      "productive": false
+    },
+    "concrete": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "stone-brick",
+          "count": 5
+        },
+        {
+          "kind": "item",
+          "name": "iron-ore",
+          "count": 1
+        },
+        {
+          "kind": "fluid",
+          "name": "water",
+          "count": 100
+        }
+      ],
+      "seconds": 10.0,
+      "result": "concrete",
+      "count": 10,
+      "productive": false
+    },
+    "centrifuge": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "concrete",
+          "count": 100
+        },
+        {
+          "kind": "item",
+          "name": "steel-plate",
+          "count": 50
+        },
+        {
+          "kind": "item",
+          "name": "advanced-circuit",
+          "count": 100
+        },
+        {
+          "kind": "item",
+          "name": "iron-gear-wheel",
+          "count": 100
+        }
+      ],
+      "seconds": 4.0,
+      "result": "centrifuge",
+      "count": 1,
+      "productive": false
+    },
+    "nuclear-reactor": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "concrete",
+          "count": 500
+        },
+        {
+          "kind": "item",
+          "name": "steel-plate",
+          "count": 500
+        },
+        {
+          "kind": "item",
+          "name": "advanced-circuit",
+          "count": 500
+        },
+        {
+          "kind": "item",
+          "name": "copper-plate",
+          "count": 500
+        }
+      ],
+      "seconds": 8.0,
+      "result": "nuclear-reactor",
+      "count": 1,
+      "productive": false
+    },
+    "heat-pipe": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "steel-plate",
+          "count": 10
+        },
+        {
+          "kind": "item",
+          "name": "copper-plate",
+          "count": 20
+        }
+      ],
+      "seconds": 1.0,
+      "result": "heat-pipe",
+      "count": 1,
+      "productive": false
+    },
+    "heat-exchanger": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "steel-plate",
+          "count": 10
+        },
+        {
+          "kind": "item",
+          "name": "copper-plate",
+          "count": 100
+        },
+        {
+          "kind": "item",
+          "name": "pipe",
+          "count": 10
+        }
+      ],
+      "seconds": 3.0,
+      "result": "heat-exchanger",
+      "count": 1,
+      "productive": false
+    },
+    "steam-turbine": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "iron-gear-wheel",
+          "count": 50
+        },
+        {
+          "kind": "item",
+          "name": "copper-plate",
+          "count": 50
+        },
+        {
+          "kind": "item",
+          "name": "pipe",
+          "count": 20
+        }
+      ],
+      "seconds": 3.0,
+      "result": "steam-turbine",
+      "count": 1,
+      "productive": false
+    },
+    "uranium-fuel-cell": {
+      "ingredients": [
+        {
+          "kind": "item",
+          "name": "iron-plate",
+          "count": 10
+        },
+        {
+          "kind": "item",
+          "name": "uranium-235",
+          "count": 1
+        },
+        {
+          "kind": "item",
+          "name": "uranium-238",
+          "count": 19
+        }
+      ],
+      "seconds": 10.0,
+      "result": "uranium-fuel-cell",
+      "count": 10,
+      "productive": true
+    }
+  },
+  "technologies": {
+    "solar-energy": {
+      "prerequisites": [
+        "steel-processing",
+        "logistic-science-pack"
+      ],
+      "unlocks": [
+        "solar-panel"
+      ],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1
+      },
+      "units": 250,
+      "seconds": 30
+    },
+    "electric-energy-accumulators": {
+      "prerequisites": [
+        "electric-energy-distribution-1",
+        "battery"
+      ],
+      "unlocks": [
+        "accumulator"
+      ],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1
+      },
+      "units": 150,
+      "seconds": 30
+    },
+    "concrete": {
+      "prerequisites": [
+        "advanced-material-processing",
+        "automation-2"
+      ],
+      "unlocks": [
+        "concrete",
+        "hazard-concrete",
+        "refined-concrete",
+        "refined-hazard-concrete",
+        "iron-stick"
+      ],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1
+      },
+      "units": 250,
+      "seconds": 30
+    },
+    "uranium-mining": {
+      "prerequisites": [
+        "chemical-science-pack",
+        "concrete"
+      ],
+      "unlocks": [],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1,
+        "chemical-science-pack": 1
+      },
+      "units": 100,
+      "seconds": 30
+    },
+    "uranium-processing": {
+      "prerequisites": [
+        "uranium-mining"
+      ],
+      "unlocks": [
+        "centrifuge",
+        "uranium-processing"
+      ],
+      "trigger": "mine:factorycraft:uranium_ore",
+      "packs": {},
+      "units": 1,
+      "seconds": 0
+    },
+    "nuclear-power": {
+      "prerequisites": [
+        "uranium-processing"
+      ],
+      "unlocks": [
+        "nuclear-reactor",
+        "heat-exchanger",
+        "heat-pipe",
+        "steam-turbine",
+        "uranium-fuel-cell"
+      ],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1,
+        "chemical-science-pack": 1
+      },
+      "units": 800,
+      "seconds": 30
+    },
+    "kovarex-enrichment-process": {
+      "prerequisites": [
+        "production-science-pack",
+        "uranium-processing",
+        "rocket-fuel"
+      ],
+      "unlocks": [
+        "kovarex-enrichment-process",
+        "nuclear-fuel"
+      ],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1,
+        "chemical-science-pack": 1,
+        "production-science-pack": 1
+      },
+      "units": 1500,
+      "seconds": 30
+    },
+    "nuclear-fuel-reprocessing": {
+      "prerequisites": [
+        "nuclear-power",
+        "production-science-pack"
+      ],
+      "unlocks": [
+        "nuclear-fuel-reprocessing"
+      ],
+      "packs": {
+        "automation-science-pack": 1,
+        "logistic-science-pack": 1,
+        "chemical-science-pack": 1,
+        "production-science-pack": 1
+      },
+      "units": 50,
+      "seconds": 30
+    }
+  }
+}

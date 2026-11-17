@@ -16,7 +16,12 @@ public final class ResourceVeinFeature extends Feature<ResourceVeinConfiguration
     var level = context.level();
     var config = context.config();
     var settings =
-        config.useWorldSettings() ? ResourceWorldgenConfig.settings() : config.settings();
+        config.useWorldSettings()
+            ? (config.state().getBlock() instanceof factorycraft.blocks.ResourceDepositBlock deposit
+                    && deposit.kind == factorycraft.resources.ResourceKind.URANIUM
+                ? ResourceWorldgenConfig.uraniumSettings()
+                : ResourceWorldgenConfig.settings())
+            : config.settings();
     int cx = context.origin().getX() >> 4, cz = context.origin().getZ() >> 4, placed = 0;
     var decorating = level.getChunk(cx, cz);
     if (ResourceTerrain.protectedStructure(decorating)) return false;

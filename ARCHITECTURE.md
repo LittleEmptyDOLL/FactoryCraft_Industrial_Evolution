@@ -1,3 +1,13 @@
+## 0.29 owned solar/nuclear systems
+
+`simulation.nuclear` contains independent exact charge/solar/heat/RNG kernels. `nuclear` adapters compose existing canonical assemblies, physical port guards, menus and persisted controller inventories. No technical part owns FE, heat, fuel, fluids or recipes. Seven new equipment profiles share layout/placement transforms and original cell-baked geometry; only centrifuge/turbine moving parts use client animation.
+
+`GridSupply` extends the existing explicit `PowerTopology`: event-coalesced demand caches, primary-source priority and tertiary storage use a single exact source debit/refund transaction. Buffers observe changes rather than scanning all consumers per tick. Storage receives one actual network membership; overlapping coverage never joins components. Native FE adapters share the controller's tick/direction quota.
+
+`HeatSimulation` indexes physical contacts, rebuilding local dirty owners only. Heat is held solely in `HeatStore`; nodes and edges contain no duplicate resource balance. Transfers have shared owner quotas and deterministic integer equalization. Reactor active-neighbor snapshots precede fuel burning. New heat/steam conversions retain exact enthalpy credit and integer-FE residues; old cold thermal checkpoints remain unchanged.
+
+`UraniumWork` holds paid ore and a saved categorical RNG decision; `ConstructionWork` holds large bills as at most 32 ordinary component-bearing stacks. Datapack identity changes pause existing paid work rather than adopting a different price. Native canonical owners/UUIDs are revalidated at every capability boundary. Direct four-color circuits and optional Jade inspect those same owners, including material escrows; no external access is widened for diagnostics.
+
 ## 0.28 turret resource transactions
 
 The flame controller separately owns a 1000-mB pass-through box and a 1000-mB private fuel buffer; physical BOTH ports expose only the former, internal atomic transfer is capped at 25 mB/t. Fuel costs 2 mB per source attack, not per source tick. Each component-bearing volume is saved once. Turret ticks defer inventory/aim notifications until magazine removal, round debit, clock and paid-shot counter are committed, avoiding observable half-transactions. Menus and optional Jade resolve the same sole owner from controllers and parts.

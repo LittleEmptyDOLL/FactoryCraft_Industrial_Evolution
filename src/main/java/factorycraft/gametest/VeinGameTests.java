@@ -60,7 +60,10 @@ public final class VeinGameTests {
               .registryOrThrow(Registries.CONFIGURED_FEATURE)
               .get(ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, kind.id));
       var config = (ResourceVeinConfiguration) feature.config();
-      var settings = ResourceWorldgenConfig.settings();
+      var settings =
+          kind == ResourceKind.URANIUM
+              ? ResourceWorldgenConfig.uraniumSettings()
+              : ResourceWorldgenConfig.settings();
       var patch =
           ResourceVeins.patch(level.getSeed(), config.salt(), 200 + index++ * 5, 200, settings);
       var chunks = plane(h, patch);

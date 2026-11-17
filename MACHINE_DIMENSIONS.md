@@ -1,3 +1,7 @@
+## 0.29 equipment (X×Z×Y)
+
+Solar 3×3×1; Accumulator 2×2×2; Centrifuge 3×3×3; Reactor 5×5×4; Heat Pipe 1×1×1; Heat Exchanger 3×2×2; Steam Turbine 3×5×3. Source footprints, Minecraft-authored heights. Controllers use center/front base cells, independently of item placement anchors. The exchanger's rear-center heat contact is distinct from its side water/front steam ports; reactor has twelve horizontal heat contacts, three per face. Heat pipes also support vertical contacts as a 3D adaptation.
+
 # Turret profiles — 0.28.0
 
 Gun and Laser: width2 × depth2 × height2. Flamethrower: width2 × depth3 × height2. All use controller local `(1,0,0)`, the existing centered placement plan, one automatic structure/item and guarded identity-only parts. Flame BOTH ports occupy local `(0,0,2)/west` and `(1,0,2)/east`; the same transforms drive physical fluid routing and visible nozzles. Heights are Minecraft adaptations; horizontal footprints follow Factorio.

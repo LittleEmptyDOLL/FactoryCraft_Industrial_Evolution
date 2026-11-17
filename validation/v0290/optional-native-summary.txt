@@ -1,0 +1,20 @@
+Calculating task graph as configuration cache cannot be reused because the set of Gradle properties has changed: the value of 'gameTestFixture' was changed and 'ftbModsDir', 'withJade', and 'withViewers' were added.
+		FTB Teams 2101.1.12 (ftbteams)
+		Jade 15.10.6+neoforge (jade)
+[16:07:03] [modloading-worker-0/INFO] [sn.ja.Jade/]: Start loading plugin from snownee.jade.addon.vanilla.VanillaPlugin
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Loaded plugin from snownee.jade.addon.vanilla.VanillaPlugin in 32.17 ms
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Start loading plugin from snownee.jade.addon.universal.UniversalPlugin
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Loaded plugin from snownee.jade.addon.universal.UniversalPlugin in 15.13 ms
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Start loading plugin from snownee.jade.addon.debug.DebugPlugin
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Loaded plugin from snownee.jade.addon.debug.DebugPlugin in 26.95 μs
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Start loading plugin from snownee.jade.addon.core.CorePlugin
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Loaded plugin from snownee.jade.addon.core.CorePlugin in 82.95 μs
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Start loading plugin from snownee.jade.addon.access.AccessibilityPlugin
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Loaded plugin from snownee.jade.addon.access.AccessibilityPlugin in 6.349 μs
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Start loading plugin from factorycraft.compatibility.jade.FactoryJadePlugin
+[16:07:04] [modloading-worker-0/INFO] [sn.ja.Jade/]: Loaded plugin from factorycraft.compatibility.jade.FactoryJadePlugin in 45.87 μs
+FACTORYCRAFT_V0290_DISK: SEEDED battery 123457q; centrifuge paid17/roll1; acid137; fuel3999; heat/hot steam exact
+FACTORYCRAFT_V0290_CHAIN: 900 real finite uranium +90000 mB acid; 90 paid categorical cycles(seed817); actual iron+U235+19U238 ->10 cells; fueled reactor ->physical heat pipe ->finite water exchanger ->500C steam ->turbine ->isolated electrical gear; bootstrap <=192 coal, no isotope/FE/hot-steam injection
+FACTORYCRAFT_V0290_HEAT_PROFILE: 128 physical pipes; conserved=39400000q; edge visits=3630; graph CPU ns=7110679
+[16:09:28] [Server thread/INFO] [minecraft/GameTestServer]: All 487 required tests passed :)
+BUILD SUCCESSFUL in 2m 42s

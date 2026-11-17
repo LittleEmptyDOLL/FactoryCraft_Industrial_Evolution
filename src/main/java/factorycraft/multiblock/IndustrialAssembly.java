@@ -114,6 +114,8 @@ public final class IndustrialAssembly {
   }
 
   public void invalidate() {
+    factorycraft.energy.PowerGrid.changed(controller);
+    factorycraft.nuclear.HeatSimulation.changed(controller);
     ready = false;
     dirty = true;
     var level = controller.getLevel();

@@ -40,7 +40,14 @@ public enum MachineProfile implements StringRepresentable {
   SELECTOR("selector_combinator", 1, 1, 2),
   GUN_TURRET("gun_turret", 2, 2, 2),
   LASER_TURRET("laser_turret", 2, 2, 2),
-  FLAME_TURRET("flamethrower_turret", 2, 2, 3);
+  FLAME_TURRET("flamethrower_turret", 2, 2, 3),
+  SOLAR_PANEL("solar_panel", 3, 1, 3),
+  ACCUMULATOR("accumulator", 2, 2, 2),
+  CENTRIFUGE("centrifuge", 3, 3, 3),
+  NUCLEAR_REACTOR("nuclear_reactor", 5, 4, 5),
+  HEAT_PIPE("heat_pipe", 1, 1, 1),
+  HEAT_EXCHANGER("heat_exchanger", 3, 2, 2),
+  STEAM_TURBINE("steam_turbine", 3, 3, 5);
   public final String id;
   public final CuboidLayout layout;
 

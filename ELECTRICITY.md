@@ -1,3 +1,13 @@
+## 0.29 solar and tertiary storage
+
+Reference: Wube 2.1.24 with Space Age, normal quality. Solar Panel occupies 3×3×1 and produces at most 60 kW (8 FE/t). Accumulator occupies 2×2×2, holds exactly 5 MJ, accepts/exports at most 300 kW (40 FE/t). Both use the same one-item assembly, physical-footprint pole coverage and explicit copper edges as existing machines.
+
+The exact internal quantum is **25 J**: one FE = 375 J = 15 quanta. Fractional solar/charge/thermal conversions remain owned and saved; integer external FE never rounds a fractional claim upward. Battery charge, tick quota and direction lease survive packing/reload. All capability and grid transactions share the lease; a battery cannot charge and discharge in one tick. A battery intersecting disconnected pole components belongs to only one current component, preventing an overlap short circuit.
+
+The cached graph maintains event-updated hungry consumers. Dispatch uses solar first, steam engines/turbines second, accumulators third; only unused primary production charges storage. A bounded incomplete demand pass conservatively defers storage. Generator buffers remain real controller-owned FE, not balances copied into poles. Levels containing only legacy engines retain their established dispatch path; with solar/storage/turbines loaded, existing engines join the priority dispatcher and share their export quota with external FE access.
+
+Solar adaptation: Factorio's 2:5:2 dawn/full/dusk proportions are fitted into Minecraft sun-up ticks 0–12000; plateau around noon, zero at night. This deliberately does not preserve Factorio's 70% full-day average on a Minecraft half-day. A single center-above-footprint sky probe refreshes every 20 ticks. Other corners are not individually shaded. No weather multiplier, ceiling/fixed-time/no-skylight dimension generation, unloaded access or time catch-up. GUI reports actual last-tick generation, not hypothetical stored solar energy.
+
 ## 0.26.1 Small Pole height
 
 Small Pole now occupies 1×1×3, original post/crossbeam/terminal geometry and copper attachment Y=2.88. One item installs all three cells; occupied third cell/build-limit rejects placement, any-part removal removes all cells. Supply remains 5×5 and wire7.5; Medium/Big/Substation and topology/energy recipes are unchanged.

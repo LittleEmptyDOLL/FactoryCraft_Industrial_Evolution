@@ -1,3 +1,7 @@
+## 0.29 centrifuge and construction
+
+Centrifuge uses two existing module slots and the common beacon effects. Source uranium processing is productive: paid fractional credit can earn another categorical isotope result, with its own committed roll. Output space is reserved for either possible isotope before payment. Fuel-cell production uses normal assembler productivity; hardware and concrete do not gain unearned productive outputs. Large hardware bills use saved ordinary-stack construction escrow and the existing machine speed/energy effects. All nine module definitions and late Space Age gates are retained.
+
 # Modules — 0.27.0
 
 Reference: **Factorio 2.1.24 with Space Age enabled, normal quality**. [Wube recipes](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/recipe.lua), [technology](https://github.com/wube/factorio-data/blob/2.1.24/base/prototypes/technology.lua), [Module](https://wiki.factorio.com/Module), [Beacon](https://wiki.factorio.com/Beacon). Space Age overrides: [pinned base-data-updates.lua](https://github.com/wube/factorio-data/blob/2.1.24/space-age/base-data-updates.lua), lines 249–263 and 669–740. Existing FactoryCraft module textures are used; no Factorio graphics/source are copied.

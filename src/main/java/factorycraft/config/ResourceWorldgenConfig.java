@@ -20,9 +20,31 @@ public final class ResourceWorldgenConfig {
       OIL_MIN_YIELD,
       OIL_MAX_YIELD;
   public static final ModConfigSpec.DoubleValue NOISE;
+  public static final ModConfigSpec.IntValue URANIUM_SPACING,
+      URANIUM_MIN_RADIUS,
+      URANIUM_MAX_RADIUS,
+      URANIUM_MIN_STOCK,
+      URANIUM_MAX_STOCK;
+
+  public static ResourceVeins.Settings uraniumSettings() {
+    return new ResourceVeins.Settings(
+        Math.min(URANIUM_MIN_RADIUS.get(), URANIUM_MAX_RADIUS.get()),
+        Math.max(URANIUM_MIN_RADIUS.get(), URANIUM_MAX_RADIUS.get()),
+        Math.min(URANIUM_MIN_STOCK.get(), URANIUM_MAX_STOCK.get()),
+        Math.max(URANIUM_MIN_STOCK.get(), URANIUM_MAX_STOCK.get()),
+        URANIUM_SPACING.get(),
+        Math.min(MIN_DEPTH.get(), MAX_DEPTH.get()),
+        Math.max(MIN_DEPTH.get(), MAX_DEPTH.get()),
+        NOISE.get());
+  }
 
   static {
     var b = new ModConfigSpec.Builder();
+    URANIUM_SPACING = b.worldRestart().defineInRange("uraniumFieldSpacingChunks", 24, 2, 32);
+    URANIUM_MIN_RADIUS = b.worldRestart().defineInRange("minUraniumRadius", 6, 4, 48);
+    URANIUM_MAX_RADIUS = b.worldRestart().defineInRange("maxUraniumRadius", 12, 4, 48);
+    URANIUM_MIN_STOCK = b.worldRestart().defineInRange("minUraniumTileStock", 500, 1, 10000000);
+    URANIUM_MAX_STOCK = b.worldRestart().defineInRange("maxUraniumTileStock", 3000, 1, 10000000);
     MIN_RADIUS = b.worldRestart().defineInRange("minVeinRadius", 8, 4, 48);
     MAX_RADIUS = b.worldRestart().defineInRange("maxVeinRadius", 20, 4, 48);
     MIN_STOCK = b.worldRestart().defineInRange("minTileStock", 500, 1, 10000000);

@@ -1,0 +1,27 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 15
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:copper_plate"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:solar_panel",
+    "count": 1
+  }
+}
