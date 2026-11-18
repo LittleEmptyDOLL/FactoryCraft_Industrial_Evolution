@@ -212,6 +212,19 @@ public final class StockPlacement {
     for (int i = 1; i < members.size(); i++)
       if (Math.abs(members.get(i - 1).coordinate - members.get(i).coordinate - 7) > .02)
         return false;
+    double front = members.getFirst().coordinate + StockSpec.HALF_LENGTH;
+    double rear = members.getLast().coordinate - StockSpec.HALF_LENGTH;
+    if (!path.contains(rear)
+        || !path.contains(front)
+        || !d.occupancy.canReserveMerged(a.id, b.id, TrackOccupancy.span(path, rear, front)))
+      return false;
+    // Mapped history must still describe every existing physical car before either owner retires.
+    var graph = RailwayData.get(d.level).graph;
+    for (var member : members) {
+      if (member.car.recovery == null) return false;
+      var pose = BogiePose.sample(path, graph, member.coordinate, false);
+      if (pose.center().distance(member.car.recovery) > .02) return false;
+    }
     d.retire(a);
     d.retire(b);
     a.path = path;
@@ -263,6 +276,12 @@ public final class StockPlacement {
   }
 
   static void remove(TrainData d, TrainData.Train t, int index) {
+    remove(d, t, index, () -> {});
+  }
+
+  private static void remove(TrainData d, TrainData.Train t, int index, Runnable transfer) {
+    if (d.train(t.id) != t) return;
+    var replacements = new ArrayList<TrainData.Train>();
     var car = t.cars.get(index);
     var before = new ArrayList<>(t.cars.subList(0, index));
     var after = new ArrayList<>(t.cars.subList(index + 1, t.cars.size()));
@@ -272,7 +291,7 @@ public final class StockPlacement {
       front.cars.addAll(before);
       front.distance = t.distance;
       d.add(front);
-      TrainWorld.views(d, front);
+      replacements.add(front);
     }
     if (!after.isEmpty()) {
       var rear =
@@ -285,8 +304,12 @@ public final class StockPlacement {
       rear.cars.addAll(after);
       rear.distance = t.distance;
       d.add(rear);
-      TrainWorld.views(d, rear);
+      replacements.add(rear);
     }
+    // All remaining cars have canonical owners before transfer/entity-join/death listeners.
+    transfer.run();
+    for (var replacement : replacements)
+      if (d.train(replacement.id) == replacement) TrainWorld.views(d, replacement);
     var entity = d.level.getEntity(car.id);
     if (entity != null) entity.discard();
   }
@@ -294,7 +317,9 @@ public final class StockPlacement {
   public static boolean damage(TrainData d, StockEntity entity, DamageSource source, float amount) {
     var t = d.owner(entity.getUUID());
     var c = d.car(entity.getUUID());
-    if (t == null || c == null || t.provisional) return false;
+    if (t == null || c == null || t.provisional || !Float.isFinite(amount) || amount <= 0)
+      return false;
+    if (!TrainPorts.canonicalView(entity)) return false;
     if (source.getEntity() instanceof ServerPlayer p && !TrainWorld.mayUse(t, p)) return false;
     var kind = factorycraft.combat.ArmorAttributes.classify(source);
     double flat = 0, percent = 0;
@@ -321,14 +346,27 @@ public final class StockPlacement {
     double damage =
         factorycraft.simulation.combat.Resistance.apply(
             amount / factorycraft.combat.Combat.HP_SCALE, flat, percent);
-    c.health = Math.max(0, c.health - damage);
+    return hurt(d, c.id, damage);
+  }
+
+  /** Exact canonical owner check also makes repeated/stale death callbacks harmless. */
+  public static boolean hurt(TrainData d, UUID carId, double sourceDamage) {
+    var t = d.owner(carId);
+    var c = d.car(carId);
+    if (t == null
+        || c == null
+        || t.provisional
+        || !Double.isFinite(sourceDamage)
+        || sourceDamage <= 0) return false;
+    c.health = Math.max(0, c.health - sourceDamage);
     d.setDirty();
     if (c.health == 0) {
       var item = c.portable(d.level.registryAccess());
-      var at = entity.position();
-      remove(d, t, t.cars.indexOf(c));
-      d.level.addFreshEntity(
-          new net.minecraft.world.entity.item.ItemEntity(d.level, at.x, at.y, at.z, item));
+      var view = d.level.getEntity(carId);
+      var at =
+          view != null ? view.position() : c.recovery == null ? null : TrainWorld.vec(c.recovery);
+      if (at == null) return false;
+      remove(d, t, t.cars.indexOf(c), () -> d.wreck(item, at));
     } else TrainWorld.views(d, t);
     return true;
   }

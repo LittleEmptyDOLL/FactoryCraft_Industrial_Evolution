@@ -1,0 +1,42 @@
+{
+  "note": "JFR sampled weights; whole recording including setup, not exact per-stage allocation counters. Original server.jfr retained.",
+  "classes": {
+    "factorycraft/simulation/rail/RailVector": 26182052176,
+    "[I": 2224959704,
+    "[Lfactorycraft/simulation/rail/RailVector;": 1948659800,
+    "net/minecraft/core/BlockPos": 1131455832,
+    "[Ljava/lang/Object;": 948226960,
+    "[J": 720527384,
+    "[B": 615508928,
+    "net/minecraft/nbt/DoubleTag": 354724440,
+    "net/minecraft/util/thread/StrictQueue$IntRunnable": 350840000,
+    "java/util/HashMap$Node": 291191824,
+    "[Ljava/util/HashMap$Node;": 275827112,
+    "net.minecraft.world.level.Level$$Lambda/0x00007f8d2101c2f0": 191668712,
+    "factorycraft/simulation/rail/RailCurve$Frame": 169220640,
+    "com/mojang/serialization/DataResult$Success": 146829656,
+    "net/minecraft/world/phys/AABB": 113028984
+  },
+  "sites": {
+    "factorycraft/simulation/rail/RailVector.cross": 19192363696,
+    "factorycraft/simulation/trains/StockEnvelope.intersects": 7963664128,
+    "factorycraft/trains/TrainWorld.contact": 1902166488,
+    "factorycraft/simulation/rail/RailVector.scale": 611162648,
+    "factorycraft/rail/RailCodec.faces": 382770008,
+    "factorycraft/simulation/rail/RailCurve.sample": 174457608,
+    "factorycraft/simulation/rail/RailMesh.cut": 138575016,
+    "factorycraft/simulation/rail/RailCurve.point": 122789944,
+    "factorycraft/simulation/rail/RailVector.add": 118892360,
+    "factorycraft/trains/TrainWorld.box": 110984240,
+    "factorycraft/simulation/rail/RailFootprint.<init>": 87617648,
+    "factorycraft/simulation/rail/RailVector.subtract": 77542368,
+    "factorycraft/trains/TrainData.index": 54738744,
+    "factorycraft/simulation/trains/SpatialReservations.cells": 53359040,
+    "factorycraft/simulation/rail/RailMesh.clip": 52893768,
+    "factorycraft/trains/TrainEvents.tickets": 40414336,
+    "factorycraft/simulation/trains/SpatialReservations.reserve": 27232272,
+    "factorycraft/rail/RailwayData.pos": 18390776,
+    "factorycraft/simulation/rail/RailCurve.derivative": 15907424,
+    "factorycraft/diagnostics/TrainServerBenchmark$Session.drive": 12568632
+  }
+}

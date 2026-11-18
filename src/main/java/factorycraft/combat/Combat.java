@@ -66,7 +66,26 @@ public final class Combat {
     return true;
   }
 
-  public static boolean sight(ServerLevel l, Vec3 a, LivingEntity target) {
+  /** Rolling stock uses the same loaded, canonical and ownership guards as its interaction. */
+  public static boolean allowed(
+      ServerLevel l, Entity target, Entity owner, String scope, boolean automatic) {
+    if (target instanceof LivingEntity living) return allowed(l, living, owner, scope, automatic);
+    if (!(target instanceof factorycraft.trains.StockEntity stock)
+        || stock.isRemoved()
+        || automatic
+        || !l.hasChunkAt(stock.blockPosition())) return false;
+    var data = factorycraft.trains.TrainData.get(l);
+    var train = data.owner(stock.getUUID());
+    return train != null
+        && !train.provisional
+        && data.car(stock.getUUID()) != null
+        && factorycraft.trains.TrainPorts.canonicalView(stock)
+        && (owner == null
+            ? scope.isEmpty() || train.scope.equals(scope)
+            : owner instanceof ServerPlayer p && factorycraft.trains.TrainWorld.mayUse(train, p));
+  }
+
+  public static boolean sight(ServerLevel l, Vec3 a, Entity target) {
     Vec3 end = target.getBoundingBox().getCenter();
     return loadedRay(l, a, end)
         && l.clip(
@@ -78,7 +97,7 @@ public final class Combat {
 
   public static void damage(
       ServerLevel l,
-      LivingEntity target,
+      Entity target,
       Entity direct,
       Entity owner,
       String scope,
@@ -99,7 +118,7 @@ public final class Combat {
 
   public static void damageAt(
       ServerLevel l,
-      LivingEntity target,
+      Entity target,
       Entity direct,
       Entity owner,
       String scope,
@@ -161,12 +180,11 @@ public final class Combat {
                   net.minecraft.world.phys.shapes.CollisionContext.empty()));
       end = block.getLocation();
       double best = from.distanceToSqr(end);
-      LivingEntity hit = null;
+      Entity hit = null;
       Vec3 impact = end;
       var area = new AABB(from, end).inflate(.25);
       for (var e :
-          l.getEntitiesOfClass(
-              LivingEntity.class, area, e -> allowed(l, e, owner, scope, automatic))) {
+          l.getEntities((Entity) null, area, e -> allowed(l, e, owner, scope, automatic))) {
         var point = e.getBoundingBox().inflate(.05).clip(from, end);
         if (point.isPresent() && from.distanceToSqr(point.get()) < best) {
           best = from.distanceToSqr(point.get());

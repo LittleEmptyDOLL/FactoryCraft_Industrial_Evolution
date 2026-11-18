@@ -72,6 +72,59 @@ public final class TrainData extends SavedData {
   final Set<Long> pendingChunks = new LinkedHashSet<>();
   public final TrackOccupancy occupancy = new TrackOccupancy();
   public final SpatialReservations spatial = new SpatialReservations();
+
+  private record Wreck(
+      UUID id, net.minecraft.world.item.ItemStack item, net.minecraft.world.phys.Vec3 at) {}
+
+  private final LinkedHashMap<UUID, Wreck> wrecks = new LinkedHashMap<>();
+  private final Set<UUID> spawningWrecks = new HashSet<>();
+  private final ArrayDeque<UUID> wreckQueue = new ArrayDeque<>();
+
+  /** Retired stock transfers to a persistent recovery claim before native spawn callbacks. */
+  void wreck(net.minecraft.world.item.ItemStack item, net.minecraft.world.phys.Vec3 at) {
+    var id = UUID.randomUUID();
+    wrecks.put(id, new Wreck(id, item, at));
+    wreckQueue.addLast(id);
+    setDirty();
+    flushWrecks();
+  }
+
+  public int pendingWrecks() {
+    return wrecks.size();
+  }
+
+  private void flushWrecks() {
+    if (wrecks.isEmpty()) return;
+    int work = Math.min(8, wreckQueue.size());
+    while (work-- > 0) {
+      var id = wreckQueue.pollFirst();
+      var w = wrecks.get(id);
+      if (w == null) continue;
+      if (!spawningWrecks.add(w.id)) {
+        wreckQueue.addLast(id);
+        continue;
+      }
+      try {
+        var p = BlockPos.containing(w.at);
+        if (!level.hasChunkAt(p)
+            || !level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(p))) continue;
+        var old = level.getEntity(w.id);
+        if (old != null) continue; // UUID collision: never take an unrelated entity's resources.
+        var drop =
+            new net.minecraft.world.entity.item.ItemEntity(
+                level, w.at.x, w.at.y, w.at.z, w.item.copy());
+        drop.setUUID(w.id);
+        if (level.addFreshEntity(drop)) {
+          wrecks.remove(w.id);
+          setDirty();
+        }
+      } finally {
+        spawningWrecks.remove(w.id);
+        if (wrecks.containsKey(w.id)) wreckQueue.addLast(w.id);
+      }
+    }
+  }
+
   ServerLevel level;
   public long ticks, worldReads, snapshots, availabilityEpoch, simulationNs, maxTickNs;
 
@@ -218,6 +271,7 @@ public final class TrainData extends SavedData {
   public void tick() {
     ensureIndex();
     if (!level.tickRateManager().runsNormally()) return;
+    flushWrecks();
     int checks = 0;
     for (var it = pendingChunks.iterator(); it.hasNext() && checks++ < 64; ) {
       long key = it.next();
@@ -287,6 +341,20 @@ public final class TrainData extends SavedData {
         throw new IllegalArgumentException("Overlapping saved train owners");
       d.active.add(t.id);
     }
+    for (var raw : n.getList("Wrecks", Tag.TAG_COMPOUND)) {
+      var x = (CompoundTag) raw;
+      var item = net.minecraft.world.item.ItemStack.parseOptional(r, x.getCompound("Item"));
+      var at =
+          new net.minecraft.world.phys.Vec3(x.getDouble("X"), x.getDouble("Y"), x.getDouble("Z"));
+      var id = x.getUUID("Id");
+      if (item.isEmpty()
+          || item.getCount() != 1
+          || !Double.isFinite(at.x + at.y + at.z)
+          || d.byCar.containsKey(id)
+          || d.wrecks.putIfAbsent(id, new Wreck(id, item, at)) != null)
+        throw new IllegalArgumentException("Wreck owner");
+      d.wreckQueue.addLast(id);
+    }
     d.setDirty(false);
     return d;
   }
@@ -329,6 +397,17 @@ public final class TrainData extends SavedData {
       list.add(tag);
     }
     n.put("Trains", list);
+    var recoveries = new ListTag();
+    for (var w : wrecks.values()) {
+      var x = new CompoundTag();
+      x.putUUID("Id", w.id);
+      x.put("Item", w.item.save(r));
+      x.putDouble("X", w.at.x);
+      x.putDouble("Y", w.at.y);
+      x.putDouble("Z", w.at.z);
+      recoveries.add(x);
+    }
+    n.put("Wrecks", recoveries);
     return n;
   }
 }

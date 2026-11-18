@@ -222,8 +222,8 @@ public final class FlameSimulation {
     end = block.getLocation();
     double distance = from.distanceToSqr(end);
     for (var e :
-        l.getEntitiesOfClass(
-            LivingEntity.class,
+        l.getEntities(
+            (Entity) null,
             new AABB(from, end).inflate(.25),
             e -> Combat.allowed(l, e, owner, scope, automatic))) {
       var hit = e.getBoundingBox().clip(from, end);
@@ -269,8 +269,8 @@ public final class FlameSimulation {
     var source = owner(l, f.owner);
     double scale = f.damage / (f.automatic ? 3 : 2);
     for (var e :
-        l.getEntitiesOfClass(
-            LivingEntity.class,
+        l.getEntities(
+            (Entity) null,
             new AABB(at, at).inflate(2.5),
             e -> Combat.allowed(l, e, source, f.scope, f.automatic)))
       if (e.getBoundingBox().getCenter().distanceToSqr(at) <= 2.5 * 2.5 && Combat.sight(l, at, e)) {
@@ -332,30 +332,39 @@ public final class FlameSimulation {
         changed = true;
         continue;
       }
-      if (!(entity instanceof LivingEntity living)) continue;
+      if (!(entity instanceof LivingEntity) && !(entity instanceof factorycraft.trains.StockEntity))
+        continue;
+      if (entity instanceof factorycraft.trains.StockEntity stock
+          && !factorycraft.trains.TrainPorts.canonicalView(stock)) continue;
       var source = owner(l, b.owner);
-      if (!Combat.allowed(l, living, source, b.scope, b.automatic)) {
-        var speed = living.getAttribute(Attributes.MOVEMENT_SPEED);
+      if (!Combat.allowed(l, entity, source, b.scope, b.automatic)) {
+        var speed =
+            entity instanceof LivingEntity living
+                ? living.getAttribute(Attributes.MOVEMENT_SPEED)
+                : null;
         if (speed != null) speed.removeModifier(SLOW);
         it.remove();
         changed = true;
         continue;
       }
-      var speed = living.getAttribute(Attributes.MOVEMENT_SPEED);
+      var speed =
+          entity instanceof LivingEntity living
+              ? living.getAttribute(Attributes.MOVEMENT_SPEED)
+              : null;
       if (speed != null && !speed.hasModifier(SLOW))
         speed.addTransientModifier(
             new AttributeModifier(SLOW, -.2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
       if (tick * 3 >= b.next) {
         Combat.damageAt(
             l,
-            living,
+            entity,
             null,
             source,
             b.scope,
             "fire",
             100.0 / 6 * b.scale,
             b.automatic,
-            living.position());
+            entity.position());
         b.next = (tick * 3 - b.next < 3 ? b.next : tick * 3) + 10;
         changed = true;
       }
@@ -374,8 +383,8 @@ public final class FlameSimulation {
       if (tick % 4 == 0) {
         var source = owner(l, p.owner);
         for (var e :
-            l.getEntitiesOfClass(
-                LivingEntity.class,
+            l.getEntities(
+                (Entity) null,
                 new AABB(p.pos, p.pos).inflate(.8),
                 e -> Combat.allowed(l, e, source, p.scope, p.automatic)))
           if (Combat.sight(l, p.pos, e))

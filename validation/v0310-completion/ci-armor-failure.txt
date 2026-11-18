@@ -1,0 +1,8 @@
+Original hosted run: https://github.com/LittleEmptyDOLL/FactoryCraft_Industrial_Evolution/actions/runs/44319899912
+Commit: 2b4a152b0cb461d1a0eca2f542145728b3a0706c
+Native job134855753695:
+2026-11-18T14:03:16.1970305Z sourcearmorresistsphysicalbutnotlaserdamage failed: source physical flat6/30% resistance; actual=18.74 fire=157 nativeArmor=0
+Optional job134855754149:
+2026-11-18T14:03:39.1499779Z sourcearmorresistsphysicalbutnotlaserdamage failed: source physical flat6/30% resistance; actual=18.74 fire=158 nativeArmor=0
+Both runs:539 tests; exactly this one required failure. Build/JUnit, full factory/restart, MIXED/restart and10000pipe/restart jobs succeeded.
+Cause: daylight ignited the uncovered zombie in the four-tick equipment synchronization wait. The extra0.7HP was unrelated fire damage, before the expected0.56HP physical hit. Fix: non-damageable carved-pumpkin head covering, which adds no armor. Assert intact20HP/not burning/nativeArmor0 before the same exact19.44/17.44 controlled-hit checks. No armor mechanics or expectations weakened.

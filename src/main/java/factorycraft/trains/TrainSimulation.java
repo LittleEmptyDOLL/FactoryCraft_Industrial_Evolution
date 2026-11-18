@@ -123,6 +123,16 @@ public final class TrainSimulation {
         return;
       }
     }
+    // A cached lookahead may have been deleted or unloaded after the current body was
+    // checked. Never sample missing bogie geometry or pay movement into an unknown edge.
+    var route = TrainWorld.routeStatus(d, t, Math.min(t.rear(), min), Math.max(t.front(), max));
+    if (!route.equals("ready")) {
+      t.status = route.equals("unloaded") ? TrainData.Status.UNLOADED : TrainData.Status.BLOCKED;
+      if (route.equals("track")) t.speed = 0;
+      d.setDirty();
+      TrainWorld.views(d, t);
+      return;
+    }
     var wanted = TrackOccupancy.span(t.path, Math.min(t.rear(), min), Math.max(t.front(), max));
     var spatial = TrainWorld.sweep(d, t, t.head, target);
     if (!d.occupancy.canReserve(t.id, wanted) || !d.spatial.canReserve(t.id, spatial)) {
@@ -132,12 +142,35 @@ public final class TrainSimulation {
       d.setDirty();
       return;
     }
-    String reason = TrainWorld.inspect(d, t, t.head, target, null);
-    if (!reason.equals("ready")) {
-      t.status = reason.equals("unloaded") ? TrainData.Status.UNLOADED : TrainData.Status.BLOCKED;
-      if (!reason.equals("unloaded")) t.speed = 0;
+    var contact = TrainWorld.contact(d, t, t.head, target, null);
+    if (!contact.reason().equals("ready")) {
+      t.status =
+          contact.reason().equals("unloaded")
+              ? TrainData.Status.UNLOADED
+              : TrainData.Status.BLOCKED;
+      if (contact.reason().equals("unloaded") || contact.reason().equals("track")) {
+        if (contact.reason().equals("track")) t.speed = 0;
+        // Unknown chunks cannot consume fuel or kinetic state, or damage an unseen target.
+        TrainWorld.views(d, t);
+        return;
+      }
+      // An unexpected obstacle inside braking distance absorbs paid movement. Commit the
+      // last clear pose and sole resource owners before any hurt/death/entity-join callbacks.
+      d.occupancy.reserve(t.id, wanted);
+      d.spatial.reserve(t.id, spatial);
+      for (var debit : pay) debit.commit();
+      double travelled = delta * contact.fraction();
+      t.head += travelled;
+      t.distance += travelled;
+      t.speed = 0;
+      d.occupancy.reserve(t.id, TrackOccupancy.span(t.path, t.rear(), t.front()));
+      d.index(t);
       d.setDirty();
       TrainWorld.views(d, t);
+      if (contact.car() >= 0
+          && next.distance() > 0
+          && (contact.block() != null || contact.entity() != null))
+        TrainDamage.impact(d, t, contact, weight, next.speed(), driver);
       return;
     }
     // No world callback occurs between the full reservation, fuel ownership and pose commit.

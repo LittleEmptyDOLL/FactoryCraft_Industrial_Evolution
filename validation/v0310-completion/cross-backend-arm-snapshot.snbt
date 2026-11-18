@@ -1,0 +1,53 @@
+{
+  ResearchScope: "player:a5f5d9fc-b951-37fe-899c-c73a530b1ba9", 
+  Phase: 3, 
+  ForcedDrop: 0b, 
+  Schema: 3, 
+  Enabled: 0b, 
+  GatherUnits: 0, 
+  DropCredit: 0b, 
+  Hand: {
+    Size: 1, 
+    Items: [
+      {
+        count: 1, 
+        Slot: 0, 
+        components: {
+          "minecraft:custom_data": {
+            grade: 17
+          }
+        }, 
+        id: "minecraft:diamond"
+      }
+    ]
+  }, 
+  HandLimit: 1, 
+  FuelEnergy: 1237L, 
+  Filters: ["minecraft:diamond", "minecraft:emerald", "missing:retained", "minecraft:coal", "minecraft:iron_ingot"], 
+  Energy: 731, 
+  PhaseTick: 59138L, 
+  keepPacked: 0b, 
+  Fuel: {
+    Size: 2, 
+    Items: [
+      {
+        count: 3, 
+        Slot: 0, 
+        components: {
+          "minecraft:custom_data": {
+            grade: 19
+          }
+        }, 
+        id: "minecraft:coal"
+      }
+    ]
+  }, 
+  x: 21015, 
+  Stage: 2, 
+  y: 70, 
+  z: 21015, 
+  Reflected: 1b, 
+  Blacklist: 1b, 
+  id: "factorycraft:inserter", 
+  EnergyRemainder: 5
+}

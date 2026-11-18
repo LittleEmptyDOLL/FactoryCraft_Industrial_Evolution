@@ -1,3 +1,19 @@
+# 0.31 continuation — issue13 collision/safety/CI follow-up
+
+Local packaged build: **302JUnit**, zero failures/errors/skips. Native checks: **548base required passes**, then **549fresh optional passes** and **550optional required passes in a separate JVM on the same optional world**. All539previous cases and thirty finite chains remain. The final merge preflight is additionally guarded by pure ownership tests; hosted CI repeats native coupling on the published tree. Exact commands, revision boundaries and retained failures: [validation/v0310-completion](validation/v0310-completion).
+
+The original hosted armor failure was unrelated sunlight damage (`actual18.74`, `fire157/158`, `nativeArmor0`). The fixture now prevents ignition without adding armor, asserts20initial HP and retains exact19.44physical/17.44laser expectations. No armor gameplay changes or weakened assertions.
+
+New native checks cover moving head-on/fork conflicts, historical rear bogies after a turnout change, a32-car push-pull owner, stopped and moving resources, stale/duplicate damage targets, wall/mob impacts, one filled wreck and cancelled-spawn retry, manual hitscan/flame stock damage, and deleted cached lookahead without a crash/fuel debit. Pure tests include source impact budgets, randomized SAT equivalence, allocation counts, repeated loop occupation and non-destructive rejected merge claims.
+
+Actual server profile:8trains/148cars, including64cars,6144blocks of track, finite216coal/2542named items/4814823mB fluids. Both directions, natural chunk unload/reload, exact ledgers and three independent-JVM checkpoint comparisons pass. Stable whole-tick mean34.413→22.980–23.128ms; p9566.822→52.889–53.915ms; exact allocation24.547→3.112–3.119decimalGB/400ticks. These are measured headless-server windows, not a universal TPS/client performance certification; full phases and limitations are in BENCHMARKS.md.
+
+A deliberately attempted base→FTB-backend restart passed548/549 but failed the old inserter research-scope expectation. Persisted `player:`scope, energy731, fuel1237, stage2/phase3, typed hand and all9research levels were retained. Existing ResearchTeams intentionally rejects that scope when FTB is enabled; no automatic cross-backend migration is implemented. The failed world/logs are preserved, not reset or rebound. Fresh optional first/reload runs use FTB consistently and pass all cases.
+
+No new renderer/UI/payload layout was introduced in this continuation; previous actual EN/RU/two-client evidence is retained. No additional client visual pass is claimed. Source collision solving remains the documented bounded3D adaptation; high-speed native positional interpolation, full multi-wagon visual combinations, source rail templates/diamonds and wreck repair remain explicit limits. No0.32 work. Required hosted CI is followed to completion for this user request; its exact commit/run status is reported at publication.
+
+---
+
 # 0.30.1 — consolidated combat / armor / uranium / rail fixes (issue #12)
 
 Final packaged build: **285 JUnit**, zero failures/errors/skips. Complete native suites: **524 required passes without optional mods**, **524 in a second JVM on the same world**, and **524 with FTB Teams /EMI /JEI /Jade /Apothic Attributes /Placebo**. All504 prior cases, PR#11's armor case, thirty finite production chains and V0270–V0300 checkpoints remain mandatory. Nineteen new native cases cover paid multi-target turrets, physical damage origins, grenades/collisions/fuse/unloaded paths, generic armor/mappings/components, uranium acid/reserve and real rail interactions/ghost ownership. Reentrant damage-triggered packing retains exactly one fully billed laser owner.

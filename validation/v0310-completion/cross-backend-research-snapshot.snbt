@@ -1,0 +1,16 @@
+{
+  Levels: {
+    "factorycraft:transport_belt_capacity_1": 1, 
+    "factorycraft:transport_belt_capacity_2": 1, 
+    "factorycraft:inserter_capacity_bonus_5": 1, 
+    "factorycraft:inserter_capacity_bonus_4": 1, 
+    "factorycraft:inserter_capacity_bonus_7": 1, 
+    "factorycraft:inserter_capacity_bonus_6": 1, 
+    "factorycraft:inserter_capacity_bonus_1": 1, 
+    "factorycraft:inserter_capacity_bonus_3": 1, 
+    "factorycraft:inserter_capacity_bonus_2": 1
+  }, 
+  Progress: {}, 
+  Team: "player:a5f5d9fc-b951-37fe-899c-c73a530b1ba9", 
+  Selected: ""
+}

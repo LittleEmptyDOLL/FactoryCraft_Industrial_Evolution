@@ -1,3 +1,14 @@
+# 0.31.0 continuation — collisions, safety and real-server validation
+
+* Fix the CI armor target's daylight ignition with a non-armored head covering; retain exact physical/laser resistance assertions and check the undamaged fixture first.
+* Add last-clear-pose impacts, bounded source-scaled damage/attribution, canonical manual weapon/flame targets, atomic reassignment of surviving cars and persistent recovery when a wreck spawn is cancelled.
+* Add moving head-on/fork/turnout,32-car push-pull, cancelled-wreck and damage regressions; retain every old native/finite-chain case.
+* Remove per-voxel SAT axis allocations and packed-position deduplication overhead, with differential/allocation regression guards.
+* Add an isolated real-server8-train/148-car/6144-block workload,64-car consist, finite ledgers, natural chunk unload and separate-JVM checkpoint verification; run it as an additional CI job. Exact measurements/results are in validation/v0310-completion.
+* Keep the documented foundation/visual/repair limits and all previous diagnostic evidence. No signals/stops/schedules/0.32 work.
+
+---
+
 # 0.31.0 — rolling-stock working subset (issue #13)
 
 * Real source-billed locomotive,40-slot cargo wagon and500000mB tanker with original distinct3D bodies/trucks/wheels/couplers/cab, procedural engine audio and EN/RU menus.

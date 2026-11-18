@@ -16,6 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
+## Active continuation — finish issue #13
+
+* Latest user explicitly requests green GitHub Actions: investigate concrete failures and wait for all required jobs after publication. This overrides the default query-once publishing budget for this continuation.
+* Fix the demonstrated sunlight contamination of the armor fixture without weakening resistance assertions. Complete bounded train impacts/damage, moving conflict/junction/long-consist/chunk tests, and a real Minecraft multi-train workload with separate-JVM resource ledgers. Preserve all539 registered native cases,297JUnit, thirty finite chains, prior failed worlds and all archives. No signals/stations/0.32.
+* New diagnostic paths use `v0310-completion` suffixes. Never overwrite or refill earlier worlds. Production movement never forces chunks; benchmark-only tickets remain explicit. Collision callbacks must see fully committed canonical ownership and cannot duplicate wrecks/cargo/fuel/fluids.
+
+* Continuation checkpoint:302JUnit;548base native,549fresh optional and550optional separate-JVM native passes, including the original539 and thirty finite chains. Last merge preflight has targeted pure guards and is repeated by hosted native CI. Actual8-train/148-car/6144-block workload (max64cars), all8reverse, natural chunk unload/reload and exact independent-JVM records pass. Keep raw before/two-after reports and all failed fixtures; cross research-backend switching is intentionally fail-closed, never silently rebind it to make a test pass. See validation/v0310-completion. No new client visual pass or full source collision/rail-template parity is claimed. No0.32.
+
 ## Active milestone — 0.31.0 / issue #13
 
 * Start from validated0.30.1 (49a1adc; hosted CI44270538504 succeeded). Implement source-proportioned locomotive/cargo/fluid stock, canonical train ownership, paid manual movement and guarded stopped transfer. Preserve0.30.1 builder UX, 285JUnit/524native/thirty finite chains, all checkpoints/worlds, three lifts/four circuit colors.

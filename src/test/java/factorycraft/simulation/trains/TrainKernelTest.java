@@ -201,4 +201,152 @@ class TrainKernelTest {
     assertTrue(
         TrainMotion.stoppingDistance(1, 4000, 13) > TrainMotion.stoppingDistance(1, 2000, 13));
   }
+
+  @Test
+  void impactsHaveFiniteKineticBudgetsAndSourceEnergyPerHp() {
+    var wall = TrainImpact.damage(2000, 1, StockSpec.LOCOMOTIVE, false);
+    assertEquals(200, wall.vehicle());
+    assertEquals(0, wall.obstacle());
+    var mob = TrainImpact.damage(2000, 1, StockSpec.CARGO, true);
+    assertEquals(wall.vehicle(), mob.vehicle() + mob.obstacle());
+    assertEquals(100, mob.obstacle());
+    assertEquals(1000.0 / 6, TrainImpact.damage(2000, 1, StockSpec.FLUID, false).vehicle());
+    assertEquals(0, TrainImpact.damage(6000, 0, StockSpec.LOCOMOTIVE, true).vehicle());
+    assertEquals(800, TrainImpact.damage(8000, 1, StockSpec.LOCOMOTIVE, false).vehicle());
+    assertThrows(
+        IllegalArgumentException.class, () -> TrainImpact.damage(0, 1, StockSpec.CARGO, true));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> TrainImpact.damage(2000, Double.NaN, StockSpec.CARGO, true));
+  }
+
+  @Test
+  void allocationFreeSatMatchesIndependentVectorReferenceForRotatedAndPitchedBodies() {
+    var random = new java.util.Random(310);
+    for (int i = 0; i < 10000; i++) {
+      double yaw = random.nextDouble() * Math.PI * 2, pitch = (random.nextDouble() - .5) * .5;
+      var f =
+          new RailVector(
+              Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch));
+      var side = new RailVector(-f.z(), 0, f.x()).unit();
+      var up = side.cross(f).unit();
+      var center =
+          new RailVector(random.nextDouble() * 4, random.nextDouble() * 4, random.nextDouble() * 4);
+      var env = new StockEnvelope(center, side, up, f);
+      double x = random.nextDouble() * 12 - 4,
+          y = random.nextDouble() * 12 - 4,
+          z = random.nextDouble() * 12 - 4;
+      var delta = new RailVector(x + .5, y + .5, z + .5).subtract(center);
+      var a =
+          new RailVector[] {
+            side, up, f, new RailVector(1, 0, 0), new RailVector(0, 1, 0), new RailVector(0, 0, 1)
+          };
+      var axes = new java.util.ArrayList<RailVector>(java.util.List.of(a));
+      for (int j = 0; j < 3; j++) for (int k = 3; k < 6; k++) axes.add(a[j].cross(a[k]));
+      boolean reference = true;
+      for (var axis : axes) {
+        if (axis.dot(axis) < 1e-16) continue;
+        double radius =
+            1.5 * Math.abs(axis.dot(side))
+                + 2 * Math.abs(axis.dot(up))
+                + 3.5 * Math.abs(axis.dot(f));
+        double box = .5 * (Math.abs(axis.x()) + Math.abs(axis.y()) + Math.abs(axis.z()));
+        if (Math.abs(delta.dot(axis)) > radius + box - 1e-8) {
+          reference = false;
+          break;
+        }
+      }
+      assertEquals(reference, env.intersects(x, y, z, x + 1, y + 1, z + 1), "SAT fixture " + i);
+    }
+  }
+
+  @Test
+  void sweptVoxelSatDoesNotAllocatePerQueryAfterWarmup() {
+    var bean =
+        (com.sun.management.ThreadMXBean) java.lang.management.ManagementFactory.getThreadMXBean();
+    org.junit.jupiter.api.Assumptions.assumeTrue(bean.isThreadAllocatedMemorySupported());
+    bean.setThreadAllocatedMemoryEnabled(true);
+    var env =
+        new StockEnvelope(
+            new RailVector(0, 2, 0),
+            new RailVector(1, 0, 0),
+            new RailVector(0, 1, 0),
+            new RailVector(0, 0, -1));
+    int hits = 0;
+    for (int i = 0; i < 20000; i++) {
+      double x = (i & 15) - 8;
+      if (env.intersects(x, 1, -.5, x + 1, 2, .5)) hits++;
+    }
+    long thread = Thread.currentThread().threadId(), before = bean.getThreadAllocatedBytes(thread);
+    for (int i = 0; i < 100000; i++) {
+      double x = (i & 15) - 8;
+      if (env.intersects(x, 1, -.5, x + 1, 2, .5)) hits++;
+    }
+    long bytes = bean.getThreadAllocatedBytes(thread) - before;
+    assertTrue(hits > 0 && hits < 120000);
+    assertTrue(bytes < 32768, "SAT allocated per-voxel objects: " + bytes);
+  }
+
+  @Test
+  void repeatedLoopTraversalPreservesBogieHistoryAndRejectsAnOverlongSelfOverlap() {
+    var graph = new RailGraph();
+    var ids = new java.util.ArrayList<UUID>();
+    var ends =
+        java.util.List.of(
+            new RailEnd(0, 70, 0, new RailHeading(0)),
+            new RailEnd(24, 70, -24, new RailHeading(4)),
+            new RailEnd(48, 70, 0, new RailHeading(8)),
+            new RailEnd(24, 70, 24, new RailHeading(12)),
+            new RailEnd(0, 70, 0, new RailHeading(0)));
+    for (int i = 0; i < 4; i++) {
+      var id = UUID.randomUUID();
+      ids.add(id);
+      graph.add(new RailGraph.Edge(id, RailCurve.plan(ends.get(i), ends.get(i + 1))));
+    }
+    var path = new TrainPath(graph, new RailGraph.Directed(ids.getFirst(), false));
+    var claims = new TrackOccupancy();
+    var train = UUID.randomUUID();
+    double head = 30;
+    for (int i = 0; i < 500; i++) {
+      head += .75;
+      while (path.max() < head + 3.5) assertTrue(path.extend(graph, true, 0));
+      assertTrue(claims.reserve(train, TrackOccupancy.span(path, head - 24.5, head + 3.5)));
+      for (int c = 0; c < 4; c++) {
+        var pose = BogiePose.sample(path, graph, head - c * 7, false);
+        assertTrue(pose.front().position().distance(pose.rear().position()) > 3.9);
+      }
+      path.trim(head - 24.5, head + 3.5);
+    }
+    var full = new TrainPath(graph, new RailGraph.Directed(ids.getFirst(), false));
+    for (int i = 0; i < 5; i++) assertTrue(full.extend(graph, true, 0));
+    assertFalse(
+        claims.canReserve(train, TrackOccupancy.span(full, 0, full.max())),
+        "long train reserved the same loop body twice");
+  }
+
+  @Test
+  void rejectedMergePreservesBothOldOwnersAndRejectsLoopOverlapOrThirdParties() {
+    var claims = new TrackOccupancy();
+    var a = UUID.randomUUID();
+    var b = UUID.randomUUID();
+    var c = UUID.randomUUID();
+    var edge = UUID.randomUUID();
+    assertTrue(claims.reserve(a, java.util.List.of(new TrackOccupancy.Interval(edge, 0, 7))));
+    assertTrue(claims.reserve(b, java.util.List.of(new TrackOccupancy.Interval(edge, 7, 14))));
+    assertTrue(claims.reserve(c, java.util.List.of(new TrackOccupancy.Interval(edge, 15, 22))));
+    assertTrue(
+        claims.canReserveMerged(a, b, java.util.List.of(new TrackOccupancy.Interval(edge, 0, 14))));
+    assertFalse(
+        claims.canReserveMerged(a, b, java.util.List.of(new TrackOccupancy.Interval(edge, 0, 16))));
+    assertFalse(
+        claims.canReserveMerged(
+            a,
+            b,
+            java.util.List.of(
+                new TrackOccupancy.Interval(edge, 0, 7),
+                new TrackOccupancy.Interval(edge, 6, 14))));
+    assertEquals(0, claims.intervals(a).getFirst().min());
+    assertEquals(14, claims.intervals(b).getFirst().max());
+    assertEquals(java.util.Set.of(a, b, c), claims.owners(edge));
+  }
 }

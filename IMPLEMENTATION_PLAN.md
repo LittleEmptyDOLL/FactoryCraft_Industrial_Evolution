@@ -1,3 +1,13 @@
+# Issue13 continuation checkpoint
+
+Implemented: deterministic daylight-safe armor fixture; last-clear-pose impacts/native weapon damage; persistent cancelled-wreck ownership; all-survivor assignment before callbacks; canonical physical/damage guards; intermediate curve/grade sweep; deleted-lookahead quarantine before bogie sampling; merge preflight before retiring old owners; scalar SAT/packed collision index and regression tests; actual8-consist server workload plus independent-JVM verification and a seventh CI job.
+
+Verified locally:302JUnit;548base native;549fresh optional native;550optional native in a second JVM; all old539cases/thirtyfinite chains retained. The last merge guard has targeted pure tests and hosted native coverage. Real8-train/148-car (up to64)6144-block profile, natural chunk unload/reload and exact records in independent JVMs pass. See validation/v0310-completion for failed evidence, raw before/two-after timing distributions and remaining limits. All older diagnostics are preserved or byte-verified in lossless archives.
+
+Publication: publish the checked tree normally to main preserving parallel work, then follow **all seven GitHub Actions jobs to success**, as explicitly requested. Do not start0.32. Next work within issue13, if authorized: remaining high-speed route-aware client interpolation/full multi-wagon visual scene acceptance; source-template/repair/art limits remain documented rather than silently marked complete. Signals/stops/schedules are a separate future milestone.
+
+---
+
 # Active0.31.0 /issue#13 — Rolling Stock & Train Simulation
 
 1. Source audit and independent kernels: stock specification, exact3×60Hz substeps per MC tick, routed metric trail/bogies, interval/conflict reservations. Keep builder controls; extend pitched clearance coherently.
@@ -8,7 +18,7 @@
 
 Implemented items1–4 as a usable train foundation. Final build297JUnit; full538optional native, earlier534base and537optional separate-JVM checks pass; the additional parked-turnout native target passes (539registered total; no single local539run claimed). Actual EN/RU/two-client mouse menus/ghost sample, riding/reverse/brake/camera, tunnel/grade, native audio and exact player-world reload are recorded in validation/v0310. All failed evidence and finite ledgers are retained without reset/refill. This patch publishes the verified subset to main; issue13 acceptance remains open.
 
-**Remaining issue13 acceptance:** source impact/combat consequences, full native moving head-on/junction/loop matrix, all multi-wagon visual scenes and measured large multi-train certification. Preserve every current checkpoint/failed evidence. Finish those within issue13 in a subsequent authorized session; do not mark the entire issue complete and do not start0.32. Final publication records actual verified scope only.
+**Historical initial0.31 handoff (superseded by the continuation above):** impact/conflict/workload gaps were then open; multi-wagon visual acceptance remains separate. Preserve every current checkpoint/failed evidence. Finish those within issue13 in a subsequent authorized session; do not mark the entire issue complete and do not start0.32. Final publication records actual verified scope only.
 
 ---
 

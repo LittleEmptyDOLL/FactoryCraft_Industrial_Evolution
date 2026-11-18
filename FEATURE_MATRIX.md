@@ -6,9 +6,10 @@
 |---|---|
 | Source locomotive/cargo/fluid stock | Real registered items/entities, source bills/gates;3fuel/40cargo/500000mB |
 | Train ownership/lifecycle | Canonical dimension save; identity-only projections; coupled/split/portable resource guards |
-| Manual motion | Three60Hz steps, finite fuel, rider intent/brake/reverse/branch selection; source collision damage incomplete |
+| Manual motion | Three60Hz steps, finite fuel, rider intent/brake/reverse/branch selection; bounded swept impacts/native source resistances; exact closed-engine collision solver not claimed |
 | Loading | Stopped physical inserter and directed pump adapters; native entity capabilities |
 | Reservations/chunks | Atomic edge/spatial swept checks, source braking bound, bounded loaded-only pause/recovery |
+| Impact lifecycle | One canonical owner; component-exact wrecks, persistent cancelled-spawn recovery; manual hitscan/explosion/flame adapters |
 | Models/audio | Original cached distinct3D bodies/trucks/cab/wheels and procedural engine; real-client acceptance tracked in validation/v0310 |
 | Signals/stops/schedules | Not implemented;0.32 follow-up only, not started |
 
@@ -149,7 +150,7 @@ Historical 0.25.1 snapshot (superseded by the active slice above): 0.25.1 correc
 | Petroleum | percentage-yield surface fields/pumpjack, basic + three-output advanced oil, heavy/light cracking, lubricant, plastic/sulfur/acid/batteries, physical guarded nozzles, five-cell menu/portable state and generated-crude/source-debit-ledger automated examples | implemented petroleum slice; later oil consumers and large petrochemical performance remain planned |
 | Research/progression | 3×3×3 labs, red/green/blue packs, shared units/prerequisites, search/dependency UI, production unlocks, repeatable efficiency, SavedData and portable labs | implemented first research slice; datapack technology catalog; later science tiers and full progression remain planned |
 | Modules/beacons/quality | tier-1 speed/efficiency/productivity slots on item/mixed production machines, canonical productive credit, powered 3×3 beacons, local spatial cache and normal-quality diminishing transmission | partial; drill/pumpjack and chemical-fluid productivity implemented; higher tiers, quality, actual lab modules and coverage overlay remain planned |
-| Railways | source-family3D rails; three canonical stock types; manual trains/reservations/stopped logistics | working0.31 subset; impact/full acceptance incomplete, signals/stations/schedules future |
+| Railways | source-family3D rails; three canonical stock types; manual trains/reservations/stopped logistics | manual stock/guarded logistics, bounded impacts, moving conflict/long-consist/server workload checks; visual/foundation limits documented, signals/stations/schedules future |
 | Robots | none | planned: logistics/construction/charging/task allocation |
 | Blueprints | none | planned: versioned import, selection, placement, undo/redo/book |
 | Circuits | original bounded four-color graph extended with typed sparse maps, independent I/O masks, direct canonical/opted-in container contacts, staged multi-row/Each/Else/Selector/Time programs, guarded device/recipe/next-team-research control, delta pipeline totals, EN/RU menus and cached physical wires | implemented requested 0.22 slice; latched outputs on unavailable combinator input, bounded sensor latency and numeric constant sections documented; quality/rocket-weight modes and train controls unavailable; see CIRCUITS.md |

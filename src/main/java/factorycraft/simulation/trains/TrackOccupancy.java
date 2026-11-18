@@ -30,6 +30,19 @@ public final class TrackOccupancy {
     return true;
   }
 
+  /** Validate a merge before either old owner is retired, including loop self-overlap. */
+  public boolean canReserveMerged(UUID first, UUID second, List<Interval> wanted) {
+    for (int i = 0; i < wanted.size(); i++)
+      for (int j = i + 1; j < wanted.size(); j++)
+        if (wanted.get(i).intersects(wanted.get(j))) return false;
+    for (var interval : wanted)
+      for (var old : byEdge.getOrDefault(interval.edge, List.of()))
+        if (!old.train.equals(first)
+            && !old.train.equals(second)
+            && old.interval.intersects(interval)) return false;
+    return true;
+  }
+
   public boolean reserve(UUID train, List<Interval> wanted) {
     if (!canReserve(train, wanted)) return false;
     var copy = List.copyOf(wanted);

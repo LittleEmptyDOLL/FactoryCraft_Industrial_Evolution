@@ -1,0 +1,174 @@
+{
+  "status": "PASS",
+  "trains": 8,
+  "cars": 148,
+  "railSegments": 48,
+  "railLength": 6144,
+  "movingSamples": 5703,
+  "reverseSamplesByConsist": [
+    271,
+    162,
+    148,
+    156,
+    224,
+    361,
+    148,
+    174
+  ],
+  "initialFuelJ": 864000000,
+  "items": 2542,
+  "fluidMB": 4814823,
+  "actualChunkUnload": true,
+  "onlineClients": 0,
+  "projectionUpdateRequests": 106336,
+  "worldReads": 11316555,
+  "stockEntities": 148,
+  "stages": {
+    "build": {
+      "count": 48,
+      "meanMs": 227.54714535416664,
+      "p50Ms": 176.507483,
+      "p95Ms": 388.280087,
+      "p99Ms": 1539.936316,
+      "maxMs": 1539.936316,
+      "over50Ms": 48,
+      "trainAdapter": {
+        "count": 48,
+        "meanMs": 0.004077625,
+        "p50Ms": 0.002924,
+        "p95Ms": 0.012809,
+        "p99Ms": 0.015573,
+        "maxMs": 0.015573,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 2028088632,
+      "worldReads": 0
+    },
+    "settle": {
+      "count": 1,
+      "meanMs": 150.208916,
+      "p50Ms": 150.208916,
+      "p95Ms": 150.208916,
+      "p99Ms": 150.208916,
+      "maxMs": 150.208916,
+      "over50Ms": 1,
+      "trainAdapter": {
+        "count": 1,
+        "meanMs": 55.53633,
+        "p50Ms": 55.53633,
+        "p95Ms": 55.53633,
+        "p99Ms": 55.53633,
+        "maxMs": 55.53633,
+        "over50Ms": 1
+      },
+      "mainThreadAllocatedBytes": 6004520,
+      "worldReads": 15540
+    },
+    "warmup": {
+      "count": 120,
+      "meanMs": 19.42496195,
+      "p50Ms": 15.772259,
+      "p95Ms": 41.10411,
+      "p99Ms": 51.159089,
+      "maxMs": 152.457897,
+      "over50Ms": 3,
+      "trainAdapter": {
+        "count": 120,
+        "meanMs": 11.487821108333332,
+        "p50Ms": 9.177615,
+        "p95Ms": 25.587227,
+        "p99Ms": 37.946719,
+        "maxMs": 39.196825,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 262059192,
+      "worldReads": 1887120
+    },
+    "stable": {
+      "count": 400,
+      "meanMs": 22.9798249175,
+      "p50Ms": 19.634779,
+      "p95Ms": 53.914623,
+      "p99Ms": 67.287531,
+      "maxMs": 84.31923,
+      "over50Ms": 26,
+      "trainAdapter": {
+        "count": 400,
+        "meanMs": 12.381281207499999,
+        "p50Ms": 10.519217,
+        "p95Ms": 22.50993,
+        "p99Ms": 50.325877,
+        "maxMs": 68.625386,
+        "over50Ms": 5
+      },
+      "mainThreadAllocatedBytes": 3119326640,
+      "worldReads": 6326280
+    },
+    "reversals": {
+      "count": 180,
+      "meanMs": 11.279840805555557,
+      "p50Ms": 10.340406,
+      "p95Ms": 13.947341,
+      "p99Ms": 39.309737,
+      "maxMs": 82.836641,
+      "over50Ms": 1,
+      "trainAdapter": {
+        "count": 180,
+        "meanMs": 4.682114711111112,
+        "p50Ms": 4.399593,
+        "p95Ms": 6.094936,
+        "p99Ms": 8.439694,
+        "maxMs": 8.764395,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 299515152,
+      "worldReads": 2826600
+    },
+    "unload": {
+      "count": 2,
+      "meanMs": 14.459403,
+      "p50Ms": 12.660018,
+      "p95Ms": 16.258788,
+      "p99Ms": 16.258788,
+      "maxMs": 16.258788,
+      "over50Ms": 0,
+      "trainAdapter": {
+        "count": 2,
+        "meanMs": 5.009521,
+        "p50Ms": 4.938927,
+        "p95Ms": 5.080115,
+        "p99Ms": 5.080115,
+        "maxMs": 5.080115,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 3598688,
+      "worldReads": 28095
+    },
+    "reload": {
+      "count": 16,
+      "meanMs": 13.62059075,
+      "p50Ms": 9.79439,
+      "p95Ms": 29.748861,
+      "p99Ms": 29.748861,
+      "maxMs": 29.748861,
+      "over50Ms": 0,
+      "trainAdapter": {
+        "count": 16,
+        "meanMs": 5.982251375,
+        "p50Ms": 4.261318,
+        "p95Ms": 16.279138,
+        "p99Ms": 16.279138,
+        "maxMs": 16.279138,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 28388488,
+      "worldReads": 232920
+    }
+  },
+  "packets": {
+    "sentPackets": 0,
+    "sentEncodedBytes": 0,
+    "receivedPackets": 0,
+    "receivedEncodedBytes": 0
+  }
+}

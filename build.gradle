@@ -100,6 +100,16 @@ neoForge {
             jvmArgument '-Xmx2G'
         }
 
+        trainBenchmarkServer {
+            server()
+            gameDirectory = project.file('run-benchmark/' + providers.gradleProperty('trainFixture').getOrElse('trains-v0310-completion'))
+            programArgument '--nogui'
+            systemProperty 'factorycraft.trainBenchmark.fixture', providers.gradleProperty('trainFixture').getOrElse('trains-v0310-completion')
+            systemProperty 'factorycraft.trainBenchmark.mode', providers.gradleProperty('trainMode').getOrElse('measure')
+            jvmArgument '-Xms512m'
+            jvmArgument '-Xmx2G'
+        }
+
         fluidBenchmarkServer {
             server()
             gameDirectory = project.file('run-benchmark/' + providers.gradleProperty('fluidFixture').getOrElse('fluids-v0310-local'))
@@ -332,5 +342,32 @@ tasks.named('runFluidBenchmarkServer') {
     doLast {
         def report = new File(fluidDir,'reports/' + fluidMode + '.json')
         if (!report.isFile() || new groovy.json.JsonSlurper().parse(report).status != 'PASS') throw new GradleException('Fluid workload failed; preserve evidence and inspect report.')
+    }
+}
+
+// Separate opt-in train workload. Existing worlds are never reset or reseeded.
+def trainFixture = providers.gradleProperty('trainFixture').getOrElse('trains-v0310-completion')
+if (!(trainFixture ==~ /trains-v0310-[a-z0-9-]+/)) throw new GradleException('Invalid isolated train fixture.')
+def trainDir = project.file('run-benchmark/' + trainFixture)
+def trainMode = providers.gradleProperty('trainMode').getOrElse('measure')
+tasks.register('prepareTrainBenchmark') {
+    doLast {
+        if (!(trainMode in ['measure','verify'])) throw new GradleException('Invalid train mode.')
+        def marker = new File(trainDir,'train-benchmark.marker')
+        if (java.nio.file.Files.isSymbolicLink(trainDir.toPath()) || trainDir.exists() && trainDir.list().length > 0 && (!marker.isFile() || marker.text != 'FactoryCraft train workload v1\n')) throw new GradleException('Unmarked train world.')
+        if (trainMode == 'measure' && new File(trainDir,'world/level.dat').exists()) throw new GradleException('Existing train world must not be reseeded.')
+        trainDir.mkdirs()
+        marker.text = 'FactoryCraft train workload v1\n'
+        new File(trainDir,'eula.txt').text = 'eula=true\n'
+        def props = new File(trainDir,'server.properties')
+        if (!props.exists()) props.text = 'level-name=world\nlevel-type=minecraft:flat\ngenerator-settings={"layers":[{"block":"minecraft:bedrock","height":1}],"biome":"minecraft:the_void"}\ngenerate-structures=false\nonline-mode=false\nserver-ip=127.0.0.1\nserver-port=25588\nspawn-protection=0\nspawn-monsters=false\nspawn-animals=false\nview-distance=2\nsimulation-distance=2\nmax-tick-time=120000\n'
+    }
+}
+tasks.named('runTrainBenchmarkServer') {
+    dependsOn 'prepareTrainBenchmark'
+    doFirst { ext.trainRunStartedMillis = System.currentTimeMillis() }
+    doLast {
+        def report = new File(trainDir,'reports/' + trainMode + '.json')
+        if (!report.isFile() || report.lastModified() < ext.trainRunStartedMillis || new groovy.json.JsonSlurper().parse(report).status != 'PASS') throw new GradleException('Train workload failed or report is stale; preserve world and report.')
     }
 }

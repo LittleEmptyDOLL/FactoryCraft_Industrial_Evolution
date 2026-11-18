@@ -4,7 +4,7 @@ Reference: Factorio2.1.24 **with Space Age enabled**. Numeric source reviewed: `
 
 ## Rolling stock extension
 
-Three individual stock types now share canonical train ownership, metric bogie sampling, manual rider input and halt-only native logistics. Rail editing refuses occupied edge removal; environmental loss quarantines recoverable contents. The existing0.30.1 builder controls are retained. Future3×7×4 clearance now includes full pitch in its conservative sweep. See [TRAINS.md](TRAINS.md) for source values, controls and explicit deviations.
+Three individual stock types now share canonical train ownership, metric bogie sampling, manual rider input and halt-only native logistics. Rail editing refuses occupied edge removal; environmental loss quarantines recoverable contents. The existing0.30.1 builder controls are retained. Moving head-on/fork conflicts keep exclusive reservations; unexpected impacts stop at the last clear pose with bounded source-scaled damage and component-exact recovery. SAT voxel checks avoid temporary axis objects. Real multi-train/chunk/restart evidence is in [validation/v0310-completion](validation/v0310-completion). Future3×7×4 clearance now includes full pitch in its conservative sweep. See [TRAINS.md](TRAINS.md) for source values, controls and explicit deviations.
 
 ## Geometry and coordinates
 

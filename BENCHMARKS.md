@@ -1,3 +1,37 @@
+# 0.31 continuation — actual multi-train server workload
+
+The opt-in `runTrainBenchmarkServer` uses real rail parts/stock entities and mounted native test drivers, not the pure kernel. Eight consists of1/3/8/16/32/64/8/16cars (148total),48paid-claim rail segments/6144blocks,27locomotives,82cargo wagons and39tankers. Declared finite inputs:216coal=864000000J,2542named iron items and4814823mB water. Each real tick audits the exact fuel-buffer+spent+remaining-coal ledger, cargo/components, fluids and health. All8consists actually travel in both directions; tickets are explicitly diagnostic-only. A moving16-car train naturally unloads/reloads, with a stale port denied and its frozen paid state unchanged. Independent-JVM verification compares complete canonical train and rail records.
+
+Same3vCPU environment, no graphical clients/other server workload during measurement,120warmup ticks and400stable measured ticks. One successful before run and two after runs are retained; the separate failed unload fixture is not a successful measurement. Before is this continuation's pre-SAT-optimization adapter, not an unmodified old-release TPS measurement. After2 also includes intermediate-curve sweep/unknown-route guards. Main-thread allocations are exact ThreadMXBean counters; JFR weights are samples over the whole recording including setup.
+
+| Stable server window | Before | After1–After2 |
+|---|---:|---:|
+| Whole-server mean, ms |34.413|22.980–23.128|
+| Whole-server p95, ms |66.822|52.889–53.915|
+| Whole-server p99, ms |78.654|67.288–67.823|
+| Whole-server maximum, ms |99.249|75.167–84.319|
+| Ticks >50ms /400 |57|24–26|
+| Train-adapter mean, ms |24.293|12.378–12.381|
+| Train-adapter p99, ms |63.581|41.824–50.326|
+| Train-adapter maximum, ms |90.834|53.786–68.625|
+| Main-thread allocation, decimal GB /400ticks |24.547|3.112–3.119|
+| Adapter world reads /400ticks |6326280|6326280|
+
+The changed path lowers mean cost and allocation in these runs (about33% whole-tick mean /49% adapter mean /87% allocation). Tails vary; p95 still exceeds50ms, and no universal20TPS or rendering/network capacity claim is made. JFR identified per-voxel `RailVector.cross`/axis-array allocation; scalar SAT matches10000reference cases, and the warmed allocation regression has a CPU-independent byte bound. Packed-long visited cells avoid immutable BlockPos allocation. Curved/graded reservations include intermediate orientations; flat straight movement retains an exact endpoint-union fast path.
+
+Raw phase distributions, including build/warmup/reversals/unload/reload, and independent-JVM results: [validation/v0310-completion](validation/v0310-completion). Actual native entities restored:148. Online clients:0; actual JFR packet counts:0. Projection update requests are reported separately and are **not packets**. Existing actual two-client visual/audio evidence remains in validation/v0310; high-speed visual acceptance is not inferred from this headless profile.
+
+Commands (choose a fresh marked fixture; never reset previous worlds):
+
+```sh
+./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0310-example
+./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0310-example -PtrainMode=verify
+```
+
+CI now runs this workload/restart in its own job, alongside all pre-existing factory/MIXED/fluid jobs.
+
+---
+
 # 0.31 bounded train observations
 
 `tools/TrainKernelBenchmark.java` measures pure motion/bogie kernels only, with three32-train400-tick warmups and three64-train1600-tick runs. Raw distributions/allocations and exact ledgers: [validation/v0310/train-kernel.jsonl](validation/v0310/train-kernel.jsonl). Mean14.467–26.171µs, max0.334–5.219ms,60.1–63.8MB allocated per102400samples. These figures exclude world collision, topology, render work and actual packets.

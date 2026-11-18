@@ -82,6 +82,10 @@ public final class CombatV28GameTests {
   public static void sourceArmorResistsPhysicalButNotLaserDamage(GameTestHelper h) {
     var target = h.spawn(EntityType.ZOMBIE, new BlockPos(4, 2, 4));
     target.setNoAi(true);
+    // CI runs in daylight. A non-armored, non-damageable head covering prevents native
+    // Zombie.aiStep sunlight ignition without adding armor or changing the damage under test.
+    target.setItemSlot(
+        net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
     target.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, item("heavy_armor", 1));
     target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR).setBaseValue(0);
     target
@@ -103,6 +107,9 @@ public final class CombatV28GameTests {
                           - .30)
                   < .001,
               "heavy chest armor did not equip percent resistance");
+          h.assertTrue(
+              !target.isOnFire() && target.getHealth() == 20 && target.getArmorValue() == 0,
+              "armor fixture took unrelated native damage before the controlled hit");
           Combat.damage(h.getLevel(), target, null, null, "", "bullet", 10, false);
           h.assertTrue(
               Math.abs(target.getHealth() - 19.44) < .001,

@@ -15,18 +15,33 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 /** UUID-bound, halt-only adapters. No neighboring or unloaded car may inherit an old handle. */
 public final class TrainPorts {
-  static boolean ready(StockEntity entity) {
+  /** A loaded physical body remains an obstacle even when another car is quarantined. */
+  public static boolean physicalView(StockEntity entity) {
     if (!(entity.level() instanceof ServerLevel l)
         || entity.isRemoved()
-        || l.getEntity(entity.getUUID()) != entity) return false;
+        || l.getEntity(entity.getUUID()) != entity
+        || !l.hasChunkAt(entity.blockPosition())) return false;
     var d = TrainData.get(l);
     var t = d.owner(entity.getUUID());
     var car = d.car(entity.getUUID());
     return t != null
+        && !t.provisional
         && car != null
         && car.recovery != null
-        && entity.position().distanceToSqr(TrainWorld.vec(car.recovery)) < .0001
-        && d.stopped(t);
+        && entity.trainId().equals(t.id)
+        && entity.position().distanceToSqr(TrainWorld.vec(car.recovery)) < .0001;
+  }
+
+  public static boolean canonicalView(StockEntity entity) {
+    if (!physicalView(entity)) return false;
+    var d = TrainData.get((ServerLevel) entity.level());
+    return TrainWorld.available(d, d.owner(entity.getUUID()));
+  }
+
+  static boolean ready(StockEntity entity) {
+    if (!canonicalView(entity)) return false;
+    var d = TrainData.get((ServerLevel) entity.level());
+    return d.stopped(d.owner(entity.getUUID()));
   }
 
   public static IItemHandler inventory(StockEntity entity) {

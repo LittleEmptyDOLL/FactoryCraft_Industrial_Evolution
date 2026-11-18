@@ -196,3 +196,28 @@ jobs:
           path: |
             run-benchmark/fluids-v0310-ci/reports/
             run-benchmark/fluids-v0310-ci/checkpoint.json
+
+  train_performance:
+    name: Eight real trains, long consists, chunk unload and JVM reload
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Actual rail stock and exact checkpoint
+        run: |
+          ./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0310-ci
+          ./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0310-ci -PtrainMode=verify
+      - name: Upload train evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: factorycraft-train-performance
+          if-no-files-found: ignore
+          path: |
+            run-benchmark/trains-v0310-ci/reports/
+            run-benchmark/trains-v0310-ci/checkpoint.nbt
+            run-benchmark/trains-v0310-ci/logs/latest.log

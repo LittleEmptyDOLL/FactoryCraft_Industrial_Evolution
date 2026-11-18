@@ -110,13 +110,15 @@ public final class CombatProjectile extends ThrowableItemProjectile {
                 .getPath()
                 .equals("explosive_rocket");
     // Entity-only blasts deliberately obey LOS and friendly-fire policy; no block-grief bypass.
-    if (hit instanceof EntityHitResult e && e.getEntity() instanceof LivingEntity target)
-      Combat.damage(l, target, this, getOwner(), scope, "explosion", amount, false);
+    if (hit instanceof EntityHitResult e)
+      Combat.damage(l, e.getEntity(), this, getOwner(), scope, "explosion", amount, false);
     double radius = explosive ? 6.5 : 0;
     if (radius > 0)
       for (var target :
-          l.getEntitiesOfClass(
-              LivingEntity.class, new AABB(hit.getLocation(), hit.getLocation()).inflate(radius)))
+          l.getEntities(
+              (net.minecraft.world.entity.Entity) null,
+              new AABB(hit.getLocation(), hit.getLocation()).inflate(radius),
+              target -> Combat.allowed(l, target, getOwner(), scope, false)))
         if (target.position().distanceToSqr(hit.getLocation()) <= radius * radius
             && Combat.sight(l, hit.getLocation().add(0, .05, 0), target))
           Combat.damageAt(
