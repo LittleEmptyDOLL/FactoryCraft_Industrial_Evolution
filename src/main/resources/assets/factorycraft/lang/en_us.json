@@ -854,5 +854,21 @@
   "rail.factorycraft.direction_12": "W",
   "rail.factorycraft.direction_13": "WNW (2:1)",
   "rail.factorycraft.direction_14": "NW",
-  "rail.factorycraft.direction_15": "NNW (1:2)"
+  "rail.factorycraft.direction_15": "NNW (1:2)",
+  "attribute.name.factorycraft.physical_flat_resistance": "Physical flat resistance",
+  "attribute.name.factorycraft.physical_percent_resistance": "Physical resistance",
+  "attribute.name.factorycraft.explosion_flat_resistance": "Explosion flat resistance",
+  "attribute.name.factorycraft.explosion_percent_resistance": "Explosion resistance",
+  "attribute.name.factorycraft.fire_flat_resistance": "Fire flat resistance",
+  "attribute.name.factorycraft.fire_percent_resistance": "Fire resistance",
+  "attribute.name.factorycraft.acid_flat_resistance": "Acid flat resistance",
+  "attribute.name.factorycraft.acid_percent_resistance": "Acid resistance",
+  "attribute.name.factorycraft.impact_flat_resistance": "Impact flat resistance",
+  "attribute.name.factorycraft.impact_percent_resistance": "Impact resistance",
+  "attribute.name.factorycraft.poison_flat_resistance": "Poison flat resistance",
+  "attribute.name.factorycraft.poison_percent_resistance": "Poison resistance",
+  "attribute.name.factorycraft.laser_flat_resistance": "Laser flat resistance",
+  "attribute.name.factorycraft.laser_percent_resistance": "Laser resistance",
+  "attribute.name.factorycraft.electric_flat_resistance": "Electric flat resistance",
+  "attribute.name.factorycraft.electric_percent_resistance": "Electric resistance"
 }

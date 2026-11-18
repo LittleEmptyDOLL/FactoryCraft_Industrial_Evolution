@@ -56,3 +56,27 @@ Stone walls join through vanilla wall geometry. Metal gates open automatically f
 * No vehicle, uranium, artillery, robot, rail, Quality or Space Age production content is registered by this stage. Three belt lifts and four circuit colors are unchanged. Old intermediate formats need no migration; diagnostic worlds are preserved.
 
 Actual automated/client evidence and remaining checks are recorded in [VALIDATION.md](VALIDATION.md), not inferred from these implementation descriptions.
+
+## Attribute-based chest armor (post-0.30 focused fix)
+
+Light and Heavy Armor remain single, indestructible chest items. Their original normal-quality
+Factorio 2.1.24 resistance values now come from eight pairs of standard, synced
+`factorycraft:*_flat_resistance` / `factorycraft:*_percent_resistance` attributes:
+physical, explosion, fire, acid, impact, poison, laser and electric. Values are item
+`ItemAttributeModifiers` with the CHEST equipment slot, so vanilla item tooltips and
+optional Apothic Attributes screens can display them; there is no special tooltip or
+required dependency. A chest item contributes the four source-defined types it actually
+resists, while other types remain zero.
+
+The existing Factorio flat-then-percent formula still runs once via
+`LivingIncomingDamageEvent` before normal vanilla or optional Apothic armor. Values
+are defined in Factorio HP and converted using the existing 0.2 Minecraft-health-per-source-HP
+scale. Normal Minecraft armor from other slots is not disabled, and no duplicate
+Minecraft armor value is added for the FactoryCraft chestplate.
+
+Vanilla explosion/fire, ordinary melee/projectiles, lightning and fly-into-wall are
+mapped to typed resistance. Explicit `factorycraft` damage types and datapack
+`factorycraft:damage_types/<kind>` tags provide mappings for laser/acid/poison/impact
+and optional other-mod damage. Untagged falling, hunger, void, magic and unknown damage
+remain unchanged. Mods and later equipment can grant the same attributes to any living
+entity, not just wearers of these two items.
