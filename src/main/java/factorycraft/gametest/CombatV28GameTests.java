@@ -87,14 +87,82 @@ public final class CombatV28GameTests {
     target
         .getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS)
         .setBaseValue(0);
-    Combat.damage(h.getLevel(), target, null, null, "", "bullet", 10, false);
+    h.runAfterDelay(
+        4,
+        () -> {
+          h.assertTrue(
+              Math.abs(
+                      target.getAttributeValue(ArmorAttributes.flat(ArmorAttributes.Kind.PHYSICAL))
+                          - 6)
+                  < .001,
+              "heavy chest armor did not equip flat resistance");
+          h.assertTrue(
+              Math.abs(
+                      target.getAttributeValue(ArmorAttributes.percent(ArmorAttributes.Kind.PHYSICAL))
+                          - .30)
+                  < .001,
+              "heavy chest armor did not equip percent resistance");
+          Combat.damage(h.getLevel(), target, null, null, "", "bullet", 10, false);
+          h.assertTrue(
+              Math.abs(target.getHealth() - 19.44) < .001,
+              "source physical flat6/30% resistance");
+          Combat.damage(h.getLevel(), target, null, null, "", "laser", 10, false);
+          h.assertTrue(
+              Math.abs(target.getHealth() - 17.44) < .001,
+              "laser was incorrectly reduced by physical armor");
+          h.succeed();
+        });
+  }
+
+  @GameTest(template = "empty", batch = "combat_v0280", timeoutTicks = 100)
+  public static void armorResistanceAttributesAppearOnItemsAndExpireOnUnequip(GameTestHelper h) {
+    var target = h.spawn(EntityType.ZOMBIE, new BlockPos(3, 2, 3));
+    target.setNoAi(true);
+    var heavy = item("heavy_armor", 1);
+    var modifiers = heavy.getAttributeModifiers().modifiers();
     h.assertTrue(
-        Math.abs(target.getHealth() - 19.44) < .001, "source physical flat6/30% resistance");
-    Combat.damage(h.getLevel(), target, null, null, "", "laser", 10, false);
-    h.assertTrue(
-        Math.abs(target.getHealth() - 17.44) < .001,
-        "laser was incorrectly reduced by physical armor");
-    h.succeed();
+        modifiers.stream()
+            .anyMatch(
+                e ->
+                    e.attribute().equals(ArmorAttributes.flat(ArmorAttributes.Kind.EXPLOSION))
+                        && e.modifier().amount() == 20),
+        "the ordinary item attribute component does not expose Factorio protection");
+    target.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, heavy);
+    h.runAfterDelay(
+        4,
+        () -> {
+          h.assertTrue(
+              Math.abs(
+                      target.getAttributeValue(
+                          ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
+                          - .40)
+                  < .001,
+              "heavy armor lacks acid resistance");
+          target.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
+        });
+    h.runAfterDelay(
+        9,
+        () -> {
+          h.assertTrue(
+              target.getAttributeValue(
+                      ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
+                  == 0,
+              "armor resistance remained after removing chest item");
+          target.setItemSlot(
+              net.minecraft.world.entity.EquipmentSlot.CHEST, item("light_armor", 1));
+        });
+    h.runAfterDelay(
+        14,
+        () -> {
+          h.assertTrue(
+              Math.abs(
+                      target.getAttributeValue(
+                          ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
+                          - .20)
+                  < .001,
+              "light armor attributes did not replace heavy armor");
+          h.succeed();
+        });
   }
 
   @GameTest(template = "empty", batch = "combat_v0280", timeoutTicks = 140)

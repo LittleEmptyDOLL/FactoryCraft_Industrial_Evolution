@@ -854,5 +854,21 @@
   "rail.factorycraft.direction_12": "З",
   "rail.factorycraft.direction_13": "ЗСЗ (2:1)",
   "rail.factorycraft.direction_14": "СЗ",
-  "rail.factorycraft.direction_15": "ССЗ (1:2)"
+  "rail.factorycraft.direction_15": "ССЗ (1:2)",
+  "attribute.name.factorycraft.physical_flat_resistance": "Физическое сопротивление (фикс.)",
+  "attribute.name.factorycraft.physical_percent_resistance": "Физическое сопротивление",
+  "attribute.name.factorycraft.explosion_flat_resistance": "Сопротивление взрывам (фикс.)",
+  "attribute.name.factorycraft.explosion_percent_resistance": "Сопротивление взрывам",
+  "attribute.name.factorycraft.fire_flat_resistance": "Огнестойкость (фикс.)",
+  "attribute.name.factorycraft.fire_percent_resistance": "Огнестойкость",
+  "attribute.name.factorycraft.acid_flat_resistance": "Сопротивление кислоте (фикс.)",
+  "attribute.name.factorycraft.acid_percent_resistance": "Сопротивление кислоте",
+  "attribute.name.factorycraft.impact_flat_resistance": "Сопротивление столкновениям (фикс.)",
+  "attribute.name.factorycraft.impact_percent_resistance": "Сопротивление столкновениям",
+  "attribute.name.factorycraft.poison_flat_resistance": "Сопротивление яду (фикс.)",
+  "attribute.name.factorycraft.poison_percent_resistance": "Сопротивление яду",
+  "attribute.name.factorycraft.laser_flat_resistance": "Сопротивление лазеру (фикс.)",
+  "attribute.name.factorycraft.laser_percent_resistance": "Сопротивление лазеру",
+  "attribute.name.factorycraft.electric_flat_resistance": "Сопротивление электричеству (фикс.)",
+  "attribute.name.factorycraft.electric_percent_resistance": "Сопротивление электричеству"
 }

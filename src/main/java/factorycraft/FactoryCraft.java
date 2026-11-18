@@ -12,6 +12,7 @@ public final class FactoryCraft {
     public static final String ID = "factorycraft";
 
     public FactoryCraft(IEventBus bus, ModContainer container) {
+        factorycraft.combat.ArmorAttributes.register(bus);
         Content.register(bus);
         container.registerConfig(ModConfig.Type.COMMON,factorycraft.config.ResourceWorldgenConfig.SPEC,"factorycraft-worldgen.toml");
         container.registerConfig(ModConfig.Type.SERVER, FactoryConfig.SPEC);
