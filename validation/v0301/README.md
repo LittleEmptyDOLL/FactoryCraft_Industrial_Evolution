@@ -4,7 +4,7 @@ Base main: `fcd3309454c15bc560016ae63aef1163f9598c76`. Existing armor PR #11 (`b
 
 ## Automated checks
 
-Final build: **285 JUnit, zero failed/error/skipped** (280 baseline +3 exact laser-ledger +2 preview-only geometry cases). Final native suite: **524 required passes**, retaining all504 baseline +PR armor case +19 new focused cases and thirty finite production chains. A second independent JVM on the same final world passed **524/524** and verified the exact new checkpoint plus all old checkpoints. Final optional runtime results are recorded below; they must not be inferred from compilation.
+Final build: **285 JUnit, zero failed/error/skipped** (280 baseline +3 exact laser-ledger +2 preview-only geometry cases). Final native suite: **524 required passes**, retaining all504 baseline +PR armor case +19 new focused cases and thirty finite production chains. A second independent JVM on the same final world passed **524/524** and verified the exact new checkpoint plus all old checkpoints. The final optional-mod runtime also passed **524/524**; its result is recorded independently below.
 
 Commands (Java21 and cached Gradle dependencies):
 
@@ -48,3 +48,17 @@ No trains/signals/robots/0.31, new combat balance, recipe or nuclear/production 
 ## Bounded profiling
 
 Three standalone warmed JVMs after actual server/client exit: exact laser idle ledger median3.246–3.403ns/modeled tick,160 measured allocated bytes across2.1million ticks, exact6720000FE per run; no negative debt/free work. Existing rail100/1000/4000-edge graph profile retains zero idle rebuilds. Raw tails are retained, including a5.906ms scheduling outlier; no before/after speedup or Minecraft TPS improvement is claimed. See `kernel-profiles.txt` and BENCHMARKS.md. Full hosted workloads remain CI.
+
+## Final rebuilt client and actual server reload
+
+Final optional native suite: **524/524** with FTB Teams/Library/Architectury, EMI, JEI, Jade, Apothic Attributes and Placebo. All285 JUnit remain green in the final packaged build; exact JAR hash is in `check-summary.json`.
+
+The same running clients survived the environment-control outage; no world or inventory was reset. `en-uranium-localized-final.png` / `ru-uranium-localized-final.png` confirm317 exact remaining units and the translated acid requirement in both actionbar and Jade. Real armor queries remained6 flat/0.3 after relog and dimension travel, while an ordinary iron helmet contributed its normal2 armor. Actual death dropped exactly one Heavy Armor; respawn read0, pickup of the existing dropped item and normal shift-equip restored6. Diagnostic teleport gathered the16 existing scattered item entities without creating replacement items. The first scripted dimension transition was still on its loading screen; its premature follow-on commands were repeated after terrain was actually ready, not counted as a successful death.
+
+`en-rail-curve-final-preview.png` and `en-curved-rail-built-auto-clear.png` show a valid19-rail curved connection, then the placed curve with automatic deselection. `ru-curved-body-canonical-end-selected.png` confirms actual curved-body targeting selects a canonical endpoint; C cancels it. `ru-flame-status-menu-reloaded.png` shows215mB retained fuel and the real localized searching status after reload. Original straight/red-obstruction/clear/cancel evidence remains above.
+
+The first player-world grenade replay continued while the environment was disconnected and before clients finished joining; its eventual absence is **not** a precise timed-reload acceptance. A second genuine paid throw used one of the two remaining grenades (2→1, no refill), was frozen/saved atAge37, then reopened in another dedicated-server JVM with automatic freeze-on-ready. `network-guarded-reload.log.gz` confirms **Age37**, position(80.5,122.49149416677355,16.265647225299645), and the unchanged215mB flame owner. This is real world entity NBT persistence, in addition to the native exact-owner checkpoint. Subsequent live continuation is recorded below.
+
+Live continuation after reload: server count was exactly1 atAge57, position(80.5,107.75729890962238,9.702715449533558), well beyond the old15-block path boundary. After43 more ticks it was0; the player's remaining grenade was still1 and the flame owner still215mB. The automatic guard and exact server output are retained in `guarded_reload_harness.py` / `network-guarded-reload.log.gz`. Native tests separately prove actual ground/mob/wall contact and exact100-tick airborne fallback; these screenshots do not isolate a single exact impact frame. The diagnostic forced tickets were removed, normal ticking restored and the same world saved/closed normally.
+
+The RU observer received a native Netty `connection reset by peer` disconnect **after the explicit server stop**, producing a retained network diagnostic report; it stayed responsive and quit normally. No FactoryCraft packet-decode exception or in-game compatibility crash is reported. This shutdown observation is preserved rather than described as an ideal graceful disconnect. Full final client logs are retained. All original and final audio captures are losslessly archived with hashes; no subjective speaker/loudness review is claimed.

@@ -22,6 +22,8 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * Preserve 280 JUnit /504 native baseline, PR armor case, thirty finite chains, v0270–v0300 checkpoints and all evidence. New v0301 fixture names; never reset failures or seed old checkpoints. Exact ammo/FE/oil/rail owners remain authoritative. No forced runtime chunks, global track/turret scans, duplicate resistance or per-bullet Entities.
 * Validate integrated build/JUnit/native, new independent-JVM owners, EN/RU real weapon/rail/armor visuals and affected optional mods including Apothic. Check observer-visible effects/audio with real two-client flow if new networking requires it. Do not call visual/audio acceptance passed without inspecting it. Publish checked main without force; report CI once. No0.31.
 
+* Current0.30.1 evidence:285JUnit;524base native +524separate-JVM reload +524optional FTB/EMI/JEI/Jade/Apothic/Placebo. Actual EN/RU clients and observer-visible paid effects/audio capture, native armor tooltip/Apothic/lifecycle, uranium and straight/curved rail workflows are in validation/v0301. Preserve native failures, verified archive manifests, actual network-world checkpoint and all old snapshots. No mass-combat/TPS speedup claim; subjective audio acceptance remains user review. No0.31.
+
 ## Previous milestone — 0.30.0, GitHub issue #10
 
 * Implement railway foundation only: centered two-block bed/three-block technical corridor, Factorio 2.x sixteen connection headings, >=13-block horizontal radius, smooth 3D grades, explicit junction topology, protected atomic planner placement/removal, sole saved material owner and cached client geometry. No trains/signals/stops/robots or 0.28 polish.

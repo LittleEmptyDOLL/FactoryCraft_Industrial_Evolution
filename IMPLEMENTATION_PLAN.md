@@ -7,7 +7,9 @@
 5. Preserve baseline cases and old fixtures; extend meaningful JUnit/native/current-format cross-JVM, real EN/RU/two-client and optional runtime checks. Record failures honestly.
 6. Publish validated main and report actual acceptance/remaining limits/CI once. Do not begin0.31.
 
-Implementation in progress; no completion claimed.
+Implemented the consolidated fixes and integrated PR#11 once (merge59115be). Build285JUnit; native524base +524independent-JVM +524optional passes. Real EN/RU/two-client weapon/effect/audio/armor/uranium/rail checks and actual world-entity reload are documented in validation/v0301; original failures and all older checkpoints remain intact. Existing cubic-rail limitations and subjective audio/user gameplay sign-off are explicit.
+
+**Next concrete task:** publish these checked0.30.1 commits normally to current main, report hosted CI once, then stop. No0.31 or additional roadmap work is authorized. A subsequent session should follow the user's new request and preserve all v0301 checkpoints/archives.
 
 ---
 

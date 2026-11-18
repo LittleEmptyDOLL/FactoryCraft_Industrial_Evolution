@@ -1,3 +1,15 @@
+# 0.30.1 — consolidated combat / armor / uranium / rail fixes (issue #12)
+
+Final packaged build: **285 JUnit**, zero failures/errors/skips. Complete native suites: **524 required passes without optional mods**, **524 in a second JVM on the same world**, and **524 with FTB Teams /EMI /JEI /Jade /Apothic Attributes /Placebo**. All504 prior cases, PR#11's armor case, thirty finite production chains and V0270–V0300 checkpoints remain mandatory. Nineteen new native cases cover paid multi-target turrets, physical damage origins, grenades/collisions/fuse/unloaded paths, generic armor/mappings/components, uranium acid/reserve and real rail interactions/ghost ownership. Reentrant damage-triggered packing retains exactly one fully billed laser owner.
+
+Actual EN/RU clients verify six first-person firearms, representative offhand/third-person views, vanilla armor modifiers and real Apothic GUI, observer-visible paid bullet/laser/flame effects, native audio playback capture, translated uranium reserve/Jade, physical rail starts, red obstruction/green recovery, curved targeting/building, auto-clear and C-in-air cancel. Live armor relog/dimension/death/gear return and actual saved projectile reload are recorded in the detailed evidence. Subjective audio mix/loudness sign-off remains user review; native nonzero output/captured playback is verified, not claimed as human listening.
+
+Bounded profiles retain exact idle FE and zero idle rail graph rebuilds. No Minecraft TPS speedup or mass-combat capacity claim. Full factory/MIXED/10000pipe workloads and hosted repeats remain GitHub Actions. Preserve all historical worlds, failed runs and byte-verified archives; none were reset/refilled. Detailed commands, hashes, preserved failures, screenshots, audio and explicit limitations: [validation/v0301/README.md](validation/v0301/README.md). No0.31 work.
+
+Historical validation follows with its original scope.
+
+---
+
 # 0.30.0 — Railway Foundation (issue #10)
 
 Base dedicated native run: **504/504required tests pass**, preserving all487previous cases and thirty finite production chains. Final build succeeds with **280JUnit, zero skipped/failed/error**, including20new geometry/graph cases and260baseline tests. Exact separate-JVM rail reload verifies original UUID, metric length,19component-bearing paid rails and idempotent nonowning parts. Targeted cases exercise real source crafting/gates, claim/inventory rollback, item wrapper protection, canonical unload/rejoin, branch/overpass/clearance and exact demolition. See [validation/v0300/README.md](validation/v0300/README.md) for executed commands, complete compressed logs, preserved development failures and archive manifests.

@@ -11,5 +11,15 @@
   "baseIndependentJvm": 524,
   "optionalNative": 524,
   "baseMain": "fcd3309454c15bc560016ae63aef1163f9598c76",
-  "armorPrHead": "bb95537bf204ec74df6bf28cfd3e7ba5fabe358e"
+  "armorPrHead": "bb95537bf204ec74df6bf28cfd3e7ba5fabe358e",
+  "actualWorldProjectileReload": {
+    "savedAge": 37,
+    "restoredAge": 37,
+    "continuedAge": 57,
+    "initialEntities": 1,
+    "finalEntities": 0,
+    "remainingPlayerGrenades": 1,
+    "flameOilMB": 215
+  },
+  "publishedImplementationCommit": "00cb623"
 }
