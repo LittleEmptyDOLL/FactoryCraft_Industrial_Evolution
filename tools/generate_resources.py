@@ -1057,3 +1057,6 @@ runpy.run_path(str(Path(__file__).with_name("generate_rail_resources.py")), run_
 
 # 0.30.1 uses the forward model axis and original procedural sound overlay.
 runpy.run_path(str(Path(__file__).with_name("generate_combat_fix_assets.py")), run_name="__main__")
+
+# Source rolling-stock recipes and original stock assets.
+runpy.run_path(str(Path(__file__).with_name("generate_train_resources.py")), run_name="__main__")

@@ -1,0 +1,6 @@
+{
+  "canonical_train_nbt_exact": true,
+  "trains": 5,
+  "car_count": 10,
+  "note": "Original failed menu-world state retained, including the documented first-pass 31-item loss; no refill."
+}

@@ -37,14 +37,27 @@ public final class FluidConnections {
     var be = endpoint(level, pos);
     if (be instanceof FluidBlockEntity f && f.kind() == FluidKind.PIPE)
       return f.simulationAvailable() ? f.hydraulic(pos, side) : null;
-    return be == null ? null : factorycraft.multiblock.MachineFluidAccess.input(be, pos, side, key);
+    return be == null
+        ? wagon(level, pos, side)
+        : factorycraft.multiblock.MachineFluidAccess.input(be, pos, side, key);
   }
 
   public static FluidCell<FluidKey> output(Level level, BlockPos pos, Direction side) {
     var be = endpoint(level, pos);
     if (be instanceof FluidBlockEntity f && f.kind() == FluidKind.PIPE)
       return f.simulationAvailable() ? f.hydraulic(pos, side) : null;
-    return be == null ? null : factorycraft.multiblock.MachineFluidAccess.output(be, pos, side);
+    return be == null
+        ? wagon(level, pos, side)
+        : factorycraft.multiblock.MachineFluidAccess.output(be, pos, side);
+  }
+
+  private static FluidCell<FluidKey> wagon(Level level, BlockPos pos, Direction side) {
+    // A fluid wagon is a pump endpoint, never a passive pipe-segment member.
+    if (side == null) return null;
+    var caller = fluidDevice(level, pos.relative(side));
+    return caller != null && caller.kind() == FluidKind.PUMP && caller.simulationAvailable()
+        ? factorycraft.trains.TrainPorts.fluid(level, pos, side)
+        : null;
   }
 
   private FluidConnections() {}

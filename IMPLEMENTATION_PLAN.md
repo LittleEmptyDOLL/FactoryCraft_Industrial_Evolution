@@ -1,3 +1,17 @@
+# Active0.31.0 /issue#13 — Rolling Stock & Train Simulation
+
+1. Source audit and independent kernels: stock specification, exact3×60Hz substeps per MC tick, routed metric trail/bogies, interval/conflict reservations. Keep builder controls; extend pitched clearance coherently.
+2. One saved train aggregate; original three stock items/entities and guarded placement/coupling/split/portable lifecycle; safe loaded track edit policy.
+3. Server manual driving/passengers, finite fuel, halt-only cargo/fluid/fuel menus and direct inserter/pump adapters, source recipes/research.
+4. Original source-proportioned locomotive/cargo/tanker meshes, independent bogies/wheels/couplers/grade pose, sparse authoritative projection sync, original engine audio and EN/RU controls.
+5. Pure/native/current-format independent-JVM and actual EN/RU/two-client scenes; bounded train profile. Retain all old tests/diagnostics. Publish checked main; report actual scope/remaining limitations/CI once. No0.32.
+
+Implemented items1–4 as a usable train foundation. Final build297JUnit; full538optional native, earlier534base and537optional separate-JVM checks pass; the additional parked-turnout native target passes (539registered total; no single local539run claimed). Actual EN/RU/two-client mouse menus/ghost sample, riding/reverse/brake/camera, tunnel/grade, native audio and exact player-world reload are recorded in validation/v0310. All failed evidence and finite ledgers are retained without reset/refill. This patch publishes the verified subset to main; issue13 acceptance remains open.
+
+**Remaining issue13 acceptance:** source impact/combat consequences, full native moving head-on/junction/loop matrix, all multi-wagon visual scenes and measured large multi-train certification. Preserve every current checkpoint/failed evidence. Finish those within issue13 in a subsequent authorized session; do not mark the entire issue complete and do not start0.32. Final publication records actual verified scope only.
+
+---
+
 # Active0.30.1 /issue#12 — consolidated fixes
 
 1. Integrate PR#11 ancestry without rewriting armor. Audit actual combat/rail defects and technical source references.

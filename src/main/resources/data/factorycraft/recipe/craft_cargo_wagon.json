@@ -1,0 +1,27 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 20
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 20
+    }
+  ],
+  "result": {
+    "id": "factorycraft:cargo_wagon",
+    "count": 1
+  }
+}

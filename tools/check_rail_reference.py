@@ -10,7 +10,7 @@ for name,ingredients in [('rail',{'minecraft:cobblestone':1,'factorycraft:iron_s
 tech=read('railway');assert tech['units']==75 and tech['ticks']==600
 assert tech['prerequisites']==['factorycraft:logistics_2','factorycraft:engine']
 assert tech['packs']=={'factorycraft:automation_science_pack':1,'factorycraft:logistic_science_pack':1}
-assert tech['unlocks']==['factorycraft:rail','factorycraft:iron_stick']
+assert tech['unlocks']==['factorycraft:rail','factorycraft:iron_stick','factorycraft:locomotive','factorycraft:cargo_wagon']
 assert json.loads((R/'data/factorycraft/loot_table/blocks/rail_bed.json').read_text())['pools']==[]
 for lang in ['en_us','ru_ru']:
  d=json.loads((R/'assets/factorycraft/lang'/f'{lang}.json').read_text())

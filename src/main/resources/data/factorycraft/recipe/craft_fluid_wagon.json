@@ -1,0 +1,43 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_gear"
+      },
+      "count": 10
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 16
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fluid_pipe"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 8
+    },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": [
+          "factorycraft:fluid_tank"
+        ],
+        "components": {},
+        "strict": true
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "factorycraft:fluid_wagon",
+    "count": 1
+  }
+}

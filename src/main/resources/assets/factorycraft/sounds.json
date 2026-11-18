@@ -25,5 +25,14 @@
         "attenuation_distance": 40
       }
     ]
+  },
+  "train_engine": {
+    "subtitle": "subtitles.factorycraft.train_engine",
+    "sounds": [
+      {
+        "name": "factorycraft:train_engine",
+        "attenuation_distance": 48
+      }
+    ]
   }
 }

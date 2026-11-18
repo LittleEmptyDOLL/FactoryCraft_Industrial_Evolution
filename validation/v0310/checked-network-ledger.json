@@ -1,0 +1,179 @@
+[
+  {
+    "kind": 0,
+    "fuel_J": 2260000,
+    "spent_J": 1740000,
+    "items": {
+      "Size": 4,
+      "Items": [
+        {
+          "count": 7,
+          "Slot": 0,
+          "id": "minecraft:coal"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 46.55010565053933,
+    "speed": 0.0
+  },
+  {
+    "kind": 1,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 40,
+      "Items": [
+        {
+          "count": 31,
+          "Slot": 0,
+          "components": {
+            "minecraft:custom_name": "\"finite train QA iron\""
+          },
+          "id": "minecraft:iron_ingot"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 1,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 40,
+      "Items": []
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 0,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 4,
+      "Items": [
+        {
+          "count": 8,
+          "Slot": 0,
+          "id": "minecraft:coal"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 2,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 0,
+      "Items": []
+    },
+    "fluid": {
+      "amount": 123457,
+      "id": "minecraft:water"
+    },
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 0,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 4,
+      "Items": [
+        {
+          "count": 8,
+          "Slot": 0,
+          "id": "minecraft:coal"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 0,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 4,
+      "Items": [
+        {
+          "count": 8,
+          "Slot": 0,
+          "id": "minecraft:coal"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 1,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 40,
+      "Items": [
+        {
+          "count": 31,
+          "Slot": 0,
+          "components": {
+            "minecraft:custom_name": "\"finite train QA iron\""
+          },
+          "id": "minecraft:iron_ingot"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 0,
+    "fuel_J": 0,
+    "spent_J": 0,
+    "items": {
+      "Size": 4,
+      "Items": [
+        {
+          "count": 8,
+          "Slot": 0,
+          "id": "minecraft:coal"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 0.0,
+    "speed": 0.0
+  },
+  {
+    "kind": 0,
+    "fuel_J": 3170000,
+    "spent_J": 4830000,
+    "items": {
+      "Size": 4,
+      "Items": [
+        {
+          "count": 6,
+          "Slot": 0,
+          "id": "minecraft:coal"
+        }
+      ]
+    },
+    "fluid": {},
+    "distance": 27.470340258498045,
+    "speed": 0.0
+  }
+]

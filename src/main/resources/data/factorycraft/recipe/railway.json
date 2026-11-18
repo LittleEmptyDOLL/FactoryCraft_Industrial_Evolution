@@ -12,7 +12,9 @@
   "ticks": 600,
   "unlocks": [
     "factorycraft:rail",
-    "factorycraft:iron_stick"
+    "factorycraft:iron_stick",
+    "factorycraft:locomotive",
+    "factorycraft:cargo_wagon"
   ],
   "x": 8,
   "y": 3

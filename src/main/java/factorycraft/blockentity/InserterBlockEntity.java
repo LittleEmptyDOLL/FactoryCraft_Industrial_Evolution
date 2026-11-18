@@ -15,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.*;
 
@@ -432,7 +431,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
       if (!ready()
           || level.getBlockEntity(sourcePos) != ownerBefore
           || level.getBlockState(sourcePos) != stateBefore) return;
-      var fresh = level.getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, cachedFacing);
+      var fresh = factorycraft.trains.TrainPorts.items(level, sourcePos, cachedFacing);
       if (fresh == null || i >= fresh.getSlots()) return;
       var actual = fresh.extractItem(i, 1, false);
       if (actual.isEmpty()) return;
@@ -485,9 +484,8 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
     for (int transitions = 0; transitions < 8; transitions++) {
       if (!ready()) break;
       if (stage == 0) {
-        var target =
-            level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, facing.getOpposite());
-        var source = level.getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, facing);
+        var target = factorycraft.trains.TrainPorts.items(level, targetPos, facing.getOpposite());
+        var source = factorycraft.trains.TrainPorts.items(level, sourcePos, facing);
         selfFuel(source);
         if (!ready()) break;
         var targetBelt = factorycraft.simulation.BeltSimulation.at(level, targetPos);
@@ -563,8 +561,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
         continue;
       }
       if (stage == 2) {
-        var target =
-            level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, facing.getOpposite());
+        var target = factorycraft.trains.TrainPorts.items(level, targetPos, facing.getOpposite());
         if (target == null) {
           status = 7;
           break;
@@ -582,8 +579,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
             || !endpointReady(targetPos)
             || level.getBlockEntity(targetPos) != ownerBefore
             || level.getBlockState(targetPos) != stateBefore) break;
-        target =
-            level.getCapability(Capabilities.ItemHandler.BLOCK, targetPos, facing.getOpposite());
+        target = factorycraft.trains.TrainPorts.items(level, targetPos, facing.getOpposite());
         if (target == null) break;
         if (!canPay() || !dropCredit && !cycle.payUnit(debit)) {
           status = 1;
@@ -645,7 +641,7 @@ public final class InserterBlockEntity extends FactoryBlockEntity implements Gri
           || !endpointReady(sourcePos)
           || level.getBlockEntity(sourcePos) != ownerBefore
           || level.getBlockState(sourcePos) != stateBefore) return changed;
-      var fresh = level.getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, cachedFacing);
+      var fresh = factorycraft.trains.TrainPorts.items(level, sourcePos, cachedFacing);
       if (fresh == null || slot >= fresh.getSlots()) return changed;
       if (!paid) {
         if (!cycle.payUnit(debit)) return false;

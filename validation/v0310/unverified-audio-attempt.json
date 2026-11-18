@@ -1,0 +1,5 @@
+{
+  "archive": "/workspace/work/v0310-evidence/client-one.wav.gz",
+  "verified": false,
+  "note": "First attempt while the client was open failed verification. Not a valid backup; verified closed archives are listed separately."
+}

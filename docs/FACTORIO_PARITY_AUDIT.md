@@ -1,5 +1,12 @@
 ## 0.30 railway foundation audit
 
+## 0.31 rolling stock (issue13)
+
+Pinned2.1.24 train prototypes/bills and Space Age gates are audited by `tools/check_train_reference.py` and native recipes. Three source stock kinds now run on the existing16-heading graph. Exact native500000mB normalization,40cargo/3fuel, fixed entity mass, seven-block spacing, ±2bogies, source traction/drag/braking and60→20Hz conversion are described in [TRAINS.md](../TRAINS.md).
+
+Current Minecraft adaptations: conservative pitched3×7×4 envelope, loaded/ticking-only runtime pause, whole-Minecraft-tick30000J burner reservation, native furnace-fuel fallback, recoverable zero-health wrecks. Full source collision damage, all visual scene combinations and a large multi-train performance certification must not be inferred from the implementation. Signals/stops remain0.32 and are not implemented here. No Factorio/Create art/code is bundled.
+
+
 Reference: pinned Factorio 2.1.24 base/Space Age prototypes and FFF-377. Source bills: Rail2 = Stone1 + Iron Stick1 + Steel1 (0.5s); Stick2 = Iron Plate1 (0.5s); Railway75 red/green ×30s, Logistics2+Engine. Existing cobblestone supplies stone. Sixteen cardinal/diagonal/1:2 headings and minimum radius13 are enforced. Numeric checks: `tools/check_rail_reference.py`.
 
 **Minecraft adaptations:** block-centered two-block bed/three-cell corridor; variable cubic connectors instead of fixed A/B footprints; curved/sloped cost ceil(metric length/2), whereas source A/B entities cost3; smooth 1:4 3D slopes and one unified elevation type. Bridges require existing endpoint foundations, with independently player-built structural supports. Conservative 3×7×4 swept clearance. Endpoint-only explicit turnouts; unrelated same-level diamonds are refused, overpasses stay independent. Movable blades, mid-edge splitting, trains/signals/stops are not implemented. Space Age elevated infrastructure progression remains unresolved rather than introducing fabricated early gates. Three lifts/four logical colors remain approved extensions. This is a tested foundation subset, not full rail parity.

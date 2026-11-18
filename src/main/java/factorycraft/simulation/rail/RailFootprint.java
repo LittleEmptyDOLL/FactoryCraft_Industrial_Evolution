@@ -24,11 +24,14 @@ public final class RailFootprint {
       addBed(new Box(p.x() - bx, p.y() - .125, p.z() - bz, p.x() + bx, p.y() + .25, p.z() + bz));
       // A full sized future 7-block body, 3-wide and 4-high. AABB sweep is conservative at
       // rotations.
-      double cx = Math.abs(side.x()) * 1.5 + Math.abs(forward.x()) * 3.5,
-          cz = Math.abs(side.z()) * 1.5 + Math.abs(forward.z()) * 3.5;
-      for (int x = floor(p.x() - cx + .00001); x <= floor(p.x() + cx - .00001); x++)
-        for (int z = floor(p.z() - cz + .00001); z <= floor(p.z() + cz - .00001); z++)
-          for (int y = floor(p.y() + .125 + .00001); y <= floor(p.y() + 4 - .00001); y++)
+      var normal = f.normal();
+      var center = p.add(normal.scale(2.02));
+      double cx = Math.abs(side.x()) * 1.5 + Math.abs(forward.x()) * 3.5 + Math.abs(normal.x()) * 2,
+          cy = Math.abs(forward.y()) * 3.5 + Math.abs(normal.y()) * 2,
+          cz = Math.abs(side.z()) * 1.5 + Math.abs(forward.z()) * 3.5 + Math.abs(normal.z()) * 2;
+      for (int x = floor(center.x() - cx + .00001); x <= floor(center.x() + cx - .00001); x++)
+        for (int z = floor(center.z() - cz + .00001); z <= floor(center.z() + cz - .00001); z++)
+          for (int y = floor(center.y() - cy + .00001); y <= floor(center.y() + cy - .00001); y++)
             clearance.add(new Cell(x, y, z));
     }
     // Endpoint foundations remain real world blocks. Clip the tiny eased-ramp abutment

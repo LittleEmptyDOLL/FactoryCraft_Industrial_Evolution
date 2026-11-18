@@ -16,7 +16,15 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active milestone — 0.30.1 / consolidated issue #12
+## Active milestone — 0.31.0 / issue #13
+
+* Start from validated0.30.1 (49a1adc; hosted CI44270538504 succeeded). Implement source-proportioned locomotive/cargo/fluid stock, canonical train ownership, paid manual movement and guarded stopped transfer. Preserve0.30.1 builder UX, 285JUnit/524native/thirty finite chains, all checkpoints/worlds, three lifts/four circuit colors.
+* One dimension-local train aggregate owns each carriage's fuel/cargo/500000mB fluid/health and movement. Entities are identity-only projections; no replicated inventory owners, forced runtime chunks or client-authoritative motion. Reserve swept occupancy before fuel/payment/position commit; unavailable track pauses, environmental removal quarantines rather than erases cargo. Native protections/UUID/actual side/loaded guards remain mandatory.
+* Verify source physics/60→20 scaling, bogies/consists/both directions, safe split/merge/portable restore, exact resources/independent JVM, actual EN/RU/two-client visuals and optional mods. Original detailed meshes/audio, no imported art or mandatory Create. Full hosted workloads remain CI. If acceptance remains incomplete, publish only a functioning checked subset and enumerate gaps; never call it full0.31. No signals/stops/schedules/robots/0.32 implementation.
+
+* Current0.31 evidence:297JUnit; full538optional native, earlier534base/537optional independent-JVM exact reload, actual EN/RU/two-client menus/driving/tunnel/grade/native audio and player-world NBT equality. The final parked-turnout correction has an additional independently verified native success beacon;539cases are now registered, but no single local539-case run is claimed. Preserve failed31-item menu-world ledger, all checkpoints and verified external archives. Issue13 remains incomplete for source impacts/full moving conflict and visual/performance matrices; no0.32. See validation/v0310/README.md.
+
+## Previous milestone — 0.30.1 / consolidated issue #12
 
 * Integrate existing armor PR #11 once; verify standard modifiers/tooltips/Apothic, server resistance and source damage mappings. Correct paid multi-target turret work, physical knockback, loaded hitscan spans, grenade collision/lifetime, original weapon transforms and synced effects/audio. Show real uranium reserves without changing mining. Create1.21.1-style paid rail starts, explicit selection/connection and automatic cancellation, persistent red invalid geometry previews.
 * Preserve 280 JUnit /504 native baseline, PR armor case, thirty finite chains, v0270–v0300 checkpoints and all evidence. New v0301 fixture names; never reset failures or seed old checkpoints. Exact ammo/FE/oil/rail owners remain authoritative. No forced runtime chunks, global track/turret scans, duplicate resistance or per-bullet Entities.

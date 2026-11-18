@@ -1,0 +1,3 @@
+{"profile":"pure-train-kernel","trains":64,"ticks":1600,"mean_ns":23726,"p95_ns":44976,"p99_ns":97024,"max_ns":5219109,"allocated_bytes":63813568,"bogie_samples":102400,"fuel_ledger":"exact"}
+{"profile":"pure-train-kernel","trains":64,"ticks":1600,"mean_ns":14467,"p95_ns":15693,"p99_ns":66107,"max_ns":334244,"allocated_bytes":63078400,"bogie_samples":102400,"fuel_ledger":"exact"}
+{"profile":"pure-train-kernel","trains":64,"ticks":1600,"mean_ns":26171,"p95_ns":106317,"p99_ns":171393,"max_ns":400572,"allocated_bytes":60134304,"bogie_samples":102400,"fuel_ledger":"exact"}

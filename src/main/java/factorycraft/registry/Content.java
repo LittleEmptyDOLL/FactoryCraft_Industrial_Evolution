@@ -802,6 +802,8 @@ public final class Content {
 
   public static void register(IEventBus bus) {
     factorycraft.rail.RailContent.init();
+    factorycraft.trains.TrainContent.init();
+    factorycraft.trains.TrainContent.registerAudio(bus);
     factorycraft.thermal.SteamFluids.register(bus);
     factorycraft.nuclear.HotSteam.register(bus);
     factorycraft.petroleum.PetroleumFluids.register(bus);
@@ -821,6 +823,7 @@ public final class Content {
   }
 
   private static void capabilities(RegisterCapabilitiesEvent e) {
+    factorycraft.trains.TrainEvents.capabilities(e);
     e.registerBlockEntity(
         Capabilities.ItemHandler.BLOCK, TURRET.get(), (be, side) -> be.inventory());
     e.registerBlockEntity(

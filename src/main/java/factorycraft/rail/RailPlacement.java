@@ -132,6 +132,7 @@ public final class RailPlacement {
     var data = RailwayData.get(level);
     var s = data.segment(id);
     if (s == null) return "missing";
+    if (factorycraft.trains.TrainData.get(level).occupied(id)) return "occupied";
     if (player.isSpectator() || !player.mayBuild()) return "permission";
     boolean inRange = false;
     for (var cell : s.footprint.bed.keySet()) {

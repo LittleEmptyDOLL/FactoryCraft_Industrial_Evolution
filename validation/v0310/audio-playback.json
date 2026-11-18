@@ -1,0 +1,22 @@
+[
+  {
+    "client": "one",
+    "clip": "native-one-engine-playback.ogg",
+    "source_archive": "/workspace/work/v0310-evidence/client-one-final.wav.gz",
+    "source_offset_seconds": 300,
+    "duration_seconds": 8,
+    "peak": 0.1518574208021164,
+    "rms": 0.03160039441293333,
+    "note": "Actual native OpenAL playback capture; not subjective listening approval."
+  },
+  {
+    "client": "two",
+    "clip": "native-two-engine-playback.ogg",
+    "source_archive": "/workspace/work/v0310-evidence/client-two-final.wav.gz",
+    "source_offset_seconds": 300,
+    "duration_seconds": 8,
+    "peak": 0.31869232654571533,
+    "rms": 0.06202362052416149,
+    "note": "Actual native OpenAL playback capture; not subjective listening approval."
+  }
+]

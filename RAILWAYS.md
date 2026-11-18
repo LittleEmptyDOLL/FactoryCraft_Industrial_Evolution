@@ -1,6 +1,10 @@
-# Railway Foundation — 0.30.1 / issues #10 and #12
+# Railways — 0.31.0 rolling stock / foundation issues #10 and #12
 
-Reference: Factorio2.1.24 **with Space Age enabled**. Numeric source reviewed: `base/prototypes/entity/trains.lua`, base recipe/technology definitions; half-diagonal bounding half-length2.236, source A/B cost3, source rail and stick recipes and Railway75 red/green×30s. Create1.21.1 `TrackPlacement` and `TrackGraph` were studied for separate endpoint geometry, cached planning, stable adjacency and change-based sync. No Create code, models/textures or dependency is imported. No rolling stock, trains/entities, signals/stops/schedules or robots.
+Reference: Factorio2.1.24 **with Space Age enabled**. Numeric source reviewed: `base/prototypes/entity/trains.lua`, base recipe/technology definitions; half-diagonal bounding half-length2.236, source A/B cost3, source rail and stick recipes and Railway75 red/green×30s. Create1.21.1 `TrackPlacement` and `TrackGraph` were studied for separate endpoint geometry, cached planning, stable adjacency and change-based sync. No Create code, models/textures or dependency is imported. The0.31 rolling-stock extension is documented in [TRAINS.md](TRAINS.md); signals/stops/schedules and robots remain future work.
+
+## Rolling stock extension
+
+Three individual stock types now share canonical train ownership, metric bogie sampling, manual rider input and halt-only native logistics. Rail editing refuses occupied edge removal; environmental loss quarantines recoverable contents. The existing0.30.1 builder controls are retained. Future3×7×4 clearance now includes full pitch in its conservative sweep. See [TRAINS.md](TRAINS.md) for source values, controls and explicit deviations.
 
 ## Geometry and coordinates
 
@@ -14,7 +18,7 @@ Sixteen endpoint heading families: cardinal, diagonal and `(1:2)/(2:1)` half dia
 
 A saved segment has a UUID and stable `Directed(UUID, reverse)` traversal identity. Node identity includes integer position and tangent axis, never just proximity. Only explicit compatible endpoints join. A turnout is one endpoint shared by incoming, straight and tangent-continuous branching curves; its outgoing alternatives are graph edges, not random minecart choices. Reverse traversal exposes the legitimate incoming route without an automatic U-turn. Up to8local segments share a physical cell.
 
-Unrelated same-level crossings are **explicit placement conflicts** in this foundation. They do not create a hidden junction. A shared-endpoint turnout permits its local24-block conflict envelope; future train reservations must treat the whole turnout as conflicting. Short straight approach edges within8blocks are allowed only through actual graph connectivity, so consecutive two-tile pieces do not collide with their own future carriage envelope. Unrelated nearby tracks receive no exemption. A geometric overpass with sufficient separation stays disconnected. At-grade diamonds/crossover primitives and movable switch blades are not implemented. Mid-edge splitting is not yet a player action: build a junction at a chosen segment endpoint; demolition/rejoin edits that edge without changing siblings.
+Unrelated same-level crossings are **explicit placement conflicts** in this foundation. They do not create a hidden junction. A shared-endpoint turnout permits its local24-block conflict envelope; train spatial reservations treat intersecting swept turnout bounds as conflicting. Short straight approach edges within8blocks are allowed only through actual graph connectivity, so consecutive two-tile pieces do not collide with their own future carriage envelope. Unrelated nearby tracks receive no exemption. A geometric overpass with sufficient separation stays disconnected. At-grade diamonds/crossover primitives and movable switch blades are not implemented. Mid-edge splitting is not yet a player action: build a junction at a chosen segment endpoint; demolition/rejoin edits that edge without changing siblings.
 
 ## Placement and protection
 
@@ -44,4 +48,4 @@ The unified 3D rail can change elevation under Railway as an explicit Minecraft 
 
 ## Verification
 
-Final local build280JUnit;504base native/504optional native, exact separate-JVM owner reload, actual EN/RU scenes and bounded profiles pass as recorded in VALIDATION.md and validation/v0300. Full hosted regression remains CI; no two-user remote graphical session was executed. Registration or compilation is not a claim that all issue#10 acceptance scenarios passed. Existing0.29 production/heat/energy/combat tests and old diagnostic worlds remain mandatory and preserved. No0.31 work.
+Final local build280JUnit;504base native/504optional native, exact separate-JVM owner reload, actual EN/RU scenes and bounded profiles pass as recorded in VALIDATION.md and validation/v0300. Full hosted regression remains CI; no two-user remote graphical session was executed. Registration or compilation is not a claim that all issue#10 acceptance scenarios passed. Existing0.29 production/heat/energy/combat tests and old diagnostic worlds remain mandatory and preserved. These counts describe the archived0.30 milestone; current rolling-stock validation is in validation/v0310.

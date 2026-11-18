@@ -173,6 +173,7 @@ public final class RailwayData extends SavedData {
   public List<ItemStack> remove(UUID id) {
     var s = segments.remove(id);
     if (s == null) return List.of();
+    factorycraft.trains.TrainData.get(level).trackRemoved(id);
     graph.remove(id);
     RailPlanner.removed(level, id);
     setDirty();

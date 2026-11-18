@@ -1,5 +1,12 @@
 ## 0.30.1 authoritative combat and construction projections
 
+## 0.31 canonical rolling stock
+
+`simulation.trains` contains source motion, historical route/bogies, oriented clearance and atomic interval/spatial reservations. `trains` adapts them to dimension-local `TrainData`, exactly one `TrainCar` resource owner, identity-only entities, protected stock placement and native stopped transfer. No carriage entity duplicates NBT inventories/fluids. Saved rail UUIDs and paid-claim ownership remain unchanged; rail future clearance includes body pitch. Cached client meshes/interpolation/audio are isolated in `client.trains`.
+
+Active owners are bounded and chunk-indexed; native ticket demotion revokes access and promotion readiness is budgeted. Movement settles loaded swept claims before finite fuel and pose; world edits preserve recoverable poses/resources. See [TRAINS.md](TRAINS.md) for exact source formulas and current adaptations; validation evidence remains separate from implementation claims.
+
+
 Existing production, heat, fluid, power and circuit engines are unchanged. Turrets retain one resource owner; the laser's exact bounded idle ledger settles with the paid shot before reentrant damage callbacks. Damage attribution separates owning player from physical source position. Saved projectiles synchronize only their visual mode and never invent impacts at a range boundary. `CombatEffects` contains bounded server-confirmed S2C visual projections and original ranged/rate-limited sound dispatch; `CombatEffectRenderer` is client-only and has no hit/damage authority.
 
 Existing PR #11 supplies native chest-slot attribute modifiers and sixteen synced typed resistance attributes. Optional Apothic/Placebo jars are pinned in the test lock, not mandatory dependencies. Uranium inspection reuses the canonical snapshot; it exposes no resource-mutating capability.
@@ -12,7 +19,7 @@ Rail selections bind a real UUID owner instead of an invisible ground point. Sho
 
 `RailPlan` is shared by preview and server. Transactions validate the entire bed/vehicle envelope, supports, chunks, border, collisions, claims and exact inventory before publishing one saved claim. A custom all-voxel protection event replaces the generic item wrapper's second late placement transaction; cancellation rolls back before payment. Demolition retires the claim before refunds/callbacks. Short connected approaches are discovered through explicit endpoint links, never arbitrary proximity. Unrelated at-grade crossings are rejected, raised crossings remain independent.
 
-Client geometry is clipped per cell and baked into ordinary chunks with cached quads; preview mesh/footprint are cached separately. Only changed tracking projections are sent. No train simulation, per-rail Entity or global per-tick railway traversal exists. See [RAILWAYS.md](RAILWAYS.md) for geometry/progression adaptations and current limits.
+Client geometry is clipped per cell and baked into ordinary chunks with cached quads; preview mesh/footprint are cached separately. Only changed tracking projections are sent. RailwayData itself owns no train resources: the separate0.31 TrainData module drives car projections. There is no per-rail Entity or global per-tick railway traversal. See [RAILWAYS.md](RAILWAYS.md) for geometry/progression adaptations and current limits.
 
 ## 0.29 owned solar/nuclear systems
 

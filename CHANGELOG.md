@@ -1,3 +1,13 @@
+# 0.31.0 — rolling-stock working subset (issue #13)
+
+* Real source-billed locomotive,40-slot cargo wagon and500000mB tanker with original distinct3D bodies/trucks/wheels/couplers/cab, procedural engine audio and EN/RU menus.
+* One canonical saved train/car owner; protected metric placement, automatic coupling, safe split/portable recovery, finite chemical fuel and three source60Hz motion steps per Minecraft tick. Manual riding/forward/reverse/coast/brake/branch intent is server-authoritative.
+* Edge/spatial swept reservations, source braking bounds, pitched3×7×4 planner/runtime clearance, loaded-only chunk quarantine and recoverable track loss. Stopped native cargo/fluid capabilities integrate actual inserters and directed pumps; filled portable placement consumes its sole owner even in Creative.
+* Preserve0.30.1 rail-builder controls, all285baselineJUnit/524native tests/thirtyfinite chains, old diagnostics, three lifts and four circuit colors. Add source audits, ownership/menu/chunk/restart regressions and real two-client evidence.
+* Full source impact behavior and the remaining visual/native/performance acceptance matrix are still open. This is not a claim that all issue13 requirements or0.32automation are complete. See [TRAINS.md](TRAINS.md) and [validation/v0310](validation/v0310).
+
+---
+
 ## 0.30.1 — consolidated combat, armor and railway fixes
 
 - Integrate existing PR #11 armor attributes; verify native tooltip/optional Apothic rendering without adding a second resistance pass.

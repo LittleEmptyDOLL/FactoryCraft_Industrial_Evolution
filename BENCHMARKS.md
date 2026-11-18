@@ -1,3 +1,11 @@
+# 0.31 bounded train observations
+
+`tools/TrainKernelBenchmark.java` measures pure motion/bogie kernels only, with three32-train400-tick warmups and three64-train1600-tick runs. Raw distributions/allocations and exact ledgers: [validation/v0310/train-kernel.jsonl](validation/v0310/train-kernel.jsonl). Mean14.467–26.171µs, max0.334–5.219ms,60.1–63.8MB allocated per102400samples. These figures exclude world collision, topology, render work and actual packets.
+
+The real two-client server adapter reports cold peaks88.3/55.6/204.9ms in distinct sessions on3vCPU/software rendering; the worst value is retained. These are not a warmed throughput comparison or a large multi-train certification. See [validation/v0310/README.md](validation/v0310/README.md); full factory/MIXED CI remains separate and does not substitute for the unfinished train-specific acceptance matrix.
+
+---
+
 # 0.30.0 — bounded railway foundation profiles
 
 Two distinct measurements, neither a factory TPS result. No equivalent railway kernel existed in0.29, so no before/after speedup claim.

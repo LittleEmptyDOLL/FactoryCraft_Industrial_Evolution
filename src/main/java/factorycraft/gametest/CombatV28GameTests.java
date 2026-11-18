@@ -98,14 +98,20 @@ public final class CombatV28GameTests {
               "heavy chest armor did not equip flat resistance");
           h.assertTrue(
               Math.abs(
-                      target.getAttributeValue(ArmorAttributes.percent(ArmorAttributes.Kind.PHYSICAL))
+                      target.getAttributeValue(
+                              ArmorAttributes.percent(ArmorAttributes.Kind.PHYSICAL))
                           - .30)
                   < .001,
               "heavy chest armor did not equip percent resistance");
           Combat.damage(h.getLevel(), target, null, null, "", "bullet", 10, false);
           h.assertTrue(
               Math.abs(target.getHealth() - 19.44) < .001,
-              "source physical flat6/30% resistance");
+              "source physical flat6/30% resistance; actual="
+                  + target.getHealth()
+                  + " fire="
+                  + target.getRemainingFireTicks()
+                  + " nativeArmor="
+                  + target.getArmorValue());
           Combat.damage(h.getLevel(), target, null, null, "", "laser", 10, false);
           h.assertTrue(
               Math.abs(target.getHealth() - 17.44) < .001,
@@ -133,8 +139,7 @@ public final class CombatV28GameTests {
         () -> {
           h.assertTrue(
               Math.abs(
-                      target.getAttributeValue(
-                          ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
+                      target.getAttributeValue(ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
                           - .40)
                   < .001,
               "heavy armor lacks acid resistance");
@@ -144,9 +149,7 @@ public final class CombatV28GameTests {
         9,
         () -> {
           h.assertTrue(
-              target.getAttributeValue(
-                      ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
-                  == 0,
+              target.getAttributeValue(ArmorAttributes.percent(ArmorAttributes.Kind.ACID)) == 0,
               "armor resistance remained after removing chest item");
           target.setItemSlot(
               net.minecraft.world.entity.EquipmentSlot.CHEST, item("light_armor", 1));
@@ -156,8 +159,7 @@ public final class CombatV28GameTests {
         () -> {
           h.assertTrue(
               Math.abs(
-                      target.getAttributeValue(
-                          ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
+                      target.getAttributeValue(ArmorAttributes.percent(ArmorAttributes.Kind.ACID))
                           - .20)
                   < .001,
               "light armor attributes did not replace heavy armor");
