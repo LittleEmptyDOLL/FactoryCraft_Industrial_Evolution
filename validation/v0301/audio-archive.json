@@ -1,0 +1,16 @@
+[
+  {
+    "file": "client-one-native.wav",
+    "bytes": 208451948,
+    "sha256": "6346c997d8db7e4fb891b27987e46743adf65ef7d4624e21ab7b09406fc8d35d",
+    "losslessArchive": "/workspace/work/v0301-evidence/client-one-native.wav.gz",
+    "archiveBytes": 43389748
+  },
+  {
+    "file": "client-two-native.wav",
+    "bytes": 208504868,
+    "sha256": "91133efe53d1a9bfa14f9df41d25f68b6e4012817a94d65efe86d7de040f7eb8",
+    "losslessArchive": "/workspace/work/v0301-evidence/client-two-native.wav.gz",
+    "archiveBytes": 76020703
+  }
+]

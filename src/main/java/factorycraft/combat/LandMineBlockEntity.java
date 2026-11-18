@@ -37,15 +37,16 @@ public final class LandMineBlockEntity extends BlockEntity {
     l.removeBlock(worldPosition, false);
     for (var e : l.getEntitiesOfClass(LivingEntity.class, new AABB(worldPosition).inflate(3))) {
       if (!Combat.allowed(l, e, shooter, scope, true) || !Combat.sight(l, center, e)) continue;
-      Combat.damage(
+      Combat.damageAt(
           l,
           e,
-          shooter,
+          null,
           shooter,
           scope,
           "explosion",
           250 * (1 + CombatResearch.bonus(l, scope, "ammo-damage", "landmine")),
-          true);
+          true,
+          center);
       if (e instanceof net.minecraft.world.entity.Mob mob && mob.isAlive())
         CombatStun.apply(mob, 60);
     }

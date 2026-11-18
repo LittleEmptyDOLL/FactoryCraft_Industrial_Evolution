@@ -1,0 +1,3 @@
+RAILWAY_REFERENCE: source rail/stick bills, 0.5s, Railway75x30s/logistics2+engine, real gates and no part loot: PASS
+Nuclear source audit: nine exact bills/times/results, acid-gated mining trigger, uranium probability recipe, seven sole portable drops, real future science gates.
+SPACE_AGE_MODULE_REFERENCE: nine module recipes/technologies, six finite research speeds, Automation 3, categories and no fake future science: PASS

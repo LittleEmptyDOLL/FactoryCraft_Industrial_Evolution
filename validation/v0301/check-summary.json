@@ -1,0 +1,15 @@
+{
+  "jar": "build/libs/factorycraft-0.30.1.jar",
+  "sha256": "03c30ba362406113a03b3fc5db1aef7a6bb1d9fd999bf3909cc4c946e678a269",
+  "junit": {
+    "tests": 285,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "baseNative": 524,
+  "baseIndependentJvm": 524,
+  "optionalNative": 524,
+  "baseMain": "fcd3309454c15bc560016ae63aef1163f9598c76",
+  "armorPrHead": "bb95537bf204ec74df6bf28cfd3e7ba5fabe358e"
+}

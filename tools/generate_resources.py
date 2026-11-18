@@ -1054,3 +1054,6 @@ exec(compile((Path(__file__).parent/"generate_nuclear_resources.py").read_text()
 
 # Railway is a scoped final overlay; it never changes earlier machine artwork.
 runpy.run_path(str(Path(__file__).with_name("generate_rail_resources.py")), run_name="__main__")
+
+# 0.30.1 uses the forward model axis and original procedural sound overlay.
+runpy.run_path(str(Path(__file__).with_name("generate_combat_fix_assets.py")), run_name="__main__")

@@ -13,5 +13,15 @@
     "name": "architectury-neoforge-13.0.8.jar",
     "url": "https://maven.architectury.dev/dev/architectury/architectury-neoforge/13.0.8/architectury-neoforge-13.0.8.jar",
     "sha256": "2eb06668281be9c57ed6ba8b2ca39b155567063c3096aa94a1c2140694f787df"
+  },
+  {
+    "name": "ApothicAttributes-1.21.1-2.11.0.jar",
+    "url": "https://cdn.modrinth.com/data/DGaH8Rh0/versions/64fZbLnj/ApothicAttributes-1.21.1-2.11.0.jar",
+    "sha256": "17c42bb6dd5c0d820fe090e1bb5959578cd5ab7b70caf98a2a59b319fcc7e1ba"
+  },
+  {
+    "name": "Placebo-1.21.1-9.9.4.jar",
+    "url": "https://cdn.modrinth.com/data/tCkE8p2N/versions/B5zbSVlT/Placebo-1.21.1-9.9.4.jar",
+    "sha256": "d8952c019d6e54befe37155bc9876985ec57bf73dd33872115c7a65ac6bceba0"
   }
 ]

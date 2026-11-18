@@ -46,9 +46,9 @@ public final class ResourceDepositBlock extends BaseEntityBlock {
     if (player.isCreative())
       return super.onDestroyedByPlayer(state, level, pos, player, harvest, fluid);
     if (kind == factorycraft.resources.ResourceKind.URANIUM) {
-      if (!level.isClientSide)
-        player.displayClientMessage(
-            Component.translatable("message.factorycraft.uranium_acid_required"), true);
+      if (!level.isClientSide
+          && level.getBlockEntity(pos) instanceof ResourceDepositBlockEntity deposit
+          && deposit.available()) player.displayClientMessage(reserveMessage(deposit), true);
       return false;
     }
     if (!level.isClientSide
@@ -66,20 +66,20 @@ public final class ResourceDepositBlock extends BaseEntityBlock {
 
   protected InteractionResult useWithoutItem(
       BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-    if (kind == factorycraft.resources.ResourceKind.URANIUM) {
-      if (!level.isClientSide)
-        player.displayClientMessage(
-            Component.translatable("message.factorycraft.uranium_acid_required"), true);
-      return InteractionResult.sidedSuccess(level.isClientSide);
-    }
     if (!level.isClientSide
-        && level.getBlockEntity(pos) instanceof ResourceDepositBlockEntity deposit)
-      player.displayClientMessage(
-          Component.translatable(
-              "message.factorycraft.resource_remaining",
-              kind.result().getHoverName(),
-              deposit.remaining()),
-          true);
+        && level.getBlockEntity(pos) instanceof ResourceDepositBlockEntity deposit
+        && deposit.available()) player.displayClientMessage(reserveMessage(deposit), true);
     return InteractionResult.sidedSuccess(level.isClientSide);
+  }
+
+  public Component reserveMessage(ResourceDepositBlockEntity deposit) {
+    var stock =
+        Component.translatable(
+            "message.factorycraft.resource_remaining",
+            kind.result().getHoverName(),
+            deposit.remaining());
+    return kind == factorycraft.resources.ResourceKind.URANIUM
+        ? stock.append(" — ").append(Component.translatable("tooltip.factorycraft.uranium_acid"))
+        : stock;
   }
 }

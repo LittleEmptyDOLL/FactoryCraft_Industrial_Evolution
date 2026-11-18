@@ -12,7 +12,9 @@ public final class RailPlanner {
       RailEnd start,
       int goal,
       net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension,
-      long selectedAt) {}
+      long selectedAt,
+      UUID anchor,
+      int slot) {}
 
   private static final Map<UUID, Selection> selections = new HashMap<>();
 
@@ -20,7 +22,13 @@ public final class RailPlanner {
     var s = selections.get(p.getUUID());
     if (s != null
         && (s.dimension() != p.level().dimension()
-            || p.level().getGameTime() - s.selectedAt() > 12000)) {
+            || p.level().getGameTime() - s.selectedAt() > 1200
+            || !p.isAlive()
+            || p.isSpectator()
+            || p.getInventory().selected != s.slot()
+            || !p.getMainHandItem().is(RailContent.RAIL.get())
+                && !p.getOffhandItem().is(RailContent.RAIL.get())
+            || !RailwayData.get(p.serverLevel()).available(s.anchor()))) {
       clear(p);
       return null;
     }
@@ -44,7 +52,7 @@ public final class RailPlanner {
     if (hit.getType() != HitResult.Type.BLOCK || !level.hasChunkAt(hit.getBlockPos())) return null;
     if (level.getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity cell) {
       RailEnd best = null;
-      double distance = 4, alignment = -Double.MAX_VALUE;
+      double distance = Double.POSITIVE_INFINITY, alignment = -Double.MAX_VALUE;
       for (var d : cell.descriptors)
         for (var e : List.of(d.a(), d.b())) {
           var q = e.point();
@@ -76,8 +84,16 @@ public final class RailPlanner {
                 s.start(),
                 s.goal() < 0 ? 0 : s.goal() == 15 ? -1 : s.goal() + 1,
                 s.dimension(),
-                p.level().getGameTime())
-            : new Selection(s.start().reverse(), s.goal(), s.dimension(), p.level().getGameTime());
+                p.level().getGameTime(),
+                s.anchor(),
+                s.slot())
+            : new Selection(
+                s.start().reverse(),
+                s.goal(),
+                s.dimension(),
+                p.level().getGameTime(),
+                s.anchor(),
+                s.slot());
     selections.put(p.getUUID(), next);
     RailNetwork.send(p, next);
   }
@@ -93,7 +109,31 @@ public final class RailPlanner {
     if (end == null) return "endpoint";
     if (s == null) {
       if (!p.level().mayInteract(p, hit.getBlockPos()) || !p.mayBuild()) return "permission";
-      s = new Selection(end, -1, p.level().dimension(), p.level().getGameTime());
+      if (!(p.level().getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity cell)) {
+        try {
+          return RailPlacement.place(p, new RailPlan(starter(end)));
+        } catch (IllegalArgumentException invalid) {
+          return invalid.getMessage();
+        }
+      }
+      UUID anchor = null;
+      for (var id : cell.segments()) {
+        var owner = RailwayData.get(p.serverLevel()).segment(id);
+        if (owner != null
+            && (owner.curve.start.samePosition(end) || owner.curve.end.samePosition(end))) {
+          anchor = id;
+          break;
+        }
+      }
+      if (anchor == null || !RailwayData.get(p.serverLevel()).available(anchor)) return "unloaded";
+      s =
+          new Selection(
+              end,
+              -1,
+              p.level().dimension(),
+              p.level().getGameTime(),
+              anchor,
+              p.getInventory().selected);
       selections.put(p.getUUID(), s);
       RailNetwork.send(p, s);
       return "selected";
@@ -111,14 +151,42 @@ public final class RailPlanner {
       var plan = new RailPlan(RailCurve.plan(s.start(), end));
       var result = RailPlacement.place(p, plan);
       if (result.equals("ready")) {
-        var next = new Selection(end, -1, p.level().dimension(), p.level().getGameTime());
-        selections.put(p.getUUID(), next);
-        RailNetwork.send(p, next);
+        clear(p);
       }
       return result;
     } catch (IllegalArgumentException invalid) {
       return invalid.getMessage();
     }
+  }
+
+  public static RailCurve starter(RailEnd start) {
+    var v = start.heading().vector();
+    double scale =
+        2
+            / Math.min(
+                Math.abs(v.x()) < 1e-8 ? 1 : Math.abs(v.x()),
+                Math.abs(v.z()) < 1e-8 ? 1 : Math.abs(v.z()));
+    return RailCurve.plan(
+        start,
+        new RailEnd(
+            start.x() + (int) Math.round(v.x() * scale),
+            start.y(),
+            start.z() + (int) Math.round(v.z() * scale),
+            start.heading()));
+  }
+
+  public static void tick(ServerPlayer player) {
+    if (selections.containsKey(player.getUUID())) get(player);
+  }
+
+  public static void removed(ServerLevel level, UUID anchor) {
+    for (var entry : List.copyOf(selections.entrySet()))
+      if (entry.getValue().dimension() == level.dimension()
+          && entry.getValue().anchor().equals(anchor)) {
+        var player = level.getServer().getPlayerList().getPlayer(entry.getKey());
+        if (player != null) clear(player);
+        else selections.remove(entry.getKey());
+      }
   }
 
   private RailPlanner() {}

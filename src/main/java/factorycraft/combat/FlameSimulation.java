@@ -238,6 +238,14 @@ public final class FlameSimulation {
         new Flight(
             from, end, due, owner == null ? null : owner.getUUID(), scope, amount, automatic));
     d.setDirty();
+    CombatEffects.emit(
+        l,
+        from,
+        List.of(
+            new CombatEffects.Impact(
+                end, aim.normalize().scale(-1), block.getType() == HitResult.Type.BLOCK)),
+        2,
+        automatic);
     var flash = from.add(aim.normalize().scale(.7)).add(0, -.2, 0);
     l.sendParticles(
         ParticleTypes.FLAME, flash.x, flash.y, flash.z, 1, aim.x * .1, aim.y * .1, aim.z * .1, .05);
@@ -266,7 +274,7 @@ public final class FlameSimulation {
             new AABB(at, at).inflate(2.5),
             e -> Combat.allowed(l, e, source, f.scope, f.automatic)))
       if (e.getBoundingBox().getCenter().distanceToSqr(at) <= 2.5 * 2.5 && Combat.sight(l, at, e)) {
-        Combat.damage(l, e, source, source, f.scope, "fire", f.damage, f.automatic);
+        Combat.damageAt(l, e, null, source, f.scope, "fire", f.damage, f.automatic, at);
         if (d.burns.size() < LIMIT || d.burns.containsKey(e.getUUID())) {
           var b = d.burns.computeIfAbsent(e.getUUID(), k -> new Burn());
           b.target = e.getUUID();
@@ -338,7 +346,16 @@ public final class FlameSimulation {
         speed.addTransientModifier(
             new AttributeModifier(SLOW, -.2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
       if (tick * 3 >= b.next) {
-        Combat.damage(l, living, source, source, b.scope, "fire", 100.0 / 6 * b.scale, b.automatic);
+        Combat.damageAt(
+            l,
+            living,
+            null,
+            source,
+            b.scope,
+            "fire",
+            100.0 / 6 * b.scale,
+            b.automatic,
+            living.position());
         b.next = (tick * 3 - b.next < 3 ? b.next : tick * 3) + 10;
         changed = true;
       }
@@ -362,15 +379,16 @@ public final class FlameSimulation {
                 new AABB(p.pos, p.pos).inflate(.8),
                 e -> Combat.allowed(l, e, source, p.scope, p.automatic)))
           if (Combat.sight(l, p.pos, e))
-            Combat.damage(
+            Combat.damageAt(
                 l,
                 e,
-                source,
+                null,
                 source,
                 p.scope,
                 "fire",
                 13.0 / 5 * p.strength * p.scale,
-                p.automatic);
+                p.automatic,
+                p.pos);
       }
       if (tick % 10 == 0 && visuals-- > 0)
         l.sendParticles(ParticleTypes.FLAME, p.pos.x, p.pos.y, p.pos.z, 1, .15, .05, .15, .01);

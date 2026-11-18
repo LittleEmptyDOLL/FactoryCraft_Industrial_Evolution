@@ -1,3 +1,13 @@
+## 0.30.1 — consolidated combat, armor and railway fixes
+
+- Integrate existing PR #11 armor attributes; verify native tooltip/optional Apothic rendering without adding a second resistance pass.
+- Resolve fractional laser starvation and unnecessary flame re-priming; expose real turret status and physical hit/knockback origins. Preserve exact FE/oil/ammunition ownership before external callbacks.
+- Replace grenade distance-triggered fake impacts with real collision and saved five-second safety fuse; synchronize client gravity mode.
+- Correct six weapon first-person transforms; add original bounded paid firing audio, synchronized tracers/laser/flame/impact effects.
+- Show exact uranium reserves together with the acid requirement through canonical interaction/Jade data.
+- Build physical short initial rails; bind endpoint selections to real UUIDs, clear after success/cancel/invalidation, and keep red invalid geometry previews visible with reasons. Preserve source rails, refunds, protection, old checkpoints, three lifts and four circuit colors.
+- New focused invariant, native and independent-JVM coverage; retain all old tests and diagnostic failures. Evidence and explicit review limitations: validation/v0301.
+
 ## 0.30.0 — Railway Foundation
 
 - Add one source-gated Rail item and Iron Stick recipes, sixteen Factorio 2.x endpoint families, metric smooth 3D cubic rails, radius/grade validation and explicit endpoint turnout graph.

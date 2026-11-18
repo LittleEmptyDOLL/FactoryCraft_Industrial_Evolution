@@ -1,3 +1,11 @@
+## 0.30.1 authoritative combat and construction projections
+
+Existing production, heat, fluid, power and circuit engines are unchanged. Turrets retain one resource owner; the laser's exact bounded idle ledger settles with the paid shot before reentrant damage callbacks. Damage attribution separates owning player from physical source position. Saved projectiles synchronize only their visual mode and never invent impacts at a range boundary. `CombatEffects` contains bounded server-confirmed S2C visual projections and original ranged/rate-limited sound dispatch; `CombatEffectRenderer` is client-only and has no hit/damage authority.
+
+Existing PR #11 supplies native chest-slot attribute modifiers and sixteen synced typed resistance attributes. Optional Apothic/Placebo jars are pinned in the test lock, not mandatory dependencies. Uranium inspection reuses the canonical snapshot; it exposes no resource-mutating capability.
+
+Rail selections bind a real UUID owner instead of an invisible ground point. Short initial pieces and subsequent connections share the existing protected exact-cost transaction. Selection lifecycle is independent of paid geometry. Invalid preview-only curves cannot enter `RailwayData`; local meshes/status can remain visible while server placement refuses them. Existing saved material ownership and graph identity stay unchanged.
+
 ## 0.30 railway ownership and static geometry
 
 `simulation.rail` defines sixteen endpoint families, metric cubic/smoothstep paths, sampled frames, voxel footprints and UUID-oriented explicit adjacency. `rail.RailwayData` is the dimension-local sole owner of component-exact paid materials and canonical curves. Physical `rail_bed` cells contain only versioned nonowning identities/mesh/collision projections; they have no independent loot, item, ticker or resource store. Early unload revokes availability without deleting saved graph edges. Reload checks actual canonical parts and rebuilds stale projections from the owner.

@@ -1,3 +1,7 @@
+## 0.30.1 uranium reserve readout
+
+The former uranium interaction returned after its acid warning and never reached the generic reserve message. One canonical `reserveMessage` now supplies exact remaining units **and** the existing localized acid-drill requirement, for both use and rejected hand mining. Jade reads the same loaded authoritative owner through a read-only `MachineInspection` snapshot. It neither duplicates stock in a technical part nor enables extraction. Native tests run real 100-mB-acid-paid extraction from 3 → 2 → exhausted, then check both message/snapshot. Uninitialized/unavailable owners remain unavailable; finite reserves, generation, research triggers and drilling costs are unchanged. Actual EN/RU client acceptance is recorded in [validation/v0301](validation/v0301).
+
 ## 0.29 finite uranium
 
 Uranium uses the existing deterministic irregular full ellipsoid, vertical radius 5–8, canonical terrain anchor and replaceable-natural-solids rules. Separate restart-required defaults: candidate spacing 24 chunks, horizontal radius 6–12, per-cell reserve 500–3000. These are explicit Minecraft rarity/richness adaptations, not literal Wube autoplace parity. Existing iron/copper/coal/stone settings are unchanged. No generation into water, air, structures or unavailable decorating chunks.

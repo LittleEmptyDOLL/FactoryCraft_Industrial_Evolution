@@ -1,0 +1,38 @@
+[
+  {
+    "file": "one-gun-playback.ogg",
+    "peakDB": "-13.934732",
+    "rmsDB": "-41.987779",
+    "method": "actual OpenAL wave-backend capture; nonzero decoded playback; no subjective loudness/listening acceptance claimed"
+  },
+  {
+    "file": "one-laser-playback.ogg",
+    "peakDB": "-12.458554",
+    "rmsDB": "-38.437413",
+    "method": "actual OpenAL wave-backend capture; nonzero decoded playback; no subjective loudness/listening acceptance claimed"
+  },
+  {
+    "file": "one-flame-playback.ogg",
+    "peakDB": "-10.504057",
+    "rmsDB": "-46.113017",
+    "method": "actual OpenAL wave-backend capture; nonzero decoded playback; no subjective loudness/listening acceptance claimed"
+  },
+  {
+    "file": "two-gun-playback.ogg",
+    "peakDB": "-10.684655",
+    "rmsDB": "-38.727472",
+    "method": "actual OpenAL wave-backend capture; nonzero decoded playback; no subjective loudness/listening acceptance claimed"
+  },
+  {
+    "file": "two-laser-playback.ogg",
+    "peakDB": "-12.009777",
+    "rmsDB": "-38.244705",
+    "method": "actual OpenAL wave-backend capture; nonzero decoded playback; no subjective loudness/listening acceptance claimed"
+  },
+  {
+    "file": "two-flame-playback.ogg",
+    "peakDB": "-10.968345",
+    "rmsDB": "-45.564058",
+    "method": "actual OpenAL wave-backend capture; nonzero decoded playback; no subjective loudness/listening acceptance claimed"
+  }
+]

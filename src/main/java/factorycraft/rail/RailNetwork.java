@@ -43,7 +43,7 @@ public final class RailNetwork {
 
   @SubscribeEvent
   public static void register(RegisterPayloadHandlersEvent event) {
-    var r = event.registrar("0.30.0");
+    var r = event.registrar("0.30.1");
     r.playToClient(
         Selection.TYPE, Selection.CODEC, (p, c) -> c.enqueueWork(() -> clientReceiver.accept(p)));
     r.playToServer(
@@ -56,7 +56,8 @@ public final class RailNetwork {
                       && p.action >= 0
                       && p.action <= 2
                       && (!player.isSpectator())
-                      && (player.getMainHandItem().is(RailContent.RAIL.get())
+                      && (p.action == 2
+                          || player.getMainHandItem().is(RailContent.RAIL.get())
                           || player.getOffhandItem().is(RailContent.RAIL.get())))
                     RailPlanner.edit(player, p.action);
                 }));
@@ -67,6 +68,8 @@ public final class RailNetwork {
     if (s != null) {
       n.put("Start", RailCodec.end(s.start()));
       n.putInt("Goal", s.goal());
+      n.putUUID("Anchor", s.anchor());
+      n.putInt("Slot", s.slot());
     }
     PacketDistributor.sendToPlayer(p, new Selection(n));
   }

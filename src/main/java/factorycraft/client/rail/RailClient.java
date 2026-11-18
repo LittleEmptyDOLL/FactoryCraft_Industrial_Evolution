@@ -41,7 +41,10 @@ public final class RailClient {
           GLFW.GLFW_KEY_C,
           "key.categories.factorycraft");
   private static RailEnd start;
-  private static int goal = -1;
+  private static int goal = -1, selectedSlot = -1;
+  private static UUID anchor;
+  private static boolean geometric = true;
+  private static BlockHitResult hovering;
   private static net.minecraft.world.level.Level currentLevel;
   private static final Map<UUID, RailViews.Route> curves =
       new LinkedHashMap<>(64, .75f, true) {
@@ -69,6 +72,11 @@ public final class RailClient {
         new RailGeometryLoader());
     RailNetwork.clientReceiver =
         p -> {
+          var level = Minecraft.getInstance().level;
+          if (currentLevel != level) curves.clear();
+          currentLevel = level;
+          anchor = p.tag().hasUUID("Anchor") ? p.tag().getUUID("Anchor") : null;
+          selectedSlot = p.tag().getInt("Slot");
           start = p.tag().contains("Start") ? RailCodec.end(p.tag().getCompound("Start")) : null;
           goal = p.tag().getInt("Goal");
           lastStart = null;
@@ -100,20 +108,35 @@ public final class RailClient {
       plan = null;
       lastStart = null;
     }
-    if (mc.player == null
-        || mc.screen != null
-        || !mc.player.getMainHandItem().is(RailContent.RAIL.get())
-            && !mc.player.getOffhandItem().is(RailContent.RAIL.get())) return;
+    if (mc.player == null) return;
+    boolean held =
+        mc.player.getMainHandItem().is(RailContent.RAIL.get())
+            || mc.player.getOffhandItem().is(RailContent.RAIL.get());
+    if (start != null
+        && (!held
+            || selectedSlot != mc.player.getInventory().selected
+            || !(mc.level.getBlockEntity(new BlockPos(start.x(), start.y(), start.z()))
+                instanceof RailCellBlockEntity cell)
+            || !cell.segments().contains(anchor))) {
+      start = null;
+      plan = null;
+      lastStart = null;
+      PacketDistributor.sendToServer(new RailNetwork.Edit(2));
+    }
+    if (mc.screen != null || !held) return;
     while (ROTATE.consumeClick()) PacketDistributor.sendToServer(new RailNetwork.Edit(0));
     while (FLIP.consumeClick()) PacketDistributor.sendToServer(new RailNetwork.Edit(1));
-    while (CANCEL.consumeClick()) PacketDistributor.sendToServer(new RailNetwork.Edit(2));
+    while (CANCEL.consumeClick()) {
+      start = null;
+      plan = null;
+      lastStart = null;
+      PacketDistributor.sendToServer(new RailNetwork.Edit(2));
+    }
   }
 
   private static boolean target(Minecraft mc, BlockHitResult hit) {
     return hit.getType() == HitResult.Type.BLOCK
-        && !mc.level.getBlockState(hit.getBlockPos()).isAir()
-        && mc.player.getEyePosition().distanceToSqr(hit.getLocation())
-            <= mc.player.blockInteractionRange() * mc.player.blockInteractionRange() + .01;
+        && !mc.level.getBlockState(hit.getBlockPos()).isAir();
   }
 
   @SubscribeEvent
@@ -121,22 +144,29 @@ public final class RailClient {
     if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
     var mc = Minecraft.getInstance();
     plan = null;
+    hovering = null;
     if (mc.level == null
         || mc.player == null
         || mc.screen != null
-        || start == null
         || !mc.player.getMainHandItem().is(RailContent.RAIL.get())
-            && !mc.player.getOffhandItem().is(RailContent.RAIL.get())
-        || !(mc.hitResult instanceof BlockHitResult hit)
-        || !target(mc, hit)) return;
+            && !mc.player.getOffhandItem().is(RailContent.RAIL.get())) return;
+    // Extend only an active construction ray. A real surface remains required; MISS has no ghost.
+    var result =
+        start == null
+            ? mc.hitResult
+            : mc.player.pick(64, e.getPartialTick().getGameTimeDeltaPartialTick(false), false);
+    if (!(result instanceof BlockHitResult hit) || !target(mc, hit)) return;
+    hovering = hit;
     var look = mc.player.getLookAngle();
     var end = RailPlanner.target(mc.level, hit, false, RailHeading.nearest(look.x, look.z));
-    if (end == null) {
-      reason = "endpoint";
-      return;
-    }
-    if (!mc.level.getBlockState(hit.getBlockPos()).is(RailContent.BED.get())) {
-      var delta = end.point().subtract(start.point());
+    if (end == null) return;
+    RailEnd origin = start;
+    if (origin == null) {
+      if (mc.level.getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity) return;
+      origin = end;
+      end = RailPlanner.starter(origin).end;
+    } else if (!mc.level.getBlockState(hit.getBlockPos()).is(RailContent.BED.get())) {
+      var delta = end.point().subtract(origin.point());
       end =
           new RailEnd(
               end.x(),
@@ -145,23 +175,42 @@ public final class RailClient {
               goal < 0 ? RailHeading.nearest(delta.x(), delta.z()) : new RailHeading(goal));
     }
     try {
-      if (!start.equals(lastStart) || !end.equals(lastEnd)) {
-        lastStart = start;
+      if (!origin.equals(lastStart) || !end.equals(lastEnd)) {
+        lastStart = origin;
         lastEnd = end;
-        cached = null;
-        plan = new RailPlan(RailCurve.plan(start, end));
-        cached = plan;
-        ghost = ghost(plan);
+        geometric = true;
+        String invalid = null;
+        RailCurve curve;
+        try {
+          curve = RailCurve.plan(origin, end);
+        } catch (IllegalArgumentException bad) {
+          geometric = false;
+          invalid = bad.getMessage();
+          try {
+            curve = RailCurve.preview(origin, end);
+          } catch (IllegalArgumentException beyond) {
+            curve = RailPlanner.starter(origin);
+          }
+        }
+        cached = new RailPlan(curve);
+        ghost = ghost(cached);
         checkedAt = Long.MIN_VALUE;
-      } else plan = cached;
+        if (!geometric) reason = invalid;
+      }
+      plan = cached;
       if (plan == null) return;
       if (mc.level.getGameTime() - checkedAt >= 4 || checkedAt == Long.MIN_VALUE) {
-        reason = plan.inspect(mc.level, mc.player);
-        if (reason.equals("ready")
-            && !mc.player.isCreative()
-            && RailPlacement.count(mc.player) < plan.curve.cost()) reason = "price";
+        if (geometric) {
+          reason = plan.inspect(mc.level, mc.player);
+          if (reason.equals("ready")
+              && !mc.player.isCreative()
+              && RailPlacement.count(mc.player) < plan.curve.cost()) reason = "price";
+        }
         checkedAt = mc.level.getGameTime();
       }
+      if (mc.player.getEyePosition().distanceToSqr(hit.getLocation())
+          > mc.player.blockInteractionRange() * mc.player.blockInteractionRange() + .01)
+        reason = "reach";
       var pose = e.getPoseStack();
       pose.pushPose();
       var camera = e.getCamera().getPosition();
@@ -170,20 +219,20 @@ public final class RailClient {
       boolean valid = reason.equals("ready");
       float r = valid ? .2f : 1, g = valid ? 1 : .18f;
       pose.pushPose();
-      pose.translate(start.x(), start.y(), start.z());
+      pose.translate(plan.curve.start.x(), plan.curve.start.y(), plan.curve.start.z());
       var fill = buffers.getBuffer(RenderType.debugQuads());
       for (int i = 0; i < ghost.length; i += 3)
         fill.addVertex(pose.last(), ghost[i], ghost[i + 1], ghost[i + 2]).setColor(r, g, .4f, .22f);
       buffers.endBatch(RenderType.debugQuads());
       pose.popPose();
-      var line = buffers.getBuffer(RenderType.lines());
-      RailCurve.Frame prev = plan.curve.sample(0, false);
+      var out = buffers.getBuffer(RenderType.lines());
+      var prev = plan.curve.sample(0, false);
       for (double d = .5; d < plan.curve.length() + .5; d += .5) {
         var next = plan.curve.sample(Math.min(d, plan.curve.length()), false);
         for (double offset : new double[] {-1, -.72, 0, .72, 1})
           line(
               pose,
-              line,
+              out,
               prev.position().add(prev.side().scale(offset)),
               next.position().add(next.side().scale(offset)),
               r,
@@ -191,14 +240,33 @@ public final class RailClient {
               .4f);
         prev = next;
       }
-      LevelRenderer.renderLineBox(
-          pose,
-          line,
-          new AABB(start.x(), start.y(), start.z(), start.x() + 1, start.y() + .3, start.z() + 1),
-          .3f,
-          .5f,
-          1,
-          1);
+      for (var point : List.of(plan.curve.start, plan.curve.end))
+        LevelRenderer.renderLineBox(
+            pose,
+            out,
+            new AABB(point.x(), point.y(), point.z(), point.x() + 1, point.y() + .4, point.z() + 1),
+            .3f,
+            .5f,
+            1,
+            1);
+      // Coarse carriage envelopes clarify why a nearby/overhead obstacle blocks the track.
+      for (double d = 0; d <= plan.curve.length(); d += 4) {
+        var point = plan.curve.sample(d, false).position();
+        LevelRenderer.renderLineBox(
+            pose,
+            out,
+            new AABB(
+                point.x() - 1.5,
+                point.y() + .35,
+                point.z() - 1.5,
+                point.x() + 1.5,
+                point.y() + 4,
+                point.z() + 1.5),
+            1,
+            .72f,
+            .2f,
+            .2f);
+      }
       buffers.endBatch(RenderType.lines());
       pose.popPose();
     } catch (IllegalArgumentException bad) {
@@ -252,11 +320,10 @@ public final class RailClient {
     if (mc.player == null
         || mc.level == null
         || mc.screen != null
-        || start == null
         || !mc.player.getMainHandItem().is(RailContent.RAIL.get())
             && !mc.player.getOffhandItem().is(RailContent.RAIL.get())
-        || !(mc.hitResult instanceof BlockHitResult hit)
-        || !target(mc, hit)) return;
+        || hovering == null
+        || plan == null) return;
     e.getGuiGraphics()
         .drawCenteredString(
             mc.font,

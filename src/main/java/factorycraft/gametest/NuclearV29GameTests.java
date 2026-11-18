@@ -414,57 +414,59 @@ public final class NuclearV29GameTests {
     factorycraft.energy.PowerWires.connect(a, b);
     l.setDayTime(6000);
     long[] held = {0};
-    h.runAfterDelay(
-        70,
-        () -> {
-          held[0] = battery.battery.units();
-          h.assertTrue(
-              held[0] > 0 && load.power.getEnergyStored() == 16000,
-              "solar surplus not charged: "
-                  + held[0]
-                  + " "
-                  + factorycraft.energy.PowerGrid.statistics(l));
-          l.setDayTime(18000);
-          load.power.spend(100);
-        });
-    h.runAfterDelay(
-        90,
-        () -> {
-          h.assertTrue(
-              load.power.getEnergyStored() == 16000 && battery.battery.units() == held[0] - 1500,
-              "night tertiary ledger: " + battery.battery.units() + " initial " + held[0]);
-          factorycraft.energy.PowerWires.disconnect(a, b);
-          load.power.spend(100);
-        });
-    h.runAfterDelay(
-        110,
-        () -> {
-          // Battery and load remain on B; A's panel cannot energize it across a cut.
-          l.setDayTime(6000);
-          held[0] = battery.battery.units();
-          load.power.restore(16000);
-        });
-    h.runAfterDelay(
-        145,
-        () -> {
-          h.assertTrue(battery.battery.units() == held[0], "unconnected solar charged battery");
-          factorycraft.energy.PowerWires.connect(a, b);
-          l.setBlockAndUpdate(o.south().above(3), Blocks.STONE.defaultBlockState());
-        });
-    h.runAfterDelay(175, () -> held[0] = battery.battery.units());
-    h.runAfterDelay(
-        205,
-        () -> {
-          h.assertTrue(
-              battery.battery.units() == held[0],
-              "shaded solar generated after visibility cache expiry");
-          l.removeBlock(o.south().above(3), false);
-          for (var owner : List.of(panel, battery, a, b, load))
-            AssemblyAccess.owner(owner).assembly().removeWhole(false);
-          for (var cp : tickets) l.setChunkForced(cp.x, cp.z, false);
-          l.setDayTime(originalDay);
-          h.succeed();
-        });
+    // Native chunk promotion is asynchronous. Wait for real, sufficient surplus,
+    // never assume 70 wall-scheduled ticks have already generated 100 FE.
+    h.startSequence()
+        .thenWaitUntil(
+            () ->
+                h.assertTrue(
+                    battery.battery.units() >= 1500 && load.power.getEnergyStored() == 16000,
+                    "waiting for real sufficient solar surplus"))
+        .thenExecute(
+            () -> {
+              held[0] = battery.battery.units();
+              l.setDayTime(18000);
+              load.power.spend(100);
+            })
+        .thenIdle(20)
+        .thenExecute(
+            () -> {
+              h.assertTrue(
+                  load.power.getEnergyStored() == 16000
+                      && battery.battery.units() == held[0] - 1500,
+                  "night tertiary ledger: " + battery.battery.units() + " initial " + held[0]);
+              factorycraft.energy.PowerWires.disconnect(a, b);
+              load.power.spend(100);
+            })
+        .thenIdle(20)
+        .thenExecute(
+            () -> {
+              l.setDayTime(6000);
+              held[0] = battery.battery.units();
+              load.power.restore(16000);
+            })
+        .thenIdle(35)
+        .thenExecute(
+            () -> {
+              h.assertTrue(battery.battery.units() == held[0], "unconnected solar charged battery");
+              factorycraft.energy.PowerWires.connect(a, b);
+              l.setBlockAndUpdate(o.south().above(3), Blocks.STONE.defaultBlockState());
+            })
+        .thenIdle(30)
+        .thenExecute(() -> held[0] = battery.battery.units())
+        .thenIdle(30)
+        .thenExecute(
+            () -> {
+              h.assertTrue(
+                  battery.battery.units() == held[0],
+                  "shaded solar generated after visibility cache expiry");
+              l.removeBlock(o.south().above(3), false);
+              for (var owner : List.of(panel, battery, a, b, load))
+                AssemblyAccess.owner(owner).assembly().removeWhole(false);
+              for (var cp : tickets) l.setChunkForced(cp.x, cp.z, false);
+              l.setDayTime(originalDay);
+            })
+        .thenSucceed();
   }
 
   @GameTest(template = "empty", batch = "nuclear_v0290_disk", timeoutTicks = 100)

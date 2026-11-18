@@ -28,7 +28,13 @@ import net.neoforged.neoforge.items.*;
 public final class TurretBlockEntity extends FactoryBlockEntity
     implements AssemblyOwner, GridConsumer, MenuProvider {
   private final IndustrialAssembly assembly = new IndustrialAssembly(this);
-  private boolean loaded, flameActive, ticking, pendingSync;
+  private boolean loaded,
+      flameActive,
+      ticking,
+      pendingSync,
+      obstructed,
+      unavailablePath,
+      idleBilled;
   public final PowerBuffer power = new PowerBuffer(2136, this::markPersistentState);
 
   /**
@@ -58,7 +64,44 @@ public final class TurretBlockEntity extends FactoryBlockEntity
   public String scope = "unavailable";
   public UUID owner;
   private final ShotClock clock = new ShotClock();
-  private int target = -1, idleRemainder, shotRemainder, searchDelay;
+  private int target = -1, shotRemainder, searchDelay;
+  private final factorycraft.simulation.combat.LaserStandby standby =
+      new factorycraft.simulation.combat.LaserStandby();
+
+  public enum Status {
+    UNAVAILABLE,
+    SEARCHING,
+    BLOCKED,
+    ROTATING,
+    COOLDOWN,
+    NO_POWER,
+    PRIMING,
+    NO_FUEL,
+    QUEUE_FULL,
+    NO_AMMO,
+    FIRING,
+    UNLOADED_PATH
+  }
+
+  private Status status = Status.UNAVAILABLE;
+
+  public Status status() {
+    return status;
+  }
+
+  private void status(Status value) {
+    if (status != value) {
+      status = value;
+      sync();
+    }
+  }
+
+  private void finishIdle() {
+    idleBilled = true;
+    standby.finish(power);
+    markPersistentState();
+  }
+
   public float yaw, pitch;
   public long shotTick = Long.MIN_VALUE;
   public long paidShots;
@@ -218,23 +261,41 @@ public final class TurretBlockEntity extends FactoryBlockEntity
   }
 
   private void tickWork() {
-    if (!(level instanceof ServerLevel l) || !ready()) return;
-    if (flame()) pipeOil.transferTo(oil, 25, false);
+    if (!(level instanceof ServerLevel l) || !ready()) {
+      status(Status.UNAVAILABLE);
+      return;
+    }
+    if (laser()) {
+      if (!standby.begin(power)) {
+        status(Status.NO_POWER);
+        return;
+      }
+      // At 20 TPS the source's 801/800-kJ headroom is smaller than one idle quantum.
+      // Pay the shot before this active tick's idle bill; carry only its bounded unpaid tail.
+      idleBilled = false;
+      try {
+        activeWork(l);
+      } finally {
+        if (!idleBilled) finishIdle();
+      }
+    } else activeWork(l);
+  }
+
+  private void activeWork(ServerLevel l) {
+    if (flame()) {
+      pipeOil.transferTo(oil, 25, false);
+      if (oil.amount() < 2) flameActive = false;
+    }
     var spec = CombatProfile.get(l, kind().id);
     if (spec == null) return;
-    // 24 kW / 7.5 kW per FE/t = 3.2 FE/t, retain fifths exactly while idle.
-    if (laser()) {
-      int owed = (idleRemainder + 16) / 5;
-      if (!power.spend(owed)) return;
-      idleRemainder = (idleRemainder + 16) % 5;
-      markPersistentState();
-    }
     Entity shooter = owner == null ? null : l.getPlayerByUUID(owner);
     var entity = l.getEntity(target);
     LivingEntity victim =
         entity instanceof LivingEntity v && validTarget(l, v, shooter, spec) ? v : null;
     if (victim == null && --searchDelay <= 0) {
       searchDelay = 10;
+      obstructed = false;
+      unavailablePath = false;
       double distance = spec.range() * spec.range();
       for (var v :
           l.getEntitiesOfClass(
@@ -242,6 +303,9 @@ public final class TurretBlockEntity extends FactoryBlockEntity
               new AABB(muzzle(), muzzle()).inflate(spec.range()),
               e -> Combat.allowed(l, e, shooter, scope, true))) {
         double d = v.distanceToSqr(muzzle());
+        if (d < distance && !Combat.loadedRay(l, muzzle(), v.getBoundingBox().getCenter()))
+          unavailablePath = true;
+        else if (d < distance && !Combat.sight(l, muzzle(), v)) obstructed = true;
         if (d < distance && validTarget(l, v, shooter, spec)) {
           distance = d;
           victim = v;
@@ -250,7 +314,8 @@ public final class TurretBlockEntity extends FactoryBlockEntity
       target = victim == null ? -1 : victim.getId();
     }
     if (victim == null) {
-      flameActive = false;
+      status(
+          unavailablePath ? Status.UNLOADED_PATH : obstructed ? Status.BLOCKED : Status.SEARCHING);
       return;
     }
     Vec3 delta = victim.getBoundingBox().getCenter().subtract(muzzle());
@@ -264,20 +329,37 @@ public final class TurretBlockEntity extends FactoryBlockEntity
       pitch = net.minecraft.util.Mth.clamp(dp, -80, 80);
       sync();
     }
-    if (Math.abs(change) > limit || !clock.ready(l.getGameTime())) return;
+    if (Math.abs(change) > limit) {
+      status(Status.ROTATING);
+      return;
+    }
+    if (!clock.ready(l.getGameTime())) {
+      status(Status.COOLDOWN);
+      return;
+    }
     double damage = spec.damage();
     if (laser()) {
       int debit = shotRemainder + spec.energy();
       int need = debit / 375;
-      if (!power.spend(need)) return;
+      if (!power.spend(need)) {
+        status(Status.NO_POWER);
+        return;
+      }
       shotRemainder = debit % 375;
     } else if (flame()) {
       // Prototype fluid_consumption is per attack: 0.2 units × 10 mB/unit.
-      if (!FlameSimulation.canLaunch(l)) return;
+      if (!FlameSimulation.canLaunch(l)) {
+        status(Status.QUEUE_FULL);
+        return;
+      }
       int need = 2;
-      if (!flameActive && oil.amount() < 250) return;
+      if (!flameActive && oil.amount() < 250) {
+        status(Status.PRIMING);
+        return;
+      }
       if (oil.amount() < need || !accepts(oil.key())) {
         flameActive = false;
+        status(Status.NO_FUEL);
         return;
       }
       flameActive = true;
@@ -291,11 +373,17 @@ public final class TurretBlockEntity extends FactoryBlockEntity
     } else {
       if (items.getStackInSlot(1).isEmpty()) {
         var one = items.extractItem(0, 1, false);
-        if (one.isEmpty()) return;
+        if (one.isEmpty()) {
+          status(Status.NO_AMMO);
+          return;
+        }
         items.setStackInSlot(1, one);
       }
       var round = items.getStackInSlot(1).copy();
-      if (!MagazineItem.spend(round)) return;
+      if (!MagazineItem.spend(round)) {
+        status(Status.NO_AMMO);
+        return;
+      }
       damage *= MagazineItem.damage(round);
       items.setStackInSlot(1, MagazineItem.rounds(round) == 0 ? ItemStack.EMPTY : round);
     }
@@ -309,6 +397,9 @@ public final class TurretBlockEntity extends FactoryBlockEntity
     clock.firePeriod(l.getGameTime(), CombatResearch.period(l, scope, spec));
     shotTick = l.getGameTime();
     paidShots++;
+    status(Status.FIRING);
+    // Damage listeners may dismantle/pack this machine. Commit the complete paid tick first.
+    if (laser()) finishIdle();
     Combat.hitscan(l, muzzle(), delta.normalize(), shooter, scope, spec, damage, true);
     sync();
   }
@@ -357,7 +448,8 @@ public final class TurretBlockEntity extends FactoryBlockEntity
     if (owner != null) n.putUUID("Owner", owner);
     n.putLong("Due", clock.due());
     n.putLong("Last", clock.last());
-    n.putInt("IdleRemainder", idleRemainder);
+    n.putInt("IdleRemainder", standby.remainder());
+    if (standby.debt() > 0) n.putInt("IdleDebt", standby.debt());
     n.putInt("ShotRemainder", shotRemainder);
     n.putBoolean("FlameActive", flameActive);
     n.putFloat("Yaw", yaw);
@@ -390,7 +482,7 @@ public final class TurretBlockEntity extends FactoryBlockEntity
     scope = n.getString("Force");
     owner = n.hasUUID("Owner") ? n.getUUID("Owner") : null;
     clock.restore(n.getLong("Due"), n.getLong("Last"));
-    idleRemainder = Math.floorMod(n.getInt("IdleRemainder"), 5);
+    standby.restore(n.getInt("IdleRemainder"), n.getInt("IdleDebt"));
     shotRemainder = Math.floorMod(n.getInt("ShotRemainder"), 375);
     yaw = n.getFloat("Yaw");
     pitch = n.getFloat("Pitch");

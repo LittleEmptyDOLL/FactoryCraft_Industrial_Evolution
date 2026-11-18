@@ -61,6 +61,14 @@ public final class TurretScreen extends AbstractContainerScreen<TurretMenu> {
           80,
           0xbcdbe2,
           false);
+    if (menu.data.get(4) != 0)
+      g.drawString(
+          font,
+          Component.translatable("gui.factorycraft.turret_status_" + menu.data.get(6)),
+          8,
+          92,
+          0xe9d9a4,
+          false);
     if (menu.data.get(4) == 0)
       g.drawString(
           font,

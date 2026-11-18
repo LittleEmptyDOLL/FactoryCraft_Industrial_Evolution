@@ -1,0 +1,13 @@
+Bounded standalone profiles after native server exit; not Minecraft TPS. Three fresh JVMs, per-process warmup.
+LASER_STANDBY: rounds=21 ticks_per_round=100000 p50_ns_tick=3.246 p95_ns_tick=4.698 max_ns_tick=4.924 allocated_bytes=160 exact_spent_FE=6720000
+edges=100 nodes=101 setup_ms=171.228 query_mean_us=1.390 query_p50_us=0.941 query_p95_us=2.664 query_p99_us=5.588 query_max_us=125.335 local_remove_rejoin_us=118.224 idle_rebuilds=0
+edges=1000 nodes=1001 setup_ms=284.176 query_mean_us=0.531 query_p50_us=0.461 query_p95_us=0.581 query_p99_us=1.041 query_max_us=132.886 local_remove_rejoin_us=37.255 idle_rebuilds=0
+edges=4000 nodes=4001 setup_ms=986.880 query_mean_us=0.165 query_p50_us=0.160 query_p95_us=0.170 query_p99_us=0.210 query_max_us=18.206 local_remove_rejoin_us=38.516 idle_rebuilds=0
+LASER_STANDBY: rounds=21 ticks_per_round=100000 p50_ns_tick=3.403 p95_ns_tick=5.960 max_ns_tick=6.127 allocated_bytes=160 exact_spent_FE=6720000
+edges=100 nodes=101 setup_ms=117.704 query_mean_us=2.036 query_p50_us=0.921 query_p95_us=3.405 query_p99_us=5.047 query_max_us=5905.714 local_remove_rejoin_us=94.720 idle_rebuilds=0
+edges=1000 nodes=1001 setup_ms=261.023 query_mean_us=0.878 query_p50_us=0.811 query_p95_us=0.972 query_p99_us=1.311 query_max_us=52.627 local_remove_rejoin_us=38.517 idle_rebuilds=0
+edges=4000 nodes=4001 setup_ms=615.703 query_mean_us=0.189 query_p50_us=0.160 query_p95_us=0.200 query_p99_us=0.381 query_max_us=213.385 local_remove_rejoin_us=27.681 idle_rebuilds=0
+LASER_STANDBY: rounds=21 ticks_per_round=100000 p50_ns_tick=3.252 p95_ns_tick=4.415 max_ns_tick=5.432 allocated_bytes=160 exact_spent_FE=6720000
+edges=100 nodes=101 setup_ms=128.858 query_mean_us=1.598 query_p50_us=0.941 query_p95_us=3.385 query_p99_us=6.429 query_max_us=182.319 local_remove_rejoin_us=111.414 idle_rebuilds=0
+edges=1000 nodes=1001 setup_ms=158.786 query_mean_us=0.897 query_p50_us=0.821 query_p95_us=0.982 query_p99_us=1.312 query_max_us=45.647 local_remove_rejoin_us=39.769 idle_rebuilds=0
+edges=4000 nodes=4001 setup_ms=623.624 query_mean_us=0.193 query_p50_us=0.160 query_p95_us=0.181 query_p99_us=0.230 query_max_us=65.837 local_remove_rejoin_us=26.830 idle_rebuilds=0

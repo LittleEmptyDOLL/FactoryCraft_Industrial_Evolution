@@ -20,6 +20,7 @@ public final class RailwayData extends SavedData {
     final Set<BlockPos> live = new HashSet<>();
 
     public Segment(UUID id, RailCurve curve, List<ItemStack> paid) {
+      if (!curve.validated()) throw new IllegalArgumentException("Unvalidated railway ghost");
       this.id = id;
       this.curve = curve;
       this.footprint = new RailFootprint(curve);
@@ -173,6 +174,7 @@ public final class RailwayData extends SavedData {
     var s = segments.remove(id);
     if (s == null) return List.of();
     graph.remove(id);
+    RailPlanner.removed(level, id);
     setDirty();
     for (var c : s.footprint.bed.keySet()) {
       var p = pos(c);

@@ -31,6 +31,7 @@ final class FactoryJadeClient {
   static void register(IWailaClientRegistration r) {
     r.registerBlockComponent(REQUEST, FactoryBlock.class);
     r.registerBlockComponent(REQUEST, OilDepositBlock.class);
+    r.registerBlockComponent(REQUEST, ResourceDepositBlock.class);
     r.registerBlockComponent(REQUEST, FluidDeviceBlock.class);
     r.registerBlockComponent(REQUEST, ThermalBlock.class);
     r.addTooltipCollectedCallback(
@@ -51,7 +52,12 @@ final class FactoryJadeClient {
               JadeIds.CORE_OBJECT_NAME, Component.translatable(snapshot.getString("Name")));
           var block =
               BuiltInRegistries.BLOCK.get(ResourceLocation.parse(snapshot.getString("Block")));
-          box.setIcon(IElementHelper.get().item(new ItemStack(block)));
+          box.setIcon(
+              IElementHelper.get()
+                  .item(
+                      block instanceof ResourceDepositBlock resource
+                          ? resource.kind.result()
+                          : new ItemStack(block)));
           if (snapshot.contains("InitialYield"))
             tooltip.add(
                 Component.translatable(
@@ -61,6 +67,15 @@ final class FactoryJadeClient {
                     String.format(
                         java.util.Locale.ROOT, "%.3f", snapshot.getLong("CurrentYield") / 1500.0),
                     String.format(java.util.Locale.ROOT, "%.3f", snapshot.getDouble("OilRate"))));
+          if (snapshot.contains("ResourceRemaining")) {
+            tooltip.add(
+                Component.translatable(
+                    "message.factorycraft.resource_remaining",
+                    Component.translatable(snapshot.getString("ResourceName")),
+                    snapshot.getInt("ResourceRemaining")));
+            if (snapshot.getBoolean("AcidRequired"))
+              tooltip.add(Component.translatable("tooltip.factorycraft.uranium_acid"));
+          }
           var row = new ArrayList<IElement>();
           for (var raw : snapshot.getList("Items", Tag.TAG_COMPOUND)) {
             var item =

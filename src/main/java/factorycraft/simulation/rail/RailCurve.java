@@ -12,11 +12,27 @@ public final class RailCurve {
 
   public final RailEnd start, end;
   public final double handle;
+  private final boolean validated;
+
+  public boolean validated() {
+    return validated;
+  }
+
   private final RailVector a, b, c, d;
   private final double[] distances = new double[STEPS + 1];
   private double radius = Double.POSITIVE_INFINITY, grade;
 
   public RailCurve(RailEnd start, RailEnd end, double handle) {
+    this(start, end, handle, true);
+  }
+
+  /** Non-authoritative ghost only; invalid curvature/grades must remain visible in red. */
+  public static RailCurve preview(RailEnd start, RailEnd end) {
+    return new RailCurve(start, end, Math.max(.1, start.point().distance(end.point()) / 3), false);
+  }
+
+  private RailCurve(RailEnd start, RailEnd end, double handle, boolean validate) {
+    this.validated = validate;
     this.start = start;
     this.end = end;
     this.handle = handle;
@@ -25,7 +41,7 @@ public final class RailCurve {
     double chord = Math.hypot(d.x() - a.x(), d.z() - a.z());
     if (chord < 1
         || chord > 128
-        || Math.abs(d.y() - a.y()) > 24
+        || Math.abs(d.y() - a.y()) > (validate ? 24 : 128)
         || !Double.isFinite(handle)
         || handle < .1
         || handle > 128) throw new IllegalArgumentException("distance");
@@ -39,7 +55,7 @@ public final class RailCurve {
       var v = derivative(t);
       var acc = second(t);
       double horizontal = Math.hypot(v.x(), v.z());
-      if (horizontal < 1e-7 || v.x() * delta.x() + v.z() * delta.z() <= 0)
+      if (validate && (horizontal < 1e-7 || v.x() * delta.x() + v.z() * delta.z() <= 0))
         throw new IllegalArgumentException("fold");
       grade = Math.max(grade, Math.abs(v.y()) / horizontal);
       double curvature = Math.abs(v.x() * acc.z() - v.z() * acc.x());
@@ -48,9 +64,9 @@ public final class RailCurve {
       if (i > 0) distances[i] = distances[i - 1] + p.distance(previous);
       previous = p;
     }
-    if (length() > MAX_LENGTH + .000001) throw new IllegalArgumentException("distance");
-    if (grade > MAX_GRADE + 1e-8) throw new IllegalArgumentException("grade");
-    if (radius < MIN_RADIUS - .000001) throw new IllegalArgumentException("radius");
+    if (validate && length() > MAX_LENGTH + .000001) throw new IllegalArgumentException("distance");
+    if (validate && grade > MAX_GRADE + 1e-8) throw new IllegalArgumentException("grade");
+    if (validate && radius < MIN_RADIUS - .000001) throw new IllegalArgumentException("radius");
   }
 
   public static RailCurve plan(RailEnd a, RailEnd b) {
@@ -122,9 +138,14 @@ public final class RailCurve {
       else if (hi > STEPS) t = 1;
       else t = (hi - 1 + (s - distances[hi - 1]) / (distances[hi] - distances[hi - 1])) / STEPS;
     }
-    var tangent = derivative(t).unit();
+    var velocity = derivative(t);
+    var tangent = velocity.length() < 1e-8 ? d.subtract(a).unit() : velocity.unit();
     if (reverse) tangent = tangent.scale(-1);
-    var side = new RailVector(-tangent.z(), 0, tangent.x()).unit();
+    var horizontalSide = new RailVector(-tangent.z(), 0, tangent.x());
+    var side =
+        horizontalSide.length() < 1e-8
+            ? new RailVector(-start.heading().vector().z(), 0, start.heading().vector().x())
+            : horizontalSide.unit();
     return new Frame(point(t), tangent, side, side.cross(tangent).unit());
   }
 

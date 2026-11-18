@@ -289,13 +289,13 @@
       "firstperson_righthand": {
         "rotation": [
           0,
-          165,
+          0,
           0
         ],
         "translation": [
-          2,
-          2,
-          -3
+          0,
+          1,
+          -1
         ],
         "scale": [
           0.8,
@@ -306,13 +306,13 @@
       "firstperson_lefthand": {
         "rotation": [
           0,
-          195,
+          0,
           0
         ],
         "translation": [
-          2,
-          2,
-          -3
+          0,
+          1,
+          -1
         ],
         "scale": [
           0.8,
@@ -801,13 +801,13 @@
         "firstperson_righthand": {
           "rotation": [
             0,
-            165,
+            0,
             0
           ],
           "translation": [
-            2,
-            2,
-            -3
+            0,
+            1,
+            -1
           ],
           "scale": [
             0.8,
@@ -818,13 +818,13 @@
         "firstperson_lefthand": {
           "rotation": [
             0,
-            195,
+            0,
             0
           ],
           "translation": [
-            2,
-            2,
-            -3
+            0,
+            1,
+            -1
           ],
           "scale": [
             0.8,
@@ -1312,13 +1312,13 @@
         "firstperson_righthand": {
           "rotation": [
             0,
-            165,
+            0,
             0
           ],
           "translation": [
-            2,
-            2,
-            -3
+            0,
+            1,
+            -1
           ],
           "scale": [
             0.8,
@@ -1329,13 +1329,13 @@
         "firstperson_lefthand": {
           "rotation": [
             0,
-            195,
+            0,
             0
           ],
           "translation": [
-            2,
-            2,
-            -3
+            0,
+            1,
+            -1
           ],
           "scale": [
             0.8,

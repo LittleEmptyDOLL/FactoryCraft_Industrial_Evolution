@@ -50,6 +50,14 @@ public final class MachineInspection {
         || !level.mayInteract(player, pos)) return tag;
     var be = resolve(level, pos);
     if (be == null) return tag;
+    if (be instanceof ResourceDepositBlockEntity deposit) {
+      if (!deposit.available()) return new CompoundTag();
+      tag.putInt("ResourceRemaining", deposit.remaining());
+      tag.putString("ResourceName", deposit.resourceBlock().kind.result().getDescriptionId());
+      tag.putBoolean(
+          "AcidRequired",
+          deposit.resourceBlock().kind == factorycraft.resources.ResourceKind.URANIUM);
+    }
     var registry = level.registryAccess();
     tag.putString(
         "Block", BuiltInRegistries.BLOCK.getKey(be.getBlockState().getBlock()).toString());

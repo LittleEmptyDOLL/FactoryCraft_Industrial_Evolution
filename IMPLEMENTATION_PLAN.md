@@ -1,3 +1,16 @@
+# Active0.30.1 /issue#12 — consolidated fixes
+
+1. Integrate PR#11 ancestry without rewriting armor. Audit actual combat/rail defects and technical source references.
+2. Fix laser/priming/physical origins/loaded hitscan/grenade physics; add bounded original paid-shot effects/audio and correct all six model transforms.
+3. Verify generic armor attributes, equip/lifecycle/mappings/tooltips/Apothic. Display exact uranium stock and unchanged acid-only extraction.
+4. Replace invisible rail starts/forced continuation with paid short pieces, explicit canonical anchors, automatic/hard cancellation and stable cached red invalid previews.
+5. Preserve baseline cases and old fixtures; extend meaningful JUnit/native/current-format cross-JVM, real EN/RU/two-client and optional runtime checks. Record failures honestly.
+6. Publish validated main and report actual acceptance/remaining limits/CI once. Do not begin0.31.
+
+Implementation in progress; no completion claimed.
+
+---
+
 # Active0.30.0 /issue#10 — Railway Foundation
 
 1. Audit Factorio2.1.24 sixteen connection directions/source bills and Create geometry/topology separation; no assets/code copied.

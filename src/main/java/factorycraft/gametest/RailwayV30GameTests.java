@@ -146,32 +146,47 @@ public final class RailwayV30GameTests {
     var p = plan(PowerV20GameTests.site(h, 211), 0, 0, -32, 0);
     prepare(h, p);
     var player = player(h, p, true);
-    for (var e : List.of(p.curve.start, p.curve.end)) {
-      player.setPos(e.x() + .5, e.y() + 2, e.z() + .5);
-      var floor = new BlockPos(e.x(), e.y() - 1, e.z());
-      var hit =
-          new BlockHitResult(new Vec3(e.x() + .5, e.y(), e.z() + .5), Direction.UP, floor, false);
-      player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
-    }
+    var starter =
+        new RailPlan(
+            RailPlanner.starter(
+                new RailEnd(
+                    p.curve.start.x(), p.curve.start.y(), p.curve.start.z(), new RailHeading(8))));
+    prepare(h, starter);
+    var origin = p.curve.start;
+    player.setPos(origin.x() + .5, origin.y() + 2, origin.z() + .5);
+    player.setYRot(0);
+    use(h, player, new BlockPos(origin.x(), origin.y() - 1, origin.z()), origin.y());
+    h.assertTrue(
+        RailPlanner.get(player) == null && RailPlacement.count(player) == 63,
+        "ground click must build a paid short piece, not an invisible selection");
+    player.setYRot(180);
+    use(h, player, new BlockPos(origin.x(), origin.y(), origin.z()), origin.y() + .3);
+    var e = p.curve.end;
+    player.setPos(e.x() + .5, e.y() + 2, e.z() + .5);
+    use(h, player, new BlockPos(e.x(), e.y() - 1, e.z()), e.y());
     var data = RailwayData.get(h.getLevel());
     var ids = data.at(new BlockPos(p.curve.start.x(), p.curve.start.y(), p.curve.start.z()));
     h.assertTrue(
-        ids.size() == 1 && RailPlacement.count(player) == 64 - p.curve.cost(),
-        "two click debit/placement");
-    var id = ids.iterator().next();
+        ids.size() == 2 && RailPlacement.count(player) == 63 - p.curve.cost(),
+        "paid initial piece plus whole cross-chunk connection");
+    var id =
+        ids.stream()
+            .filter(i -> data.segment(i).curve.end.samePosition(p.curve.end))
+            .findFirst()
+            .orElseThrow();
     h.assertTrue(
-        data.available(id) && RailPlanner.get(player).start().samePosition(p.curve.end),
-        "cross-chunk edge or continuation missing");
+        data.available(id) && RailPlanner.get(player) == null,
+        "whole edge unavailable or selection failed to clear");
     for (var c : p.footprint.bed.keySet()) {
       var be = h.getLevel().getBlockEntity(RailwayData.pos(c));
       h.assertTrue(
-          be instanceof RailCellBlockEntity
-              && ((RailCellBlockEntity) be).segments().equals(Set.of(id)),
+          be instanceof RailCellBlockEntity && ((RailCellBlockEntity) be).segments().contains(id),
           "physical part identity");
     }
-    remove(h, player, id);
+    for (var edge : List.copyOf(ids)) remove(h, player, edge);
     h.assertTrue(
-        RailPlacement.count(player) == 64 && data.segment(id) == null, "single whole refund");
+        RailPlacement.count(player) == 64 && data.segment(id) == null,
+        "single-owner exact refunds");
     h.succeed();
   }
 
@@ -671,6 +686,13 @@ public final class RailwayV30GameTests {
     var p = plan(PowerV20GameTests.site(h, 225), 0, 0, -24, 0);
     prepare(h, p);
     var player = player(h, p, true);
+    var initial =
+        new RailPlan(
+            RailPlanner.starter(
+                new RailEnd(
+                    p.curve.start.x(), p.curve.start.y(), p.curve.start.z(), new RailHeading(8))));
+    prepare(h, initial);
+    var initialId = placed(h, initial, player);
     var calls = new java.util.concurrent.atomic.AtomicInteger();
     var listener =
         new java.util.function.Consumer<
@@ -683,7 +705,7 @@ public final class RailwayV30GameTests {
     try {
       for (var end : List.of(p.curve.start, p.curve.end)) {
         player.setPos(end.x() + .5, end.y() + 2, end.z() + .5);
-        var floor = new BlockPos(end.x(), end.y() - 1, end.z());
+        var floor = new BlockPos(end.x(), end.y() - (end == p.curve.start ? 0 : 1), end.z());
         player
             .getMainHandItem()
             .useOn(
@@ -702,11 +724,21 @@ public final class RailwayV30GameTests {
     var data = RailwayData.get(h.getLevel());
     var ids = data.at(new BlockPos(p.curve.start.x(), p.curve.start.y(), p.curve.start.z()));
     h.assertTrue(
-        calls.get() == 1 && ids.size() == 1 && RailPlacement.count(player) == 64 - p.curve.cost(),
+        calls.get() == 1 && ids.size() == 2 && RailPlacement.count(player) == 63 - p.curve.cost(),
         "generic wrapper double-claimed or rolled back a paid track");
-    remove(h, player, ids.iterator().next());
+    for (var edge : List.copyOf(ids)) remove(h, player, edge);
     h.assertTrue(RailPlacement.count(player) == 64, "wrapper refund ledger");
     h.succeed();
+  }
+
+  static void use(GameTestHelper h, ServerPlayer p, BlockPos at, double y) {
+    p.getMainHandItem()
+        .useOn(
+            new UseOnContext(
+                p,
+                InteractionHand.MAIN_HAND,
+                new BlockHitResult(
+                    new Vec3(at.getX() + .5, y, at.getZ() + .5), Direction.UP, at, false)));
   }
 
   static final class RailDisk extends net.minecraft.world.level.saveddata.SavedData {

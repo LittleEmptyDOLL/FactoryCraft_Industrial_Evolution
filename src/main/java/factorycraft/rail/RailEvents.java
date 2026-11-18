@@ -72,6 +72,11 @@ public final class RailEvents {
   }
 
   @SubscribeEvent
+  public static void playerTick(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post e) {
+    if (e.getEntity() instanceof ServerPlayer player) RailPlanner.tick(player);
+  }
+
+  @SubscribeEvent
   public static void logout(PlayerEvent.PlayerLoggedOutEvent e) {
     RailPlanner.forget(e.getEntity().getUUID());
   }

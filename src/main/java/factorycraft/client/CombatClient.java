@@ -41,7 +41,7 @@ public final class CombatClient {
                     : (float) Math.max(0, 1 - (p.level().getGameTime() + partial - shot) / 3.0);
             int side = arm == HumanoidArm.RIGHT ? 1 : -1;
             pose.translate(side * .56, -.52 - equip * .6, -.72 + recoil * .09);
-            pose.mulPose(Axis.XP.rotationDegrees(-recoil * 5));
+            pose.mulPose(Axis.XP.rotationDegrees(recoil * 5));
             return true;
           }
         };

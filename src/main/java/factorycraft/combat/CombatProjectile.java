@@ -12,6 +12,17 @@ import net.minecraft.world.phys.*;
 
 /** One entity for a rocket/grenade, never for hitscan bullets or individual flame particles. */
 public final class CombatProjectile extends ThrowableItemProjectile {
+  private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> VISUAL_MODE =
+      net.minecraft.network.syncher.SynchedEntityData.defineId(
+          CombatProjectile.class, net.minecraft.network.syncher.EntityDataSerializers.INT);
+
+  @Override
+  protected void defineSynchedData(
+      net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(VISUAL_MODE, 0);
+  }
+
   private String scope = "unavailable";
   private double amount = 0;
   private double rangeLeft = 36, areaDamage;
@@ -28,6 +39,7 @@ public final class CombatProjectile extends ThrowableItemProjectile {
     this.scope = scope;
     this.amount = amount;
     this.mode = mode;
+    entityData.set(VISUAL_MODE, mode);
     this.paid = true;
     this.rangeLeft = mode == 1 ? 15 : 36;
     this.areaDamage =
@@ -45,13 +57,13 @@ public final class CombatProjectile extends ThrowableItemProjectile {
   }
 
   protected double getDefaultGravity() {
-    return mode == 1 ? .03 : 0;
+    return entityData.get(VISUAL_MODE) == 1 ? .03 : 0;
   }
 
   public void tick() {
     if (!level().isClientSide) {
       var l = (ServerLevel) level();
-      if (++age > 400) {
+      if (!paid || ++age > 400) {
         discard();
         return;
       }
@@ -61,20 +73,34 @@ public final class CombatProjectile extends ThrowableItemProjectile {
         return;
       }
       double step = getDeltaMovement().length();
-      if (step >= rangeLeft) {
-        var end = position().add(getDeltaMovement().normalize().scale(rangeLeft));
-        onHit(
-            BlockHitResult.miss(
-                end, net.minecraft.core.Direction.UP, net.minecraft.core.BlockPos.containing(end)));
+      // A grenade's source throwing range is not an invisible collision surface.
+      // Its Minecraft adaptation detonates on real collision or a saved 100-tick fuse.
+      if (mode == 1 && age >= 100) {
+        explodeAt(
+            new HitResult(position()) {
+              public Type getType() {
+                return Type.MISS;
+              }
+            });
         return;
       }
-      rangeLeft -= step;
+      if (mode == 0 && step >= rangeLeft) {
+        var end = position().add(getDeltaMovement().normalize().scale(rangeLeft));
+        setPos(end);
+        discard(); // Rocket range exhaustion is expiration, never a fabricated hit.
+        return;
+      }
+      if (mode == 0) rangeLeft -= step;
     }
     super.tick();
   }
 
   protected void onHit(HitResult hit) {
     super.onHit(hit);
+    if (hit.getType() != HitResult.Type.MISS) explodeAt(hit);
+  }
+
+  private void explodeAt(HitResult hit) {
     if (!(level() instanceof ServerLevel l) || isRemoved() || !paid) return;
     paid = false;
     boolean explosive =
@@ -93,7 +119,16 @@ public final class CombatProjectile extends ThrowableItemProjectile {
               LivingEntity.class, new AABB(hit.getLocation(), hit.getLocation()).inflate(radius)))
         if (target.position().distanceToSqr(hit.getLocation()) <= radius * radius
             && Combat.sight(l, hit.getLocation().add(0, .05, 0), target))
-          Combat.damage(l, target, this, getOwner(), scope, "explosion", areaDamage, false);
+          Combat.damageAt(
+              l,
+              target,
+              null,
+              getOwner(),
+              scope,
+              "explosion",
+              areaDamage,
+              false,
+              hit.getLocation());
     l.sendParticles(
         ParticleTypes.EXPLOSION,
         hit.getLocation().x,
@@ -131,6 +166,7 @@ public final class CombatProjectile extends ThrowableItemProjectile {
     amount = n.getDouble("Damage");
     age = n.getInt("Age");
     mode = n.getInt("Mode");
+    entityData.set(VISUAL_MODE, mode);
     paid = n.getBoolean("Paid");
     rangeLeft = n.getDouble("RangeLeft");
     areaDamage = n.getDouble("AreaDamage");
@@ -140,6 +176,7 @@ public final class CombatProjectile extends ThrowableItemProjectile {
         || !Double.isFinite(areaDamage)
         || areaDamage < 0
         || areaDamage > 10000) paid = false;
+    if (age < 0 || age > 400) paid = false;
     if (!Double.isFinite(amount) || amount < 0 || amount > 10000 || mode < 0 || mode > 1)
       paid = false;
   }

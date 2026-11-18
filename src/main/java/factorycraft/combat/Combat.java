@@ -4,7 +4,6 @@ import factorycraft.FactoryCraft;
 import factorycraft.research.ResearchTeams;
 import factorycraft.simulation.combat.ShotClock;
 import net.minecraft.core.*;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -31,6 +30,17 @@ public final class Combat {
     for (int i = 0; i <= n; i++)
       if (!l.hasChunkAt(BlockPos.containing(a.lerp(b, i / (double) n)))) return false;
     return true;
+  }
+
+  public static Vec3 loadedEnd(ServerLevel l, Vec3 from, Vec3 to) {
+    int steps = Math.max(1, (int) Math.ceil(from.distanceTo(to) * 4));
+    Vec3 last = from;
+    for (int i = 0; i <= steps; i++) {
+      var point = from.lerp(to, i / (double) steps);
+      if (!l.hasChunkAt(BlockPos.containing(point))) break;
+      last = point;
+    }
+    return last;
   }
 
   public static boolean allowed(
@@ -75,6 +85,28 @@ public final class Combat {
       String category,
       double original,
       boolean automatic) {
+    damageAt(
+        l,
+        target,
+        direct,
+        owner,
+        scope,
+        category,
+        original,
+        automatic,
+        direct != null ? direct.position() : owner == null ? target.position() : owner.position());
+  }
+
+  public static void damageAt(
+      ServerLevel l,
+      LivingEntity target,
+      Entity direct,
+      Entity owner,
+      String scope,
+      String category,
+      double original,
+      boolean automatic,
+      Vec3 origin) {
     if (original <= 0 || !Double.isFinite(original) || !allowed(l, target, owner, scope, automatic))
       return;
     String key =
@@ -82,7 +114,10 @@ public final class Combat {
             ? "fire"
             : category.equals("explosion") || category.equals("rocket")
                 ? "explosion"
-                : category.equals("laser") ? "laser" : "physical";
+                : java.util.Set.of("laser", "acid", "poison", "electric", "impact")
+                        .contains(category)
+                    ? category
+                    : "physical";
     var holder =
         l.registryAccess()
             .registryOrThrow(Registries.DAMAGE_TYPE)
@@ -90,7 +125,7 @@ public final class Combat {
                 ResourceKey.create(
                     Registries.DAMAGE_TYPE,
                     ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, key)));
-    target.hurt(new DamageSource(holder, direct, owner), (float) (original * HP_SCALE));
+    target.hurt(new DamageSource(holder, direct, owner, origin), (float) (original * HP_SCALE));
   }
 
   public static void hitscan(
@@ -106,6 +141,7 @@ public final class Combat {
       FlameSimulation.launch(l, from, aim, owner, scope, p, amount, automatic);
       return;
     }
+    var impacts = new java.util.ArrayList<CombatEffects.Impact>();
     for (int pellet = 0; pellet < p.pellets(); pellet++) {
       Vec3 d =
           aim.add(
@@ -113,8 +149,8 @@ public final class Combat {
                   (l.random.nextDouble() - .5) * p.spread(),
                   (l.random.nextDouble() - .5) * p.spread())
               .normalize();
-      Vec3 end = from.add(d.scale(p.range()));
-      if (!loadedRay(l, from, end)) continue;
+      Vec3 end = loadedEnd(l, from, from.add(d.scale(p.range())));
+      if (from.distanceToSqr(end) < .0001) continue;
       var block =
           l.clip(
               new ClipContext(
@@ -126,6 +162,7 @@ public final class Combat {
       end = block.getLocation();
       double best = from.distanceToSqr(end);
       LivingEntity hit = null;
+      Vec3 impact = end;
       var area = new AABB(from, end).inflate(.25);
       for (var e :
           l.getEntitiesOfClass(
@@ -134,23 +171,22 @@ public final class Combat {
         if (point.isPresent() && from.distanceToSqr(point.get()) < best) {
           best = from.distanceToSqr(point.get());
           hit = e;
+          impact = point.get();
         }
       }
       if (hit != null) {
-        damage(l, hit, owner, owner, scope, p.category(), amount, automatic);
+        damageAt(l, hit, null, owner, scope, p.category(), amount, automatic, from);
         if (p.category().equals("fire")) hit.igniteForSeconds(3);
       }
-      l.sendParticles(
-          p.category().equals("fire") ? ParticleTypes.FLAME : ParticleTypes.CRIT,
-          from.x,
-          from.y,
-          from.z,
-          1,
-          d.x * .12,
-          d.y * .12,
-          d.z * .12,
-          .15);
+      var normal =
+          block.getType() == HitResult.Type.BLOCK && hit == null
+              ? Vec3.atLowerCornerOf(block.getDirection().getNormal())
+              : d.scale(-1);
+      impacts.add(
+          new CombatEffects.Impact(
+              impact, normal, hit != null || block.getType() == HitResult.Type.BLOCK));
     }
+    CombatEffects.emit(l, from, impacts, p.category().equals("laser") ? 1 : 0, automatic);
   }
 
   public static boolean fire(Player player, ItemStack weapon, String id) {
@@ -193,6 +229,13 @@ public final class Combat {
         shot.setPos(from);
         shot.shoot(aim.x, aim.y, aim.z, 1.2f, 0);
         l.addFreshEntity(shot);
+        CombatEffects.emit(
+            l,
+            from,
+            java.util.List.of(
+                new CombatEffects.Impact(from.add(aim.scale(.7)), aim.scale(-1), false)),
+            0,
+            false);
       } else {
         var shotProfile = p;
         if (ammo.getItem() instanceof MagazineItem m && m.pellets > 0)
@@ -208,13 +251,6 @@ public final class Combat {
                   p.energy());
         hitscan(l, from, aim, player, scope, shotProfile, amount, false);
       }
-      l.playSound(
-          null,
-          player.blockPosition(),
-          p.category().equals("fire") ? SoundEvents.FIRE_AMBIENT : SoundEvents.CROSSBOW_SHOOT,
-          SoundSource.PLAYERS,
-          .65f,
-          1.3f);
       fired = true;
     }
     if (fired) {

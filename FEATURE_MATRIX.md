@@ -1,3 +1,17 @@
+## 0.30.1 consolidated fixes — issue #12
+
+| Feature | Implementation / verification scope |
+|---|---|
+| Laser source-sized FE ledger / three-target acquisition / loaded near hits | Implemented; exact idle debt/residue, paid work before callbacks, explicit status |
+| Flame priming across targets / physical knockback / saved grenade contact and fuse | Implemented; source fuel/queues retained, 5-second 3D fuse adaptation |
+| Six forward first-person weapons / paid observer-visible effects / original firing audio | Implemented; actual EN/RU clients, two-client effect delivery and native audio capture; subjective mix acceptance remains user review |
+| PR #11 armor / vanilla modifiers / Apothic Attributes | Integrated once; optional native runtime and actual vanilla/Apothic screens; no Curios requirement |
+| Uranium reserve plus acid requirement / Jade | Implemented using one canonical owner; extraction/generation unchanged |
+| Physical rail starts / explicit endpoint selection / automatic and hard cancel | Implemented with existing atomic material ledger and protection |
+| Persistent invalid red rail geometry / cache / curved physical targeting | Implemented; existing radius/grade/16 headings and foundation limitations retained |
+
+Exact final checks, retained failures and remaining review: [validation/v0301](validation/v0301). No 0.31 content is included. Historical release evidence below keeps its original scope.
+
 ## 0.30 Railway Foundation — implemented subset
 
 | Feature | State / limit |

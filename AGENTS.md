@@ -16,7 +16,13 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active milestone — 0.30.0, GitHub issue #10
+## Active milestone — 0.30.1 / consolidated issue #12
+
+* Integrate existing armor PR #11 once; verify standard modifiers/tooltips/Apothic, server resistance and source damage mappings. Correct paid multi-target turret work, physical knockback, loaded hitscan spans, grenade collision/lifetime, original weapon transforms and synced effects/audio. Show real uranium reserves without changing mining. Create1.21.1-style paid rail starts, explicit selection/connection and automatic cancellation, persistent red invalid geometry previews.
+* Preserve 280 JUnit /504 native baseline, PR armor case, thirty finite chains, v0270–v0300 checkpoints and all evidence. New v0301 fixture names; never reset failures or seed old checkpoints. Exact ammo/FE/oil/rail owners remain authoritative. No forced runtime chunks, global track/turret scans, duplicate resistance or per-bullet Entities.
+* Validate integrated build/JUnit/native, new independent-JVM owners, EN/RU real weapon/rail/armor visuals and affected optional mods including Apothic. Check observer-visible effects/audio with real two-client flow if new networking requires it. Do not call visual/audio acceptance passed without inspecting it. Publish checked main without force; report CI once. No0.31.
+
+## Previous milestone — 0.30.0, GitHub issue #10
 
 * Implement railway foundation only: centered two-block bed/three-block technical corridor, Factorio 2.x sixteen connection headings, >=13-block horizontal radius, smooth 3D grades, explicit junction topology, protected atomic planner placement/removal, sole saved material owner and cached client geometry. No trains/signals/stops/robots or 0.28 polish.
 * Preserve 260 JUnit/487 native and thirty finite chains, all existing checkpoints, three lifts and four wire colors. New v0300 worlds only; verified lossless archiving is allowed for closed evidence. No resetting/reseeding failures.
@@ -211,7 +217,7 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 
 * Splitter filters are item IDs, never real inventory stacks. Preserve strict complementary routing/FIFO, grandfathered approach reservations, default-NBT omission, guarded current-menu/ordinary-slot access, portable settings and the strict 16-item v2 disk checkpoint at (12111,70,12111). The uninitialized empty v1 probe at (12015,70,12015) is evidence, never a source to refill.
 * Belt block-ticking availability is cached from ChunkTicketLevelUpdatedEvent plus pending native readiness, indexed by physical chunks. Never scan all belts per tick or move merely loaded/frozen chunks. Keep paired underground ends and both splitter cells gated. Single-route kernel optimizations must remain identical to general reservations in the differential test.
-* Mixed benchmark fixtures live only in marked run-benchmark/mixed[-name] directories. Preserve the original failed unload report/world and resume evidence; new full measurements use a separately named fresh fixture, never a reset/refill. Network QA uses only the marked run-gametest/network-v0130 world and two synthetic loopback clients.
+* Mixed benchmark fixtures live only in marked run-benchmark/mixed[-name] directories. Preserve the original failed unload report/world and resume evidence; new full measurements use a separately named fresh fixture, never a reset/refill. Network QA uses marked run-gametest/network-v0130 and independently named network-v0301 worlds with two synthetic loopback clients; never reuse ordinary player saves.
 
 * All splitter variants use FactoryKind.splitter()/MachineProfile.splitter(), four lanes, shared guarded menu/policy and centered one-item assembly. Append profile constants; never renumber old geometry/part data. Preserve exact 30/60/90 item/s saturated tests at 24 phases and all mixed-tier conservation/headway checks.
 * Upgrade recipes must not consume resource-owning portable devices. The 0.14.0 recipes use native strict DataComponentIngredient prototypes; preserve JSON/wire strictness and document that portable items are ineligible. Keep the two high-tier cross-chunk disk checkpoints at (13007,70,13007)/(13039,70,13007) without refilling or resetting.

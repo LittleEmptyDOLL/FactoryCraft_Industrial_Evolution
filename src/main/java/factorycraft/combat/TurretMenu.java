@@ -17,7 +17,7 @@ public final class TurretMenu extends AbstractContainerMenu {
         id,
         inv,
         (TurretBlockEntity) inv.player.level().getBlockEntity(b.readBlockPos()),
-        new SimpleContainerData(6));
+        new SimpleContainerData(7));
   }
 
   public TurretMenu(int id, Inventory inv, TurretBlockEntity be) {
@@ -27,7 +27,7 @@ public final class TurretMenu extends AbstractContainerMenu {
         be,
         new ContainerData() {
           public int getCount() {
-            return 6;
+            return 7;
           }
 
           public void set(int i, int v) {}
@@ -39,6 +39,7 @@ public final class TurretMenu extends AbstractContainerMenu {
               case 2 -> MagazineItem.rounds(be.items.getStackInSlot(1));
               case 3 -> be.laser() ? 1 : be.flame() ? 2 : 0;
               case 5 -> be.pipeOil.amount();
+              case 6 -> be.status().ordinal();
               default -> be.ready() ? 1 : 0;
             };
           }

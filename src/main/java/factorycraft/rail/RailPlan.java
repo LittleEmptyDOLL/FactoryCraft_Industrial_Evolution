@@ -21,6 +21,7 @@ public final class RailPlan {
   }
 
   public String inspect(Level level, Player player) {
+    if (!curve.validated()) return "geometry";
     for (var cell : footprint.clearance) {
       var p = RailwayData.pos(cell);
       if (p.getY() < level.getMinBuildHeight()

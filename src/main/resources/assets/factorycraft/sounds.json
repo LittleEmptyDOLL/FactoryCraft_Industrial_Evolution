@@ -1,0 +1,29 @@
+{
+  "gun_shot": {
+    "subtitle": "subtitles.factorycraft.gun_shot",
+    "sounds": [
+      {
+        "name": "factorycraft:gun_shot",
+        "attenuation_distance": 40
+      }
+    ]
+  },
+  "laser_shot": {
+    "subtitle": "subtitles.factorycraft.laser_shot",
+    "sounds": [
+      {
+        "name": "factorycraft:laser_shot",
+        "attenuation_distance": 40
+      }
+    ]
+  },
+  "flame_shot": {
+    "subtitle": "subtitles.factorycraft.flame_shot",
+    "sounds": [
+      {
+        "name": "factorycraft:flame_shot",
+        "attenuation_distance": 40
+      }
+    ]
+  }
+}
