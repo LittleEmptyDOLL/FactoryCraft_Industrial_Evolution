@@ -135,7 +135,7 @@ public final class TrainSimulation {
     }
     var wanted = TrackOccupancy.span(t.path, Math.min(t.rear(), min), Math.max(t.front(), max));
     var spatial = TrainWorld.sweep(d, t, t.head, target);
-    if (!d.occupancy.canReserve(t.id, wanted) || !d.spatial.canReserve(t.id, spatial)) {
+    if (!d.occupancy.canReserve(t.id, wanted) || !d.spatial.canReserveShapes(t.id, spatial)) {
       t.speed = 0;
       t.status = TrainData.Status.RESERVED;
       TrainWorld.views(d, t);
@@ -157,7 +157,7 @@ public final class TrainSimulation {
       // An unexpected obstacle inside braking distance absorbs paid movement. Commit the
       // last clear pose and sole resource owners before any hurt/death/entity-join callbacks.
       d.occupancy.reserve(t.id, wanted);
-      d.spatial.reserve(t.id, spatial);
+      d.spatial.reserveShapes(t.id, spatial);
       for (var debit : pay) debit.commit();
       double travelled = delta * contact.fraction();
       t.head += travelled;
@@ -175,7 +175,7 @@ public final class TrainSimulation {
     }
     // No world callback occurs between the full reservation, fuel ownership and pose commit.
     d.occupancy.reserve(t.id, wanted);
-    d.spatial.reserve(t.id, spatial);
+    d.spatial.reserveShapes(t.id, spatial);
     for (var debit : pay) debit.commit();
     t.speed = next.speed();
     t.head = target;

@@ -814,7 +814,7 @@
   "key.factorycraft.rail_rotate": "Rail: rotate goal tangent",
   "key.factorycraft.rail_flip": "Rail: reverse starting tangent",
   "key.factorycraft.rail_cancel": "Rail: cancel planner",
-  "rail.factorycraft.controls": "Use on ground: short rail. Use on rail: select end, then connect. R: goal direction; X: reverse; C or sneak-use (also in air): cancel. Selection clears after connecting.",
+  "rail.factorycraft.controls": "Use: starter / select endpoint / connect. Camera: end tangent; R: override; X: reverse start; C/sneak: cancel.",
   "rail.factorycraft.dimensions": "Centered 2-block bed; 3-wide corridor; radius >=13; grade <=1:4. Endpoints need foundations. Clear 4 blocks above.",
   "rail.factorycraft.preview": "Rail cost: %s | goal %s | %s",
   "rail.factorycraft.inspect": "Rail %s | %s m | endpoint degree %s/%s | loaded: %s",
@@ -838,7 +838,7 @@
   "rail.factorycraft.endpoint": "Select an existing rail endpoint, not its middle",
   "rail.factorycraft.reach": "Selected target is outside interaction reach",
   "rail.factorycraft.missing": "Segment no longer exists",
-  "rail.factorycraft.direction_-1": "auto",
+  "rail.factorycraft.direction_-1": "camera",
   "rail.factorycraft.direction_0": "N",
   "rail.factorycraft.direction_1": "NNE (1:2)",
   "rail.factorycraft.direction_2": "NE",
@@ -922,5 +922,7 @@
   "train.factorycraft.blocked": "Vehicle clearance is obstructed",
   "train.factorycraft.occupied": "Track is occupied by another train",
   "train.factorycraft.entity": "Vehicle clearance contains an entity",
-  "train.factorycraft.border": "Outside the world border"
+  "train.factorycraft.border": "Outside the world border",
+  "key.factorycraft.stock_debug": "Trains: collider diagnostics (F8)",
+  "train.factorycraft.debug_legend": "F8: hull green, mesh pink, broadphase blue, planned route amber"
 }

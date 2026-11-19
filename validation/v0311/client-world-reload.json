@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "independent_JVM": true,
+  "trains": 4,
+  "cars": 15,
+  "canonical_tag_exact": true,
+  "sha256_before": "bb0d749f4d3510fdbf49f9406390a58d755f368edb7a213e866e6c95ba3ca574",
+  "sha256_after": "bb0d749f4d3510fdbf49f9406390a58d755f368edb7a213e866e6c95ba3ca574"
+}

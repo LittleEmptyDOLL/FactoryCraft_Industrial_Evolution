@@ -8,8 +8,8 @@ public enum StockSpec {
   public static final double SPACING = 7,
       BOGIE_OFFSET = 2,
       HALF_LENGTH = 3.5,
-      HALF_WIDTH = 1.0,
-      HEIGHT = 3.8;
+      HALF_WIDTH = StockGeometry.HALF_WIDTH,
+      HEIGHT = StockGeometry.TOP;
   public static final int FLUID_CAPACITY = 500_000;
   public final String id;
   public final int weight, health, slots;

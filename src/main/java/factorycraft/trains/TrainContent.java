@@ -30,7 +30,9 @@ public final class TrainContent {
               () ->
                   EntityType.Builder.<StockEntity>of(
                           (type, level) -> new StockEntity(type, level, kind), MobCategory.MISC)
-                      .sized(2, 3.8f)
+                      .sized(
+                          (float) (factorycraft.simulation.trains.StockGeometry.HALF_WIDTH * 2),
+                          (float) factorycraft.simulation.trains.StockGeometry.TOP)
                       .clientTrackingRange(12)
                       .updateInterval(3)
                       .build("factorycraft:" + kind.id)));

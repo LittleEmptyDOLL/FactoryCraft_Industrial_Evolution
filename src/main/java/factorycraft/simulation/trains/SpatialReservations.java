@@ -27,11 +27,24 @@ public final class SpatialReservations {
 
   private record Cell(int x, int y, int z) {}
 
-  private record Claim(UUID owner, Bounds box) {}
+  private static final class Claim {
+    final UUID owner;
+    final Bounds box;
+    final SweptHull hull;
+    long seen;
+
+    Claim(UUID owner, Bounds box, SweptHull hull) {
+      this.owner = owner;
+      this.box = box;
+      this.hull = hull;
+    }
+  }
+
+  private long query;
 
   private static final ArrayList<Claim> EMPTY = new ArrayList<>();
   private final Map<Cell, ArrayList<Claim>> grid = new HashMap<>();
-  private final Map<UUID, List<Bounds>> owners = new HashMap<>();
+  private final Map<UUID, List<Claim>> owners = new HashMap<>();
 
   private static List<Cell> cells(Bounds b) {
     var out = new ArrayList<Cell>();
@@ -43,32 +56,67 @@ public final class SpatialReservations {
   }
 
   public boolean canReserve(UUID owner, List<Bounds> boxes) {
-    for (var box : boxes)
+    for (var box : boxes) {
+      long stamp = ++query;
       for (var cell : cells(box))
-        for (var old : grid.getOrDefault(cell, EMPTY))
+        for (var old : grid.getOrDefault(cell, EMPTY)) {
+          if (old.seen == stamp) continue;
+          old.seen = stamp;
           if (!old.owner.equals(owner) && old.box.intersects(box)) return false;
+        }
+    }
+    return true;
+  }
+
+  public boolean canReserveShapes(UUID owner, List<SweptHull> hulls) {
+    for (var hull : hulls) {
+      long stamp = ++query;
+      var box = hull.bounds();
+      for (var cell : cells(box))
+        for (var old : grid.getOrDefault(cell, EMPTY)) {
+          if (old.seen == stamp) continue;
+          old.seen = stamp;
+          if (!old.owner.equals(owner)
+              && old.box.intersects(box)
+              && (old.hull == null || hull.intersects(old.hull))) return false;
+        }
+    }
     return true;
   }
 
   public boolean reserve(UUID owner, List<Bounds> boxes) {
     if (!canReserve(owner, boxes)) return false;
-    release(owner);
-    owners.put(owner, List.copyOf(boxes));
-    for (var b : boxes)
-      for (var c : cells(b))
-        grid.computeIfAbsent(c, k -> new ArrayList<>()).add(new Claim(owner, b));
+    var claims = new ArrayList<Claim>();
+    for (var b : boxes) claims.add(new Claim(owner, b, null));
+    publish(owner, claims);
     return true;
+  }
+
+  public boolean reserveShapes(UUID owner, List<SweptHull> hulls) {
+    if (!canReserveShapes(owner, hulls)) return false;
+    var claims = new ArrayList<Claim>();
+    for (var h : hulls) claims.add(new Claim(owner, h.bounds(), h));
+    publish(owner, claims);
+    return true;
+  }
+
+  private void publish(UUID owner, List<Claim> claims) {
+    release(owner);
+    owners.put(owner, List.copyOf(claims));
+    for (var claim : claims)
+      for (var cell : cells(claim.box))
+        grid.computeIfAbsent(cell, k -> new ArrayList<>()).add(claim);
   }
 
   public void release(UUID owner) {
     var old = owners.remove(owner);
     if (old == null) return;
-    for (var b : old)
-      for (var c : cells(b)) {
-        var entries = grid.get(c);
+    for (var claim : old)
+      for (var cell : cells(claim.box)) {
+        var entries = grid.get(cell);
         if (entries == null) continue;
         entries.removeIf(e -> e.owner.equals(owner));
-        if (entries.isEmpty()) grid.remove(c);
+        if (entries.isEmpty()) grid.remove(cell);
       }
   }
 }

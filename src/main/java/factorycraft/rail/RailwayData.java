@@ -84,6 +84,17 @@ public final class RailwayData extends SavedData {
     return false;
   }
 
+  public boolean obstructed(BlockPos p, net.minecraft.world.level.block.state.BlockState state) {
+    var ids = chunks.get(new net.minecraft.world.level.ChunkPos(p).toLong());
+    if (ids == null) return false;
+    for (var id : ids) {
+      var footprint = segments.get(id).footprint;
+      if (footprint.bed.containsKey(cell(p)) || !RailObstacles.clear(level, p, state, footprint))
+        return true;
+    }
+    return false;
+  }
+
   public Set<UUID> candidates(RailFootprint footprint) {
     var ids = new LinkedHashSet<UUID>();
     for (long c : footprint.chunks()) ids.addAll(chunks.getOrDefault(c, new LinkedHashSet<>()));

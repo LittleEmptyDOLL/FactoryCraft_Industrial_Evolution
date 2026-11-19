@@ -39,6 +39,7 @@ directions_en=['N','NNE (1:2)','NE','ENE (2:1)','E','ESE (2:1)','SE','SSE (1:2)'
 directions_ru=['С','ССВ (1:2)','СВ','ВСВ (2:1)','В','ВЮВ (2:1)','ЮВ','ЮЮВ (1:2)','Ю','ЮЮЗ (1:2)','ЮЗ','ЗЮЗ (2:1)','З','ЗСЗ (2:1)','СЗ','ССЗ (1:2)']
 labels['rail.factorycraft.direction_-1']=('auto','авто')
 for i in range(16):labels['rail.factorycraft.direction_'+str(i)]=(directions_en[i],directions_ru[i])
+labels.update({'rail.factorycraft.controls': ('Use: starter / select endpoint / connect. Camera: end tangent; R: override; X: reverse start; C/sneak: cancel.', 'ПКМ: короткий рельс / выбрать конец / соединить. Камера: направление конца; R: вручную; X: развернуть начало; C/Shift: отмена.'), 'rail.factorycraft.dimensions': ('Centered 2-block bed; 3-wide corridor; radius >=13; grade <=1:4. Endpoints need foundations. Clear 4 blocks above.', 'Полотно 2 блока по центру клетки; коридор 3; радиус от 13; уклон до 1:4. Концам нужны основания. Сверху оставьте 4 блока.')})
 for lang,index in [('en_us',0),('ru_ru',1)]:
  p=RES/'assets/factorycraft/lang'/(lang+'.json');d=json.loads(p.read_text());d.update({k:v[index] for k,v in labels.items()});write(p.relative_to(RES),d)
 print('Railway source bills/gate and original authored assets generated.')

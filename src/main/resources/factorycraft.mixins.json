@@ -6,12 +6,17 @@
   "mixins": [
     "CraftingMenuMixin",
     "CraftingSlotMixin",
-    "CountedResultSlotMixin"
+    "CountedResultSlotMixin",
+    "StockMovementMixin",
+    "StockCollisionQueryMixin",
+    "StockPickingMixin",
+    "StockSectionDiscoveryMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "client.WeaponPoseMixin"
+    "client.WeaponPoseMixin",
+    "client.RailWorldChangeMixin"
   ]
 }

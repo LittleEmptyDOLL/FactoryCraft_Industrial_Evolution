@@ -1,0 +1,61 @@
+{
+  "directory": "/workspace/work/v0311-evidence",
+  "world_archives_byte_compared_before_removing_originals": true,
+  "files": [
+    {
+      "file": "after-benchmarked-factorycraft-0.31.1.jar",
+      "bytes": 2904166,
+      "sha256": "7a027ad97959e538981b8e83780ddd2e095dc65af152fd75d08d9618dd23be08"
+    },
+    {
+      "file": "before-benchmarked-factorycraft-0.31.0.jar",
+      "bytes": 2843791,
+      "sha256": "4265309da30bf20e3fd22465272c7aa542bb3528777a91240a2a081084a62768"
+    },
+    {
+      "file": "legacy-v050-preserved.tar.xz",
+      "bytes": 9770244,
+      "sha256": "f768b53e5a9585b83b30a67ba0027db174671eaeda5a72a4d45c713547580e03"
+    },
+    {
+      "file": "v0311-dev1.tar.xz",
+      "bytes": 10819164,
+      "sha256": "121ee587c49c38602a9599e51bd823cce56fc3ca273f562a1a9cd265a7d9e887"
+    },
+    {
+      "file": "v0311-dev2-disk-full.tar.xz",
+      "bytes": 8457984,
+      "sha256": "cf40dadf5dc966296e5f49156d8e2aefd8797a03818ecb59434a179f077be18d"
+    },
+    {
+      "file": "v0311-dev3-pass556.tar.xz",
+      "bytes": 11431324,
+      "sha256": "3057fbf84aa8f03e27a96dde0332b2c9212a11cde317dda2116d61d12d8f488b"
+    },
+    {
+      "file": "v0311-final1-three-passes.tar.xz",
+      "bytes": 27607716,
+      "sha256": "b4a5efd2f3bd7ecbdd6b59c57cf7bd4287aeb4f07ef051fae5217cba9988e1cb"
+    },
+    {
+      "file": "v0311-optional1-stall.tar.xz",
+      "bytes": 8159560,
+      "sha256": "a0fd3612cbb0fe057aa462231b4655f8ee0022b6fe89bfc6cc24f42ba96a4c59"
+    },
+    {
+      "file": "v0311-optional2-projectile-failure.tar.xz",
+      "bytes": 11980820,
+      "sha256": "a236f9d401050b7be1bfc413cca1c2402e68c71fd79be85a226d08b10fa1bea7"
+    },
+    {
+      "file": "v0311-optional3-plant-failure.tar.xz",
+      "bytes": 11497492,
+      "sha256": "caf3f549a83873546bba6dda19da95053204f74e701753e335cc1d951b7b2976"
+    },
+    {
+      "file": "v0311-optional4-intermediate-bed.tar.xz",
+      "bytes": 20403012,
+      "sha256": "9187e01e7b8b7c5ffa75844bc5e14d5fd751a056cb8fc3beb13d8b2097a890c8"
+    }
+  ]
+}

@@ -1,3 +1,14 @@
+## 0.31.1 / issue #14
+
+| Mechanic | Current implementation |
+|---|---|
+| Rotated stock | Shared mesh-sized pitched OBB; scalar SAT, continuous contacts, precise native picking/motion and oriented reservations |
+| Rail obstruction | Actual voxel subshapes, safe plant/flower/torch/snow replacement, protected rollback/deferred drops |
+| Endpoint orientation | Camera yaw, all16source families, real existing tangents; R/X/C retained |
+| Placement region | Cached local5×5 green/amber/red overlay;≤1newcandidate/tick; F8 mesh/hull/broadphase/path |
+| High-speed report | Actual original/changed client drives did not reproduce crash; no root cause claimed; exact coverage in validation/v0311 |
+| Ownership/regression | Existing canonical schema/UUIDs/resources and every prior test/diagnostic retained;314JUnit,558+558cross-JVM and559final native; actual8/148workload+restart pass; results in VALIDATION.md |
+
 ## 0.30.1 consolidated fixes — issue #12
 
 ## 0.31 rolling-stock extension

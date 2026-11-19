@@ -185,7 +185,10 @@ public final class Combat {
       var area = new AABB(from, end).inflate(.25);
       for (var e :
           l.getEntities((Entity) null, area, e -> allowed(l, e, owner, scope, automatic))) {
-        var point = e.getBoundingBox().inflate(.05).clip(from, end);
+        var point =
+            e instanceof factorycraft.trains.StockEntity stock
+                ? factorycraft.trains.TrainCollision.clip(stock, from, end)
+                : e.getBoundingBox().inflate(.05).clip(from, end);
         if (point.isPresent() && from.distanceToSqr(point.get()) < best) {
           best = from.distanceToSqr(point.get());
           hit = e;

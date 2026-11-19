@@ -1,3 +1,13 @@
+# 0.31.1 — precise rolling-stock collision and rail placement (issue #14)
+
+* Share mesh-sized, bogie-oriented stock geometry between runtime, native entity interaction, staged train reservations and future rail clearance. Use AABBs for discovery, scalar SAT/ray clipping for contact, and bounded continuous motion intervals for thin obstacles.
+* Allow harmless empty-collision scenery above rails; replace eligible bed plants/flowers/torches/snow through protected rollback and deferred NeoForge drop events. Preserve resource-owning blocks and liquids.
+* Make destination tangents follow camera yaw across the sixteen source heading families; preserve existing endpoint tangents, R/X overrides and cancellation. Add a cached local5×5 endpoint overlay, at most one new candidate per tick, and F8 hull/mesh/broadphase diagnostics.
+* Preserve train/car UUIDs, fuel/cargo/fluid ownership, source speeds and all prior tests/world evidence. New threshold/native picking/placement/restart guards and real EN/RU dedicated-client evidence are in [validation/v0311](validation/v0311).
+* The reported120km/h crash was not reproduced on the original or changed code. No cause/fix is asserted without its actual stack trace; remaining visual/performance coverage is stated explicitly. No0.32 work.
+
+---
+
 # 0.31.0 continuation — collisions, safety and real-server validation
 
 * Fix the CI armor target's daylight ignition with a non-armored head covering; retain exact physical/laser resistance assertions and check the undamaged fixture first.

@@ -1,3 +1,9 @@
+## 0.31.1 oriented stock and bounded rail planning
+
+One source-sized `StockGeometry`/`StockEnvelope` supplies live stock, native precise picking/movement, staged spatial reservations and future construction. Scalar SAT decides OBB/voxel-subshape/OBB contact; AABBs are lookup bounds. Bounded EntitySectionStorage discovery padding also finds a full car across section boundaries; existing section accessibility and original result filters remain intact. `MotionHull` caches an interval's measured rotation expansion and performs continuous translation checks, shared by runtime and builder. All canonical resources remain in TrainData; no new collision entities or persisted resource owners.
+
+`RailObstacles` separates safe bed replacement from actual clearance. Protected placement stages without neighbor drops, revalidates, publishes the sole paid rail owner, then sends precomputed original-state loot through NeoForge and updates neighbors. Server and client share camera-derived sixteen-heading destinations. `EndpointHints` amortizes a local5×5 cache; local block-state changes invalidate relevant previews, not global graphs. F8 diagnostics and the preview renderers are client-only. See RAILWAYS.md / TRAINS.md and validation/v0311 for measured costs and remaining acceptance.
+
 ## 0.30.1 authoritative combat and construction projections
 
 ## 0.31 canonical rolling stock

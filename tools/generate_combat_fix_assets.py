@@ -33,7 +33,7 @@ for lang,ru in [('en_us',False),('ru_ru',True)]:
  p=R/'lang'/f'{lang}.json';data=json.loads(p.read_text())
  data.update({f'gui.factorycraft.turret_status_{i}':s for i,s in enumerate(status_ru if ru else status_en)})
  data.update({'subtitles.factorycraft.gun_shot':'Выстрел' if ru else 'Gun fires','subtitles.factorycraft.laser_shot':'Выстрел лазера' if ru else 'Laser fires','subtitles.factorycraft.flame_shot':'Струя огня' if ru else 'Flame fires'})
- data['rail.factorycraft.controls']='ПКМ по земле: короткие рельсы. ПКМ по рельсам: выбрать конец, затем соединить. R: направление; X: развернуть; C или Shift-ПКМ (в том числе в воздух): отменить. После соединения выбор снимается.' if ru else 'Use on ground: short rail. Use on rail: select end, then connect. R: goal direction; X: reverse; C or sneak-use (also in air): cancel. Selection clears after connecting.'
+ data['rail.factorycraft.controls']='ПКМ: короткий рельс / выбрать конец / соединить. Камера: направление конца; R: вручную; X: развернуть начало; C/Shift: отмена.' if ru else 'Use: starter / select endpoint / connect. Camera: end tangent; R: override; X: reverse start; C/sneak: cancel.'
  data['rail.factorycraft.selected']='Конец выбран; укажите место соединения. C: отмена' if ru else 'Rail end selected; choose a connection. C: cancel'
  p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
 print('Original 0.30.1 sounds, forward weapon transforms and localized controls generated')

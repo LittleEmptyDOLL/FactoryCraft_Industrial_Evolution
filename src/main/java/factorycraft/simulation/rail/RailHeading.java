@@ -20,6 +20,11 @@ public record RailHeading(int index) {
     return new RailHeading(index + 8);
   }
 
+  public static RailHeading fromYaw(double yaw) {
+    double angle = Math.toRadians(yaw);
+    return nearest(-Math.sin(angle), Math.cos(angle));
+  }
+
   public static RailHeading nearest(double x, double z) {
     double best = -Double.MAX_VALUE;
     int chosen = 0;

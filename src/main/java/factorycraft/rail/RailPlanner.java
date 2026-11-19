@@ -49,7 +49,8 @@ public final class RailPlanner {
       BlockHitResult hit,
       boolean source,
       RailHeading heading) {
-    if (hit.getType() != HitResult.Type.BLOCK || !level.hasChunkAt(hit.getBlockPos())) return null;
+    if (hit.getType() != HitResult.Type.BLOCK || !RailPlan.loaded(level, hit.getBlockPos()))
+      return null;
     if (level.getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity cell) {
       RailEnd best = null;
       double distance = Double.POSITIVE_INFINITY, alignment = -Double.MAX_VALUE;
@@ -71,6 +72,16 @@ public final class RailPlanner {
     return new RailEnd(p.getX(), p.getY(), p.getZ(), heading);
   }
 
+  public static RailEnd destination(
+      net.minecraft.world.level.Level level, BlockHitResult hit, RailHeading look, int override) {
+    var end = target(level, hit, false, look);
+    if (end != null
+        && override >= 0
+        && !(level.getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity))
+      return new RailEnd(end.x(), end.y(), end.z(), new RailHeading(override));
+    return end;
+  }
+
   public static void edit(ServerPlayer p, int action) {
     var s = get(p);
     if (action == 2) {
@@ -82,7 +93,9 @@ public final class RailPlanner {
         action == 0
             ? new Selection(
                 s.start(),
-                s.goal() < 0 ? 0 : s.goal() == 15 ? -1 : s.goal() + 1,
+                s.goal() < 0
+                    ? (RailHeading.fromYaw(p.getYRot()).index() + 1) % 16
+                    : s.goal() == 15 ? -1 : s.goal() + 1,
                 s.dimension(),
                 p.level().getGameTime(),
                 s.anchor(),
@@ -103,7 +116,7 @@ public final class RailPlanner {
         || p.getEyePosition().distanceToSqr(hit.getLocation())
             > p.blockInteractionRange() * p.blockInteractionRange() + .01) return "reach";
     var look = p.getLookAngle();
-    var heading = RailHeading.nearest(look.x, look.z);
+    var heading = RailHeading.fromYaw(p.getYRot());
     var s = get(p);
     var end = target(p.level(), hit, s == null, heading);
     if (end == null) return "endpoint";
@@ -138,15 +151,7 @@ public final class RailPlanner {
       RailNetwork.send(p, s);
       return "selected";
     }
-    if (!p.level().getBlockState(hit.getBlockPos()).is(RailContent.BED.get())) {
-      var delta = end.point().subtract(s.start().point());
-      end =
-          new RailEnd(
-              end.x(),
-              end.y(),
-              end.z(),
-              s.goal() < 0 ? RailHeading.nearest(delta.x(), delta.z()) : new RailHeading(s.goal()));
-    }
+    end = destination(p.level(), hit, heading, s.goal());
     try {
       var plan = new RailPlan(RailCurve.plan(s.start(), end));
       var result = RailPlacement.place(p, plan);

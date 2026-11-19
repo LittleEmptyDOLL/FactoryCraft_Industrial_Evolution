@@ -55,7 +55,7 @@ public final class RailEvents {
             : java.util.List.of(e.getPos());
     for (var p : positions) {
       var state = level.getBlockState(p);
-      if (!state.isAir() && !state.is(RailContent.BED.get()) && data.reserved(p)) {
+      if (!state.isAir() && !state.is(RailContent.BED.get()) && data.obstructed(p, state)) {
         e.setCanceled(true);
         if (e.getEntity() instanceof net.minecraft.world.entity.player.Player player)
           player.displayClientMessage(

@@ -44,6 +44,35 @@ public final class StockEntity extends Entity {
       oldRearPitch;
   private float wheelVisual, wheelPrevious, wheelTarget;
   private boolean visualInitialized;
+  private StockEnvelope serverHull;
+  private Vec3 hullOrigin;
+
+  public StockEnvelope hull() {
+    if (!level().isClientSide
+        && serverHull != null
+        && hullOrigin != null
+        && position().distanceToSqr(hullOrigin) < 1e-10) return serverHull;
+    double yaw = Math.toRadians(getYRot()), pitch = Math.toRadians(getXRot());
+    var f =
+        new factorycraft.simulation.rail.RailVector(
+            -Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
+    var side = new factorycraft.simulation.rail.RailVector(-f.z(), 0, f.x()).unit();
+    var up = side.cross(f).unit();
+    double height = StockGeometry.top(kind()) - StockGeometry.BOTTOM;
+    return new StockEnvelope(
+        new factorycraft.simulation.rail.RailVector(getX(), getY(), getZ())
+            .add(up.scale(StockGeometry.BOTTOM + height / 2)),
+        side,
+        up,
+        f,
+        StockGeometry.HALF_WIDTH,
+        height / 2,
+        StockGeometry.HALF_LENGTH);
+  }
+
+  public float getPickRadius() {
+    return 0;
+  }
 
   public float frontYaw(float partial) {
     return net.minecraft.util.Mth.rotLerp(partial, oldFront, visualFront);
@@ -157,6 +186,8 @@ public final class StockEntity extends Entity {
 
   public void authoritative(BogiePose pose, TrainCar car, double distance, double speed) {
     var p = pose.center();
+    serverHull = StockEnvelope.of(pose, car.kind);
+    hullOrigin = TrainWorld.vec(p);
     setPos(p.x(), p.y(), p.z());
     setYRot(yaw(pose.forward()));
     setXRot(
@@ -187,7 +218,8 @@ public final class StockEntity extends Entity {
       entityData.set(WHEELS, (float) ((car.reversed ? -distance : distance) % 2048));
       entityData.set(SPEED, (float) speed);
     }
-    setBoundingBox(TrainWorld.box(pose));
+    serverHull = StockEnvelope.of(pose, car.kind);
+    setBoundingBox(TrainWorld.box(serverHull));
     setDeltaMovement(Vec3.ZERO);
   }
 
@@ -248,11 +280,7 @@ public final class StockEntity extends Entity {
   }
 
   private void updateBox() {
-    double a = Math.toRadians(getYRot());
-    double x = Math.abs(Math.sin(a)) * 3.5 + Math.abs(Math.cos(a)) * 1.5,
-        z = Math.abs(Math.cos(a)) * 3.5 + Math.abs(Math.sin(a)) * 1.5;
-    setBoundingBox(
-        new AABB(getX() - x, getY() + .02, getZ() - z, getX() + x, getY() + 4, getZ() + z));
+    setBoundingBox(TrainWorld.box(hull()));
   }
 
   public void onAddedToLevel() {
@@ -306,7 +334,8 @@ public final class StockEntity extends Entity {
   }
 
   public boolean canBeCollidedWith() {
-    return true;
+    // Native movement/noCollision mixins perform exact oriented tests instead of this broad box.
+    return false;
   }
 
   public void push(double x, double y, double z) {}
@@ -330,8 +359,14 @@ public final class StockEntity extends Entity {
     if (!(player instanceof ServerPlayer p)) return InteractionResult.SUCCESS;
     var d = TrainData.get(p.serverLevel());
     var t = d.owner(getUUID());
-    if (t == null || !TrainWorld.mayUse(t, p) || p.distanceToSqr(this) > 64)
-      return InteractionResult.FAIL;
+    if (t == null
+        || !TrainWorld.mayUse(t, p)
+        || p.distanceToSqr(this) > 64
+        || TrainCollision.clip(
+                this,
+                p.getEyePosition(),
+                p.getEyePosition().add(p.getLookAngle().scale(p.entityInteractionRange())))
+            .isEmpty()) return InteractionResult.FAIL;
     var held = p.getItemInHand(hand);
     if (net.minecraft.core.registries.BuiltInRegistries.ITEM
         .getKey(held.getItem())
@@ -358,6 +393,13 @@ public final class StockEntity extends Entity {
 
   public boolean hurt(DamageSource source, float amount) {
     if (!(level() instanceof ServerLevel l) || amount <= 0) return false;
+    if (source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+        && source.getDirectEntity() instanceof Player p
+        && TrainCollision.clip(
+                this,
+                p.getEyePosition(),
+                p.getEyePosition().add(p.getLookAngle().scale(p.entityInteractionRange())))
+            .isEmpty()) return false;
     return StockPlacement.damage(TrainData.get(l), this, source, amount);
   }
 

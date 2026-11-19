@@ -33,8 +33,10 @@ jobs:
           python tools/check_rail_reference.py
           python tools/check_train_reference.py
           mkdir -p build/rail-kernel
-          javac -d build/rail-kernel src/main/java/factorycraft/simulation/rail/*.java tools/RailwayBenchmark.java
+          javac -d build/rail-kernel src/main/java/factorycraft/simulation/rail/*.java src/main/java/factorycraft/simulation/trains/*.java tools/RailwayBenchmark.java
           java -cp build/rail-kernel RailwayBenchmark > build/reports/rail-kernel.txt
+          javac -cp build/rail-kernel -d build/rail-kernel tools/RailPlacementProfile.java
+          java -Xms512m -Xmx512m -cp build/rail-kernel RailPlacementProfile > build/reports/rail-placement.txt
           mkdir -p build/train-kernel
           javac -d build/train-kernel src/main/java/factorycraft/simulation/rail/*.java src/main/java/factorycraft/simulation/trains/*.java tools/TrainKernelBenchmark.java
           java -cp build/train-kernel TrainKernelBenchmark > build/reports/train-kernel.jsonl
@@ -47,7 +49,7 @@ jobs:
           javac -d build/fluid-kernel src/main/java/factorycraft/simulation/fluids/{FluidCell,FluidUnits,FluidTransport,PipelineNetwork}.java tools/FluidSegmentBenchmark.java tools/FluidTopologyProfile.java
           java -cp build/fluid-kernel FluidSegmentBenchmark > build/reports/fluid-kernel.txt
           cat build/reports/fluid-kernel.txt
-          java -cp build/fluid-kernel FluidTopologyProfile 0.31.0 > build/reports/fluid-topology.jsonl
+          java -cp build/fluid-kernel FluidTopologyProfile 0.31.1 > build/reports/fluid-topology.jsonl
           python tools/profile_resources.py > build/reports/resource-geometry.jsonl
       - name: Upload reports and artifacts
         if: always()
@@ -59,6 +61,7 @@ jobs:
             build/libs/*.jar
             build/reports/tests/
             build/reports/rail-kernel.txt
+            build/reports/rail-placement.txt
             build/reports/train-kernel.jsonl
             build/reports/combat-kernel.txt
             build/reports/fluid-kernel.txt
@@ -68,6 +71,8 @@ jobs:
   gametests:
     name: Native GameTests and separate-process reload
     runs-on: ubuntu-latest
+    env:
+      JAVA_TOOL_OPTIONS: -XX:ActiveProcessorCount=4
     steps:
       - uses: actions/checkout@v4
         with:
@@ -90,12 +95,14 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/v0310/reports/
-            run-gametest/v0310/logs/latest.log
+            run-gametest/v0311/reports/
+            run-gametest/v0311/logs/latest.log
 
   compatibility:
     name: FTB Teams, EMI, JEI, Jade and Apothic compatibility
     runs-on: ubuntu-latest
+    env:
+      JAVA_TOOL_OPTIONS: -XX:ActiveProcessorCount=4
     steps:
       - uses: actions/checkout@v4
         with:
@@ -118,8 +125,8 @@ jobs:
           if-no-files-found: ignore
           path: |
             build/reports/
-            run-gametest/v0310/reports/
-            run-gametest/v0310/logs/latest.log
+            run-gametest/v0311/reports/
+            run-gametest/v0311/logs/latest.log
 
   benchmark:
     name: Full factory benchmark and disk reload
@@ -145,7 +152,7 @@ jobs:
           name: factorycraft-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/full-v0310/reports/
+            run-benchmark/full-v0311/reports/
 
   mixed_benchmark:
     name: Mixed 3D factory, chunk unload and reload
@@ -171,7 +178,7 @@ jobs:
           name: factorycraft-mixed-benchmark
           if-no-files-found: ignore
           path: |
-            run-benchmark/mixed-v0310/reports/
+            run-benchmark/mixed-v0311/reports/
 
   fluid_performance:
     name: Isolated 10000-pipe server workload and restart
@@ -185,8 +192,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Real fluids and exact checkpoint
         run: |
-          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0310-ci
-          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0310-ci -PfluidMode=verify
+          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0311-ci
+          ./gradlew runFluidBenchmarkServer -PfluidFixture=fluids-v0311-ci -PfluidMode=verify
       - name: Upload fluid evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -194,8 +201,8 @@ jobs:
           name: factorycraft-fluid-performance
           if-no-files-found: ignore
           path: |
-            run-benchmark/fluids-v0310-ci/reports/
-            run-benchmark/fluids-v0310-ci/checkpoint.json
+            run-benchmark/fluids-v0311-ci/reports/
+            run-benchmark/fluids-v0311-ci/checkpoint.json
 
   train_performance:
     name: Eight real trains, long consists, chunk unload and JVM reload
@@ -209,8 +216,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Actual rail stock and exact checkpoint
         run: |
-          ./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0310-ci
-          ./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0310-ci -PtrainMode=verify
+          ./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0311-ci
+          ./gradlew runTrainBenchmarkServer -PtrainFixture=trains-v0311-ci -PtrainMode=verify
       - name: Upload train evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -218,6 +225,6 @@ jobs:
           name: factorycraft-train-performance
           if-no-files-found: ignore
           path: |
-            run-benchmark/trains-v0310-ci/reports/
-            run-benchmark/trains-v0310-ci/checkpoint.nbt
-            run-benchmark/trains-v0310-ci/logs/latest.log
+            run-benchmark/trains-v0311-ci/reports/
+            run-benchmark/trains-v0311-ci/checkpoint.nbt
+            run-benchmark/trains-v0311-ci/logs/latest.log

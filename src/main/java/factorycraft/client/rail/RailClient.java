@@ -56,7 +56,20 @@ public final class RailClient {
   private static float[] ghost = new float[0];
   private static String reason = "selected";
   private static RailEnd lastEnd, lastStart;
-  private static long checkedAt = Long.MIN_VALUE;
+  private static long checkedAt = Long.MIN_VALUE, worldRevision, hintTick = Long.MIN_VALUE;
+  private static final EndpointHints hints = new EndpointHints();
+  private static boolean showHints;
+
+  public static void changed(BlockPos pos) {
+    if (start == null || lastEnd == null) return;
+    if (pos.getX() >= Math.min(start.x(), lastEnd.x()) - 8
+        && pos.getX() <= Math.max(start.x(), lastEnd.x()) + 8
+        && pos.getZ() >= Math.min(start.z(), lastEnd.z()) - 8
+        && pos.getZ() <= Math.max(start.z(), lastEnd.z()) + 8) {
+      worldRevision++;
+      checkedAt = Long.MIN_VALUE;
+    }
+  }
 
   @SubscribeEvent
   public static void keys(RegisterKeyMappingsEvent e) {
@@ -89,7 +102,7 @@ public final class RailClient {
     var found = new LinkedHashMap<UUID, RailViews.Route>();
     for (var c : f.clearance) {
       var pos = RailwayData.pos(c);
-      if (!level.hasChunkAt(pos)) continue;
+      if (!RailPlan.loaded(level, pos)) continue;
       if (level.getBlockEntity(pos) instanceof RailCellBlockEntity cell)
         for (var d : cell.descriptors)
           found.put(
@@ -107,17 +120,26 @@ public final class RailClient {
       start = null;
       plan = null;
       lastStart = null;
+      hints.clear();
+      worldRevision++;
     }
     if (mc.player == null) return;
     boolean held =
         mc.player.getMainHandItem().is(RailContent.RAIL.get())
             || mc.player.getOffhandItem().is(RailContent.RAIL.get());
+    boolean anchorChanged = false;
+    if (start != null) {
+      var at = new BlockPos(start.x(), start.y(), start.z());
+      // A client view-distance boundary is not proof that the server-owned anchor was removed.
+      // Keep the UUID selection; the server clears a genuinely unavailable/removed owner.
+      if (RailPlan.loaded(mc.level, at)) {
+        anchorChanged = !mc.level.getBlockState(at).is(RailContent.BED.get());
+        if (mc.level.getBlockEntity(at) instanceof RailCellBlockEntity cell
+            && !cell.segments().isEmpty()) anchorChanged |= !cell.segments().contains(anchor);
+      }
+    }
     if (start != null
-        && (!held
-            || selectedSlot != mc.player.getInventory().selected
-            || !(mc.level.getBlockEntity(new BlockPos(start.x(), start.y(), start.z()))
-                instanceof RailCellBlockEntity cell)
-            || !cell.segments().contains(anchor))) {
+        && (!held || selectedSlot != mc.player.getInventory().selected || anchorChanged)) {
       start = null;
       plan = null;
       lastStart = null;
@@ -136,6 +158,7 @@ public final class RailClient {
 
   private static boolean target(Minecraft mc, BlockHitResult hit) {
     return hit.getType() == HitResult.Type.BLOCK
+        && RailPlan.loaded(mc.level, hit.getBlockPos())
         && !mc.level.getBlockState(hit.getBlockPos()).isAir();
   }
 
@@ -145,6 +168,7 @@ public final class RailClient {
     var mc = Minecraft.getInstance();
     plan = null;
     hovering = null;
+    showHints = false;
     if (mc.level == null
         || mc.player == null
         || mc.screen != null
@@ -158,22 +182,17 @@ public final class RailClient {
     if (!(result instanceof BlockHitResult hit) || !target(mc, hit)) return;
     hovering = hit;
     var look = mc.player.getLookAngle();
-    var end = RailPlanner.target(mc.level, hit, false, RailHeading.nearest(look.x, look.z));
+    var end =
+        RailPlanner.destination(
+            mc.level, hit, RailHeading.fromYaw(mc.player.getYRot()), start == null ? -1 : goal);
     if (end == null) return;
     RailEnd origin = start;
     if (origin == null) {
       if (mc.level.getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity) return;
       origin = end;
       end = RailPlanner.starter(origin).end;
-    } else if (!mc.level.getBlockState(hit.getBlockPos()).is(RailContent.BED.get())) {
-      var delta = end.point().subtract(origin.point());
-      end =
-          new RailEnd(
-              end.x(),
-              end.y(),
-              end.z(),
-              goal < 0 ? RailHeading.nearest(delta.x(), delta.z()) : new RailHeading(goal));
     }
+
     try {
       if (!origin.equals(lastStart) || !end.equals(lastEnd)) {
         lastStart = origin;
@@ -199,6 +218,43 @@ public final class RailClient {
       }
       plan = cached;
       if (plan == null) return;
+      if (start != null && hit.getDirection() == Direction.UP) {
+        showHints = true;
+        var base =
+            new RailEnd(
+                hit.getBlockPos().getX(),
+                hit.getBlockPos().getY() + 1,
+                hit.getBlockPos().getZ(),
+                goal < 0 ? RailHeading.fromYaw(mc.player.getYRot()) : new RailHeading(goal));
+        hints.key(
+            new EndpointHints.Key(
+                start, base, goal, anchor, worldRevision + mc.level.getGameTime() / 80));
+        if (hintTick != mc.level.getGameTime()) {
+          hintTick = mc.level.getGameTime();
+          hints.advance(
+              1,
+              point -> {
+                var p = new BlockPos(point.x(), point.y() - 1, point.z());
+                if (!RailPlan.loaded(mc.level, p))
+                  return new EndpointHints.Result(point, "unloaded", 0);
+                var h =
+                    new BlockHitResult(Vec3.atCenterOf(p).add(0, .5, 0), Direction.UP, p, false);
+                var target =
+                    RailPlanner.destination(
+                        mc.level, h, RailHeading.fromYaw(mc.player.getYRot()), goal);
+                try {
+                  var candidate = new RailPlan(RailCurve.plan(start, target));
+                  var status = candidate.inspect(mc.level, mc.player);
+                  if (status.equals("ready")
+                      && !mc.player.isCreative()
+                      && RailPlacement.count(mc.player) < candidate.curve.cost()) status = "price";
+                  return new EndpointHints.Result(point, status, candidate.curve.cost());
+                } catch (IllegalArgumentException invalid) {
+                  return new EndpointHints.Result(point, invalid.getMessage(), 0);
+                }
+              });
+        }
+      }
       if (mc.level.getGameTime() - checkedAt >= 4 || checkedAt == Long.MIN_VALUE) {
         if (geometric) {
           reason = plan.inspect(mc.level, mc.player);
@@ -216,6 +272,31 @@ public final class RailClient {
       var camera = e.getCamera().getPosition();
       pose.translate(-camera.x, -camera.y, -camera.z);
       var buffers = mc.renderBuffers().bufferSource();
+      if (showHints) {
+        var grid = buffers.getBuffer(RenderType.debugQuads());
+        for (int cell = 0; cell < 25; cell++) {
+          var point = hints.candidate(cell);
+          var value = hints.get(cell);
+          float cr = value == null ? .95f : value.valid() ? .2f : 1f,
+              cg = value == null ? .65f : value.valid() ? .95f : .23f;
+          double y = point.y() + .012;
+          for (int square = 0; square < 4; square++) {
+            double x = point.x() + .05 + (square % 2) * .45,
+                z = point.z() + .05 + (square / 2) * .45;
+            if (square == 0 || square == 3) {
+              grid.addVertex(pose.last(), (float) x, (float) y, (float) z)
+                  .setColor(cr, cg, .2f, .30f);
+              grid.addVertex(pose.last(), (float) x, (float) y, (float) (z + .40))
+                  .setColor(cr, cg, .2f, .30f);
+              grid.addVertex(pose.last(), (float) (x + .40), (float) y, (float) (z + .40))
+                  .setColor(cr, cg, .2f, .30f);
+              grid.addVertex(pose.last(), (float) (x + .40), (float) y, (float) z)
+                  .setColor(cr, cg, .2f, .30f);
+            }
+          }
+        }
+        buffers.endBatch(RenderType.debugQuads());
+      }
       boolean valid = reason.equals("ready");
       float r = valid ? .2f : 1, g = valid ? 1 : .18f;
       pose.pushPose();
@@ -249,24 +330,17 @@ public final class RailClient {
             .5f,
             1,
             1);
-      // Coarse carriage envelopes clarify why a nearby/overhead obstacle blocks the track.
-      for (double d = 0; d <= plan.curve.length(); d += 4) {
-        var point = plan.curve.sample(d, false).position();
-        LevelRenderer.renderLineBox(
+      // Full-sized shared oriented body, not an axis-aligned square around each rail point.
+      for (double d = 0; d <= plan.curve.length(); d += 4)
+        factorycraft.client.trains.StockDebug.outline(
             pose,
             out,
-            new AABB(
-                point.x() - 1.5,
-                point.y() + .35,
-                point.z() - 1.5,
-                point.x() + 1.5,
-                point.y() + 4,
-                point.z() + 1.5),
+            factorycraft.simulation.trains.StockEnvelope.of(
+                factorycraft.simulation.trains.BogiePose.onCurve(plan.curve, d)),
             1,
             .72f,
             .2f,
-            .2f);
-      }
+            .28f);
       buffers.endBatch(RenderType.lines());
       pose.popPose();
     } catch (IllegalArgumentException bad) {

@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "trains": 4,
+  "cars": 15,
+  "old_car_uuids_retained": 12,
+  "locomotives": 4,
+  "cargo_iron": 186,
+  "fluid_mB": 617285,
+  "chemical_energy_plus_spent_J": 512000000,
+  "wrecks": 0
+}

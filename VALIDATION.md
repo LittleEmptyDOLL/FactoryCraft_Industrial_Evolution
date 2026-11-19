@@ -1,3 +1,17 @@
+# 0.31.1 / issue14 — focused collision and rail-builder hotfix
+
+Build/314JUnit pass (302old +12new), no skipped tests. Full558optional native creation and558in an independent JVM both pass; the final559-case run also passes on that same saved world, including exact high-speed checkpoint reload and the new section-edge regression. FTB Teams, EMI, JEI, Jade and Apothic are present. The earlier556base pass is retained, together with every failed intermediate diagnostic. All prior550native cases/thirtyfinite chains remain enabled.
+
+Actual original/changed dedicated EN/RU clients crossed120km/h without the reported crash; the final interactive run recorded exact source1.2/259.2km/h, then braked; changed single/3/8-car forward/reverse/curve/S/grade/tunnel and observer checks, grid/camera/final paid curves and F8 geometry have raw evidence. No crash stack was supplied/reproduced, and the crash acceptance item remains open for a user-specific reproducer. The real client world's4trains/15cars preserve exact canonical NBT across an independent server JVM:186iron,617285mBwater,512MJremaining+spent, all12oldcar UUIDs, no wrecks.
+
+New native guards additionally confirm full-body discovery across entity-section boundaries and cover all16bed orientations/grass/torch/glass, protected rollback and exact drops, double plants, containers/water, fixed-cell camera headings, actual native collision/picking in both ProjectileUtil overloads, max-speed paid edge crossing/thin obstacles and an independent-JVM paid high-speed named-component checkpoint. Pure tests additionally check2000pitched OBB pairs against independent corner projection, temporal motion, parallel reservations, bounded hints and golden original physical-bed records. Failed projectile/double-plant/IO-stall/disk-full runs were retained and corrected/retested, never disabled.
+
+The final paired8-train/148-car server workload and its independent-JVM exact-owner verification pass:2542items,4814823mB and864MJremaining+spent. Whole-server mean20.869→19.688ms, p9545.010→44.682ms, p9963.211→65.274ms, maximum86.356→93.917ms; allocation3.164→4.467decimalGB/400ticks. Lower mean does not establish a general TPS improvement; tail/allocation costs and construction overhead are explicit in BENCHMARKS.md.
+
+Detailed revision boundaries, raw logs, actual measurements, behavior matrix and remaining exact-angle/visual/crash-reproduction limits: [validation/v0311](validation/v0311). Full factory/MIXED/fluid and hosted release regression stay in GitHub Actions; pending jobs are not called successful. No0.32.
+
+---
+
 # 0.31 continuation — issue13 collision/safety/CI follow-up
 
 Local packaged build: **302JUnit**, zero failures/errors/skips. Native checks: **548base required passes**, then **549fresh optional passes** and **550optional required passes in a separate JVM on the same optional world**. All539previous cases and thirty finite chains remain. The final merge preflight is additionally guarded by pure ownership tests; hosted CI repeats native coupling on the published tree. Exact commands, revision boundaries and retained failures: [validation/v0310-completion](validation/v0310-completion).

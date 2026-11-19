@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "independentJvmExactOwners": true,
+  "trains": 8,
+  "cars": 148
+}

@@ -814,7 +814,7 @@
   "key.factorycraft.rail_rotate": "Рельсы: поворот конечной касательной",
   "key.factorycraft.rail_flip": "Рельсы: развернуть начальную касательную",
   "key.factorycraft.rail_cancel": "Рельсы: отменить планирование",
-  "rail.factorycraft.controls": "ПКМ по земле: короткие рельсы. ПКМ по рельсам: выбрать конец, затем соединить. R: направление; X: развернуть; C или Shift-ПКМ (в том числе в воздух): отменить. После соединения выбор снимается.",
+  "rail.factorycraft.controls": "ПКМ: короткий рельс / выбрать конец / соединить. Камера: направление конца; R: вручную; X: развернуть начало; C/Shift: отмена.",
   "rail.factorycraft.dimensions": "Полотно 2 блока по центру клетки; коридор 3; радиус от 13; уклон до 1:4. Концам нужны основания. Сверху оставьте 4 блока.",
   "rail.factorycraft.preview": "Стоимость: %s рельсов | конец %s | %s",
   "rail.factorycraft.inspect": "Рельс %s | %s м | связи концов %s/%s | загружен: %s",
@@ -838,7 +838,7 @@
   "rail.factorycraft.endpoint": "Выберите конец существующего пути, а не середину",
   "rail.factorycraft.reach": "Выбранная точка вне досягаемости",
   "rail.factorycraft.missing": "Участок больше не существует",
-  "rail.factorycraft.direction_-1": "авто",
+  "rail.factorycraft.direction_-1": "по камере",
   "rail.factorycraft.direction_0": "С",
   "rail.factorycraft.direction_1": "ССВ (1:2)",
   "rail.factorycraft.direction_2": "СВ",
@@ -922,5 +922,7 @@
   "train.factorycraft.blocked": "Габарит состава занят блоками",
   "train.factorycraft.occupied": "Рельсы заняты другим составом",
   "train.factorycraft.entity": "В габарите находится существо",
-  "train.factorycraft.border": "За границей мира"
+  "train.factorycraft.border": "За границей мира",
+  "key.factorycraft.stock_debug": "Поезда: коллайдеры (F8)",
+  "train.factorycraft.debug_legend": "F8: корпус — зелёный, модель — розовый, AABB — синий, маршрут — янтарный"
 }

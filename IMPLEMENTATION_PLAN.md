@@ -1,3 +1,13 @@
+# 0.31.1 / issue14 — implementation and validation checkpoint
+
+Implemented: shared source-sized bogie-oriented hull and scalar OBB/voxel/OBB SAT; staged oriented reservations and continuous contacts; precise native movement/dismount/picking/melee/hitscan/flame; original physical-bed sampling preserved with golden tests. Protected replaceable/empty-shape handling with deferred NeoForge drops/shape updates, camera-directed sixteen-family endpoints, cached bounded5×5 hints and F8 mesh/hull/broadphase/path views. Client-only chunk unload no longer proves removal:1.21.1 real cache probes retain valid server UUID selections. New marked diagnostic fixtures preserve canonical owners and all prior evidence.
+
+Verified:314JUnit/build; full558optional creation +558independent-JVM +559final native, earlier556base; actual EN/RU dedicated clients/observer, all three stock meshes on a real curve, forward/reverse/grade/tunnel/high-speed and real128m endpoint extension; exact real-client world canonical NBT in an independent JVM and finite resource ledger. Final native checkpoint reload and8-train/148-car actual-server workload/independent-JVM verification pass; evidence is in VALIDATION.md / validation/v0311. No tests were disabled and no older diagnostic world was reset.
+
+The user-reported120km/h crash did not reproduce on original or changed gameplay. Keep that acceptance item open until a real report/reproducer supplies client vs server side, first exception/FactoryCraft frame, mod list, train/fuel and track/chunk scene. The complete exact-angle/long-consist visual matrix and wider issue13 source-template/repair/interpolation limits remain explicit. Do not invent a crash fix or begin0.32.
+
+Next concrete action: publish the locally checked tree normally to main preserving parallel commits, and report actual CI status once. Further work needs user direction; retain all owners/checkpoints and both failed/successful raw observations.
+
 # Issue13 continuation checkpoint
 
 Implemented: deterministic daylight-safe armor fixture; last-clear-pose impacts/native weapon damage; persistent cancelled-wreck ownership; all-survivor assignment before callbacks; canonical physical/damage guards; intermediate curve/grade sweep; deleted-lookahead quarantine before bogie sampling; merge preflight before retiring old owners; scalar SAT/packed collision index and regression tests; actual8-consist server workload plus independent-JVM verification and a seventh CI job.

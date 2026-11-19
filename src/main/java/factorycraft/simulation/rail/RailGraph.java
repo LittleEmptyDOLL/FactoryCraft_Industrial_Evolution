@@ -131,6 +131,18 @@ public final class RailGraph {
         }
     boolean joint = joined(a, b);
     double spacing = joint ? 1.8 : 3;
+    var aHulls = new ArrayList<factorycraft.simulation.trains.StockEnvelope>();
+    var bHulls = new ArrayList<factorycraft.simulation.trains.StockEnvelope>();
+    if (!joint) {
+      for (double d = 0; d <= a.length(); d += .75)
+        aHulls.add(
+            factorycraft.simulation.trains.StockEnvelope.of(
+                factorycraft.simulation.trains.BogiePose.onCurve(a, d)));
+      for (double d = 0; d <= b.length(); d += .75)
+        bHulls.add(
+            factorycraft.simulation.trains.StockEnvelope.of(
+                factorycraft.simulation.trains.BogiePose.onCurve(b, d)));
+    }
     for (double x = 0; x <= a.length(); x += .75) {
       var p = a.sample(x, false).position();
       for (double y = 0; y <= b.length(); y += .75) {
@@ -139,6 +151,10 @@ public final class RailGraph {
         if (Math.hypot(p.x() - q.x(), p.z() - q.z()) < spacing) {
           if (joint && nearJoint(a, b, p, q)
               || explicitApproach && nearEnd(a, p, 8) && nearEnd(a, q, 8)) continue;
+          if (!joint
+              && !aHulls
+                  .get((int) Math.round(x / .75))
+                  .intersects(bHulls.get((int) Math.round(y / .75)))) continue;
           return true;
         }
       }

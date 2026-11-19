@@ -247,9 +247,9 @@ class TrainKernelTest {
       for (var axis : axes) {
         if (axis.dot(axis) < 1e-16) continue;
         double radius =
-            1.5 * Math.abs(axis.dot(side))
-                + 2 * Math.abs(axis.dot(up))
-                + 3.5 * Math.abs(axis.dot(f));
+            env.halfWidth() * Math.abs(axis.dot(side))
+                + env.halfHeight() * Math.abs(axis.dot(up))
+                + env.halfLength() * Math.abs(axis.dot(f));
         double box = .5 * (Math.abs(axis.x()) + Math.abs(axis.y()) + Math.abs(axis.z()));
         if (Math.abs(delta.dot(axis)) > radius + box - 1e-8) {
           reference = false;

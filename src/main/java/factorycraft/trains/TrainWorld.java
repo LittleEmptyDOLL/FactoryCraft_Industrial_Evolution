@@ -9,28 +9,19 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.*;
 
-/** Loaded-only collision/projection adapter. Uses the foundation's conservative3×7×4 envelope. */
+/** Loaded-only projection and precise source-sized collision adapter. */
 public final class TrainWorld {
   public static Vec3 vec(RailVector p) {
     return new Vec3(p.x(), p.y(), p.z());
   }
 
   public static AABB box(BogiePose p) {
-    var f = p.forward();
-    var s = p.side();
-    var n = p.normal();
-    var c = p.center();
-    double x = Math.abs(f.x()) * 3.5 + Math.abs(s.x()) * 1.5 + Math.abs(n.x()) * 2,
-        y = Math.abs(f.y()) * 3.5 + Math.abs(n.y()) * 2,
-        z = Math.abs(f.z()) * 3.5 + Math.abs(s.z()) * 1.5 + Math.abs(n.z()) * 2;
-    var center = c.add(n.scale(2.02));
-    return new AABB(
-        center.x() - x,
-        center.y() - y,
-        center.z() - z,
-        center.x() + x,
-        center.y() + y,
-        center.z() + z);
+    return box(StockEnvelope.of(p));
+  }
+
+  public static AABB box(StockEnvelope hull) {
+    var b = hull.bounds();
+    return new AABB(b.x0(), b.y0(), b.z0(), b.x1(), b.y1(), b.z1());
   }
 
   public static boolean available(TrainData data, TrainData.Train t) {
@@ -48,9 +39,15 @@ public final class TrainWorld {
         if (!rails.available(leg.edge().edge())) return false;
     try {
       for (int i = 0; i < t.cars.size(); i++) {
-        var b = box(BogiePose.sample(t.path, rails.graph, t.center(i), t.cars.get(i).reversed));
+        var car = t.cars.get(i);
+        var hull =
+            StockEnvelope.of(
+                BogiePose.sample(t.path, rails.graph, t.center(i), car.reversed), car.kind);
+        var b = box(hull);
         for (int x = ((int) Math.floor(b.minX)) >> 4; x <= ((int) Math.floor(b.maxX)) >> 4; x++)
           for (int z = ((int) Math.floor(b.minZ)) >> 4; z <= ((int) Math.floor(b.maxZ)) >> 4; z++) {
+            if (!hull.intersects(
+                x * 16., b.minY - 1, z * 16., x * 16. + 16, b.maxY + 1, z * 16. + 16)) continue;
             long key = net.minecraft.world.level.ChunkPos.asLong(x, z);
             if (data.level.getChunkSource().getChunkNow(x, z) == null
                 || !data.level.shouldTickBlocksAt(key)) return false;
@@ -62,37 +59,38 @@ public final class TrainWorld {
     return true;
   }
 
-  public static List<SpatialReservations.Bounds> sweep(
-      TrainData data, TrainData.Train t, double from, double to) {
+  private static boolean straight(TrainData data, TrainData.Train t, double from, double to) {
     var graph = RailwayData.get(data.level).graph;
-    var out = new ArrayList<SpatialReservations.Bounds>();
-    boolean straight = true;
     double min = Math.min(from, to) - (t.cars.size() - 1) * 7 - 3.5, max = Math.max(from, to) + 3.5;
     for (var leg : t.path.legs())
       if (leg.end() >= min && leg.begin() <= max) {
-        var edge = graph.edge(leg.edge().edge());
-        if (edge == null) throw new IllegalArgumentException("Unresolved sweep track");
-        if (!Double.isInfinite(edge.curve().minimumRadius()) || edge.curve().maximumGrade() > 1e-10)
-          straight = false;
+        var e = graph.edge(leg.edge().edge());
+        if (e == null
+            || !Double.isInfinite(e.curve().minimumRadius())
+            || e.curve().maximumGrade() > 1e-10) return false;
       }
-    int samples = straight ? 1 : Math.max(1, (int) Math.ceil(Math.abs(to - from) * 4));
+    return true;
+  }
+
+  public static List<SweptHull> sweep(TrainData data, TrainData.Train t, double from, double to) {
+    var graph = RailwayData.get(data.level).graph;
+    var out = new ArrayList<SweptHull>(t.cars.size());
+    boolean linear = straight(data, t, from, to);
+    int count = linear ? 1 : Math.max(1, (int) Math.ceil(Math.abs(to - from) * 8));
     for (int i = 0; i < t.cars.size(); i++) {
-      var a = box(BogiePose.sample(t.path, graph, from - i * 7, t.cars.get(i).reversed));
-      var u = a;
-      for (int sample = 1; sample <= samples; sample++) {
-        var b =
-            box(
-                BogiePose.sample(
-                    t.path,
-                    graph,
-                    from + (to - from) * sample / samples - i * 7,
-                    t.cars.get(i).reversed));
-        u = u.minmax(b);
+      var samples = new ArrayList<StockEnvelope>(count + 1);
+      var car = t.cars.get(i);
+      for (int k = 0; k <= count; k++) {
+        var pose =
+            BogiePose.sample(
+                t.path,
+                graph,
+                from + (to - from) * k / count - i * StockSpec.SPACING,
+                car.reversed);
+        var hull = StockEnvelope.of(pose, car.kind);
+        samples.add(from == to || linear ? hull : hull.grow(.085));
       }
-      // Curved/graded movement reserves intermediate orientations and a conservative
-      // quarter-block margin; flat straight motion has an exact endpoint-union fast path.
-      if (!straight && from != to) u = u.inflate(.25);
-      out.add(new SpatialReservations.Bounds(u.minX, u.minY, u.minZ, u.maxX, u.maxY, u.maxZ));
+      out.add(new SweptHull(samples));
     }
     return out;
   }
@@ -127,8 +125,12 @@ public final class TrainWorld {
           return new Contact("track", -1, null, null, 0);
         if (!rails.available(leg.edge().edge())) return new Contact("unloaded", -1, null, null, 0);
       }
-    var seen = new it.unimi.dsi.fastutil.longs.LongOpenHashSet(Math.min(8192, t.cars.size() * 128));
-    int steps = Math.max(1, (int) Math.ceil(Math.abs(to - from) * 4));
+    var shapes =
+        new it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap<java.util.List<AABB>>(
+            Math.min(8192, t.cars.size() * 128));
+    var previous = new StockEnvelope[t.cars.size()];
+    boolean linear = straight(data, t, from, to);
+    int steps = linear ? 1 : Math.max(1, (int) Math.ceil(Math.abs(to - from) * 8));
     for (int sample = 0; sample <= steps; sample++)
       for (int car = 0; car < t.cars.size(); car++) {
         double center = from + (to - from) * sample / steps - car * StockSpec.SPACING;
@@ -138,8 +140,10 @@ public final class TrainWorld {
         } catch (IllegalArgumentException e) {
           return new Contact("track", -1, null, null, 0);
         }
-        var box = box(pose);
-        var envelope = StockEnvelope.of(pose);
+        var envelope = StockEnvelope.of(pose, t.cars.get(car).kind);
+        var motion = new MotionHull(previous[car], envelope);
+        var box = box(envelope);
+        if (previous[car] != null) box = box.minmax(box(previous[car]));
         if (!data.level
                 .getWorldBorder()
                 .isWithinBounds(BlockPos.containing(box.minX, box.minY, box.minZ))
@@ -147,26 +151,34 @@ public final class TrainWorld {
                 .getWorldBorder()
                 .isWithinBounds(BlockPos.containing(box.maxX, box.maxY, box.maxZ)))
           return new Contact("border", car, null, null, Math.max(0, sample - 1) / (double) steps);
-        // The thin bed belongs below the train; complete prior rail clearance must stay clear.
+        // Neighbor origins matter: fences/pistons can extend beyond their own voxel.
         for (var p :
             BlockPos.betweenClosed(
-                (int) Math.floor(box.minX + 1e-6),
-                (int) Math.floor(box.minY + 1e-6),
-                (int) Math.floor(box.minZ + 1e-6),
-                (int) Math.floor(box.maxX - 1e-6),
-                (int) Math.floor(box.maxY - 1e-6),
-                (int) Math.floor(box.maxZ - 1e-6))) {
-          if (!envelope.intersects(
-              p.getX(), p.getY(), p.getZ(), p.getX() + 1, p.getY() + 1, p.getZ() + 1)) continue;
-          if (!seen.add(p.asLong())) continue;
-          data.worldReads++;
-          if (!data.level.hasChunkAt(p)) return new Contact("unloaded", -1, null, null, 0);
-          var state = data.level.getBlockState(p);
-          if (!state.isAir()
-              && !state.is(RailContent.BED.get())
-              && !state.getCollisionShape(data.level, p).isEmpty())
-            return new Contact(
-                "blocked", car, null, p.immutable(), Math.max(0, sample - 1) / (double) steps);
+                (int) Math.floor(box.minX) - 1,
+                (int) Math.floor(box.minY) - 1,
+                (int) Math.floor(box.minZ) - 1,
+                (int) Math.floor(box.maxX) + 1,
+                (int) Math.floor(box.maxY) + 1,
+                (int) Math.floor(box.maxZ) + 1)) {
+          long key = p.asLong();
+          var boxes = shapes.get(key);
+          if (boxes == null) {
+            data.worldReads++;
+            if (!data.level.hasChunkAt(p)) return new Contact("unloaded", -1, null, null, 0);
+            var state = data.level.getBlockState(p);
+            boxes =
+                state.isAir() || state.is(RailContent.BED.get())
+                    ? List.of()
+                    : state.getCollisionShape(data.level, p).toAabbs();
+            shapes.put(key, boxes);
+          }
+          for (var sub : boxes) {
+            var world = sub.move(p);
+            if (motion.intersects(
+                world.minX, world.minY, world.minZ, world.maxX, world.maxY, world.maxZ))
+              return new Contact(
+                  "blocked", car, null, p.immutable(), Math.max(0, sample - 1) / (double) steps);
+          }
         }
         for (var e :
             data.level.getEntities(
@@ -178,14 +190,7 @@ public final class TrainWorld {
           if (e instanceof StockEntity stock) {
             if (stock.trainId().equals(t.id) || ignore != null && stock.trainId().equals(ignore))
               continue;
-            if (TrainPorts.physicalView(stock)
-                && envelope.intersects(
-                    e.getBoundingBox().minX,
-                    e.getBoundingBox().minY,
-                    e.getBoundingBox().minZ,
-                    e.getBoundingBox().maxX,
-                    e.getBoundingBox().maxY,
-                    e.getBoundingBox().maxZ))
+            if (TrainPorts.physicalView(stock) && envelope.intersects(stock.hull()))
               return new Contact(
                   "occupied", car, stock, null, Math.max(0, sample - 1) / (double) steps);
             continue;
@@ -196,10 +201,11 @@ public final class TrainWorld {
                       && vehicle.trainId().equals(t.id))) continue;
           if (e.isAlive() && (e instanceof LivingEntity || e.canBeCollidedWith())) {
             var b = e.getBoundingBox();
-            if (envelope.intersects(b.minX, b.minY, b.minZ, b.maxX, b.maxY, b.maxZ))
+            if (motion.intersects(b.minX, b.minY, b.minZ, b.maxX, b.maxY, b.maxZ))
               return new Contact("entity", car, e, null, Math.max(0, sample - 1) / (double) steps);
           }
         }
+        previous[car] = envelope;
       }
     return READY;
   }

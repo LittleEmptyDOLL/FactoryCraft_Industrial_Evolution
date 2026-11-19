@@ -1,0 +1,6 @@
+length=64 mean_us=955.111 median_us=926.345 p95_us=1094.913 max_us=1157.025 allocated_bytes_per_candidate=2239104
+length=128 mean_us=970.221 median_us=917.662 p95_us=1284.072 max_us=1425.390 allocated_bytes_per_candidate=1849856
+length=64 mean_us=939.939 median_us=856.051 p95_us=1225.025 max_us=1880.531 allocated_bytes_per_candidate=2239104
+length=128 mean_us=974.974 median_us=867.208 p95_us=1170.044 max_us=3163.411 allocated_bytes_per_candidate=1849856
+length=64 mean_us=1349.490 median_us=878.454 p95_us=2875.066 max_us=2880.484 allocated_bytes_per_candidate=2239104
+length=128 mean_us=1041.721 median_us=870.192 p95_us=2089.959 max_us=2315.170 allocated_bytes_per_candidate=1849856

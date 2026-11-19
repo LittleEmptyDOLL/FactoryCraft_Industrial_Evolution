@@ -1,3 +1,31 @@
+# 0.31.1 / issue14 — oriented stock and placement cost
+
+The final bounded paired actual-server run used preserved0.31.0 and0.31.1release JARs, identical8trains/148cars/6144m rails,120warmup +400stable ticks, no clients or other game process, same host (2CPUquota, JVM4workers),2GiBheap. Both preserve2542component-exact cargo items,4814823mB and864MJremaining+spent; real unload/reload occurs. New-artifact verification in a separate JVM passes exact8/148canonical owners. Raw artifact hashes, stage reports and logs: [validation/v0311](validation/v0311).
+
+| Stable-window metric | 0.31.0 | 0.31.1 |
+|---|---:|---:|
+| Whole-server mean ms |20.869|19.688|
+| Whole-server p95 ms |45.010|44.682|
+| Whole-server p99 ms |63.211|65.274|
+| Whole-server maximum ms |86.356|93.917|
+| Train adapter mean ms |11.552|9.537|
+| Train adapter p99 /maximum ms |46.451 /61.977|44.673 /71.173|
+| Main-thread allocated bytes /400ticks |3164003280|4467363224|
+| Adapter world reads /400ticks |6326280|12059995|
+
+This run has a lower mean, nearly equal p95 and **worse whole-server p99/maximum and allocation**. It is not a universal TPS improvement/capacity claim. Neighbor collision origins and precise cached subshapes expand the inspected volume; extra temporary structures increase allocation. Flat longitudinal motion uses exact overlapping endpoint coverage, avoiding repeated intermediate poses. The hardware/worker configuration differs from the historic0.31.0completion reports, which are not substituted into this paired table. A single final paired run cannot establish statistical significance. The earlier pre-section-discovery pair (20.834→18.904ms mean;101.448→111.455ms maximum) is retained separately, not presented as another run of the final code. The two unchanged-baseline runs also show maximum86.356–101.448ms variability. Full factory/MIXED/hosted release workloads remain CI.
+
+The separate warmed pure construction profile (10warmup rounds, three recorded rounds of25candidates/size) compares the old axis-aligned clearance with the new continuous bogie-oriented index:
+
+| Candidate | Old mean range ms | New mean range ms | Old→new allocated bytes/candidate |
+|---|---:|---:|---:|
+|64m offset connector|0.940–1.349|7.991–9.919|2239104→4167712|
+|128m straight|0.970–1.042|10.049–10.677|1849856→6449704|
+
+New maximum observed candidate14.513ms; all raw rounds/ranges remain in `placement-*-final.txt` and `placement-comparison.json`. This is geometry construction, **not server TPS**. More accurate pitched/rotated voxel clearance has a material build-time/memory cost. The client inspects at most one new hint candidate per game tick in a cached5×5window, plus its one primary preview; completed hints reuse results. No global rail scan or per-frame server requests. No always-on debug rendering or per-block collision entities were introduced.
+
+---
+
 # 0.31 continuation — actual multi-train server workload
 
 The opt-in `runTrainBenchmarkServer` uses real rail parts/stock entities and mounted native test drivers, not the pure kernel. Eight consists of1/3/8/16/32/64/8/16cars (148total),48paid-claim rail segments/6144blocks,27locomotives,82cargo wagons and39tankers. Declared finite inputs:216coal=864000000J,2542named iron items and4814823mB water. Each real tick audits the exact fuel-buffer+spent+remaining-coal ledger, cargo/components, fluids and health. All8consists actually travel in both directions; tickets are explicitly diagnostic-only. A moving16-car train naturally unloads/reloads, with a stale port denied and its frozen paid state unchanged. Independent-JVM verification compares complete canonical train and rail records.

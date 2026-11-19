@@ -226,7 +226,10 @@ public final class FlameSimulation {
             (Entity) null,
             new AABB(from, end).inflate(.25),
             e -> Combat.allowed(l, e, owner, scope, automatic))) {
-      var hit = e.getBoundingBox().clip(from, end);
+      var hit =
+          e instanceof factorycraft.trains.StockEntity stock
+              ? factorycraft.trains.TrainCollision.clip(stock, from, end)
+              : e.getBoundingBox().clip(from, end);
       if (hit.isPresent() && from.distanceToSqr(hit.get()) < distance) {
         end = hit.get();
         distance = from.distanceToSqr(end);

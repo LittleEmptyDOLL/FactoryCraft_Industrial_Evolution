@@ -16,9 +16,17 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active continuation — finish issue #13
+## Active milestone — 0.31.1 / issue #14
 
-* Latest user explicitly requests green GitHub Actions: investigate concrete failures and wait for all required jobs after publication. This overrides the default query-once publishing budget for this continuation.
+* Focused hotfix: reproduce reported120km/h crash in actual Minecraft before claiming its cause; preserve real crash/log/world evidence. No speed cap, collision disabling, swallowed errors, forced runtime chunks or0.32.
+* Use one source-proportioned oriented stock hull for runtime/reservations/placement/hits; AABBs only broadphase. Preserve stable train/car IDs, fuel/cargo/fluids/paid rails and all302JUnit/550native/thirtyfinite chains. Fix noncolliding/replaceable rail placement with protected transactional drops/rollback, camera-directed16-heading endpoints and bounded cached5x5 hints. Study current1.21.1 Create as technical reference only; no copied art/code/dependency.
+* Fresh `v0311`/`network-v0311`/`trains-v0311` diagnostic fixtures only. Real EN/RU high-speed client/observer and placement/collider screenshots, native invariants/restart/affected optional profile and bounded performance precede publication. Update exact limits if reproduction remains incomplete. Publish checked main normally, query CI once by default for this new task; don't automatically extend issue13's previous wait-green request or start0.32.
+
+* 0.31.1 checkpoint:314JUnit,558fresh +558independent-JVM +559final optional native pass; every old550case/thirtyfinite chains retained. Actual EN/RU/observer/259.2km/h, exact15-car client-world ledger/reload and final8-train/148-car artifact workload/restart pass. Published physical bed sampling is golden-tested; section discovery uses bounded full-stock margins without loading chunks. Keep all failed worlds/archives. Crash root cause remains unreproduced, exact-angle visual acceptance and broader issue13 limits remain open. Final performance has lower mean but higher p99/maximum/allocation; no general TPS claim. No0.32.
+
+## Previous continuation — issue #13 (published and validated)
+
+* The previous issue13 continuation explicitly required green GitHub Actions; that publication completed with all seven jobs successful (run44342213020). The current issue14 follows its active scope above and the default query-once rule.
 * Fix the demonstrated sunlight contamination of the armor fixture without weakening resistance assertions. Complete bounded train impacts/damage, moving conflict/junction/long-consist/chunk tests, and a real Minecraft multi-train workload with separate-JVM resource ledgers. Preserve all539 registered native cases,297JUnit, thirty finite chains, prior failed worlds and all archives. No signals/stations/0.32.
 * New diagnostic paths use `v0310-completion` suffixes. Never overwrite or refill earlier worlds. Production movement never forces chunks; benchmark-only tickets remain explicit. Collision callbacks must see fully committed canonical ownership and cannot duplicate wrecks/cargo/fuel/fluids.
 

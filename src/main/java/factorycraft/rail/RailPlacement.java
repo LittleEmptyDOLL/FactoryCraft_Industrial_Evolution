@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.EventHooks;
  * publish.
  */
 public final class RailPlacement {
-  private record Before(BlockPos p, BlockState state, CompoundTag tag) {}
+  private record Before(BlockPos p, BlockState state, CompoundTag tag, List<ItemStack> drops) {}
 
   private record Debit(int slot, ItemStack original, int count) {}
 
@@ -85,10 +85,17 @@ public final class RailPlacement {
         if (level.getBlockState(p).is(RailContent.BED.get())) continue;
         var state = level.getBlockState(p);
         var be = level.getBlockEntity(p);
+        if (be != null || !RailObstacles.replaceable(level, p, state, player)) return "blocked";
         before.add(
             new Before(
-                p, state, be == null ? null : be.saveWithFullMetadata(level.registryAccess())));
-        if (!level.setBlock(p, RailContent.BED.get().defaultBlockState(), 2)) return "blocked";
+                p,
+                state,
+                be == null ? null : be.saveWithFullMetadata(level.registryAccess()),
+                player.isCreative() || state.isAir()
+                    ? List.of()
+                    : net.minecraft.world.level.block.Block.getDrops(
+                        state, level, p, be, player, new ItemStack(RailContent.RAIL.get()))));
+        if (!level.setBlock(p, RailContent.BED.get().defaultBlockState(), 18)) return "blocked";
       }
       if (EventHooks.onMultiBlockPlace(player, snapshots, Direction.UP)) return "permission";
       reason = plan.inspect(level, player);
@@ -106,6 +113,39 @@ public final class RailPlacement {
       committed = true;
       for (var c : plan.footprint.bed.keySet()) data.refresh(RailwayData.pos(c));
       player.getInventory().setChanged();
+      // Resolve loot against the intact pre-removal neighbors (double plants depend on them),
+      // but publish it only after the protected placement succeeds. Preserve NeoForge drop events.
+      if (!player.isCreative()
+          && level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_DOBLOCKDROPS)
+          && !level.restoringBlockSnapshots)
+        for (var old : before)
+          if (!old.state.isAir()) {
+            var drops = new ArrayList<net.minecraft.world.entity.item.ItemEntity>();
+            for (var stack : old.drops) {
+              var entity =
+                  new net.minecraft.world.entity.item.ItemEntity(
+                      level, old.p.getX() + .5, old.p.getY() + .5, old.p.getZ() + .5, stack);
+              entity.setDefaultPickUpDelay();
+              drops.add(entity);
+            }
+            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops(
+                level,
+                old.p,
+                old.state,
+                null,
+                drops,
+                player,
+                new ItemStack(RailContent.RAIL.get()));
+          }
+      for (var old : before) {
+        // UPDATE_KNOWN_SHAPE suppressed these during staging; replay them only after commit.
+        // In particular a double plant's upper half is removed by updateShape, not neighborChanged.
+        old.state.updateIndirectNeighbourShapes(level, old.p, 3, 512);
+        var placed = level.getBlockState(old.p);
+        placed.updateNeighbourShapes(level, old.p, 3, 512);
+        placed.updateIndirectNeighbourShapes(level, old.p, 3, 512);
+        level.updateNeighborsAt(old.p, RailContent.BED.get());
+      }
       return "ready";
     } finally {
       if (!committed) {
@@ -114,7 +154,7 @@ public final class RailPlacement {
         try {
           for (int i = before.size() - 1; i >= 0; i--) {
             var b = before.get(i);
-            level.setBlock(b.p, b.state, 3);
+            level.setBlock(b.p, b.state, 18);
             if (b.tag != null && level.getBlockEntity(b.p) != null)
               level.getBlockEntity(b.p).loadWithComponents(b.tag, level.registryAccess());
           }
