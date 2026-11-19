@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active milestone — 0.31.1 / issue #14
+## Active hotfix — 0.31.2 / supplied Track interval crash
+
+* The user supplied crash UUID53abbe4a-fc30-46a9-9c84-4ba5d256a3e3: TrackOccupancy.Interval → span → TrainSimulation.tick. Reproduce the accumulated-origin/reversed-fractional endpoint failure before asserting its cause. Correct global-to-local interval conversion without weakening strict invalid-interval rejection, claims, collisions, source speeds or fuel ownership. No0.32.
+* Preserve all314JUnit/559native cases and previous evidence. New `v0311-intervalfix` diagnostic world only; verify paid native reversed-curve traversal and exact independent-JVM cargo/fluid/fuel/route owners. Do not reset/reseed a failed world. No renderer/network changes or global performance claims are part of this fix. Publish checked main normally and report hosted CI once.
+
+* Verified checkpoint:317JUnit,560fresh native +560same-world native in an independent JVM, exact paid reverse-boundary train/resource/route state. New logs and both checkpoint records remain in validation/v0311-intervalfix; its live diagnostic world is retained. No new graphical-client/optional/full workload pass is claimed; those hosted jobs remain CI. User's actual save is not attached. No0.32.
+
+## Previous milestone — 0.31.1 / issue #14
 
 * Focused hotfix: reproduce reported120km/h crash in actual Minecraft before claiming its cause; preserve real crash/log/world evidence. No speed cap, collision disabling, swallowed errors, forced runtime chunks or0.32.
 * Use one source-proportioned oriented stock hull for runtime/reservations/placement/hits; AABBs only broadphase. Preserve stable train/car IDs, fuel/cargo/fluids/paid rails and all302JUnit/550native/thirtyfinite chains. Fix noncolliding/replaceable rail placement with protected transactional drops/rollback, camera-directed16-heading endpoints and bounded cached5x5 hints. Study current1.21.1 Create as technical reference only; no copied art/code/dependency.

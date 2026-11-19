@@ -1,0 +1,8 @@
+{
+  "train": "cfa8d23d-0c73-47c4-aae8-5877a083da85",
+  "independentJvmNativeCanonicalEquality": true,
+  "checkpointBytesEqual": true,
+  "createdSha256": "d8c0aac28fcc52f50cade1f973d07749ebcfc1edfda4cbf0f6ce2279597def91",
+  "reloadedSha256": "d8c0aac28fcc52f50cade1f973d07749ebcfc1edfda4cbf0f6ce2279597def91",
+  "retainedWorld": "run-gametest/v0311-intervalfix/world"
+}

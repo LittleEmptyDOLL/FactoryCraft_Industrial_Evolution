@@ -1,3 +1,15 @@
+# 0.31.2 — supplied Track interval crash follow-up
+
+The 19 November crash report supplies the formerly missing server stack: `TrackOccupancy.Interval -> span -> TrainSimulation.tick`. A deterministic regression reproduces the failure on published f17c22f: reversed fractional-length legs with nonzero accumulated origins can produce a negative local minimum through floating-point cancellation. Exact clipped endpoints and bounded global-to-local conversion correct that path while retaining strict validation and all resource/collision rules.
+
+New tests retain all previous cases, cover both directions and shifted curved/fractional routes, and exercise a genuinely paid 120km/h three-car reverse-curve boundary with component-bearing cargo/fluid and finite fuel. A separately named `v0311-intervalfix` world checks the exact owner/route/paid phase in another JVM. Historical reports below describe what was known at their original publication; they are not erased or retroactively called crash reproductions.
+
+Verified:317JUnit and560+560required native passes in separate JVMs on the same saved world. The genuine reverse-curve case retained exact UUID/route/cargo/fluid/fuel/motion state. See validation/v0311-intervalfix. No older world was reset/reseeded and no test was disabled.
+
+Next concrete action: publish this checked patch normally to main and report hosted status once, then leave the exact user-world retry and unrelated visual/performance acceptance for user direction. Do not start0.32. The user's actual world has not been supplied; do not claim validation of that exact scene.
+
+---
+
 # 0.31.1 / issue14 — implementation and validation checkpoint
 
 Implemented: shared source-sized bogie-oriented hull and scalar OBB/voxel/OBB SAT; staged oriented reservations and continuous contacts; precise native movement/dismount/picking/melee/hitscan/flame; original physical-bed sampling preserved with golden tests. Protected replaceable/empty-shape handling with deferred NeoForge drops/shape updates, camera-directed sixteen-family endpoints, cached bounded5×5 hints and F8 mesh/hull/broadphase/path views. Client-only chunk unload no longer proves removal:1.21.1 real cache probes retain valid server UUID selections. New marked diagnostic fixtures preserve canonical owners and all prior evidence.

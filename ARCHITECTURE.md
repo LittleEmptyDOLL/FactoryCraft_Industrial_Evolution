@@ -1,3 +1,7 @@
+## 0.31.2 canonical route-to-edge intervals
+
+Historical route coordinates and canonical physical edge coordinates have different origins. `TrackOccupancy.span` preserves exact0/length at clipped leg boundaries and bounds the global-to-local subtraction before reverse mapping; floating-point cancellation must never create negative reverse minima or fractional gaps at a fully reserved endpoint. The `Interval` constructor remains strict. Atomic claims, source movement/fuel/collision order and TrainData schema1 are unchanged. The supplied-stack reproducer and real three-car boundary/restart checkpoint are in validation/v0311-intervalfix.
+
 ## 0.31.1 oriented stock and bounded rail planning
 
 One source-sized `StockGeometry`/`StockEnvelope` supplies live stock, native precise picking/movement, staged spatial reservations and future construction. Scalar SAT decides OBB/voxel-subshape/OBB contact; AABBs are lookup bounds. Bounded EntitySectionStorage discovery padding also finds a full car across section boundaries; existing section accessibility and original result filters remain intact. `MotionHull` caches an interval's measured rotation expansion and performs continuous translation checks, shared by runtime and builder. All canonical resources remain in TrainData; no new collision entities or persisted resource owners.

@@ -1,3 +1,13 @@
+# 0.31.2 — exact canonical edge intervals
+
+`TrainPath` keeps a historical metric origin per leg. A legal fractional edge at nonzero origin may satisfy `(begin + length) - begin > length` by an ULP. In0.31.1, reverse mapping changed that excess into a negative minimum and `TrackOccupancy.Interval` correctly rejected it, crashing the server tick. The user-supplied report identifies precisely this call path; a deterministic test fails on f17c22f before the correction.
+
+`TrackOccupancy.span` now uses exact0/length at clipped leg endpoints and bounds the global-to-local subtraction to the physical edge domain before reversing. It does not relax `Interval` validation, swallow errors, reduce speed, release reservations or skip collision work. Full-edge claims use exact endpoints in both directions; other trains still cannot claim an occupied boundary. Train schema1, UUIDs, finite fuel, cargo/fluid components and paid phase are unchanged, so existing0.31.1 worlds require no conversion.
+
+Native reverse-curve crossing/restart evidence and precise coverage: [validation/v0311-intervalfix](validation/v0311-intervalfix). The historical0.31.1 report below predates the supplied crash stack. No client rendering or protocol changes, extra runtime tickets or global performance claims.
+
+---
+
 # 0.31.1 precise stock geometry and hotfix validation
 
 The single `StockGeometry` definition covers the existing original meshes: X±1.09m, length7m, wheel bottom.02m; locomotive roof3.42m, cargo2.73m, tanker3.17m. Collision uses half-width1.125m (3.5cm side allowance), half-length3.5m, bottom.005m and per-kind top3.45/2.76/3.20m. It preserves source seven-metre spacing, full chassis/roof/couplers and grade pitch. No model rescaling, speed cap or collision disabling was used.

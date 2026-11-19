@@ -1,3 +1,11 @@
+## 0.31.2 / supplied Track interval crash
+
+| Mechanic | Current implementation |
+|---|---|
+| Reverse fractional edge boundary | Exact clipped endpoints and bounded global-to-local conversion; deterministic old-code crash reproduced |
+| Strict occupancy and ownership | Invalid intervals still rejected; source speed, fuel, collision and canonical NBT unchanged |
+| Regression coverage |317JUnit;560+560native passes across separate JVMs with exact paid reverse-curve/resource checkpoint; validation/v0311-intervalfix |
+
 ## 0.31.1 / issue #14
 
 | Mechanic | Current implementation |

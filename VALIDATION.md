@@ -1,3 +1,13 @@
+# 0.31.2 — supplied reverse-interval server crash
+
+The original attachment identifies `IllegalArgumentException: Track interval` in `TrackOccupancy.span`, called by `TrainSimulation.tick`. The new deterministic JUnit fails with that exception on f17c22f. A second property guard also exposes noncanonical fractional full-edge bounds. After the correction, the packaged build's317JUnit pass with zero failures/errors/skips. Strict negative/nonfinite/reversed-interval rejection remains tested.
+
+Native validation: **560/560required passes**, then **560/560in a separate JVM on the same untouched world**. The new three-car checkpoint crosses a real reversed fractional curve at120km/h, preserves finite28MJfuel+buffer+spent,31named diamonds and234567named mBwater, and reloads exact UUID/route/resource/paid motion NBT. The actual old reverse minimum is−1.4210854715202004E−14. All559prior native cases and thirty finite chains remain. Logs/checkpoints/before-failure proof: [validation/v0311-intervalfix](validation/v0311-intervalfix).
+
+This follow-up changes only route-to-edge interval conversion, tests, patch metadata and documentation. Existing meshes/network/source speeds/recipes/owners remain unchanged. The actual user's save was not attached; no claim of replaying that exact world or a new graphical-client test. Hosted optional/full/MIXED/fluid/train workloads remain GitHub Actions, not inferred from the local results.
+
+---
+
 # 0.31.1 / issue14 — focused collision and rail-builder hotfix
 
 Build/314JUnit pass (302old +12new), no skipped tests. Full558optional native creation and558in an independent JVM both pass; the final559-case run also passes on that same saved world, including exact high-speed checkpoint reload and the new section-edge regression. FTB Teams, EMI, JEI, Jade and Apothic are present. The earlier556base pass is retained, together with every failed intermediate diagnostic. All prior550native cases/thirtyfinite chains remain enabled.

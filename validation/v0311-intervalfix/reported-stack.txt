@@ -1,0 +1,26 @@
+User-supplied 0.31.1 integrated-server report, 2026-11-19
+Original attachment SHA256: e158475fae266e2355d28a45f1bc48fe34238cb3d19d47ce3008c7073d408698
+Crash report UUID: 53abbe4a-fc30-46a9-9c84-4ba5d256a3e3
+Minecraft 1.21.1 / NeoForge 21.1.252 / Java 21.0.11
+
+Time: 2026-11-19 13:34:30
+Description: Exception in server tick loop
+
+java.lang.IllegalArgumentException: Track interval
+	at TRANSFORMER/factorycraft@0.31.1/factorycraft.simulation.trains.TrackOccupancy$Interval.<init>(TrackOccupancy.java:10) ~[%23209!/:?] {re:classloading}
+	at TRANSFORMER/factorycraft@0.31.1/factorycraft.simulation.trains.TrackOccupancy.span(TrackOccupancy.java:109) ~[%23209!/:?] {re:classloading}
+	at TRANSFORMER/factorycraft@0.31.1/factorycraft.trains.TrainSimulation.tick(TrainSimulation.java:136) ~[%23209!/:?] {re:classloading}
+	at TRANSFORMER/factorycraft@0.31.1/factorycraft.trains.TrainData.tick(TrainData.java:293) ~[%23209!/:?] {re:classloading}
+	at TRANSFORMER/factorycraft@0.31.1/factorycraft.trains.TrainEvents.tick(TrainEvents.java:16) ~[%23209!/:?] {re:classloading}
+	at MC-BOOTSTRAP/net.neoforged.bus/net.neoforged.bus.EventBus.post(EventBus.java:360) ~[bus-8.0.5.jar%23150!/:?] {}
+	at MC-BOOTSTRAP/net.neoforged.bus/net.neoforged.bus.EventBus.post(EventBus.java:328) ~[bus-8.0.5.jar%23150!/:?] {}
+	at TRANSFORMER/neoforge@21.1.252/net.neoforged.neoforge.event.EventHooks.fireLevelTickPost(EventHooks.java:1000) ~[neoforge-21.1.252.jar%23199!/:?] {re:classloading}
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.tickChildren(MinecraftServer.java:1058) ~[neoforge-21.1.252.jar%23198!/:?] {re:classloading,pl:accesstransformer:B}
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.tickServer(MinecraftServer.java:932) ~[neoforge-21.1.252.jar%23198!/:?] {re:classloading,pl:accesstransformer:B}
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.server.IntegratedServer.tickServer(IntegratedServer.java:113) ~[neoforge-21.1.252.jar%23198!/:?] {re:classloading,pl:runtimedistcleaner:A}
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:713) ~[neoforge-21.1.252.jar%23198!/:?] {re:classloading,pl:accesstransformer:B}
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.MinecraftServer.lambda$spin$2(MinecraftServer.java:267) ~[neoforge-21.1.252.jar%23198!/:?] {re:classloading,pl:accesstransformer:B}
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?] {re:mixin}
+
+
+Full attachment stays in the user upload; unrelated player, machine and world-seed details omitted.

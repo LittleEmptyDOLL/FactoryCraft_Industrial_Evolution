@@ -100,7 +100,12 @@ public final class TrackOccupancy {
     for (var leg : path.legs()) {
       double a = Math.max(min, leg.begin()), b = Math.min(max, leg.end());
       if (a >= b - 1e-8) continue;
-      double lo = a - leg.begin(), hi = b - leg.begin();
+      // Route coordinates include an accumulated origin. Subtracting it from begin + length
+      // can round beyond length; reverse mapping would then create a negative track position.
+      // Preserve exact clipped endpoints and bound only this global-to-local conversion.
+      // Interval itself remains strict: malformed claims must not be silently accepted.
+      double lo = a == leg.begin() ? 0 : Math.clamp(a - leg.begin(), 0, leg.length()),
+          hi = b == leg.end() ? leg.length() : Math.clamp(b - leg.begin(), 0, leg.length());
       if (leg.edge().reverse()) {
         double t = lo;
         lo = leg.length() - hi;

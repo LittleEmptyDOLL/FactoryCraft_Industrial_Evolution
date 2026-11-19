@@ -190,6 +190,69 @@ class TrainKernelTest {
   }
 
   @Test
+  void reversedFractionalLegAtNonzeroOriginReservesItsExactEndWithoutNegativeCoordinates() {
+    var edge = UUID.randomUUID();
+    var leg = new TrainPath.Leg(new RailGraph.Directed(edge, true), 32, 13.1);
+    // On the reported tick path, (begin + length) - begin can exceed length by an ULP.
+    assertTrue(leg.end() - leg.begin() > leg.length());
+    var path = new TrainPath(List.of(leg));
+    var interval = TrackOccupancy.span(path, leg.end() - 7, leg.end() + 2).getFirst();
+    assertEquals(edge, interval.edge());
+    assertEquals(0, interval.min());
+    assertEquals(7, interval.max(), 1e-12);
+    assertEquals(
+        List.of(new TrackOccupancy.Interval(edge, 0, leg.length())),
+        TrackOccupancy.span(path, leg.begin() - 2, leg.end() + 2));
+    assertEquals(
+        TrackOccupancy.span(path, leg.end() - 7, leg.end() + 2),
+        TrackOccupancy.span(path, leg.end() + 2, leg.end() - 7));
+  }
+
+  @Test
+  void shiftedFractionalRoutesKeepCanonicalBoundsAndAtomicHeadwayInBothDirections() {
+    var curve =
+        RailCurve.plan(
+            new RailEnd(0, 70, 0, new RailHeading(0)),
+            new RailEnd(24, 70, -24, new RailHeading(4)));
+    var random = new Random(0x53abbe4aL);
+    for (int sample = 0; sample < 2000; sample++) {
+      double begin = (random.nextDouble() - .5) * 2_000_000;
+      double length = sample % 2 == 0 ? curve.length() : 1 + random.nextDouble() * 127;
+      for (boolean reverse : new boolean[] {false, true}) {
+        var edge = UUID.randomUUID();
+        var leg = new TrainPath.Leg(new RailGraph.Directed(edge, reverse), begin, length);
+        var path = new TrainPath(List.of(leg));
+        var full = TrackOccupancy.span(path, leg.begin(), leg.end());
+        assertEquals(List.of(new TrackOccupancy.Interval(edge, 0, length)), full);
+        for (double offset : new double[] {-2, -.000001, 0, .000001, 2}) {
+          var intervals = TrackOccupancy.span(path, leg.end() - 7 + offset, leg.end() + offset);
+          for (var interval : intervals) {
+            assertTrue(interval.min() >= 0 && interval.max() <= length);
+            assertTrue(interval.max() > interval.min());
+          }
+        }
+        var occupancy = new TrackOccupancy();
+        var owner = UUID.randomUUID();
+        var other = UUID.randomUUID();
+        assertTrue(occupancy.reserve(owner, full));
+        assertFalse(occupancy.reserve(other, TrackOccupancy.span(path, begin + 1, begin + 2)));
+        assertEquals(full, occupancy.intervals(owner));
+      }
+    }
+  }
+
+  @Test
+  void invalidIntervalsAreStillRejectedRatherThanSilentlyClamped() {
+    var edge = UUID.randomUUID();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new TrackOccupancy.Interval(edge, -Math.ulp(13.1), 7));
+    assertThrows(IllegalArgumentException.class, () -> new TrackOccupancy.Interval(edge, 7, 6));
+    assertThrows(
+        IllegalArgumentException.class, () -> new TrackOccupancy.Interval(edge, Double.NaN, 7));
+  }
+
+  @Test
   void unknownAndChangedRoutesFailClosedAndStoppingBoundsGrowWithMass() {
     var g = new RailGraph();
     var id = UUID.randomUUID();

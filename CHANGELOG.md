@@ -1,3 +1,11 @@
+# 0.31.2 — reverse fractional-rail interval crash
+
+* Fix the supplied 0.31.1 server `IllegalArgumentException: Track interval`: accumulated route origins can make `(begin + length) - begin` slightly exceed a fractional edge length, producing a negative minimum when the edge is reversed.
+* Preserve exact clipped edge endpoints and bound the global-to-local conversion before reverse mapping. Strict interval validation, source speeds, fuel, collisions and atomic occupancy remain unchanged; no catch-and-continue or save migration.
+* Add deterministic before/after JUnit regressions and a real paid reverse-curve boundary / independent-JVM owner checkpoint. Validation and retained failure evidence: [validation/v0311-intervalfix](validation/v0311-intervalfix).
+
+---
+
 # 0.31.1 — precise rolling-stock collision and rail placement (issue #14)
 
 * Share mesh-sized, bogie-oriented stock geometry between runtime, native entity interaction, staged train reservations and future rail clearance. Use AABBs for discovery, scalar SAT/ray clipping for contact, and bounded continuous motion intervals for thin obstacles.
