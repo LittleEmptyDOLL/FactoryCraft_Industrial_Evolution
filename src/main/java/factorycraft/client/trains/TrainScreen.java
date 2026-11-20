@@ -57,6 +57,7 @@ public final class TrainScreen extends AbstractContainerScreen<TrainMenu> {
     button(3, "uncouple", x, y);
     button(4, "couple", x, y + 21);
     button(5, "color", x, y + 42);
+    if (menu.kind == StockSpec.LOCOMOTIVE) button(6, "schedule", x, topPos + 17);
   }
 
   private void button(int id, String label, int x, int y) {

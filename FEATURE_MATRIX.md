@@ -1,3 +1,20 @@
+## 0.32.0 / issue15 — basic checkpoint, full milestone remains open
+
+| Mechanic | Current implementation / acceptance |
+|---|---|
+| Signal, chain, stop | Registered source recipes/research; original multipart models, one protected item/identity, guarded UI/circuit contact |
+| Fractional blocks | Existing rail UUID/material owner preserved; paired sides produce one cut; budgeted local regions and full-body claims |
+| Routes/movement | Bounded metric search; real locomotive directions; actual original paid physics without rider; exact source braking |
+| Stops/schedules | Scoped names, destination priorities/limits, ordered editable explicit-wait schedules; finite two-way service native-tested |
+| Circuits | Four colors, force red, station limit/priority, canonical train ID/cargo reading; native four-color red/limit/ID acceptance passes |
+| Persistence/performance | Independent-JVM exact automatic owner/slot verified;577optional native; actual EN/RU clients and six-car/512MJ restart ledger; bounded16-car stand |
+| Advanced scope | Pass-through/temporary go-to, origin dispatch priority, group editing/propagation, shared interrupts/wildcards runtime/UI **pending in issue15** |
+| Remaining matrix | Comprehensive native branch-blue/junction/opposing high-speed/long-consist and client acceptance must not be inferred from kernel/basic-service checks |
+
+Definition codecs and pure wildcard expansion are preparation, not working interrupts. No fake group/interrupt buttons or0.33 content.
+
+---
+
 ## 0.31.3 / updated issue14
 
 | Mechanic | Implementation |

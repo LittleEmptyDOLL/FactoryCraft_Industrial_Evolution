@@ -182,6 +182,11 @@ public final class TrainMenu extends AbstractContainerMenu {
     var c = d.car(entity.getUUID());
     int i = t.cars.indexOf(c);
     switch (button) {
+      case 6 -> {
+        if (c.kind != StockSpec.LOCOMOTIVE) return false;
+        factorycraft.rail.automation.TracksideMenus.train(s, t, entity);
+        return true;
+      }
       case 0 -> filters = !filters;
       case 1 -> {
         if (c.kind == StockSpec.CARGO) c.bar = Math.max(0, c.bar - 1);

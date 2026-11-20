@@ -1,0 +1,21 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:rail_chain_signal",
+    "count": 1
+  }
+}

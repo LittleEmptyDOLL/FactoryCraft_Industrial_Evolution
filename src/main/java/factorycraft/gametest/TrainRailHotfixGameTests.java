@@ -66,39 +66,67 @@ public final class TrainRailHotfixGameTests {
     var o = PowerV20GameTests.site(h, 430);
     var plan = RailwayV30GameTests.plan(o, 0, 0, -16, 0);
     RailwayV30GameTests.prepare(h, plan);
-    var p = RailwayV30GameTests.player(h, plan, true);
-    var torch = new BlockPos(o.getX(), o.getY(), o.getZ() - 8);
-    h.getLevel().setBlockAndUpdate(torch.below(), Blocks.STONE.defaultBlockState());
-    h.getLevel().setBlock(torch, Blocks.TORCH.defaultBlockState(), 18);
-    var cancel =
-        new java.util.function.Consumer<
-            net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent>() {
-          public void accept(net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) {
-            if (e.getEntity() == p) e.setCanceled(true);
-          }
-        };
-    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cancel);
-    try {
-      h.assertTrue(RailPlacement.place(p, plan).equals("permission"), "claim cancellation ignored");
-    } finally {
-      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(cancel);
-    }
-    h.assertTrue(
-        h.getLevel().getBlockState(torch).is(Blocks.TORCH) && RailPlacement.count(p) == 64,
-        "rollback changed torch/material owner");
-    var area = new AABB(torch).inflate(20);
-    h.assertTrue(
-        h.getLevel().getEntitiesOfClass(ItemEntity.class, area).isEmpty(),
-        "cancelled replacement dropped resources");
-    var id = RailwayV30GameTests.placed(h, plan, p);
-    var drops =
-        h.getLevel().getEntitiesOfClass(ItemEntity.class, area, e -> e.getItem().is(Items.TORCH));
-    h.assertTrue(
-        drops.stream().mapToInt(e -> e.getItem().getCount()).sum() == 1,
-        "accepted torch replacement did not drop exactly once");
-    for (var drop : drops) drop.discard();
-    RailwayV30GameTests.remove(h, p, id);
-    h.succeed();
+    var pins = new java.util.HashSet<Long>();
+    for (long key : plan.footprint.chunks())
+      for (int dx = -1; dx <= 1; dx++)
+        for (int dz = -1; dz <= 1; dz++) {
+          long adjacent =
+              net.minecraft.world.level.ChunkPos.asLong((int) key + dx, (int) (key >> 32) + dz);
+          pins.add(adjacent);
+          h.getLevel().getChunk((int) adjacent, (int) (adjacent >> 32));
+          h.getLevel().setChunkForced((int) adjacent, (int) (adjacent >> 32), true);
+        }
+    h.startSequence()
+        .thenWaitUntil(
+            () -> {
+              for (long key : pins)
+                h.assertTrue(
+                    h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
+                    "waiting for real torch-drop entity visibility");
+            })
+        .thenExecute(
+            () -> {
+              var p = RailwayV30GameTests.player(h, plan, true);
+              var torch = new BlockPos(o.getX(), o.getY(), o.getZ() - 8);
+              h.getLevel().setBlockAndUpdate(torch.below(), Blocks.STONE.defaultBlockState());
+              h.getLevel().setBlock(torch, Blocks.TORCH.defaultBlockState(), 18);
+              var cancel =
+                  new java.util.function.Consumer<
+                      net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent>() {
+                    public void accept(
+                        net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) {
+                      if (e.getEntity() == p) e.setCanceled(true);
+                    }
+                  };
+              net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cancel);
+              try {
+                h.assertTrue(
+                    RailPlacement.place(p, plan).equals("permission"),
+                    "claim cancellation ignored");
+              } finally {
+                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(cancel);
+              }
+              h.assertTrue(
+                  h.getLevel().getBlockState(torch).is(Blocks.TORCH)
+                      && RailPlacement.count(p) == 64,
+                  "rollback changed torch/material owner");
+              var area = new AABB(torch).inflate(20);
+              h.assertTrue(
+                  h.getLevel().getEntitiesOfClass(ItemEntity.class, area).isEmpty(),
+                  "cancelled replacement dropped resources");
+              var id = RailwayV30GameTests.placed(h, plan, p);
+              var drops =
+                  h.getLevel()
+                      .getEntitiesOfClass(ItemEntity.class, area, e -> e.getItem().is(Items.TORCH));
+              h.assertTrue(
+                  drops.stream().mapToInt(e -> e.getItem().getCount()).sum() == 1,
+                  "accepted torch replacement did not drop exactly once");
+              for (var drop : drops) drop.discard();
+              RailwayV30GameTests.remove(h, p, id);
+              for (long key : pins)
+                h.getLevel().setChunkForced((int) key, (int) (key >> 32), false);
+            })
+        .thenSucceed();
   }
 
   @GameTest(template = "empty", batch = "rail_v0311", timeoutTicks = 100)
@@ -331,45 +359,72 @@ public final class TrainRailHotfixGameTests {
     var o = PowerV20GameTests.site(h, 436);
     var plan = RailwayV30GameTests.plan(o, 0, 0, -16, 0);
     RailwayV30GameTests.prepare(h, plan);
-    var p = RailwayV30GameTests.player(h, plan, true);
-    var at = o.north(8);
-    h.getLevel().setBlock(at.below(), Blocks.DIRT.defaultBlockState(), 18);
-    h.getLevel()
-        .setBlock(
-            at,
-            Blocks.PEONY
-                .defaultBlockState()
-                .setValue(
-                    net.minecraft.world.level.block.state.properties.BlockStateProperties
-                        .DOUBLE_BLOCK_HALF,
-                    net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER),
-            18);
-    h.getLevel()
-        .setBlock(
-            at.above(),
-            Blocks.PEONY
-                .defaultBlockState()
-                .setValue(
-                    net.minecraft.world.level.block.state.properties.BlockStateProperties
-                        .DOUBLE_BLOCK_HALF,
-                    net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER),
-            18);
-    h.assertTrue(
-        plan.inspect(h.getLevel(), p).equals("ready"), "tagged empty-shape flower blocked rail");
-    var id = RailwayV30GameTests.placed(h, plan, p);
-    var area = new AABB(at).inflate(8);
-    var drops =
-        h.getLevel().getEntitiesOfClass(ItemEntity.class, area, e -> e.getItem().is(Items.PEONY));
-    h.assertTrue(
-        drops.stream().mapToInt(e -> e.getItem().getCount()).sum() == 1
-            && !h.getLevel().getBlockState(at.above()).is(Blocks.PEONY),
-        "double flower count="
-            + drops.stream().mapToInt(e -> e.getItem().getCount()).sum()
-            + " upper="
-            + h.getLevel().getBlockState(at.above()));
-    for (var drop : drops) drop.discard();
-    RailwayV30GameTests.remove(h, p, id);
-    h.succeed();
+    var pins = new java.util.HashSet<Long>();
+    for (long key : plan.footprint.chunks())
+      for (int dx = -1; dx <= 1; dx++)
+        for (int dz = -1; dz <= 1; dz++) {
+          long adjacent =
+              net.minecraft.world.level.ChunkPos.asLong((int) key + dx, (int) (key >> 32) + dz);
+          pins.add(adjacent);
+          h.getLevel().getChunk((int) adjacent, (int) (adjacent >> 32));
+          h.getLevel().setChunkForced((int) adjacent, (int) (adjacent >> 32), true);
+        }
+    h.startSequence()
+        .thenWaitUntil(
+            () -> {
+              for (long key : pins)
+                h.assertTrue(
+                    h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
+                    "waiting for real flower-drop entity visibility");
+            })
+        .thenExecute(
+            () -> {
+              var p = RailwayV30GameTests.player(h, plan, true);
+              var at = o.north(8);
+              h.getLevel().setBlock(at.below(), Blocks.DIRT.defaultBlockState(), 18);
+              h.getLevel()
+                  .setBlock(
+                      at,
+                      Blocks.PEONY
+                          .defaultBlockState()
+                          .setValue(
+                              net.minecraft.world.level.block.state.properties.BlockStateProperties
+                                  .DOUBLE_BLOCK_HALF,
+                              net.minecraft.world.level.block.state.properties.DoubleBlockHalf
+                                  .LOWER),
+                      18);
+              h.getLevel()
+                  .setBlock(
+                      at.above(),
+                      Blocks.PEONY
+                          .defaultBlockState()
+                          .setValue(
+                              net.minecraft.world.level.block.state.properties.BlockStateProperties
+                                  .DOUBLE_BLOCK_HALF,
+                              net.minecraft.world.level.block.state.properties.DoubleBlockHalf
+                                  .UPPER),
+                      18);
+              h.assertTrue(
+                  plan.inspect(h.getLevel(), p).equals("ready"),
+                  "tagged empty-shape flower blocked rail");
+              var id = RailwayV30GameTests.placed(h, plan, p);
+              var area = new AABB(at).inflate(8);
+              var drops =
+                  h.getLevel()
+                      .getEntitiesOfClass(ItemEntity.class, area, e -> e.getItem().is(Items.PEONY));
+              h.assertTrue(
+                  drops.stream().mapToInt(e -> e.getItem().getCount()).sum() == 1
+                      && !h.getLevel().getBlockState(at.above()).is(Blocks.PEONY),
+                  "double flower count="
+                      + drops.stream().mapToInt(e -> e.getItem().getCount()).sum()
+                      + " upper="
+                      + h.getLevel().getBlockState(at.above()));
+              for (var drop : drops) drop.discard();
+              RailwayV30GameTests.remove(h, p, id);
+              for (long key : pins)
+                h.getLevel().setChunkForced((int) key, (int) (key >> 32), false);
+            })
+        .thenSucceed();
   }
 
   @GameTest(template = "empty", batch = "rail_v0311_disk", timeoutTicks = 120)

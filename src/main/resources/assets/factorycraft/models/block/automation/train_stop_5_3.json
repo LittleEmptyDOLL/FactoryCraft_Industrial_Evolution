@@ -1,0 +1,10 @@
+{
+  "textures": {
+    "particle": "factorycraft:block/rail_steel",
+    "steel": "factorycraft:block/rail_steel",
+    "dark": "factorycraft:block/rail_dark",
+    "sign": "factorycraft:block/rail_sign",
+    "lamp": "factorycraft:block/rail_signal_green"
+  },
+  "elements": []
+}

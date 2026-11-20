@@ -1,3 +1,13 @@
+# 0.32.0 / basic automatic train stand
+
+New native stand: four automatic trains/sixteen real paid cars, four96-block loaded rail lines, named stops and chain/regular signals, finite8coal per locomotive,88iron total and93828mBwater. Each reaches its actual stop with no rider in107simulation ticks; exact remaining+spent fuel is checked. No output is fabricated. See raw AUTO_PROFILE receipts in validation/v0320.
+
+The575-case fresh JVM observed the whole TrainData movement/dispatch tick mean1.191ms, p951.649ms, p992.658ms, max15.892ms during this stand. A separate-JVM replay observed mean2.869ms, p956.151ms, p9932.864ms, max36.310ms. These are real Minecraft adapter timings, **not full server MSPT/TPS**, not a comparison to0.31 manual operation, and not evidence of a speedup. No clients were running in these two observations; JVM/batch history differs. Preserve both outcomes rather than selecting the lower tail. The optional pre-client-bootstrap observation is mean2.273ms, p952.893ms, p9931.967ms, max36.069ms; raw107samples are retained in the native optional log. Subsequent replay/release observations remain in their own logs and must not be silently merged as identical conditions. Final optional-profile numbers are separately labeled; full factory/MIXED/eight-train148-car workloads remain hosted CI.
+
+The final optional release observation is mean6.794ms, p9537.574ms, p9952.354ms, maximum62.379ms over107 ticks. Its larger tails are retained explicitly in `validation/v0320/native-release-profile.json`; this concurrent full-native-batch observation is not pooled with the earlier observations or called a performance improvement.
+
+---
+
 # 0.31.1 / issue14 — oriented stock and placement cost
 
 The final bounded paired actual-server run used preserved0.31.0 and0.31.1release JARs, identical8trains/148cars/6144m rails,120warmup +400stable ticks, no clients or other game process, same host (2CPUquota, JVM4workers),2GiBheap. Both preserve2542component-exact cargo items,4814823mB and864MJremaining+spent; real unload/reload occurs. New-artifact verification in a separate JVM passes exact8/148canonical owners. Raw artifact hashes, stage reports and logs: [validation/v0311](validation/v0311).

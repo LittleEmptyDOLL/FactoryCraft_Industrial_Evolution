@@ -1,3 +1,17 @@
+# 0.32.0 — basic automatic named-stop service
+
+Open a stopped locomotive's ordinary inventory, then **Schedule**. Add/reorder named stops and explicit waits, save, and switch Manual/Automatic. Automatic motion does not require a rider; entering a train does not stop it. Explicit driver input takes over in Manual and cancels prospective automatic/stop commitments while preserving physical body claims and cargo. Saving a changed schedule deliberately switches to Manual before replacing the definition.
+
+Stations use names within the train's research/team scope. The dispatcher chooses the highest reachable destination priority, then metric cost and stable UUID ties. A station limit counts each approaching/docked train once; reducing it or disabling a stop preserves an already committed arrival. Missing paths and saturated destinations are distinct waiting states and do not skip schedule entries. Rename/removal invalidates the indexed commitment and brakes before re-dispatch. Reverse departure requires an actual outward-facing locomotive at that end.
+
+Time/inactivity advance only while loaded and really stopped at the destination; inactivity watches actual cargo changes and excludes locomotive fuel. Native cargo/filter/component stacks and tanker fluid remain owned by TrainData. Waits use AND groups separated by OR. Fluid thresholds are Factorio units multiplied by10 for comparison to native mB, never truncated division. The native adapters also observe full/empty/has cargo, typed item/fluid counts, fuel, passengers, named-stop availability and known circuit input. A malformed/unavailable circuit sample is unknown, including for NE. Full component-specific condition editing and comprehensive advanced-condition acceptance remain pending.
+
+Regular signals split logical regions at metric positions; opposite sides enable two-way passage. Chains reserve the selected route through a regular exit with enough space for every car. A signal's global blue indication is distinct from permission for a particular chosen route. Actual interval/hull collisions still protect manual traffic. Paused/unloaded trains do not spend movement fuel or simulate offline cargo transfers. Head/nose targeting uses the source braking recurrence and0.06-block alignment tolerance.
+
+Current checkpoint requires an explicit wait in each GUI schedule entry. Empty-condition pass-through, temporary go-to actions, origin-priority dispatch, synchronized groups and shared named interrupts/wildcards are **not yet playable**, despite bounded definition codecs/pure wildcard helpers being present. Issue15 remains open; no0.33 work is included. See validation/v0320 for precise actual checks and limitations.
+
+---
+
 # 0.31.3 — momentum-preserving living contacts
 
 A lethal ordinary mob impact no longer unconditionally zeroes speed. Server contact detection orders real swept entries, commits full reservations/fuel/last-clear pose, invokes native impact hurt with driver/direct-stock attribution, and checks both actual health and the final cancellable death event. Surviving, immune, allied/pet/PvP-protected or cancelled targets stop the train; dead bodies and item drops do not become walls. Wall/stock/nonliving structural contacts keep their distinct blocking model.

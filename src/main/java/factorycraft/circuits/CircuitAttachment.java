@@ -133,6 +133,8 @@ public final class CircuitAttachment {
   }
 
   public int portAt(BlockPos physical) {
+    if (owner instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      return root.cells().contains(physical) ? 0 : -1;
     if (owner instanceof CircuitNodeBlockEntity n) return n.portAt(physical);
     if (physical.equals(pos())) return 0;
     if (owner instanceof BeltBlockEntity belt)
@@ -163,14 +165,16 @@ public final class CircuitAttachment {
     cachedRoute = route;
     var assembly = AssemblyAccess.owner(owner);
     cachedCells =
-        owner instanceof BeltBlockEntity belt
-            ? List.copyOf(belt.physicalCells())
-            : assembly == null
-                ? List.of(pos())
-                : assembly
-                    .assembly()
-                    .profile()
-                    .cells(pos(), assembly.assembly().profile().facing(owner.getBlockState()));
+        owner instanceof factorycraft.rail.automation.TracksideBlockEntity root
+            ? root.cells()
+            : owner instanceof BeltBlockEntity belt
+                ? List.copyOf(belt.physicalCells())
+                : assembly == null
+                    ? List.of(pos())
+                    : assembly
+                        .assembly()
+                        .profile()
+                        .cells(pos(), assembly.assembly().profile().facing(owner.getBlockState()));
     return cachedCells;
   }
 
@@ -181,6 +185,8 @@ public final class CircuitAttachment {
         || !server.tickRateManager().runsNormally()) return false;
     var chunk = server.getChunkSource().getChunkNow(pos().getX() >> 4, pos().getZ() >> 4);
     if (chunk == null || chunk.getBlockEntity(pos()) != owner) return false;
+    if (owner instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      return root.ready();
     if (owner instanceof CircuitNodeBlockEntity n) return n.available();
     if (owner instanceof FactoryBlockEntity f) {
       if (f instanceof BeltBlockEntity b
@@ -231,12 +237,15 @@ public final class CircuitAttachment {
 
   public void changed() {
     persistent();
+    if (owner instanceof factorycraft.rail.automation.TracksideBlockEntity root && available())
+      root.sync();
     if (owner instanceof FactoryBlockEntity f && available()) f.sync();
     CircuitNetwork.changed(this);
   }
 
   public void persistent() {
-    if (owner instanceof FactoryBlockEntity f) f.markCircuitStatePersistent();
+    if (owner instanceof factorycraft.rail.automation.TracksideBlockEntity root) root.setChanged();
+    else if (owner instanceof FactoryBlockEntity f) f.markCircuitStatePersistent();
     else if (level() instanceof ServerLevel s) CircuitContainers.dirty(s);
   }
 

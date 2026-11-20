@@ -40,6 +40,16 @@ public final class TrainMotion {
     return speed < 1e-10 ? 0 : speed;
   }
 
+  /** Exact remaining displacement of the existing ordered source braking recurrence. */
+  public static double brakeDistance(double speed, Parameters p) {
+    if (!Double.isFinite(speed) || speed < 0) throw new IllegalArgumentException("Braking speed");
+    if (speed == 0) return 0;
+    double decrement = p.brake / p.weight;
+    if (decrement == 0) return Double.POSITIVE_INFINITY;
+    double steps = Math.max(0, Math.ceil(speed / decrement) - 1);
+    return Math.max(0, steps * speed - decrement * steps * (steps + 1) / 2);
+  }
+
   /**
    * Allocated only on contact. The interrupted 60Hz step retains its remaining time; later steps
    * reapply the original force recurrence to the post-impact velocity.

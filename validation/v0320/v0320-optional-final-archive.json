@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-optional-final",
+  "archive": "/workspace/work/v0320-optional-final-checkpoint.tar.xz",
+  "sha256": "d5c23f283d71b7c44595019d600b17615eaf5b120fad29d4a1ba3a95cce494fa",
+  "bytes": 44233228,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "PASS:577 final optional native; earlier same-world exact FTB automatic checkpoint and all original571 cases retained; intermediate failed runs are logged separately"
+}

@@ -1,0 +1,9 @@
+{
+  "run": "native-release.log.gz",
+  "samples": 107,
+  "metric": "TrainData movement/dispatch adapter time; not server MSPT",
+  "mean_ms": 6.793772710280374,
+  "p95_ms": 37.574143,
+  "p99_ms": 52.353835,
+  "max_ms": 62.378923
+}

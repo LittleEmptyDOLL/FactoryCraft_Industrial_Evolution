@@ -16,7 +16,17 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active hotfix — 0.31.3 / updated issue #14 sections6–7
+## Active milestone — 0.32.0 / issue #15
+
+* The user explicitly authorizes implementation of issue15 now, from latest main69a2a6d; the earlier spec-only introduction and previous No0.32 restrictions are superseded for this task. Preserve all326JUnit/571native, source motion, exact fractional intervals, finite resources, three lifts/four circuit colors and old evidence. No0.33.
+* Actively reuse suitable MIT Create1.21.1 code with pinned provenance, full copyright/permission notice in sources/release, and separate Factorio acceptance. The user's explicit licensed reuse permission supersedes old Copy no third-party code restrictions. Create assets remain All Rights Reserved; no copied art, sounds/translations, mandatory Create/Flywheel/Catnip dependency or parallel physical train engine.
+* One canonical TrainData resource owner. Trackside devices are identity/configuration adapters, actual fractional UUID-edge points, loaded-only availability; no fake driver, automatic chunk tickets or virtual paid rail splits. Schedule/mode additions must omit defaults and read existing schema1 owners exactly.
+* Deliver issue15 Gates A/B/C only when genuinely working/tested. The issue explicitly permits a working basic automated system first if advanced groups/interrupt acceptance cannot be responsibly finished; leave unmet items in the same issue and never advertise partial0.32 as complete. No placeholder interrupt UI.
+* New v0320[-suffix], network-v0320[-suffix], trains-v0320[-suffix] diagnostics only. Use actual GameTestServer and independent JVMs; preserve every failed world and old workload. Real EN/RU and two-client acceptance is required for modified networking/automation. Investigate the inherited hosted optional-mod double-flower fixture failure rather than disabling it. Full factory/mixed CI remains hosted. Publish checked main normally and report CI once unless explicitly asked otherwise.
+
+* Basic checkpoint:343JUnit;575base/576independent/577final optional native, frozen exact auto owner/slot, real EN/RU two-client controls and a six-car62iron/512MJ restart ledger. Recovery must rotate unavailable claims without starving new loaded returns. Torch/flower drops require real entity visibility in test fixtures, not weaker assertions. All failures/manifests retained in validation/v0320. Final diagnostic-only forced-ticket guard is build/JUnit checked after native acceptance. Full issue15 GateC and broad native junction/high-speed/16-heading art acceptance remain unfinished; continue in the SAME issue, never call this full0.32 or start0.33.
+
+## Previous hotfix — 0.31.3 / updated issue #14 sections6–7
 
 * Current user asks for the next issue changes; the latest issue is updated#14 (19November17:52UTC), adding momentum-preserving lethal mob contacts and bidirectional Create-style source/end resolution. Implement these corrections only; preserve0.31.2 exact reversed intervals,317JUnit/560native and all finite chains/diagnostic evidence. No0.32 or new train types.
 * Native hurt acceptance and actual death decide continuation, never attempted damage. Keep finite momentum, one fuel settlement, travel-ordered bounded contacts, real walls/stock/protected survivors and callback-safe canonical ownership. A shared pure resolver must use real saved endpoints/tangents, client ghost/hints and server transactions; no invented mid-edge nodes.

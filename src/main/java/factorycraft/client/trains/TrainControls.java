@@ -47,6 +47,9 @@ public final class TrainControls {
     int branch =
         input ? (mc.options.keyRight.isDown() ? 1 : 0) - (mc.options.keyLeft.isDown() ? 1 : 0) : 0;
     boolean brake = !input || mc.options.keyJump.isDown();
+    if (e.automatic()
+        && (mc.screen != null || intent == 0 && branch == 0 && !mc.options.keyJump.isDown()))
+      return;
     if (e.getId() != lastEntity
         || intent != lastIntent
         || branch != lastBranch

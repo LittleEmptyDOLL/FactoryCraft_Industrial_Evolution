@@ -1,0 +1,27 @@
+{
+  "type": "factorycraft:processing",
+  "machine": "assembling_machine",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 1
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 5
+    }
+  ],
+  "result": {
+    "id": "factorycraft:rail_chain_signal",
+    "count": 1
+  },
+  "ticks": 10,
+  "energy": 10,
+  "categories": [
+    "railway"
+  ]
+}

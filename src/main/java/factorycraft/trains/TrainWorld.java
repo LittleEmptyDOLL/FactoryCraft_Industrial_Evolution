@@ -25,8 +25,9 @@ public final class TrainWorld {
   }
 
   public static boolean available(TrainData data, TrainData.Train t) {
-    if (t.checkedTick == data.level.getGameTime() && t.checkedEpoch == data.availabilityEpoch)
-      return t.checkedAvailable;
+    if ((t.checkedTick == data.level.getGameTime()
+            || t.automation.automatic && t.speed == 0 && t.checkedTick != Long.MIN_VALUE)
+        && t.checkedEpoch == data.availabilityEpoch) return t.checkedAvailable;
     t.checkedTick = data.level.getGameTime();
     t.checkedEpoch = data.availabilityEpoch;
     return t.checkedAvailable = checkAvailable(data, t);

@@ -1,3 +1,13 @@
+# 0.32.0 — trackside contacts
+
+Signals/stops join the existing red/green/blue/white buses through the sole root identity; every physical part resolves to that contact. There is no casing inventory/energy proxy. Wiring and settings enforce native reach/protection/team checks; unloads/unknown inputs fail closed.
+
+For a **rail signal**, a true configured circuit condition forces red; this intentionally differs from an ordinary machine's true-enable gate. State reading emits `signal_red`, `signal_yellow`, `signal_green` or `signal_blue` only for a valid known aspect. For a **stop**, the ordinary enable condition applies; optional `signal_l` sets limit0–65535 and `signal_p` sets priority0–255. Existing committed arrivals survive a reduced limit. State reading emits `signal_c` (committed trains) and `train_id` for the actual docked canonical train. Contents are nonowning observations of that train's cargo/tankers, never fuel or a new capability. Fluid bus values retain the existing native mB convention; schedule fluid thresholds use10mB/Factorio unit.
+
+Effective changes invalidate only indexed stop/signal dependencies rather than changing topology on each sensor poll. Input at a docked stop supplies known circuit wait samples. Shared interrupts, direct locomotive-wire contacts and broader circuit feature parity remain outside this basic checkpoint.
+
+---
+
 ## 0.29 energy observations
 
 New nuclear/electric owners expose the existing four-color contact and read-only state/contents. Accumulator ENERGY is integer external FE and PROGRESS is charge percent; reactor progress is remaining fuel ticks. Nuclear private fluids, paid uranium ore escrow and construction materials are read from their sole owners. Centrifuge recipe-result reading reports only its already sampled paid outcome, never two guaranteed isotope products. Reactor fuel burning is not turned into a demand/circuit-throttled process. Unloaded owners return unavailable data. No wire colors, signal graph or selector behavior changed.

@@ -459,7 +459,21 @@ public final class NuclearV29GameTests {
             () -> {
               h.assertTrue(
                   battery.battery.units() == held[0],
-                  "shaded solar generated after visibility cache expiry");
+                  "shaded solar changed battery after visibility cache expiry: before="
+                      + held[0]
+                      + " after="
+                      + battery.battery.units()
+                      + " load="
+                      + load.power.getEnergyStored()
+                      + " sky="
+                      + l.canSeeSky(
+                          panel
+                              .assembly()
+                              .profile()
+                              .center(panel.getBlockPos(), Direction.NORTH)
+                              .above(1))
+                      + " roof="
+                      + l.getBlockState(o.south().above(3)));
               l.removeBlock(o.south().above(3), false);
               for (var owner : List.of(panel, battery, a, b, load))
                 AssemblyAccess.owner(owner).assembly().removeWhole(false);

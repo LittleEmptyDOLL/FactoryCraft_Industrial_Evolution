@@ -1,0 +1,444 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "part": "0",
+        "aspect": "0",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_0",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "0",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "0",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "0",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "1",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_1",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "1",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "1",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "1",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "2",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_2",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "2",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "2",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "2",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "3",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_3",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "3",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "3",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "3",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "4",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_4",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "4",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "4",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "0",
+        "aspect": "4",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_0_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "0",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_0",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "0",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "0",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "0",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "1",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_1",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "1",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "1",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "1",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "2",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_2",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "2",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "2",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "2",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "3",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_3",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "3",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "3",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "3",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "4",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_4",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "4",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "4",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "1",
+        "aspect": "4",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "factorycraft:block/automation/rail_chain_signal_1_4",
+        "y": 270
+      }
+    }
+  ]
+}

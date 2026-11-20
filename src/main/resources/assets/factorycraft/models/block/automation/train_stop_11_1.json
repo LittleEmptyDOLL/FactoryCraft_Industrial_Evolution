@@ -1,0 +1,81 @@
+{
+  "textures": {
+    "particle": "factorycraft:block/rail_steel",
+    "steel": "factorycraft:block/rail_steel",
+    "dark": "factorycraft:block/rail_dark",
+    "sign": "factorycraft:block/rail_sign",
+    "lamp": "factorycraft:block/rail_signal_red"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        8,
+        4
+      ],
+      "to": [
+        16,
+        16,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sign",
+          "tintindex": 0
+        },
+        "down": {
+          "texture": "#sign",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#sign",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#sign",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#sign",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#sign",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        10,
+        3.8
+      ],
+      "to": [
+        15,
+        14,
+        4
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dark"
+        },
+        "down": {
+          "texture": "#dark"
+        },
+        "north": {
+          "texture": "#dark"
+        },
+        "south": {
+          "texture": "#dark"
+        },
+        "east": {
+          "texture": "#dark"
+        },
+        "west": {
+          "texture": "#dark"
+        }
+      }
+    }
+  ]
+}

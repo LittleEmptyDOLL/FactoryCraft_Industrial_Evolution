@@ -1,0 +1,19 @@
+{
+  "type": "factorycraft:research",
+  "prerequisites": [
+    "factorycraft:railway"
+  ],
+  "packs": {
+    "factorycraft:automation_science_pack": 1,
+    "factorycraft:logistic_science_pack": 1
+  },
+  "units": 200,
+  "ticks": 600,
+  "unlocks": [
+    "factorycraft:rail_signal",
+    "factorycraft:rail_chain_signal",
+    "factorycraft:train_stop"
+  ],
+  "x": 9,
+  "y": 3
+}

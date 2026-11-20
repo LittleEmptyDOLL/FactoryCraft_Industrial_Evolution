@@ -24,6 +24,10 @@ public final class TrainCar {
   public int color = 0xb45c27, bar;
   public final String[] filters;
   public long fuelJ, spentJ;
+
+  /** Transient native-transfer version; never a second cargo owner or persisted resource. */
+  public long cargoVersion;
+
   public double fuelAcceleration = 1, fuelSpeed = 1;
   private final Runnable dirty;
   public ItemStack shell = ItemStack.EMPTY;
@@ -44,6 +48,7 @@ public final class TrainCar {
     items =
         new ItemStackHandler(count) {
           protected void onContentsChanged(int slot) {
+            if (kind == StockSpec.CARGO) cargoVersion++;
             dirty.run();
           }
 
@@ -58,7 +63,13 @@ public final class TrainCar {
                         .equals(filters[slot]));
           }
         };
-    fluid = new FluidCell<>(StockSpec.FLUID_CAPACITY, dirty);
+    fluid =
+        new FluidCell<>(
+            StockSpec.FLUID_CAPACITY,
+            () -> {
+              cargoVersion++;
+              dirty.run();
+            });
   }
 
   public void changed() {

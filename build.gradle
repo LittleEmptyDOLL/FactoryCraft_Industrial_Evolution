@@ -42,8 +42,8 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 // Named diagnostic runs preserve previous failed worlds instead of resetting their evidence.
-def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0311')
-if (!(gameTestFixture ==~ /v0(?:270|280|290|300|301|310|311)(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.27/0.28/0.29/0.30 GameTest fixture name.')
+def gameTestFixture = providers.gradleProperty('gameTestFixture').getOrElse('v0320')
+if (!(gameTestFixture ==~ /v0(?:270|280|290|300|301|310|311|320)(?:-[a-z0-9]+)*/)) throw new GradleException('Invalid 0.27/0.28/0.29/0.30 GameTest fixture name.')
 def benchmarkProfile = providers.gradleProperty('benchmarkProfile').getOrElse('full')
 def benchmarkFixtureName = providers.gradleProperty('benchmarkFixture').getOrElse(benchmarkProfile + '-v0311')
 if (!(benchmarkProfile in ['full', 'smoke', 'mixed']) || !(benchmarkFixtureName ==~ /${benchmarkProfile}(?:-[a-z0-9]+)*/)) throw new GradleException('Fixture must be a simple profile[-name] child of run-benchmark.')
@@ -258,7 +258,7 @@ idea {
 
 test { useJUnitPlatform() }
 
-tasks.named("jar") { from("LICENSE") }
+tasks.named("jar") { from("LICENSE", "THIRD_PARTY_NOTICES.md"); from("third_party") { into("third_party") } }
 
 def prepareBenchmark = tasks.register('prepareBenchmarkWorld') {
     group = 'verification'
@@ -322,7 +322,7 @@ tasks.register('resetBenchmarkWorld', Delete) {
 }
 
 def fluidFixture = providers.gradleProperty('fluidFixture').getOrElse('fluids-v0311-local')
-if (!(fluidFixture ==~ /fluids-v0(270|280|290|300|301|310|311)-[a-z0-9-]+/)) throw new GradleException('Invalid isolated fluid fixture.')
+if (!(fluidFixture ==~ /fluids-v0(270|280|290|300|301|310|311|320)-[a-z0-9-]+/)) throw new GradleException('Invalid isolated fluid fixture.')
 def fluidDir = project.file('run-benchmark/' + fluidFixture)
 def fluidMode = providers.gradleProperty('fluidMode').getOrElse('measure')
 tasks.register('prepareFluidBenchmark') {

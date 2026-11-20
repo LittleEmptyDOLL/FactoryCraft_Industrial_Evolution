@@ -1,0 +1,33 @@
+{
+  "type": "factorycraft:counted_crafting",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "factorycraft:electronic_circuit"
+      },
+      "count": 5
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_plate"
+      },
+      "count": 6
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:iron_stick"
+      },
+      "count": 6
+    },
+    {
+      "ingredient": {
+        "item": "factorycraft:steel_plate"
+      },
+      "count": 3
+    }
+  ],
+  "result": {
+    "id": "factorycraft:train_stop",
+    "count": 1
+  }
+}

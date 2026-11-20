@@ -1,0 +1,103 @@
+{
+  "revision": "37ea4afcfe5bf85875d4b0749798a45330070a1f",
+  "files": [
+    {
+      "file": "LICENSE.md",
+      "sha256": "2382116a50f4779cd338bcb8d8ab50363f2f72805f0bf1d69d169dfc781f3724",
+      "bytes": 1411
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/graph/TrackGraph.java",
+      "sha256": "3f33905f6c2bc68a7fe7ff7fbf53c16655c3fc897694d7b03046df92cd46a86b",
+      "bytes": 18940
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/graph/TrackEdge.java",
+      "sha256": "9c3618bbecd9d9fd91f56cf3ddd477551b51110191991df9b344aef66c0247f4",
+      "bytes": 7659
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/graph/EdgeData.java",
+      "sha256": "bf48648cf743fa9f7c919049758ba5ded14cc9238a74bddd10d95d1776fb1e64",
+      "bytes": 7074
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/graph/TrackNode.java",
+      "sha256": "c2f4f58507d97d0eb816361485ef2cf1a968bd410d2b6804ee1d00d16658dcb7",
+      "bytes": 486
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/graph/DiscoveredPath.java",
+      "sha256": "de5dcbddd85b24612c73fae2118576d7cae1de933d4b3175f4a258d4bccb2774",
+      "bytes": 552
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/signal/SignalPropagator.java",
+      "sha256": "e70be57ba68fdcef87c2f0a55592996bf00065c559cc9c3b70504604de918898",
+      "bytes": 7881
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/signal/SignalBoundary.java",
+      "sha256": "d33452d2b5f6cbc4d192330bd3c98d8279653df8672075c5edea677bd67ca996",
+      "bytes": 10726
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/signal/SignalEdgeGroup.java",
+      "sha256": "8ddf6a40ff65d12790652918f24c17114fdfb74fb82db223bb40749c64cfbac2",
+      "bytes": 4688
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/entity/Navigation.java",
+      "sha256": "8c158fe8df092e5522d7ca098f0fa2e788aaebb992a2439d66b276c3a5975c3f",
+      "bytes": 32177
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/station/GlobalStation.java",
+      "sha256": "8db20270e000d1ce8ec66771c10397db5b957c199a085bb334494ea1a2d336f1",
+      "bytes": 8284
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/station/StationBlockEntity.java",
+      "sha256": "61a1aa04c5c6ce80da784b3365c2677866222539e854dc2e6890fe69b4ecf207",
+      "bytes": 35344
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/schedule/Schedule.java",
+      "sha256": "3c114537f3696509d5689f8154267e6932267d2b4886c902573754cb466ffaed",
+      "bytes": 5414
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/schedule/ScheduleRuntime.java",
+      "sha256": "24da83bbafa736ad602a61b31ea5affa092efc75883295a1e8e8f82b784f9cf5",
+      "bytes": 13564
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/schedule/ScheduleWaitCondition.java",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/schedule/condition/DelayCondition.java",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/schedule/condition/IdleCargoCondition.java",
+      "sha256": "af988a2db5ba4dc8ff6454b27d6c59d24ed03ad06962528fda94d1e6155dc02b",
+      "bytes": 1234
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/schedule/condition/ItemThresholdCondition.java",
+      "sha256": "d6a46ef3e75868b4648af8f68ccdae0c4dd08cb1ec1baf6a7f8d1488bac880cd",
+      "bytes": 4744
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/GlobalRailwayManager.java",
+      "sha256": "0edec5d6c20e5eb1b73279237c0761c64e7f2b67217d512382c3d39aedbc8d5e",
+      "bytes": 8880
+    },
+    {
+      "file": "src/main/java/com/simibubi/create/content/trains/RailwaySavedData.java",
+      "sha256": "ad9d97509e230a2d563add4a8729b369488672b6758e5d63655e8567840c17ab",
+      "bytes": 3882
+    }
+  ]
+}

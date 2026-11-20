@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-native-second",
+  "archive": "/workspace/work/v0320-native-second-failed.tar.xz",
+  "sha256": "7fdd9ede9c54f97d4d78960f64655ff4def01422ee90d5d5bb32c5715081831e",
+  "bytes": 14314628,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "571/574; two automatic test callback re-entry failures and flower entity-readiness failure retained"
+}

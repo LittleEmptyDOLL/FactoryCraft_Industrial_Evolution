@@ -18,7 +18,8 @@ public final class CircuitAccess {
           CircuitAttachment.class);
 
   public static boolean supported(BlockEntity be) {
-    return be instanceof factorycraft.nuclear.NuclearOwner
+    return be instanceof factorycraft.rail.automation.TracksideBlockEntity
+        || be instanceof factorycraft.nuclear.NuclearOwner
         || be instanceof factorycraft.circuits.CircuitNodeBlockEntity
         || be instanceof InserterBlockEntity
         || be instanceof BeltBlockEntity
@@ -33,6 +34,8 @@ public final class CircuitAccess {
     if (be instanceof CasingBlockEntity part)
       be = part.genericForRemoval() == null ? null : part.genericForRemoval().factoryEntity();
     else if (be instanceof TransportPartBlockEntity part) be = part.owner();
+    if (be instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      return root.circuit(create);
     return supported(be) ? ((FactoryBlockEntity) be).circuit(create) : null;
   }
 
@@ -41,6 +44,11 @@ public final class CircuitAccess {
         level instanceof net.minecraft.server.level.ServerLevel
             ? factorycraft.fluids.FluidConnections.at(level, physical)
             : level.hasChunkAt(physical) ? level.getBlockEntity(physical) : null;
+    if (be == null
+        && level.hasChunkAt(physical)
+        && level.getBlockState(physical).getBlock()
+            instanceof factorycraft.rail.automation.TracksideBlock)
+      be = factorycraft.rail.automation.TracksideBlock.owner(level, physical);
     if (be == null) return null;
     var own = own(be, true);
     return own != null

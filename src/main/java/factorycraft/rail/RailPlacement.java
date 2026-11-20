@@ -66,6 +66,7 @@ public final class RailPlacement {
     }
     var snapshots = new ArrayList<BlockSnapshot>();
     var before = new ArrayList<Before>();
+    var staged = new ArrayList<Before>();
     boolean committed = false;
     int oldWriting = data.writing;
     // This item owns an all-voxel transaction. Do not let the generic ItemStack
@@ -95,7 +96,14 @@ public final class RailPlacement {
                     ? List.of()
                     : net.minecraft.world.level.block.Block.getDrops(
                         state, level, p, be, player, new ItemStack(RailContent.RAIL.get()))));
-        if (!level.setBlock(p, RailContent.BED.get().defaultBlockState(), 18)) return "blocked";
+      }
+      // Snapshot all loot before changing any neighbor. Immutable footprint-map iteration is
+      // salted per JVM; an upper plant half may otherwise disappear before lower-half loot.
+      for (var old : before) {
+        if (!level.getBlockState(old.p).equals(old.state) || level.getBlockEntity(old.p) != null)
+          return "blocked";
+        staged.add(old);
+        if (!level.setBlock(old.p, RailContent.BED.get().defaultBlockState(), 18)) return "blocked";
       }
       if (EventHooks.onMultiBlockPlace(player, snapshots, Direction.UP)) return "permission";
       reason = plan.inspect(level, player);
@@ -152,8 +160,8 @@ public final class RailPlacement {
         boolean restoring = level.restoringBlockSnapshots;
         level.restoringBlockSnapshots = true;
         try {
-          for (int i = before.size() - 1; i >= 0; i--) {
-            var b = before.get(i);
+          for (int i = staged.size() - 1; i >= 0; i--) {
+            var b = staged.get(i);
             level.setBlock(b.p, b.state, 18);
             if (b.tag != null && level.getBlockEntity(b.p) != null)
               level.getBlockEntity(b.p).loadWithComponents(b.tag, level.registryAccess());

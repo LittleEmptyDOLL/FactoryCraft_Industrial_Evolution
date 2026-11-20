@@ -48,6 +48,18 @@ public final class TrainSimulation {
             && driver.getVehicle() instanceof StockEntity s
             && s.trainId().equals(t.id)
             && l.getGameTime() - t.lastInput <= 20;
+    boolean automatic = t.automation.automatic;
+    if (automatic) {
+      if (!TrainAutomation.prepare(d, t)) {
+        if (t.automation.phase == AutoTrainState.Phase.UNLOADED) {
+          for (var car : t.cars)
+            if (l.getEntity(car.id) instanceof StockEntity view) view.pauseVisual();
+        } else TrainWorld.views(d, t);
+        d.setDirty();
+        return;
+      }
+      controlled = true;
+    }
     if (!controlled) {
       t.desired = 0;
       t.brake = true;
@@ -93,6 +105,7 @@ public final class TrainSimulation {
     if (throttle && pay.isEmpty()) {
       throttle = false;
       t.status = TrainData.Status.NO_FUEL;
+      if (automatic) t.automation.phase = AutoTrainState.Phase.NO_FUEL;
     }
     var p =
         new TrainMotion.Parameters(
@@ -107,11 +120,22 @@ public final class TrainSimulation {
     double stopping = TrainMotion.stoppingDistance(t.speed, weight, braking) + 4;
     int ahead = 0;
     double leading = t.direction > 0 ? t.front() : t.rear();
-    while ((t.direction > 0 ? t.path.max() - leading : leading - t.path.min()) < stopping
+    while (!automatic
+        && (t.direction > 0 ? t.path.max() - leading : leading - t.path.min()) < stopping
         && ahead++ < 128) if (!t.path.extend(rails.graph, t.direction > 0, t.branch)) break;
     double free = t.direction > 0 ? t.path.max() - t.front() : t.rear() - t.path.min();
     free = d.occupancy.freeDistance(t.id, t.path, t.rear(), t.front(), t.direction, free);
-    if (free <= stopping) {
+    if (automatic)
+      free =
+          Math.min(free, TrainAutomation.freeDistance(d, t, stopping + Math.max(16, t.speed * 6)));
+    boolean mustBrake =
+        automatic
+            ? TrainMotion.tick(t.speed, p, throttle, false).distance()
+                    + TrainMotion.brakeDistance(
+                        TrainMotion.tick(t.speed, p, throttle, false).speed(), p)
+                > free - 1e-7
+            : free <= stopping;
+    if (mustBrake) {
       brake = true;
       throttle = false;
       pay.clear();
@@ -124,7 +148,7 @@ public final class TrainSimulation {
     int extension = 0;
     while ((min < t.path.min() || max > t.path.max()) && extension++ < 128) {
       boolean front = max > t.path.max();
-      if (!t.path.extend(rails.graph, front, t.branch)) {
+      if (automatic || !t.path.extend(rails.graph, front, t.branch)) {
         t.speed = 0;
         t.status = TrainData.Status.END_OF_TRACK;
         d.setDirty();
@@ -243,13 +267,15 @@ public final class TrainSimulation {
     if (t.speed > 0) t.status = brake ? TrainData.Status.BRAKING : TrainData.Status.DRIVING;
     else if (t.status != TrainData.Status.NO_FUEL && t.status != TrainData.Status.DESTROYED)
       t.status = TrainData.Status.STOPPED;
-    t.path.trim(t.rear(), t.front());
+    if (automatic) t.path.trimBehind(t.rear(), t.front(), t.direction);
+    else t.path.trim(t.rear(), t.front());
     d.occupancy.reserve(t.id, TrackOccupancy.span(t.path, t.rear(), t.front()));
     d.index(t);
     d.setDirty();
     TrainWorld.views(d, t);
     if (t.speed == 0 && wasMoving) TrainPorts.wakePumps(d, t);
-    if (t.speed == 0
+    if (!automatic
+        && t.speed == 0
         && t.desired == 0
         && t.cars.stream().allMatch(c -> l.getEntity(c.id) instanceof StockEntity))
       d.active.remove(t.id);

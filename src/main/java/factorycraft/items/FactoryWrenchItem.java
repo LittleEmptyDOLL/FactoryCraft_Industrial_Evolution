@@ -8,13 +8,34 @@ import net.minecraft.world.item.context.UseOnContext;
 
 /** Item-first handling keeps sneak-wrench usable even when the player's offhand is occupied. */
 public final class FactoryWrenchItem extends Item {
-    public FactoryWrenchItem(Properties properties) { super(properties); }
-    @Override public InteractionResult onItemUseFirst(ItemStack stack,UseOnContext context) {
-        if(context.getHand()!=InteractionHand.MAIN_HAND || context.getPlayer()==null)return InteractionResult.PASS;
-        var state=context.getLevel().getBlockState(context.getClickedPos());
-        if(state.getBlock() instanceof factorycraft.rail.RailBlock)return factorycraft.rail.RailEvents.wrench(context);
-        if(state.getBlock() instanceof factorycraft.blocks.ThermalBlock thermal)return thermal.useWrench(context.getLevel(),context.getClickedPos(),context.getPlayer());
-        if(state.getBlock() instanceof factorycraft.blocks.FluidDeviceBlock fluid)return fluid.useWrench(context.getLevel(),context.getClickedPos(),context.getPlayer());
-        return state.getBlock() instanceof FactoryBlock block ? block.useWrench(context.getLevel(),context.getClickedPos(),context.getPlayer()):InteractionResult.PASS;
+  public FactoryWrenchItem(Properties properties) {
+    super(properties);
+  }
+
+  @Override
+  public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+    if (context.getHand() != InteractionHand.MAIN_HAND || context.getPlayer() == null)
+      return InteractionResult.PASS;
+    var state = context.getLevel().getBlockState(context.getClickedPos());
+    if (state.getBlock() instanceof factorycraft.rail.automation.TracksideBlock) {
+      if (context.getPlayer() instanceof net.minecraft.server.level.ServerPlayer player) {
+        var result =
+            factorycraft.rail.automation.TracksidePlacement.remove(player, context.getClickedPos());
+        if (!result.equals("ready"))
+          player.displayClientMessage(
+              net.minecraft.network.chat.Component.translatable("rail.factorycraft." + result),
+              true);
+      }
+      return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
     }
+    if (state.getBlock() instanceof factorycraft.rail.RailBlock)
+      return factorycraft.rail.RailEvents.wrench(context);
+    if (state.getBlock() instanceof factorycraft.blocks.ThermalBlock thermal)
+      return thermal.useWrench(context.getLevel(), context.getClickedPos(), context.getPlayer());
+    if (state.getBlock() instanceof factorycraft.blocks.FluidDeviceBlock fluid)
+      return fluid.useWrench(context.getLevel(), context.getClickedPos(), context.getPlayer());
+    return state.getBlock() instanceof FactoryBlock block
+        ? block.useWrench(context.getLevel(), context.getClickedPos(), context.getPlayer())
+        : InteractionResult.PASS;
+  }
 }

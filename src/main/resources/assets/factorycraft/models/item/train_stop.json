@@ -1,0 +1,140 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "factorycraft:block/rail_steel",
+    "steel": "factorycraft:block/rail_steel",
+    "dark": "factorycraft:block/rail_dark",
+    "lamp": "factorycraft:block/rail_signal_green",
+    "sign": "factorycraft:block/rail_sign"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel"
+        },
+        "down": {
+          "texture": "#steel"
+        },
+        "north": {
+          "texture": "#steel"
+        },
+        "south": {
+          "texture": "#steel"
+        },
+        "east": {
+          "texture": "#steel"
+        },
+        "west": {
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        2,
+        7
+      ],
+      "to": [
+        9,
+        12,
+        9
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel"
+        },
+        "down": {
+          "texture": "#steel"
+        },
+        "north": {
+          "texture": "#steel"
+        },
+        "south": {
+          "texture": "#steel"
+        },
+        "east": {
+          "texture": "#steel"
+        },
+        "west": {
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        9,
+        5
+      ],
+      "to": [
+        13,
+        16,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#sign"
+        },
+        "down": {
+          "texture": "#sign"
+        },
+        "north": {
+          "texture": "#sign"
+        },
+        "south": {
+          "texture": "#sign"
+        },
+        "east": {
+          "texture": "#sign"
+        },
+        "west": {
+          "texture": "#sign"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        10,
+        4.8
+      ],
+      "to": [
+        11,
+        15,
+        5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#lamp"
+        },
+        "down": {
+          "texture": "#lamp"
+        },
+        "north": {
+          "texture": "#lamp"
+        },
+        "south": {
+          "texture": "#lamp"
+        },
+        "east": {
+          "texture": "#lamp"
+        },
+        "west": {
+          "texture": "#lamp"
+        }
+      }
+    }
+  ]
+}

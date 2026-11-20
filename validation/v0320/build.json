@@ -1,0 +1,22 @@
+{
+  "base_commit": "69a2a6d19c4305ff3efb5f1bddf9f69360131a20",
+  "version": "0.32.0",
+  "scope": "Issue15 basic automation checkpoint; not full GateC completion",
+  "junit": 343,
+  "failures": 0,
+  "skipped": 0,
+  "jar_sha256": "56a2f569b6e9e147b9cda349a8e253d58e177e5dcbf1014ef8282f1cc976dbef",
+  "native_release": 577,
+  "native_release_runtime": [
+    "NeoForge21.1.252",
+    "FTBTeams2101.1.12",
+    "FTBLibrary2101.1.37",
+    "Architectury13.0.8",
+    "EMI1.1.24",
+    "JEI19.21.1.248",
+    "Jade15.10.6",
+    "ApothicAttributes2.11.0",
+    "Placebo9.9.4"
+  ],
+  "post_native_difference": "Final diagnostic-only duplicate-forceload dirty-flag guard built/JUnit checked; gameplay/renderer code unchanged."
+}

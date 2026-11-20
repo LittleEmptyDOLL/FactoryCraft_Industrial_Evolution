@@ -101,11 +101,25 @@ public final class RailwayData extends SavedData {
     return ids;
   }
 
+  /** Cached nine-chunk neighborhood, never a global graph scan or chunk load. */
+  public List<Segment> nearby(BlockPos p) {
+    var ids = new LinkedHashSet<UUID>();
+    int x = p.getX() >> 4, z = p.getZ() >> 4;
+    for (int dx = -1; dx <= 1; dx++)
+      for (int dz = -1; dz <= 1; dz++)
+        ids.addAll(
+            chunks.getOrDefault(
+                net.minecraft.world.level.ChunkPos.asLong(x + dx, z + dz), new LinkedHashSet<>()));
+    return ids.stream().map(segments::get).filter(java.util.Objects::nonNull).toList();
+  }
+
   public void add(Segment segment) {
     if (segments.containsKey(segment.id))
       throw new IllegalArgumentException("Duplicate saved railway");
     segments.put(segment.id, segment);
     graph.add(new RailGraph.Edge(segment.id, segment.curve));
+    if (level != null && factorycraft.trains.RailAutomationData.peek(level) != null)
+      factorycraft.trains.RailAutomationData.peek(level).trackChanged(segment.id);
     for (var c : segment.footprint.bed.keySet())
       cells.computeIfAbsent(pos(c), k -> new LinkedHashSet<>()).add(segment.id);
     for (long c : segment.footprint.chunks())
@@ -186,6 +200,8 @@ public final class RailwayData extends SavedData {
     if (s == null) return List.of();
     factorycraft.trains.TrainData.get(level).trackRemoved(id);
     graph.remove(id);
+    if (factorycraft.trains.RailAutomationData.peek(level) != null)
+      factorycraft.trains.RailAutomationData.peek(level).trackChanged(id);
     RailPlanner.removed(level, id);
     setDirty();
     for (var c : s.footprint.bed.keySet()) {

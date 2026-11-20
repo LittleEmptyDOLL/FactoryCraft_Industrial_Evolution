@@ -1,0 +1,145 @@
+package factorycraft.trains;
+
+import factorycraft.simulation.rail.*;
+import java.util.*;
+import net.minecraft.nbt.*;
+
+/** Configuration/runtime metadata only, attached to the sole TrainData resource owner. */
+public final class AutoTrainState {
+  public enum Phase {
+    MANUAL,
+    DISPATCHING,
+    DRIVING,
+    SIGNAL_WAIT,
+    STATION_WAIT,
+    NO_PATH,
+    DESTINATION_FULL,
+    NO_FUEL,
+    UNLOADED,
+    ROUTE_LIMIT,
+    INVALID_CONFIG
+  }
+
+  public boolean automatic, routed, arrived;
+  public RailSchedule schedule = RailSchedule.EMPTY;
+  public String group = "";
+  public int entry, stationTicks, idleTicks, temporaryEntry, returnEntry;
+  public UUID destination, activeInterrupt;
+  public int number;
+  public Set<UUID> reserved = Set.of();
+  public RailInterrupt.Match binding;
+  public double targetHead, reservationEnd;
+  public Phase phase = Phase.MANUAL;
+  public long lastCargo = Long.MIN_VALUE, checkedGraph = -1, checkedRules = -1, retryAt;
+  public RailPathSearch searching;
+  public TrainRouteJob routeJob;
+  public int searchingDirection;
+  public CompoundTag invalid;
+
+  public boolean empty() {
+    return number == 0
+        && reserved.isEmpty()
+        && !routed
+        && !arrived
+        && !automatic
+        && schedule.equals(RailSchedule.EMPTY)
+        && group.isEmpty()
+        && entry == 0
+        && destination == null
+        && activeInterrupt == null
+        && invalid == null;
+  }
+
+  public CompoundTag save() {
+    if (invalid != null) return invalid.copy();
+    var n = new CompoundTag();
+    n.putInt("Schema", 1);
+    n.putBoolean("Automatic", automatic);
+    n.put("Schedule", RailScheduleCodec.save(schedule));
+    if (!group.isEmpty()) n.putString("Group", group);
+    if (number != 0) n.putInt("Number", number);
+    if (!reserved.isEmpty()) {
+      var claims = new ListTag();
+      for (var id : new TreeSet<>(reserved)) {
+        var claim = new CompoundTag();
+        claim.putUUID("Block", id);
+        claims.add(claim);
+      }
+      n.put("Reserved", claims);
+    }
+    n.putInt("Entry", entry);
+    n.putBoolean("Routed", routed);
+    n.putBoolean("Arrived", arrived);
+    n.putDouble("ReservationEnd", reservationEnd);
+    n.putDouble("TargetHead", targetHead);
+    n.putInt("StationTicks", stationTicks);
+    n.putInt("IdleTicks", idleTicks);
+    if (destination != null) n.putUUID("Destination", destination);
+    if (activeInterrupt != null) {
+      n.putUUID("ActiveInterrupt", activeInterrupt);
+      n.putInt("TemporaryEntry", temporaryEntry);
+      n.putInt("ReturnEntry", returnEntry);
+      if (binding != null) {
+        n.putString("WildcardType", binding.type().name());
+        n.putString("WildcardId", binding.id());
+      }
+    }
+    n.putString("Phase", phase.name());
+    return n;
+  }
+
+  public static AutoTrainState load(CompoundTag n) {
+    var state = new AutoTrainState();
+    try {
+      if (n.getInt("Schema") != 1) throw new IllegalArgumentException("Automatic train schema");
+      state.automatic = n.getBoolean("Automatic");
+      state.schedule = RailScheduleCodec.load(n.getCompound("Schedule"));
+      state.group = n.getString("Group");
+      state.entry = n.getInt("Entry");
+      state.number = n.getInt("Number");
+      var claims = n.getList("Reserved", Tag.TAG_COMPOUND);
+      if (claims.size() > 4096) throw new IllegalArgumentException("Block claims");
+      var ids = new HashSet<UUID>();
+      for (var raw : claims)
+        if (!ids.add(((CompoundTag) raw).getUUID("Block")))
+          throw new IllegalArgumentException("Duplicate block claim");
+      state.reserved = Set.copyOf(ids);
+      state.routed = n.getBoolean("Routed");
+      state.arrived = n.getBoolean("Arrived");
+      state.reservationEnd = n.getDouble("ReservationEnd");
+      state.targetHead = n.getDouble("TargetHead");
+      state.stationTicks = n.getInt("StationTicks");
+      state.idleTicks = n.getInt("IdleTicks");
+      if (n.hasUUID("Destination")) state.destination = n.getUUID("Destination");
+      if (n.hasUUID("ActiveInterrupt")) {
+        state.activeInterrupt = n.getUUID("ActiveInterrupt");
+        state.temporaryEntry = n.getInt("TemporaryEntry");
+        state.returnEntry = n.getInt("ReturnEntry");
+        if (n.contains("WildcardType"))
+          state.binding =
+              new RailInterrupt.Match(
+                  RailInterrupt.Type.valueOf(n.getString("WildcardType")),
+                  n.getString("WildcardId"));
+      }
+      state.phase = Phase.valueOf(n.getString("Phase"));
+      if (state.number < 0
+          || state.group.length() > 128
+          || state.entry < 0
+          || state.entry >= 64
+          || state.stationTicks < 0
+          || state.idleTicks < 0
+          || !Double.isFinite(state.targetHead + state.reservationEnd)
+          || state.temporaryEntry < 0
+          || state.temporaryEntry >= 16
+          || state.returnEntry < 0
+          || state.returnEntry >= 64
+          || state.routed && state.destination == null)
+        throw new IllegalArgumentException("Automatic runtime bounds");
+    } catch (RuntimeException malformed) {
+      state = new AutoTrainState();
+      state.invalid = n.copy();
+      state.phase = Phase.INVALID_CONFIG;
+    }
+    return state;
+  }
+}

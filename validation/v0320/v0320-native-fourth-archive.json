@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-native-fourth",
+  "archive": "/workspace/work/v0320-native-fourth-checkpoint.tar.xz",
+  "sha256": "7d01d3689da7481eba2b3bcd946965ca0903690183206d73f3001ba56abb2bf0",
+  "bytes": 25896796,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "PASS:575 native fresh plus576 in independent JVM; exact canonical automatic service and all previous owners retained"
+}

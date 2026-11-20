@@ -118,7 +118,15 @@ public final class StockEntity extends Entity {
     entityData.set(KIND, kind.ordinal());
   }
 
+  private static final EntityDataAccessor<Boolean> AUTOMATIC =
+      SynchedEntityData.defineId(StockEntity.class, EntityDataSerializers.BOOLEAN);
+
+  public boolean automatic() {
+    return entityData.get(AUTOMATIC);
+  }
+
   protected void defineSynchedData(SynchedEntityData.Builder b) {
+    b.define(AUTOMATIC, false);
     b.define(KIND, 0);
     b.define(COLOR, 0xb45c27);
     b.define(TRAIN, Optional.empty());
@@ -185,6 +193,10 @@ public final class StockEntity extends Entity {
   }
 
   public void authoritative(BogiePose pose, TrainCar car, double distance, double speed) {
+    if (level() instanceof net.minecraft.server.level.ServerLevel l) {
+      var owner = TrainData.get(l).owner(car.id);
+      entityData.set(AUTOMATIC, owner != null && owner.automation.automatic);
+    }
     var p = pose.center();
     serverHull = StockEnvelope.of(pose, car.kind);
     hullOrigin = TrainWorld.vec(p);

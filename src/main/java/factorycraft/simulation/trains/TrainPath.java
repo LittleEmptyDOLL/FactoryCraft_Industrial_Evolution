@@ -52,14 +52,19 @@ public final class TrainPath {
   }
 
   public Leg at(double coordinate) {
-    if (!contains(coordinate)) return null;
+    int index = indexAt(coordinate);
+    return index < 0 ? null : legs.get(index);
+  }
+
+  public int indexAt(double coordinate) {
+    if (!contains(coordinate)) return -1;
     int lo = 0, hi = legs.size() - 1;
     while (lo < hi) {
       int mid = (lo + hi) / 2;
       if (coordinate > legs.get(mid).end() + 1e-9) lo = mid + 1;
       else hi = mid;
     }
-    return legs.get(lo);
+    return lo;
   }
 
   public RailCurve.Frame sample(RailGraph graph, double coordinate) {
@@ -140,6 +145,13 @@ public final class TrainPath {
     if (direction > 0)
       while (legs.size() > 1 && legs.getLast().begin() > front + 1e-7) legs.removeLast();
     else while (legs.size() > 1 && legs.getFirst().end() < rear - 1e-7) legs.removeFirst();
+  }
+
+  /** Automatic lookahead is chosen by the pathfinder, never truncated/reselected under bogies. */
+  public void trimBehind(double rear, double front, int direction) {
+    if (direction > 0)
+      while (legs.size() > 1 && legs.getFirst().end() < rear - 8) legs.removeFirst();
+    else while (legs.size() > 1 && legs.getLast().begin() > front + 8) legs.removeLast();
   }
 
   /** Drop only historical legs behind all bodies and ahead of neither reservation. */

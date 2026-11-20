@@ -50,6 +50,10 @@ public final class TrainNetwork {
         || !TrainWorld.mayUse(t, p)
         || p.serverLevel().getEntity(entity.getUUID()) != entity
         || t.provisional) return false;
+    if (t.automation.automatic) {
+      if (throttle == 0 && !brake && branch == 0) return true;
+      TrainAutomation.manual(d, t);
+    }
     t.driver = p.getUUID();
     t.lastInput = p.serverLevel().getGameTime();
     t.desired = throttle * (car.reversed ? -1 : 1);

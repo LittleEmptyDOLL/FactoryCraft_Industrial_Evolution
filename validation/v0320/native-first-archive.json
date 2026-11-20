@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-native-first",
+  "archive": "/workspace/work/v0320-native-first-failed.tar.xz",
+  "sha256": "2973ef89bd8b95c8d8f3e8b156ce26468d869d68f1c47e746f6ff9e308b64074",
+  "bytes": 13997972,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "570/573; solar baseline fixture and two new automation fixture failures retained"
+}

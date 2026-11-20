@@ -1,3 +1,15 @@
+# 0.32.0 — issue15 basic automation checkpoint (full milestone incomplete)
+
+Implemented source devices/research/recipes; protected multipart placement and one-return demolition; fractional UUID edge points and paired cuts; bounded regions/claims/pathfinder adapted from pinned MIT Create; native automatic intent using existing physics/fuel/ports; named station slots/priorities; explicit waits and guarded EN/RU editors; four-color contacts and diagnostic/client fixture. Existing schema1 resources/default tags stay exact.
+
+Verified:343JUnit;575fresh base native,576in an independent JVM and final577optional native, including exact automatic service/stop commitment and recovery fairness. The finite two-ended three-car service unloads7iron through a real burner arm and returns; four autonomous16-car consists preserve88items/93828mB and fuel. Protected callbacks, duplicate-cut refusal, real EN/RU two-client controls/preview and a separate dedicated restart ledger also pass; see validation/v0320 for receipts, all failures and archives. Do not certify unexecuted cases.
+
+Finish this checkpoint: review final documentation/evidence and publish normally to main, preserving remote work. Do not close issue15 as complete.
+
+Next authorized work stays **in issue15**: complete source route penalties, native blue-chain/junction/opposing/high-speed/long-consist acceptance, pass-through and temporary routes, component-aware condition UX, origin-priority dispatch, scoped versioned shared groups, shared named interrupts/refuel/no-path/full detours and typed wildcard bindings/return, then comprehensive native/JVM/client validation. Existing definition codecs are not runtime features. No0.33.
+
+---
+
 # 0.31.3 — updated issue14, impacts and bidirectional planning
 
 Implement the new sections6–7 from the19November17:52UTC issue14 revision, based on529feef. Scope is lethal mob momentum, callback-safe paid residual motion and one shared physical-endpoint connection resolver. No0.32, recipes/progression, new rolling stock or rail types.

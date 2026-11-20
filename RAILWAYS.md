@@ -1,3 +1,15 @@
+# 0.32.0 — physical trackside devices
+
+Rail signal and chain signal use original1×1×2models; train stop is one automatically formed2×2×3structure. Native source recipes/Automated Rail Transportation use Factorio2.1.24 costs: signal or chain1circuit+5iron plates; stop5circuits+6iron plates+6iron sticks+3steel; research200red/green×30s, prerequisite Railway. Physical metadata records source health100/100/250; a general damageable-machine health layer is not added by this checkpoint.
+
+Place on a solid foundation beside the **right side in the intended travel direction**. The common loaded-neighborhood plan binds to an existing UUID edge and1/8-block metric point. A second signal on the opposite side at the same point provides the other direction; it is not a second cut and never renumbers the rail or its paid material owner. Invalid sides, obstructed volume, unavailable chunks and protection failures reject atomically. A valid block/reach target is required for the cached placement outline/arrow; MISS/air clears it. Existing rail-builder controls are unchanged.
+
+Any physical part opens the guarded device menu. Signals expose aspect/circuit controls, while stops expose name/color/enabled/limit/priority and circuitry. Removal through a part returns at most one configured device. Occupied/reserved cuts cannot be removed unsafely; detached orphan devices can be removed after rail owners are recovered. Source health values do not imply a newly implemented general block-combat API. Original station sign tint uses the saved public color; no Factorio/Create art is distributed.
+
+No diamond, virtual junction, new rail template or routing around unloaded chunks is invented. A signal whose two sides belong to the same unsignaled region is invalid. Full branch-blue, long junction and high-speed client acceptance still belong to issue15's remaining matrix.
+
+---
+
 # 0.31.3 — bidirectional physical-source connections
 
 Select any physical part of an existing saved segment. Selection keeps that edge's identity, the nearer real outward endpoint and the other real outward endpoint. Hovering across the source can automatically choose the lawful opposite end; the player's standing side never defines the rail's growth direction. Source picking compares local curved geometry and gaze axis with stable UUID ties. At ambiguous junctions, aiming at the intended branch selects its physical axis; the current preview marks the resolved source/end. This is a two-endpoint saved-edge planner, not an invented mid-edge junction editor.

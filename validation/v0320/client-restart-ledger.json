@@ -1,0 +1,22 @@
+{
+  "trains": 2,
+  "cars": 6,
+  "cargo_items": 62,
+  "coal_buffer_plus_spent_j": 512000000,
+  "spent_j": 332100000,
+  "paid_restart_delta_j": 114660000,
+  "driverless_movement_after_restart": true,
+  "schedules_and_scopes_exact": true,
+  "trackside_devices": 12,
+  "paid_rails_exact": true,
+  "before_sha256": {
+    "factorycraft_trains": "ec6c286bb85f9af867246264de9a2359ec506624e7401fa02a68f6ba4b46a6d7",
+    "factorycraft_rail_automation": "1e758289e04e4f32297602490ec18e1a52fc08b564888f9aa3c902316900f72e",
+    "factorycraft_railways": "08766b139728ef777cbfaa79a028a31c6ef97836900184e12284a96b3e6eca84"
+  },
+  "after_sha256": {
+    "factorycraft_trains": "4fcf032fe38ddcc66f3aa3d94f10f58ff22b1073458b7346bf1153f2116c1c39",
+    "factorycraft_rail_automation": "1e758289e04e4f32297602490ec18e1a52fc08b564888f9aa3c902316900f72e",
+    "factorycraft_railways": "08766b139728ef777cbfaa79a028a31c6ef97836900184e12284a96b3e6eca84"
+  }
+}

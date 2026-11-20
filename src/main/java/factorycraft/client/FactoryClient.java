@@ -12,6 +12,26 @@ import net.neoforged.neoforge.client.event.*;
 @EventBusSubscriber(modid = FactoryCraft.ID, value = Dist.CLIENT)
 public final class FactoryClient {
   @SubscribeEvent
+  public static void railColors(RegisterColorHandlersEvent.Block event) {
+    event.register(
+        (state, level, pos, tint) -> {
+          if (level == null
+              || pos == null
+              || tint != 0
+              || net.minecraft.client.Minecraft.getInstance().level == null) return 0xffffff;
+          var root =
+              factorycraft.rail.automation.TracksideBlock.owner(
+                  net.minecraft.client.Minecraft.getInstance().level, pos);
+          return root == null || !root.visual.contains("Color")
+              ? 0xffffff
+              : root.visual.getInt("Color");
+        },
+        factorycraft.rail.automation.TracksideContent.BLOCKS
+            .get(factorycraft.rail.automation.TracksideKind.STOP)
+            .get());
+  }
+
+  @SubscribeEvent
   public static void recipeReload(RecipesUpdatedEvent event) {
     factorycraft.recipes.RecipeSelectionNetwork.generation++;
   }
@@ -53,6 +73,9 @@ public final class FactoryClient {
 
   @SubscribeEvent
   public static void menus(RegisterMenuScreensEvent e) {
+    e.register(
+        factorycraft.rail.automation.TracksideContent.MENU.get(),
+        factorycraft.client.trains.RailAutomationScreen::new);
     factorycraft.circuits.CircuitNetwork.clientReceiver = CircuitVisuals::receive;
     e.register(
         factorycraft.trains.TrainContent.MENU.get(), factorycraft.client.trains.TrainScreen::new);

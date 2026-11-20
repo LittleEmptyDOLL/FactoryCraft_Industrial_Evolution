@@ -53,7 +53,9 @@ public final class LogicMenu extends AbstractContainerMenu {
   }
 
   public boolean allowed(Player player) {
-    return !player.isSpectator()
+    return (!(owner.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+            || root.mayUse(player))
+        && !player.isSpectator()
         && player.getAbilities().mayBuild
         && (!(owner.owner() instanceof factorycraft.blockentity.LabBlockEntity lab)
             || factorycraft.research.ResearchTeams.member(player, lab.scope()))
@@ -122,6 +124,8 @@ public final class LogicMenu extends AbstractContainerMenu {
         || !player.canInteractWithBlock(hit, 0)
         || !player.level().mayInteract(player, hit)
         || !player.level().mayInteract(player, owner.pos())) return false;
+    if (owner.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root
+        && !root.mayUse(player)) return false;
     owner.configured = true;
     CircuitSimulation.add(owner);
     player.openMenu(

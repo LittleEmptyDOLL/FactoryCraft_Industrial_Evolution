@@ -40,7 +40,8 @@ public final class CircuitDevices {
   }
 
   public static boolean gateable(BlockEntity be) {
-    return be instanceof InserterBlockEntity
+    return be instanceof factorycraft.rail.automation.TracksideBlockEntity
+        || be instanceof InserterBlockEntity
         || be instanceof BeltBlockEntity
         || be instanceof MachineBlockEntity
         || be instanceof ThermalBlockEntity
@@ -53,6 +54,8 @@ public final class CircuitDevices {
   }
 
   public static boolean readable(BlockEntity be) {
+    if (be instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      return root.kind() == factorycraft.rail.automation.TracksideKind.STOP;
     return !(be instanceof PoleBlockEntity) && !(be instanceof CircuitNodeBlockEntity);
   }
 
@@ -142,6 +145,8 @@ public final class CircuitDevices {
 
   public static Reading read(CircuitAttachment n) {
     if (!n.available()) return new Reading(false, SignalSet.EMPTY);
+    if (n.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      return factorycraft.trains.RailCircuitAdapter.read(root, n);
     var out = new SignalSet.Builder().addAll(stateSignals(n));
     var be = n.owner();
     var settings = n.settings();
@@ -285,6 +290,8 @@ public final class CircuitDevices {
   }
 
   public static void controlChanged(CircuitAttachment n) {
+    if (n.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      factorycraft.trains.RailCircuitAdapter.changed(root);
     if (n.owner() instanceof BeltBlockEntity belt && belt.loaded()) belt.refreshCircuitControl();
     if (n.owner() instanceof FluidBlockEntity pump && pump.kind() == FluidKind.PUMP)
       FluidSimulation.activatePump(pump);
@@ -294,6 +301,8 @@ public final class CircuitDevices {
   public static void apply(CircuitAttachment n) {
     if (!n.available() || !n.inputReady) return;
     var settings = n.settings();
+    if (n.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root)
+      factorycraft.trains.RailCircuitAdapter.changed(root);
     if (n.owner() instanceof InserterBlockEntity arm) {
       if (settings.filters()) {
         var selected =

@@ -42,6 +42,7 @@ public final class TrainData extends SavedData {
     long checkedTick = Long.MIN_VALUE, checkedEpoch = -1;
     boolean checkedAvailable;
     public Status status = Status.STOPPED;
+    public AutoTrainState automation = new AutoTrainState();
 
     public Train(UUID id, UUID owner, String scope, TrainPath path, double head) {
       this.id = id;
@@ -127,6 +128,7 @@ public final class TrainData extends SavedData {
   }
 
   ServerLevel level;
+  private boolean automationChecked;
   public long ticks,
       worldReads,
       snapshots,
@@ -192,11 +194,13 @@ public final class TrainData extends SavedData {
   /** Retires membership before any caller drops items or reassigns existing car objects. */
   void retire(Train t) {
     if (trains.get(t.id) != t) throw new IllegalStateException("Stale train retirement");
+    if (t.automation.automatic) TrainAutomation.manual(this, t);
     trains.remove(t.id);
     for (var c : t.cars) byCar.remove(c.id, t);
     occupancy.release(t.id);
     spatial.release(t.id);
     active.remove(t.id);
+    if (RailAutomationData.peek(level) != null) RailAutomationData.peek(level).trainRemoved(t.id);
     unindex(t.id);
     setDirty();
   }
@@ -230,6 +234,7 @@ public final class TrainData extends SavedData {
               net.minecraft.world.level.ChunkPos.asLong(
                   (int) Math.floor(point.x()) >> 4, (int) Math.floor(point.z()) >> 4));
       }
+    if (RailAutomationData.peek(level) != null) RailAutomationData.peek(level).trainChanged(t);
     trainChunks.put(t.id, keys);
     for (long key : keys) byChunk.computeIfAbsent(key, k -> new HashSet<>()).add(t.id);
   }
@@ -280,6 +285,13 @@ public final class TrainData extends SavedData {
     ensureIndex();
     if (!level.tickRateManager().runsNormally()) return;
     flushWrecks();
+    var automation = RailAutomationData.peek(level);
+    if (!automationChecked) {
+      automationChecked = true;
+      if (automation == null && trains.values().stream().anyMatch(t -> t.automation.automatic))
+        automation = RailAutomationData.get(level);
+    }
+    if (automation != null) automation.tick(this);
     int checks = 0;
     for (var it = pendingChunks.iterator(); it.hasNext() && checks++ < 64; ) {
       long key = it.next();
@@ -330,6 +342,8 @@ public final class TrainData extends SavedData {
       t.speed = tag.getDouble("Speed");
       t.distance = tag.getDouble("Distance");
       t.direction = tag.getInt("Direction");
+      if (tag.contains("Automation"))
+        t.automation = AutoTrainState.load(tag.getCompound("Automation"));
       if (!Double.isFinite(t.head + t.speed + t.distance)
           || t.speed < 0
           || t.speed > 1.38
@@ -389,6 +403,7 @@ public final class TrainData extends SavedData {
       tag.putDouble("Speed", t.speed);
       tag.putDouble("Distance", t.distance);
       tag.putInt("Direction", t.direction);
+      if (!t.automation.empty()) tag.put("Automation", t.automation.save());
       var route = new ListTag();
       for (var l : t.path.legs()) {
         var x = new CompoundTag();

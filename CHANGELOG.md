@@ -1,3 +1,14 @@
+# 0.32.0 — Railway automation basic checkpoint (issue15 remains open)
+
+* Add source-cost signals, chain signals and stops, protected one-item structures and original models.
+* Adapt licensed Create ordered-point/flood/search code to the existing resource-owning railway, without a runtime dependency or copied assets.
+* Add fractional logical regions, atomic passage/stop commitments, driverless native paid motion and braking, named explicit-wait schedules and guarded editors.
+* Add four-color trackside circuit controls and canonical train readout; retain all prior mechanics and tests.
+* Preserve exact schema1 owners with additive/default-omitted automation metadata. Fix native flower-drop readiness and paired-cut/orphan-device handling.
+* Full0.32 group/interrupt/pass-through and comprehensive advanced rail acceptance remain unfinished, not advertised as complete.
+
+---
+
 # 0.31.3 — updated issue14: train impacts and source-direction planning
 
 * Lethal weak-mob contacts preserve finite momentum and remaining source-substep travel. Native hurt/death cancellation, blockers, recoil, once-only fuel and callback ownership guards remain authoritative.

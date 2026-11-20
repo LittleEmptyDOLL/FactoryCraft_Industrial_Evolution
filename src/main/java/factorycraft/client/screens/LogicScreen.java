@@ -205,12 +205,21 @@ public final class LogicScreen extends AbstractContainerScreen<LogicMenu> {
             case "Pulse" -> menu.clientState.getBoolean("CanPulse");
             default -> true;
           };
+      String device = menu.clientState.getString("Device");
+      boolean railSignal =
+          device.equals("factorycraft:rail_signal")
+              || device.equals("factorycraft:rail_chain_signal");
+      boolean railDevice = railSignal || device.equals("factorycraft:train_stop");
+      String label =
+          railSignal && field.equals("Gate")
+              ? "ForceRed"
+              : railDevice && field.equals("State") ? "RailState" : field;
       var b =
           button(
               8 + (i / 6) * 159,
               49 + (i % 6) * 23,
               153,
-              tr("option." + field, settings().getBoolean(field) ? "✓" : "−"),
+              tr("option." + label, settings().getBoolean(field) ? "✓" : "−"),
               () -> toggle(settings(), field));
       b.active = available;
     }

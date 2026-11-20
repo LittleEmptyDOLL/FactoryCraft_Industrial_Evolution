@@ -56,6 +56,8 @@ public final class CircuitWireItem extends Item {
           Component.translatable("message.factorycraft.circuit_node_required"), true);
       return InteractionResult.FAIL;
     }
+    if (node.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root
+        && !root.mayUse(player)) return InteractionResult.FAIL;
     int port = node.portAt(ctx.getClickedPos());
     if (port < 0
         || !ctx.getLevel().mayInteract(player, ctx.getClickedPos())
@@ -101,6 +103,9 @@ public final class CircuitWireItem extends Item {
             && ctx.getLevel().mayInteract(player, first.portPosition(from))
             && player.mayUseItemAt(
                 first.portPosition(from), ctx.getClickedFace(), ctx.getItemInHand());
+    if (first != null
+        && first.owner() instanceof factorycraft.rail.automation.TracksideBlockEntity root
+        && !root.mayUse(player)) valid = false;
     boolean ok = valid && CircuitSimulation.connect(first, from, node, port, color);
     player.displayClientMessage(
         Component.translatable(

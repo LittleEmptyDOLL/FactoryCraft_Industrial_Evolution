@@ -1,0 +1,9 @@
+{
+  "archive": "/workspace/work/v0311-evidence/v0313-native-release-archive.tar.xz",
+  "sha256": "204569131a8105308417e382c2dc20f55b7afa4620fba5d146238f84051d8374",
+  "bytes": 14573844,
+  "byte_compared": true,
+  "source_fixture": "v0311-momentum-guards-final",
+  "passed_native": 571,
+  "source_commit": "69a2a6d19c4305ff3efb5f1bddf9f69360131a20"
+}

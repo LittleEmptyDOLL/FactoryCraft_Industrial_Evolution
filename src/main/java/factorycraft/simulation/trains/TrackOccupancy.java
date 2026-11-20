@@ -97,7 +97,11 @@ public final class TrackOccupancy {
       max = t;
     }
     var out = new ArrayList<Interval>();
-    for (var leg : path.legs()) {
+    var legs = path.legs();
+    int first = path.indexAt(min);
+    for (int at = Math.max(0, first); at < legs.size(); at++) {
+      var leg = legs.get(at);
+      if (leg.begin() > max + 1e-8) break;
       double a = Math.max(min, leg.begin()), b = Math.min(max, leg.end());
       if (a >= b - 1e-8) continue;
       // Route coordinates include an accumulated origin. Subtracting it from begin + length

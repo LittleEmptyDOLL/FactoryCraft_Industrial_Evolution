@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-native-third",
+  "archive": "/workspace/work/v0320-native-third-failed.tar.xz",
+  "sha256": "329dcafd2dd0fd481ba0c4c6585bc04fa6f2a92df01447d903872061b5a31325",
+  "bytes": 14364424,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "572/574; chain paired-cut double count and orphan-device removal failures retained; original571 and flower readiness passed"
+}
