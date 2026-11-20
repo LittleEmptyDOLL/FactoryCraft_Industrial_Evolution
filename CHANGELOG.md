@@ -1,3 +1,12 @@
+# 0.31.3 — updated issue14: train impacts and source-direction planning
+
+* Lethal weak-mob contacts preserve finite momentum and remaining source-substep travel. Native hurt/death cancellation, blockers, recoil, once-only fuel and callback ownership guards remain authoritative.
+* Order swept contacts by entry time; bound crowd work and prevent reentrant billing/retirement. Keep0.31.2 exact reversed intervals and canonical NBT.
+* Resolve both actual source endpoints and lawful existing destination tangents in one pure planner shared by client/server/hints. X cycles auto/other/selected; camera axes, saved nodes, protected payment and ordinary reach remain intact. Wrap long EN/RU preview text.
+* New pure/native/restart/profile/client evidence and exact validation limits: validation/v0313. No0.32.
+
+---
+
 # 0.31.2 — reverse fractional-rail interval crash
 
 * Fix the supplied 0.31.1 server `IllegalArgumentException: Track interval`: accumulated route origins can make `(begin + length) - begin` slightly exceed a fractional edge length, producing a negative minimum when the edge is reversed.

@@ -16,12 +16,20 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active hotfix — 0.31.2 / supplied Track interval crash
+## Active hotfix — 0.31.3 / updated issue #14 sections6–7
+
+* Current user asks for the next issue changes; the latest issue is updated#14 (19November17:52UTC), adding momentum-preserving lethal mob contacts and bidirectional Create-style source/end resolution. Implement these corrections only; preserve0.31.2 exact reversed intervals,317JUnit/560native and all finite chains/diagnostic evidence. No0.32 or new train types.
+* Native hurt acceptance and actual death decide continuation, never attempted damage. Keep finite momentum, one fuel settlement, travel-ordered bounded contacts, real walls/stock/protected survivors and callback-safe canonical ownership. A shared pure resolver must use real saved endpoints/tangents, client ghost/hints and server transactions; no invented mid-edge nodes.
+* New `v0311-momentum*`, `network-v0313` and `network-v0313-guards` fixtures only. Preserve before failures and measure bounded crowd work against baseline, exact separate-JVM owners, native safety and real EN/RU client source-direction/impact behavior. Archive closed diagnostics only with byte-verified comparison if disk requires it. Publish checked main normally, report CI once; no unrun checks claimed.
+* Use the real GameTestServer for final native receipts. A regular TestCommand server without a player/full ticking template chunks can leave tests in preparation; Running1tests alone is not success. Arena IDs are fixed per JVM, so do not rerun a resource-owning scenario in the same arena to obtain a pass. Keep the failed manual-stand evidence.
+* Release checkpoint:326JUnit, four full571required native passes with optional mods (final exact-release native run included), prior same-world independent-JVM native owners, final actual EN/RU clients and exact12-car/30-edge release-JVM reload. Keep incomplete/failed manual focused attempts uncertified. See validation/v0313 for immutable artifact hash, resource receipts, all failures and archive manifests. No full Create runtime/audio/old angle matrix or general TPS improvement is claimed; hosted heavy jobs remain CI.
+
+## Previous hotfix — 0.31.2 / supplied Track interval crash
 
 * The user supplied crash UUID53abbe4a-fc30-46a9-9c84-4ba5d256a3e3: TrackOccupancy.Interval → span → TrainSimulation.tick. Reproduce the accumulated-origin/reversed-fractional endpoint failure before asserting its cause. Correct global-to-local interval conversion without weakening strict invalid-interval rejection, claims, collisions, source speeds or fuel ownership. No0.32.
 * Preserve all314JUnit/559native cases and previous evidence. New `v0311-intervalfix` diagnostic world only; verify paid native reversed-curve traversal and exact independent-JVM cargo/fluid/fuel/route owners. Do not reset/reseed a failed world. No renderer/network changes or global performance claims are part of this fix. Publish checked main normally and report hosted CI once.
 
-* Verified checkpoint:317JUnit,560fresh native +560same-world native in an independent JVM, exact paid reverse-boundary train/resource/route state. New logs and both checkpoint records remain in validation/v0311-intervalfix; its live diagnostic world is retained. No new graphical-client/optional/full workload pass is claimed; those hosted jobs remain CI. User's actual save is not attached. No0.32.
+* Verified checkpoint:317JUnit,560fresh native +560same-world native in an independent JVM, exact paid reverse-boundary train/resource/route state. New logs and both checkpoint records remain in validation/v0311-intervalfix; its diagnostic world is retained in the byte-compared lossless archive referenced by validation/v0313/v0312-world-archive.json. No new graphical-client/optional/full workload pass is claimed; those hosted jobs remain CI. User's actual save is not attached. No0.32.
 
 ## Previous milestone — 0.31.1 / issue #14
 

@@ -812,11 +812,11 @@
   "technology.factorycraft.railway": "Railway",
   "key.categories.factorycraft": "FactoryCraft",
   "key.factorycraft.rail_rotate": "Rail: rotate goal tangent",
-  "key.factorycraft.rail_flip": "Rail: reverse starting tangent",
+  "key.factorycraft.rail_flip": "Cycle source end (auto / other / selected)",
   "key.factorycraft.rail_cancel": "Rail: cancel planner",
-  "rail.factorycraft.controls": "Use: starter / select endpoint / connect. Camera: end tangent; R: override; X: reverse start; C/sneak: cancel.",
+  "rail.factorycraft.controls": "Use: starter / select rail / connect. Camera: end axis; R: override; X: source auto / other / selected; C/sneak: cancel.",
   "rail.factorycraft.dimensions": "Centered 2-block bed; 3-wide corridor; radius >=13; grade <=1:4. Endpoints need foundations. Clear 4 blocks above.",
-  "rail.factorycraft.preview": "Rail cost: %s | goal %s | %s",
+  "rail.factorycraft.preview": "Rail cost: %s | goal %s | %s | Source: %4$s",
   "rail.factorycraft.inspect": "Rail %s | %s m | endpoint degree %s/%s | loaded: %s",
   "rail.factorycraft.ready": "Ready (server also checks claims)",
   "rail.factorycraft.selected": "Rail end selected; choose a connection. C: cancel",
@@ -924,5 +924,9 @@
   "train.factorycraft.entity": "Vehicle clearance contains an entity",
   "train.factorycraft.border": "Outside the world border",
   "key.factorycraft.stock_debug": "Trains: collider diagnostics (F8)",
-  "train.factorycraft.debug_legend": "F8: hull green, mesh pink, broadphase blue, planned route amber"
+  "train.factorycraft.debug_legend": "F8: hull green, mesh pink, broadphase blue, planned route amber",
+  "rail.factorycraft.source_0": "Auto (X: other end)",
+  "rail.factorycraft.source_1": "Selected end (X: auto)",
+  "rail.factorycraft.source_2": "Other end (X: selected)",
+  "rail.factorycraft.source_direction": "The selected source end cannot connect in this direction"
 }

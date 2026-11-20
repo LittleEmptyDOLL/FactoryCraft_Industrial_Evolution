@@ -1,3 +1,14 @@
+## 0.31.3 / updated issue14
+
+| Mechanic | Implementation |
+|---|---|
+| Living contact outcome | Native accepted hurt + uncancelled death, finite health-based kinetic debit and source-reduced recoil |
+| Remaining travel | Interrupted60Hz time retained, later source steps recomputed, one fuel debit; current world rechecked after each death |
+| Safety/budget | Canonical callback guards, reentrant tick exclusion, sixteen-hit/identity budget; protected survivors/structure/stock block |
+| Bidirectional source | Two actual saved outward endpoints; pure client/server/hint resolver; no player-relative growth or mid-edge invention |
+| Controls/cache | X auto/other/selected, explicit R, C/cancel/clear preserved; source/mode/topology-aware bounded cache and wrapped EN/RU HUD |
+| Validation | 326 JUnit; 571 native ×4 with optional mods, independent JVM owners; EN/RU client and exact 12-car/30-edge reload; release receipts/limits in VALIDATION.md |
+
 ## 0.31.2 / supplied Track interval crash
 
 | Mechanic | Current implementation |

@@ -95,7 +95,7 @@ public final class Combat {
             == HitResult.Type.MISS;
   }
 
-  public static void damage(
+  public static boolean damage(
       ServerLevel l,
       Entity target,
       Entity direct,
@@ -104,7 +104,7 @@ public final class Combat {
       String category,
       double original,
       boolean automatic) {
-    damageAt(
+    return damageAt(
         l,
         target,
         direct,
@@ -116,7 +116,7 @@ public final class Combat {
         direct != null ? direct.position() : owner == null ? target.position() : owner.position());
   }
 
-  public static void damageAt(
+  public static boolean damageAt(
       ServerLevel l,
       Entity target,
       Entity direct,
@@ -127,7 +127,7 @@ public final class Combat {
       boolean automatic,
       Vec3 origin) {
     if (original <= 0 || !Double.isFinite(original) || !allowed(l, target, owner, scope, automatic))
-      return;
+      return false;
     String key =
         category.equals("fire")
             ? "fire"
@@ -144,7 +144,8 @@ public final class Combat {
                 ResourceKey.create(
                     Registries.DAMAGE_TYPE,
                     ResourceLocation.fromNamespaceAndPath(FactoryCraft.ID, key)));
-    target.hurt(new DamageSource(holder, direct, owner, origin), (float) (original * HP_SCALE));
+    return target.hurt(
+        new DamageSource(holder, direct, owner, origin), (float) (original * HP_SCALE));
   }
 
   public static void hitscan(

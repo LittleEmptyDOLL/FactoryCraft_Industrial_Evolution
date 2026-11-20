@@ -1,0 +1,10 @@
+{
+  "baseline": "529feefbfd40bd0a73497dd58d1375439c44f267",
+  "scope": "Original movement/contact/impact/MotionHull; added QA profile and planner code are identical across the comparison",
+  "files": {
+    "trains/TrainSimulation.java": "0d1a5b5e9a53e934443c11dbe5da9808ec3f41c32ca28f7c42737e9b914fc067",
+    "trains/TrainDamage.java": "9829c9eea854a583ae08235a79f5e9f347e3f20c1093acba6664f8f2f2583749",
+    "trains/TrainWorld.java": "d1fc707c76c6d432782f6476a09834cd8ef22e26f90724a87754a606dae42aec",
+    "simulation/trains/MotionHull.java": "37f1c31e47447d09eb1cd2550b48273a8e2ab9a7870579ab53b124dc840b1837"
+  }
+}

@@ -147,8 +147,15 @@ public final class TrainCompletionGameTests {
           t.speed = 1.1;
           TrainSimulation.tick(d, t);
           h.assertTrue(
-              t.speed == 0 && car.health < 1000 && mob.getHealth() < 10,
-              "swept mob impact or native damage missing");
+              t.speed > 0
+                  && t.head > 30
+                  && Math.abs(
+                          car.health
+                              - (1000
+                                  - factorycraft.simulation.combat.Resistance.apply(50, 50, .6)))
+                      < 1e-8
+                  && mob.getHealth() <= 0,
+              "lethal weak mob contact lost momentum, durability or native damage");
           h.assertTrue(
               mob.getLastDamageSource() != null
                   && mob.getLastDamageSource().getDirectEntity() == view,

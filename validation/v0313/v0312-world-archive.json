@@ -1,0 +1,7 @@
+{
+  "archive": "/workspace/work/v0311-evidence/v0312-native-world.tar.xz",
+  "sha256": "b1ce69e25d4fa31f08695ea9dc647e27e8a6080326a47e6a0fb29ba7e1451a98",
+  "byteComparison": "tar --compare passed before removal",
+  "source": "run-gametest/v0311-intervalfix",
+  "diagnosticOnly": true
+}

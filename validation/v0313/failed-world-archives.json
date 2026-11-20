@@ -1,0 +1,16 @@
+[
+  {
+    "fixture": "v0311-momentum",
+    "archive": "/workspace/work/v0311-evidence/v0311-momentum-failed.tar.xz",
+    "sha256": "1f5747ed8ef75d56860a2fc40c3afc8da0a1145da4c81eaa93c7a4fccb28a19a",
+    "verifiedByteComparison": true,
+    "status": "failed diagnostic; not reset"
+  },
+  {
+    "fixture": "network-v0313-before-oom",
+    "archive": "/workspace/work/v0311-evidence/network-v0313-before-oom-failed.tar.xz",
+    "sha256": "9586961afdebb72eff5446e858403ecb3116a1dc6e6e1238df601a86a30cbb2f",
+    "verifiedByteComparison": true,
+    "status": "failed diagnostic; not reset"
+  }
+]

@@ -8,7 +8,18 @@ import java.util.function.Function;
  * inspected.
  */
 public final class EndpointHints {
-  public record Key(RailEnd start, RailEnd hover, int override, UUID anchor, long revision) {}
+  public record Key(
+      RailEnd start,
+      RailEnd hover,
+      int override,
+      UUID anchor,
+      long revision,
+      RailEnd other,
+      int side) {
+    public Key(RailEnd start, RailEnd hover, int override, UUID anchor, long revision) {
+      this(start, hover, override, anchor, revision, null, 0);
+    }
+  }
 
   public record Result(RailEnd end, String reason, int cost) {
     public boolean valid() {

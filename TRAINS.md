@@ -1,3 +1,15 @@
+# 0.31.3 — momentum-preserving living contacts
+
+A lethal ordinary mob impact no longer unconditionally zeroes speed. Server contact detection orders real swept entries, commits full reservations/fuel/last-clear pose, invokes native impact hurt with driver/direct-stock attribution, and checks both actual health and the final cancellable death event. Surviving, immune, allied/pet/PvP-protected or cancelled targets stop the train; dead bodies and item drops do not become walls. Wall/stock/nonliving structural contacts keep their distinct blocking model.
+
+**Documented Minecraft adapter, not the closed-source Factorio collision formula:** use public source masses and5movement-energy/HP (6for fluid cars). Kinetic energy is weight×sourceSpeed²/2. Actual removed native health+absorption divided by0.2 gives sourceHP; only the finite corresponding energy is charged for an accepted lethal hit. Remaining speed is sqrt(2remainingEnergy/weight). Recoil uses the charged sourceHP through the existing50flat/60%impact resistance. Resistance has Factorio's nonzero low-damage tail: a10HPcow removes50sourceHP and inflicts0.2sourceHP recoil, rather than half the entire moving train's energy. Resistant survivors absorb the remaining motion. Cancelled hurt has no self-damage debit. This does not make stock invulnerable or infer a kill from attempted overkill.
+
+Remaining movement continues in the same Minecraft tick. The interrupted60Hz substep retains its remaining time, later substeps reapply the original paid recurrence, and fuel is charged once for the20Hz tick. No-contact source recurrence/max speeds remain unchanged. A bounded16-contact loop resumes dense crowds on later ticks with residual velocity; no permanent target immunity is stored. Native callbacks that change canonical owners/path/pose abort the old advance; retired owners cannot be billed/moved again. Each continuation resamples the world, including newly created walls and chunk unavailability. All train/car IDs, inventories/fluids/fuel, health, paid phase and schema1 remain canonical/persistent.
+
+New checks include three-mob source-cap travel order, cancelled hurt/death, heavy survivors, death-created walls, source retirement/reentrant callbacks, a dense crowd budget, curve+grade contacts and exact rear-wagon reverse-impact JVM checkpoints. A continuing impact immediately restores the projection's positive speed through its visual throttle: the callback's temporary zero must not escape as a false HUD/audio stall. See [validation/v0313](validation/v0313). Existing0.31.2 reversed-fractional interval protection and every earlier finite production chain are retained.
+
+---
+
 # 0.31.2 — exact canonical edge intervals
 
 `TrainPath` keeps a historical metric origin per leg. A legal fractional edge at nonzero origin may satisfy `(begin + length) - begin > length` by an ULP. In0.31.1, reverse mapping changed that excess into a negative minimum and `TrackOccupancy.Interval` correctly rejected it, crashing the server tick. The user-supplied report identifies precisely this call path; a deterministic test fails on f17c22f before the correction.

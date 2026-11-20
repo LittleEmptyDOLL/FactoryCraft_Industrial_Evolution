@@ -1,3 +1,17 @@
+# 0.31.3 — bidirectional physical-source connections
+
+Select any physical part of an existing saved segment. Selection keeps that edge's identity, the nearer real outward endpoint and the other real outward endpoint. Hovering across the source can automatically choose the lawful opposite end; the player's standing side never defines the rail's growth direction. Source picking compares local curved geometry and gaze axis with stable UUID ties. At ambiguous junctions, aiming at the intended branch selects its physical axis; the current preview marks the resolved source/end. This is a two-endpoint saved-edge planner, not an invented mid-edge junction editor.
+
+The pure common `RailConnectionResolver` chooses the source and an actual connectable destination tangent. Ground camera headings are axes whose sign may flip to make a lawful connection, following Create's first/second-axis idea; an explicit R override stays explicit. Existing destination rails contribute their real incoming endpoints only. No saved endpoint is shifted/reversed in place. If geometry/physical clearance/claims prevent a connection, the ghost stays red with a reason. Both directions use the same protected payment/rollback and unchanged Factorio radius/headings/grade constraints.
+
+X cycles **Auto → Other end → Selected end → Auto**; it locks a real source endpoint instead of reversing an arbitrary tangent at that same coordinate. R cycles destination heading, C/sneak/item switch/logout cancel, successful placement clears. The source and mode are synced only to the choosing player; shared pure requests drive ghost,5×5hint/cost and the actual server plan. Same-frame world state/permissions still decide the final transaction. Source/mode/hover/look/anchor/revision caches stay bounded, and long EN/RU HUD text wraps.
+
+Create1.21.1 actual TrackBlockItem.select/useOn, TrackPlacement.tryConnect and TrackBlockOutline were reviewed again. No code/assets or Create runtime dependency are included. A separate Create client world is not claimed. Full behavior matrix and actual FactoryCraft captures: [validation/v0313](validation/v0313).
+
+Persistent rail/train NBT remains unchanged. The appended source endpoints/mode use planner protocol0.31.3; update both client and server together.
+
+---
+
 # Railways — 0.31.1 / issues #10, #12–14
 
 Reference: Factorio2.1.24 **with Space Age enabled**. Numeric source reviewed: `base/prototypes/entity/trains.lua`, base recipe/technology definitions; half-diagonal bounding half-length2.236, source A/B cost3, source rail and stick recipes and Railway75 red/green×30s. Create1.21.1 `TrackPlacement` and `TrackGraph` were studied for separate endpoint geometry, cached planning, stable adjacency and change-based sync. No Create code, models/textures or dependency is imported. The0.31 rolling-stock extension is documented in [TRAINS.md](TRAINS.md); signals/stops/schedules and robots remain future work.

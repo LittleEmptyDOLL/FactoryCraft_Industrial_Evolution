@@ -1,0 +1,253 @@
+{
+  "notes": "One bounded pair, 8 warmup/16 measured source-cap input trials; 1GiB actual server/no clients, initial kinetic phase is declared QA input; different effective work (one kill-stop vs three kills-continue). Not a TPS improvement claim.",
+  "results": {
+    "before": {
+      "measuredSamples": [
+        {
+          "trial": 8,
+          "nanos": 1139952,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 9,
+          "nanos": 1098441,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 10,
+          "nanos": 1085893,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 11,
+          "nanos": 1085182,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 12,
+          "nanos": 963912,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 13,
+          "nanos": 1040325,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 14,
+          "nanos": 997451,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 15,
+          "nanos": 1132602,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 16,
+          "nanos": 984093,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 17,
+          "nanos": 1029799,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 18,
+          "nanos": 1087385,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 19,
+          "nanos": 1132301,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 20,
+          "nanos": 1031772,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 21,
+          "nanos": 1030501,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 22,
+          "nanos": 35363842,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        },
+        {
+          "trial": 23,
+          "nanos": 1386426,
+          "reads": 420,
+          "callbacks": 1,
+          "speed": 0.0
+        }
+      ],
+      "meanNs": 3224367.3125,
+      "medianNs": 1085537.5,
+      "p95Ns": 35363842,
+      "p99Ns": 35363842,
+      "maxNs": 35363842,
+      "worldReads": 6720,
+      "damageCallbacks": 16,
+      "movingTrains": 0
+    },
+    "after": {
+      "measuredSamples": [
+        {
+          "trial": 8,
+          "nanos": 2481728,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 9,
+          "nanos": 3686128,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 10,
+          "nanos": 2574955,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 11,
+          "nanos": 2684125,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 12,
+          "nanos": 2757673,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 13,
+          "nanos": 3512953,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 14,
+          "nanos": 2288033,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 15,
+          "nanos": 2130461,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 16,
+          "nanos": 2110292,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 17,
+          "nanos": 3223028,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 18,
+          "nanos": 3216778,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 19,
+          "nanos": 3385646,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 20,
+          "nanos": 2956325,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 21,
+          "nanos": 2394799,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 22,
+          "nanos": 2664746,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        },
+        {
+          "trial": 23,
+          "nanos": 2720008,
+          "reads": 1500,
+          "callbacks": 3,
+          "speed": 0.8335542629763285
+        }
+      ],
+      "meanNs": 2799229.875,
+      "medianNs": 2702066.5,
+      "p95Ns": 3686128,
+      "p99Ns": 3686128,
+      "maxNs": 3686128,
+      "worldReads": 24000,
+      "damageCallbacks": 48,
+      "movingTrains": 16
+    }
+  }
+}

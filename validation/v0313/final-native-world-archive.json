@@ -1,0 +1,14 @@
+{
+  "archive": "/workspace/work/v0311-evidence/v0313-momentum-final-three-passes.tar.xz",
+  "sha256": "7b56aad4c5b08fb191f909d1da5252483c527f67e5a645dab7d0e66dbd9b9a42",
+  "bytes": 33288244,
+  "byte_compared": true,
+  "closed_fixture": "v0311-momentum-final",
+  "native_passes": [
+    571,
+    571,
+    571
+  ],
+  "checkpoint": "3f9e6941-c5b0-427d-82a0-a2b9836c5df9",
+  "note": "Lossless archive of the completed three-run native fixture. Initial collision, independent JVM, then projection-resume correction. The final zero-health non-dying sweep guard is checked separately on the real server; not claimed in these three logs."
+}

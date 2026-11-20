@@ -40,7 +40,10 @@ public final class RailClient {
           InputConstants.Type.KEYSYM,
           GLFW.GLFW_KEY_C,
           "key.categories.factorycraft");
-  private static RailEnd start;
+  private static RailEnd start, other;
+  private static int side;
+  private static RailConnectionResolver.Request lastRequest;
+  private static RailConnectionResolver.Result resolution;
   private static int goal = -1, selectedSlot = -1;
   private static UUID anchor;
   private static boolean geometric = true;
@@ -62,10 +65,11 @@ public final class RailClient {
 
   public static void changed(BlockPos pos) {
     if (start == null || lastEnd == null) return;
-    if (pos.getX() >= Math.min(start.x(), lastEnd.x()) - 8
-        && pos.getX() <= Math.max(start.x(), lastEnd.x()) + 8
-        && pos.getZ() >= Math.min(start.z(), lastEnd.z()) - 8
-        && pos.getZ() <= Math.max(start.z(), lastEnd.z()) + 8) {
+    var source = lastStart == null ? start : lastStart;
+    if (pos.getX() >= Math.min(source.x(), lastEnd.x()) - 8
+        && pos.getX() <= Math.max(source.x(), lastEnd.x()) + 8
+        && pos.getZ() >= Math.min(source.z(), lastEnd.z()) - 8
+        && pos.getZ() <= Math.max(source.z(), lastEnd.z()) + 8) {
       worldRevision++;
       checkedAt = Long.MIN_VALUE;
     }
@@ -92,6 +96,9 @@ public final class RailClient {
           selectedSlot = p.tag().getInt("Slot");
           start = p.tag().contains("Start") ? RailCodec.end(p.tag().getCompound("Start")) : null;
           goal = p.tag().getInt("Goal");
+          other = p.tag().contains("Other") ? RailCodec.end(p.tag().getCompound("Other")) : null;
+          side = p.tag().getInt("Side");
+          lastRequest = null;
           lastStart = null;
         };
     RailViews.client = RailClient::curves;
@@ -181,13 +188,30 @@ public final class RailClient {
             : mc.player.pick(64, e.getPartialTick().getGameTimeDeltaPartialTick(false), false);
     if (!(result instanceof BlockHitResult hit) || !target(mc, hit)) return;
     hovering = hit;
-    var look = mc.player.getLookAngle();
+    RailConnectionResolver.Result resolved = null;
     var end =
         RailPlanner.destination(
             mc.level, hit, RailHeading.fromYaw(mc.player.getYRot()), start == null ? -1 : goal);
     if (end == null) return;
     RailEnd origin = start;
-    if (origin == null) {
+    if (origin != null) {
+      if (other == null) return;
+      var request =
+          RailPlanner.request(
+              mc.level,
+              hit,
+              new RailConnectionResolver.Source(start, other, side),
+              RailHeading.fromYaw(mc.player.getYRot()),
+              goal);
+      if (request == null) return;
+      if (!request.equals(lastRequest)) {
+        lastRequest = request;
+        resolution = RailConnectionResolver.resolve(request);
+      }
+      resolved = resolution;
+      origin = resolved.start();
+      end = resolved.end();
+    } else {
       if (mc.level.getBlockEntity(hit.getBlockPos()) instanceof RailCellBlockEntity) return;
       origin = end;
       end = RailPlanner.starter(origin).end;
@@ -201,7 +225,9 @@ public final class RailClient {
         String invalid = null;
         RailCurve curve;
         try {
-          curve = RailCurve.plan(origin, end);
+          if (resolved != null && !resolved.valid())
+            throw new IllegalArgumentException(resolved.reason());
+          curve = resolved == null ? RailCurve.plan(origin, end) : resolved.curve();
         } catch (IllegalArgumentException bad) {
           geometric = false;
           invalid = bad.getMessage();
@@ -228,7 +254,13 @@ public final class RailClient {
                 goal < 0 ? RailHeading.fromYaw(mc.player.getYRot()) : new RailHeading(goal));
         hints.key(
             new EndpointHints.Key(
-                start, base, goal, anchor, worldRevision + mc.level.getGameTime() / 80));
+                start,
+                base,
+                goal,
+                anchor,
+                worldRevision + mc.level.getGameTime() / 80,
+                other,
+                side));
         if (hintTick != mc.level.getGameTime()) {
           hintTick = mc.level.getGameTime();
           hints.advance(
@@ -243,7 +275,18 @@ public final class RailClient {
                     RailPlanner.destination(
                         mc.level, h, RailHeading.fromYaw(mc.player.getYRot()), goal);
                 try {
-                  var candidate = new RailPlan(RailCurve.plan(start, target));
+                  var intent =
+                      RailPlanner.request(
+                          mc.level,
+                          h,
+                          new RailConnectionResolver.Source(start, other, side),
+                          RailHeading.fromYaw(mc.player.getYRot()),
+                          goal);
+                  if (intent == null) return new EndpointHints.Result(point, "unloaded", 0);
+                  var connection = RailConnectionResolver.resolve(intent);
+                  if (!connection.valid())
+                    return new EndpointHints.Result(point, connection.reason(), 0);
+                  var candidate = new RailPlan(connection.curve());
                   var status = candidate.inspect(mc.level, mc.player);
                   if (status.equals("ready")
                       && !mc.player.isCreative()
@@ -398,16 +441,21 @@ public final class RailClient {
             && !mc.player.getOffhandItem().is(RailContent.RAIL.get())
         || hovering == null
         || plan == null) return;
-    e.getGuiGraphics()
-        .drawCenteredString(
-            mc.font,
-            Component.translatable(
-                "rail.factorycraft.preview",
-                plan == null ? 0 : plan.curve.cost(),
-                Component.translatable("rail.factorycraft.direction_" + goal),
-                Component.translatable("rail.factorycraft." + reason)),
-            e.getGuiGraphics().guiWidth() / 2,
-            e.getGuiGraphics().guiHeight() / 2 + 30,
-            reason.equals("ready") ? 0x55ff88 : 0xff7777);
+    var message =
+        Component.translatable(
+            "rail.factorycraft.preview",
+            plan.curve.cost(),
+            Component.translatable("rail.factorycraft.direction_" + goal),
+            Component.translatable("rail.factorycraft." + reason),
+            Component.translatable("rail.factorycraft.source_" + side));
+    var lines = mc.font.split(message, e.getGuiGraphics().guiWidth() - 24);
+    for (int row = 0; row < lines.size(); row++)
+      e.getGuiGraphics()
+          .drawCenteredString(
+              mc.font,
+              lines.get(row),
+              e.getGuiGraphics().guiWidth() / 2,
+              e.getGuiGraphics().guiHeight() / 2 + 30 + row * 10,
+              reason.equals("ready") ? 0x55ff88 : 0xff7777);
   }
 }

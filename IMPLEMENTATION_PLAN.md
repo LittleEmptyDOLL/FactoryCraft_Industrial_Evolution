@@ -1,3 +1,15 @@
+# 0.31.3 — updated issue14, impacts and bidirectional planning
+
+Implement the new sections6–7 from the19November17:52UTC issue14 revision, based on529feef. Scope is lethal mob momentum, callback-safe paid residual motion and one shared physical-endpoint connection resolver. No0.32, recipes/progression, new rolling stock or rail types.
+
+Implemented: actual hurt/death-cancellation outcomes; finite health/absorption-based kinetic debit and source resistance; travel-ordered continuous contacts; up to16resolutions/tick with a fresh identity set; once-only fuel settlement and reentrant movement guard; three60Hz substeps with explicit interrupted-step time. Source selection retains saved edge identity and both real outward endpoints, resolves from hovered geometry, and cycles X(auto/other/selected). Client/server/hints share the same pure request/result; no mid-edge nodes. Long HUD messages wrap.
+
+Validation checkpoint: 326 JUnit pass. Three full optional native runs pass 571/571, including an independent JVM exact checkpoint; the third also asserts immediate projected-speed resume. A fourth full571/571optional GameTestServer run validates the final zero-health, non-dying canceled-death sweep guard on the exact release code. Incomplete regular-server focused attempts remain uncertified and retained separately. EN/RU clients build both source directions from the same standing position, with green hints and explicit red locked-side rejection. Real paid acceleration to 259.2km/h, cow/zombie kills and three-cow continuation are recorded. After the final client session a separate JVM retains all 12 canonical cars, routes, paid rails, fuel/cargo/fluid exactly: 155iron, 493828mB, 384MJ remaining+spent. The bounded collision profile has a higher median because the correct result processes more contacts; no TPS improvement is claimed. Initial failures and lossless archive manifests remain intact. Final receipts and remaining hosted validation are recorded in VALIDATION.md.
+
+Next concrete action: publish the checked release normally to main preserving remote work, report CI once, then stop. Further development requires a new user request; residual Create runtime/audio/hull-angle acceptance remains documented. Do not start0.32. All prior worlds/failures remain intact or byte-verified in lossless archives.
+
+---
+
 # 0.31.2 — supplied Track interval crash follow-up
 
 The 19 November crash report supplies the formerly missing server stack: `TrackOccupancy.Interval -> span -> TrainSimulation.tick`. A deterministic regression reproduces the failure on published f17c22f: reversed fractional-length legs with nonzero accumulated origins can produce a negative local minimum through floating-point cancellation. Exact clipped endpoints and bounded global-to-local conversion correct that path while retaining strict validation and all resource/collision rules.

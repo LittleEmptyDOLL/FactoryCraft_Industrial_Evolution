@@ -195,11 +195,14 @@ public final class StockEntity extends Entity {
             -Math.toDegrees(
                 Math.atan2(
                     pose.forward().y(), Math.hypot(pose.forward().x(), pose.forward().z()))));
+    // A death callback can commit a temporary stop and resume in the same tick. Both zero
+    // transitions bypass visual throttling so the HUD/audio do not falsely stall for three ticks.
     if (lastVisual == Long.MIN_VALUE
         || level().getGameTime() - lastVisual >= 3
         || car.color != color()
         || (float) car.health != entityData.get(HEALTH)
-        || speed == 0 && speed() != 0) {
+        || speed == 0 && speed() != 0
+        || speed > 0 && speed() == 0) {
       lastVisual = level().getGameTime();
       entityData.set(
           BOGIE_DISTANCE, (float) pose.front().position().distance(pose.rear().position()));

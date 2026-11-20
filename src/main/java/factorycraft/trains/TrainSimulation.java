@@ -7,6 +7,15 @@ import java.util.*;
 /** Bounded per-active-train movement; claims and fuel settle before position or callbacks. */
 public final class TrainSimulation {
   public static void tick(TrainData d, TrainData.Train t) {
+    if (d.train(t.id) != t || !d.moving.add(t.id)) return;
+    try {
+      advance(d, t);
+    } finally {
+      d.moving.remove(t.id);
+    }
+  }
+
+  private static void advance(TrainData d, TrainData.Train t) {
     var l = d.level;
     var rails = RailwayData.get(l);
     d.ensureIndex();
@@ -143,43 +152,94 @@ public final class TrainSimulation {
       return;
     }
     var contact = TrainWorld.contact(d, t, t.head, target, null);
-    if (!contact.reason().equals("ready")) {
+    if (contact.reason().equals("unloaded") || contact.reason().equals("track")) {
       t.status =
           contact.reason().equals("unloaded")
               ? TrainData.Status.UNLOADED
               : TrainData.Status.BLOCKED;
-      if (contact.reason().equals("unloaded") || contact.reason().equals("track")) {
-        if (contact.reason().equals("track")) t.speed = 0;
-        // Unknown chunks cannot consume fuel or kinetic state, or damage an unseen target.
-        TrainWorld.views(d, t);
-        return;
-      }
-      // An unexpected obstacle inside braking distance absorbs paid movement. Commit the
-      // last clear pose and sole resource owners before any hurt/death/entity-join callbacks.
-      d.occupancy.reserve(t.id, wanted);
-      d.spatial.reserveShapes(t.id, spatial);
-      for (var debit : pay) debit.commit();
-      double travelled = delta * contact.fraction();
-      t.head += travelled;
-      t.distance += travelled;
-      t.speed = 0;
-      d.occupancy.reserve(t.id, TrackOccupancy.span(t.path, t.rear(), t.front()));
-      d.index(t);
+      if (contact.reason().equals("track")) t.speed = 0;
       d.setDirty();
       TrainWorld.views(d, t);
-      if (contact.car() >= 0
-          && next.distance() > 0
-          && (contact.block() != null || contact.entity() != null))
-        TrainDamage.impact(d, t, contact, weight, next.speed(), driver);
       return;
     }
-    // No world callback occurs between the full reservation, fuel ownership and pose commit.
+    // Retain the complete swept claims through callbacks. Fuel settles exactly once, regardless
+    // of how many targets are encountered in the remaining fraction of this Minecraft tick.
     d.occupancy.reserve(t.id, wanted);
     d.spatial.reserveShapes(t.id, spatial);
     for (var debit : pay) debit.commit();
-    t.speed = next.speed();
-    t.head = target;
-    t.distance += delta;
+    int direction = t.direction;
+    double reservedTarget = target;
+    double motionSpeed = next.speed();
+    TrainMotion.Remainder remainder = null;
+    java.util.Set<UUID> resolved = null;
+    for (int hits = 0; ; hits++) {
+      if (contact.reason().equals("ready")) {
+        double travelled = target - t.head;
+        t.head = target;
+        t.distance += travelled;
+        t.speed = motionSpeed;
+        break;
+      }
+      if (contact.reason().equals("unloaded") || contact.reason().equals("track")) {
+        t.status =
+            contact.reason().equals("unloaded")
+                ? TrainData.Status.UNLOADED
+                : TrainData.Status.BLOCKED;
+        t.speed = contact.reason().equals("track") ? 0 : motionSpeed;
+        settle(d, t);
+        return;
+      }
+      double travelled = (target - t.head) * contact.fraction();
+      if (remainder == null) remainder = new TrainMotion.Remainder(t.speed, p, throttle, brake);
+      double impactSpeed = remainder.consume(Math.abs(travelled));
+      t.head += travelled;
+      t.distance += travelled;
+      t.speed = 0;
+      t.status = TrainData.Status.BLOCKED;
+      var members = List.copyOf(t.cars);
+      var path = t.path;
+      double settledHead = t.head, settledDistance = t.distance;
+      d.index(t);
+      d.setDirty();
+      TrainWorld.views(d, t);
+      if (!canonical(d, t, members, path, settledHead, settledDistance, direction)) return;
+      if (!(contact.entity() instanceof net.minecraft.world.entity.LivingEntity)
+          || impactSpeed <= 0
+          || contact.car() < 0) {
+        if (contact.car() >= 0
+            && impactSpeed > 0
+            && (contact.block() != null || contact.entity() != null))
+          TrainDamage.impact(d, t, contact, weight, impactSpeed, driver);
+        settle(d, t);
+        return;
+      }
+      if (resolved == null) resolved = new HashSet<>();
+      if (!resolved.add(contact.entity().getUUID())) {
+        settle(d, t); // A death callback revived/replaced this target. Never replay its hit.
+        return;
+      }
+      var result = TrainDamage.living(d, t, contact, weight, impactSpeed, driver);
+      if (!canonical(d, t, members, path, settledHead, settledDistance, direction)) return;
+      if (!result.continues()) {
+        settle(d, t);
+        return;
+      }
+      remainder.impact(result.speed());
+      target =
+          Math.clamp(
+              t.head + remainder.distance() * direction,
+              Math.min(t.head, reservedTarget),
+              Math.max(t.head, reservedTarget));
+      motionSpeed = remainder.speed();
+      if (hits == 15) {
+        t.speed = motionSpeed;
+        settle(d, t); // Bounded crowd work; preserve momentum and resume on the next tick.
+        return;
+      }
+      // Recheck the real world after native damage/death callbacks; they may place a wall,
+      // change chunks, or spawn a new blocker. No uninspected remainder can be teleported over.
+      contact = TrainWorld.contact(d, t, t.head, target, null);
+    }
     if (t.speed > 0) t.status = brake ? TrainData.Status.BRAKING : TrainData.Status.DRIVING;
     else if (t.status != TrainData.Status.NO_FUEL && t.status != TrainData.Status.DESTROYED)
       t.status = TrainData.Status.STOPPED;
@@ -193,6 +253,33 @@ public final class TrainSimulation {
         && t.desired == 0
         && t.cars.stream().allMatch(c -> l.getEntity(c.id) instanceof StockEntity))
       d.active.remove(t.id);
+  }
+
+  private static boolean canonical(
+      TrainData d,
+      TrainData.Train t,
+      List<TrainCar> members,
+      TrainPath path,
+      double head,
+      double distance,
+      int direction) {
+    return d.train(t.id) == t
+        && !t.provisional
+        && t.cars.equals(members)
+        && t.path == path
+        && t.head == head
+        && t.distance == distance
+        && t.speed == 0
+        && t.direction == direction
+        && members.stream().allMatch(c -> d.owner(c.id) == t && d.car(c.id) == c);
+  }
+
+  private static void settle(TrainData d, TrainData.Train t) {
+    if (d.train(t.id) != t) return;
+    d.occupancy.reserve(t.id, TrackOccupancy.span(t.path, t.rear(), t.front()));
+    d.index(t);
+    d.setDirty();
+    TrainWorld.views(d, t);
   }
 
   private TrainSimulation() {}

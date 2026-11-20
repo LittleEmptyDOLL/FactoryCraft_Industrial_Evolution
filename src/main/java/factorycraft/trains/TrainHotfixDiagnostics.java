@@ -101,7 +101,8 @@ public final class TrainHotfixDiagnostics {
     var parent = level.getServer().getServerDirectory().toAbsolutePath().normalize().getParent();
     return parent != null
         && parent.getFileName() != null
-        && parent.getFileName().toString().equals("network-v0311")
+        && java.util.Set.of("network-v0311", "network-v0313")
+            .contains(parent.getFileName().toString())
         && Files.isRegularFile(parent.resolve("factorycraft-network.marker"));
   }
 
@@ -113,14 +114,25 @@ public final class TrainHotfixDiagnostics {
     require(!s.built, "Scene already claimed; no reset");
     s.built = true;
     s.setDirty();
+    // Keep the independent bidirectional placement scene at x0/x8 intact in the new fixture.
+    boolean current =
+        l.getServer()
+            .getServerDirectory()
+            .toAbsolutePath()
+            .normalize()
+            .getParent()
+            .getFileName()
+            .toString()
+            .equals("network-v0313");
+    int offset = current ? 160 : 0;
     var plans = new ArrayList<RailPlan>();
     for (int lane = 0; lane < 3; lane++)
       for (int part = 0; part < 8; part++)
         plans.add(
             new RailPlan(
                 RailCurve.plan(
-                    new RailEnd(lane * 16, 70, -part * 128, new RailHeading(0)),
-                    new RailEnd(lane * 16, 70, -(part + 1) * 128, new RailHeading(0)))));
+                    new RailEnd(offset + lane * 16, 70, -part * 128, new RailHeading(0)),
+                    new RailEnd(offset + lane * 16, 70, -(part + 1) * 128, new RailHeading(0)))));
     for (var plan : plans) {
       for (long cp : plan.footprint.chunks())
         for (int dx = -1; dx <= 1; dx++)

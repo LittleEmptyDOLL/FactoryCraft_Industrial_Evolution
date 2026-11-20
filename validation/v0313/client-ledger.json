@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "exact_canonical_state": true,
+  "trains": 3,
+  "cars": 12,
+  "locomotives": 3,
+  "iron": 155,
+  "fluid_mB": 493828,
+  "chemical_energy_plus_spent_J": 384000000,
+  "spent_J": 55560000,
+  "wrecks": 0
+}

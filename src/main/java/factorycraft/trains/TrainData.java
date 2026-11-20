@@ -69,6 +69,7 @@ public final class TrainData extends SavedData {
   private final Map<Long, Set<UUID>> byChunk = new HashMap<>();
   private final Map<UUID, Set<Long>> trainChunks = new HashMap<>();
   final Set<UUID> active = new LinkedHashSet<>();
+  final Set<UUID> moving = new HashSet<>();
   final Set<Long> pendingChunks = new LinkedHashSet<>();
   public final TrackOccupancy occupancy = new TrackOccupancy();
   public final SpatialReservations spatial = new SpatialReservations();
@@ -126,7 +127,14 @@ public final class TrainData extends SavedData {
   }
 
   ServerLevel level;
-  public long ticks, worldReads, snapshots, availabilityEpoch, simulationNs, maxTickNs;
+  public long ticks,
+      worldReads,
+      snapshots,
+      availabilityEpoch,
+      simulationNs,
+      maxTickNs,
+      contactScans,
+      impactCallbacks;
 
   public static TrainData get(ServerLevel level) {
     var d =

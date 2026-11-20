@@ -117,6 +117,7 @@ public final class TrainWorld {
   /** Earliest swept contact; callers must commit ownership before invoking damage callbacks. */
   public static Contact contact(
       TrainData data, TrainData.Train t, double from, double to, UUID ignore) {
+    data.contactScans++;
     var rails = RailwayData.get(data.level);
     for (var leg : t.path.legs())
       if (leg.end() >= Math.min(from, to) - (t.cars.size() - 1) * 7 - 3.5
@@ -131,7 +132,8 @@ public final class TrainWorld {
     var previous = new StockEnvelope[t.cars.size()];
     boolean linear = straight(data, t, from, to);
     int steps = linear ? 1 : Math.max(1, (int) Math.ceil(Math.abs(to - from) * 8));
-    for (int sample = 0; sample <= steps; sample++)
+    for (int sample = 0; sample <= steps; sample++) {
+      Contact best = null;
       for (int car = 0; car < t.cars.size(); car++) {
         double center = from + (to - from) * sample / steps - car * StockSpec.SPACING;
         BogiePose pose;
@@ -142,8 +144,9 @@ public final class TrainWorld {
         }
         var envelope = StockEnvelope.of(pose, t.cars.get(car).kind);
         var motion = new MotionHull(previous[car], envelope);
-        var box = box(envelope);
-        if (previous[car] != null) box = box.minmax(box(previous[car]));
+        var bounds = motion.bounds();
+        var box =
+            new AABB(bounds.x0(), bounds.y0(), bounds.z0(), bounds.x1(), bounds.y1(), bounds.z1());
         if (!data.level
                 .getWorldBorder()
                 .isWithinBounds(BlockPos.containing(box.minX, box.minY, box.minZ))
@@ -174,10 +177,15 @@ public final class TrainWorld {
           }
           for (var sub : boxes) {
             var world = sub.move(p);
-            if (motion.intersects(
-                world.minX, world.minY, world.minZ, world.maxX, world.maxY, world.maxZ))
-              return new Contact(
-                  "blocked", car, null, p.immutable(), Math.max(0, sample - 1) / (double) steps);
+            double entry =
+                motion.fraction(
+                    world.minX, world.minY, world.minZ, world.maxX, world.maxY, world.maxZ);
+            if (!Double.isNaN(entry))
+              best =
+                  earlier(
+                      best,
+                      new Contact(
+                          "blocked", car, null, p.immutable(), safeFraction(sample, steps, entry)));
           }
         }
         for (var e :
@@ -191,23 +199,56 @@ public final class TrainWorld {
             if (stock.trainId().equals(t.id) || ignore != null && stock.trainId().equals(ignore))
               continue;
             if (TrainPorts.physicalView(stock) && envelope.intersects(stock.hull()))
-              return new Contact(
-                  "occupied", car, stock, null, Math.max(0, sample - 1) / (double) steps);
+              best =
+                  earlier(
+                      best,
+                      new Contact(
+                          "occupied", car, stock, null, Math.max(0, sample - 1) / (double) steps));
             continue;
           }
           if (e instanceof Player p
               && (p.isCreative()
                   || p.getVehicle() instanceof StockEntity vehicle
                       && vehicle.trainId().equals(t.id))) continue;
-          if (e.isAlive() && (e instanceof LivingEntity || e.canBeCollidedWith())) {
+          // A canceled native death can leave zero health without entering the dying pose.
+          // Keep it blocking on later ticks too; actual falling corpses remain passable.
+          boolean collidable =
+              e instanceof LivingEntity living
+                  ? !living.isRemoved()
+                      && (living.isAlive()
+                          || living.getPose() != net.minecraft.world.entity.Pose.DYING)
+                  : e.isAlive() && e.canBeCollidedWith();
+          if (collidable) {
             var b = e.getBoundingBox();
-            if (motion.intersects(b.minX, b.minY, b.minZ, b.maxX, b.maxY, b.maxZ))
-              return new Contact("entity", car, e, null, Math.max(0, sample - 1) / (double) steps);
+            double entry = motion.fraction(b.minX, b.minY, b.minZ, b.maxX, b.maxY, b.maxZ);
+            if (!Double.isNaN(entry))
+              best =
+                  earlier(
+                      best,
+                      new Contact("entity", car, e, null, safeFraction(sample, steps, entry)));
           }
         }
         previous[car] = envelope;
       }
+      if (best != null) return best;
+    }
     return READY;
+  }
+
+  private static double safeFraction(int sample, int steps, double entry) {
+    return sample == 0 ? 0 : Math.max(0, (sample - 1 + entry) / steps - 1e-7);
+  }
+
+  private static Contact earlier(Contact a, Contact b) {
+    if (a == null || b.fraction() < a.fraction() - 1e-10) return b;
+    if (b.fraction() > a.fraction() + 1e-10) return a;
+    // Real structure wins ties; then stable car/UUID order, never entity-list iteration order.
+    if ((a.entity() == null) != (b.entity() == null)) return b.entity() == null ? b : a;
+    if (a.car() != b.car()) return a.car() < b.car() ? a : b;
+    if (a.entity() != null && b.entity() != null)
+      return a.entity().getUUID().compareTo(b.entity().getUUID()) <= 0 ? a : b;
+    if (a.block() != null && b.block() != null) return a.block().compareTo(b.block()) <= 0 ? a : b;
+    return a;
   }
 
   public static void views(TrainData data, TrainData.Train t) {

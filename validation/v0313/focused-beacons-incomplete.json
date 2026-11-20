@@ -1,0 +1,5 @@
+{
+  "status": "NOT_CERTIFIED",
+  "reason": "Native success beacon stayed light_gray: some regular-server tests remained in chunk preparation without a player. Earlier same-JVM arena reruns also produced a retained failure. No focused success count is claimed; replaced by an actual GameTestServer full run on a separately named new fixture.",
+  "world": "network-v0313-guards"
+}

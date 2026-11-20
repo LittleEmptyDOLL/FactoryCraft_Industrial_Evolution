@@ -812,11 +812,11 @@
   "technology.factorycraft.railway": "Железная дорога",
   "key.categories.factorycraft": "FactoryCraft",
   "key.factorycraft.rail_rotate": "Рельсы: поворот конечной касательной",
-  "key.factorycraft.rail_flip": "Рельсы: развернуть начальную касательную",
+  "key.factorycraft.rail_flip": "Выбрать исходный конец (авто / другой / выбранный)",
   "key.factorycraft.rail_cancel": "Рельсы: отменить планирование",
-  "rail.factorycraft.controls": "ПКМ: короткий рельс / выбрать конец / соединить. Камера: направление конца; R: вручную; X: развернуть начало; C/Shift: отмена.",
+  "rail.factorycraft.controls": "ПКМ: короткий рельс / выбрать рельс / соединить. Камера: ось конца; R: вручную; X: начало авто / другое / выбранное; C/Shift: отмена.",
   "rail.factorycraft.dimensions": "Полотно 2 блока по центру клетки; коридор 3; радиус от 13; уклон до 1:4. Концам нужны основания. Сверху оставьте 4 блока.",
-  "rail.factorycraft.preview": "Стоимость: %s рельсов | конец %s | %s",
+  "rail.factorycraft.preview": "Стоимость: %s рельсов | конец %s | %s | Начало: %4$s",
   "rail.factorycraft.inspect": "Рельс %s | %s м | связи концов %s/%s | загружен: %s",
   "rail.factorycraft.ready": "Готово (сервер дополнительно проверит защиту)",
   "rail.factorycraft.selected": "Конец выбран; укажите место соединения. C: отмена",
@@ -924,5 +924,9 @@
   "train.factorycraft.entity": "В габарите находится существо",
   "train.factorycraft.border": "За границей мира",
   "key.factorycraft.stock_debug": "Поезда: коллайдеры (F8)",
-  "train.factorycraft.debug_legend": "F8: корпус — зелёный, модель — розовый, AABB — синий, маршрут — янтарный"
+  "train.factorycraft.debug_legend": "F8: корпус — зелёный, модель — розовый, AABB — синий, маршрут — янтарный",
+  "rail.factorycraft.source_0": "Авто (X: другой конец)",
+  "rail.factorycraft.source_1": "Выбранный конец (X: авто)",
+  "rail.factorycraft.source_2": "Другой конец (X: выбранный)",
+  "rail.factorycraft.source_direction": "Выбранный исходный конец не может соединиться в этом направлении"
 }

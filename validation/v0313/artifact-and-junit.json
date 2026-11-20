@@ -1,0 +1,11 @@
+{
+  "artifact": "build/libs/factorycraft-0.31.3.jar",
+  "sha256": "28e15a470d69da2f86aeb182d31c23c1d56a090edf448f6c41c4354eb813dd60",
+  "bytes": 2951725,
+  "junit": {
+    "tests": 326,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

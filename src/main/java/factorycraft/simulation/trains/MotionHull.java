@@ -55,6 +55,13 @@ public final class MotionHull {
             : !Double.isNaN(expanded.sweepFraction(x0, y0, z0, x1, y1, z1, vx, vy, vz)));
   }
 
+  /** Earliest conservative time of contact in this interval, not collection iteration order. */
+  public double fraction(double x0, double y0, double z0, double x1, double y1, double z1) {
+    if (!intersects(x0, y0, z0, x1, y1, z1)) return Double.NaN;
+    double t = expanded.sweepFraction(x0, y0, z0, x1, y1, z1, vx, vy, vz);
+    return Double.isNaN(t) ? 1 : t;
+  }
+
   private static double distance(RailVector a, RailVector b) {
     double x = a.x() - b.x(), y = a.y() - b.y(), z = a.z() - b.z();
     return Math.sqrt(x * x + y * y + z * z);

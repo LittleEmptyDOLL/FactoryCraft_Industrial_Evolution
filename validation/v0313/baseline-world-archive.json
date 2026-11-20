@@ -1,0 +1,7 @@
+{
+  "path": "/workspace/work/v0311-evidence/v0313-before-initial.tar.xz",
+  "sha256": "9df5ce2dc03932ab1d6665a2e7033848740e93611b47b9041539ea8850d03ff2",
+  "verifiedByteComparison": true,
+  "fixture": "v0311-momentum-before",
+  "status": "failed; retained initial fixtures and old movement before corrections"
+}
