@@ -141,6 +141,8 @@ public final class TrainSimulation {
       pay.clear();
     }
     var next = TrainMotion.tick(t.speed, p, throttle, brake);
+    if (automatic && brake && next.speed() == 0 && t.automation.blockingSignal != null)
+      t.automation.heldSignal = t.automation.blockingSignal;
     double delta = next.distance() * t.direction, target = t.head + delta;
     // Pre-extend only the leading route. Rear bogies keep historical turnout choices.
     double min = target - (t.cars.size() - 1) * StockSpec.SPACING - StockSpec.HALF_LENGTH,

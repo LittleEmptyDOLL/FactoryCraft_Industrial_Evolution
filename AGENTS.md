@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active milestone — 0.32.0 / issue #15
+## Active continuation — issue #15 safety gates (21 November 2026)
+
+* Continue from published72844d0 and its successful hosted run44805203791. The updated issue requires Gates1→2→3 in order; first complete actual shared-network signal safety and local fail-closed rebuild/reconciliation. Do not duplicate the base, start0.33, or advertise advanced dispatch helpers as operational features.
+* Preserve343JUnit/577native, all original finite chains/worlds, source physics and components. New v0320-safety[-suffix] and network-v0320-safety[-suffix] worlds only. Real moving train and separate-JVM receipts must distinguish tested traffic from pure aspect helpers. Keep failures and exact ownership comparisons.
+
+* Safety checkpoint:346JUnit;584fresh and584independent-JVM required native, exact held-red/limit1owner replay; actual optional EN/RU two-client passing-loop/red→blue acceptance. Whole-body tests cover1/3/16/64cars. Preserve both failed worlds, every old case/thirty chains and all archives. Local readiness must quarantine pending occupants, not ready independent networks; unrelated edits cannot starve an active flood. A real stopped-red HeldSignal prevents repeated paid creep and persists additively. Cardinal model lamps face approaching trains; full16-heading art and the broader Gate1matrix/new8+auto workload remain pending, then Gates2/3. Do not call this full0.32.
+
+## Prior basic milestone — 0.32.0 / issue #15
 
 * The user explicitly authorizes implementation of issue15 now, from latest main69a2a6d; the earlier spec-only introduction and previous No0.32 restrictions are superseded for this task. Preserve all326JUnit/571native, source motion, exact fractional intervals, finite resources, three lifts/four circuit colors and old evidence. No0.33.
 * Actively reuse suitable MIT Create1.21.1 code with pinned provenance, full copyright/permission notice in sources/release, and separate Factorio acceptance. The user's explicit licensed reuse permission supersedes old Copy no third-party code restrictions. Create assets remain All Rights Reserved; no copied art, sounds/translations, mandatory Create/Flywheel/Catnip dependency or parallel physical train engine.

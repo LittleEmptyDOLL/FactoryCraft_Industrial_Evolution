@@ -1,3 +1,18 @@
+# Issue15 safety continuation — deterministic progress, no TPS claim
+
+The same read-only `tools/RailSignalPublicationProbe.java` was compiled against72844d0 and the current kernels, with independent classes/directories. It changes one unrelated edge between bounded advances while a connected primary component is being published. This counts work/progress, **not elapsed time, allocations or Minecraft TPS**.
+
+| Primary edges |72844d0: published during churn /visited before bound|Current: published /advances to ready /visited|
+|---|---|---|
+|80|No /1281|Yes /40 /80|
+|1000|No /16001|Yes /500 /1000|
+
+Every advance spends at most4units. The old run reaches its fixed4×edge-count advance bound; the current run stops at first readiness. Their work totals therefore represent different outcomes, not an equal-duration timing comparison. Exact JSONL receipts are in validation/v0320-safety. JUnit also protects bounded progress under unrelated edits and held-region publication/abort/release.
+
+Native1/3/16/64-car body checks arrive in102/141/207/200simulation ticks with declared finite fuel/cargo. Their logged `batchAdapterNs` cover the shared TrainData batch while the full native suite is active; they are **not isolated per-train cost or whole-server MSPT**. No timing speedup is claimed. The prior full0.31.x8-train/148-car baselines below remain intact. A comparable new8+active autonomous/mixed-length workload is still pending in Issue15; existing hosted factory/MIXED/manual-train workloads do not substitute for it.
+
+---
+
 # 0.32.0 / basic automatic train stand
 
 New native stand: four automatic trains/sixteen real paid cars, four96-block loaded rail lines, named stops and chain/regular signals, finite8coal per locomotive,88iron total and93828mBwater. Each reaches its actual stop with no rider in107simulation ticks; exact remaining+spent fuel is checked. No output is fabricated. See raw AUTO_PROFILE receipts in validation/v0320.

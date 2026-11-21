@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-safety-second",
+  "archive": "/workspace/work/v0320-safety-second-failed.tar.xz",
+  "sha256": "0a05db2c15ccd58e2ab59075fb1939a686b50d174179a2eb41941941d00d2be0",
+  "bytes": 16518444,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "FAIL: all new blue/loop/1-3-16-64 body cases passed; maximum-speed ordinary and chain tests exposed actual repeated paid acceleration after red stop. Native evidence and exact ledgers retained for the fix."
+}

@@ -8,7 +8,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_0",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -19,7 +19,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_0",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -30,7 +30,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_0",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -41,7 +41,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_0",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -52,7 +52,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_1",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -63,7 +63,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_1",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -74,7 +74,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_1",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -85,7 +85,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_1",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -96,7 +96,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_2",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -107,7 +107,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_2",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -118,7 +118,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_2",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -129,7 +129,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_2",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -140,7 +140,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_3",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -151,7 +151,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_3",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -162,7 +162,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_3",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -173,7 +173,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_3",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -184,7 +184,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_4",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -195,7 +195,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_4",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -206,7 +206,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_4",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -217,7 +217,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_0_4",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -228,7 +228,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_0",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -239,7 +239,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_0",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -250,7 +250,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_0",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -261,7 +261,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_0",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -272,7 +272,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_1",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -283,7 +283,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_1",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -294,7 +294,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_1",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -305,7 +305,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_1",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -316,7 +316,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_2",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -327,7 +327,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_2",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -338,7 +338,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_2",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -349,7 +349,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_2",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -360,7 +360,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_3",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -371,7 +371,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_3",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -382,7 +382,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_3",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -393,7 +393,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_3",
-        "y": 270
+        "y": 90
       }
     },
     {
@@ -404,7 +404,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_4",
-        "y": 0
+        "y": 180
       }
     },
     {
@@ -415,7 +415,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_4",
-        "y": 90
+        "y": 270
       }
     },
     {
@@ -426,7 +426,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_4",
-        "y": 180
+        "y": 0
       }
     },
     {
@@ -437,7 +437,7 @@
       },
       "apply": {
         "model": "factorycraft:block/automation/rail_chain_signal_1_4",
-        "y": 270
+        "y": 90
       }
     }
   ]

@@ -25,6 +25,11 @@ public final class AutoTrainState {
   public String group = "";
   public int entry, stationTicks, idleTicks, temporaryEntry, returnEntry;
   public UUID destination, activeInterrupt;
+  public UUID heldSignal;
+
+  /** Current scout refusal only; never another resource/reservation owner. */
+  public transient UUID blockingSignal;
+
   public int number;
   public Set<UUID> reserved = Set.of();
   public RailInterrupt.Match binding;
@@ -46,6 +51,7 @@ public final class AutoTrainState {
         && group.isEmpty()
         && entry == 0
         && destination == null
+        && heldSignal == null
         && activeInterrupt == null
         && invalid == null;
   }
@@ -75,6 +81,7 @@ public final class AutoTrainState {
     n.putInt("StationTicks", stationTicks);
     n.putInt("IdleTicks", idleTicks);
     if (destination != null) n.putUUID("Destination", destination);
+    if (heldSignal != null) n.putUUID("HeldSignal", heldSignal);
     if (activeInterrupt != null) {
       n.putUUID("ActiveInterrupt", activeInterrupt);
       n.putInt("TemporaryEntry", temporaryEntry);
@@ -111,6 +118,7 @@ public final class AutoTrainState {
       state.stationTicks = n.getInt("StationTicks");
       state.idleTicks = n.getInt("IdleTicks");
       if (n.hasUUID("Destination")) state.destination = n.getUUID("Destination");
+      if (n.hasUUID("HeldSignal")) state.heldSignal = n.getUUID("HeldSignal");
       if (n.hasUUID("ActiveInterrupt")) {
         state.activeInterrupt = n.getUUID("ActiveInterrupt");
         state.temporaryEntry = n.getInt("TemporaryEntry");

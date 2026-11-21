@@ -1,0 +1,13 @@
+{
+  "independentJvmCanonicalEquality": true,
+  "trains": 2,
+  "cars": 4,
+  "cargoItems": 7,
+  "coalBufferPlusSpentJ": 96000000,
+  "spentJ": 270000,
+  "heldSignal": "48860a19-e805-4df4-97e3-f8c0c5e7c0f7",
+  "limitedDestination": "a5fd46b0-2f9a-415f-9f37-890618d43638",
+  "sourcePhase": "SIGNAL_WAIT",
+  "speed": 0,
+  "checkpointSha256": "c90b5020124ce592380a67fb77e980d222f2d80243cdffdceb7bb45f47fbc817"
+}

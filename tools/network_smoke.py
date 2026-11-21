@@ -35,11 +35,11 @@ view-distance=3
 simulation-distance=3
 max-players=4
 max-tick-time=120000
-''').replace('server-port=25585','server-port='+str(PORT)).replace('spawn-animals=false','spawn-animals=true' if args.fixture in ['network-v0313','network-v0313-guards','network-v0320','network-v0320-final'] else 'spawn-animals=false'))
+''').replace('server-port=25585','server-port='+str(PORT)).replace('spawn-animals=false','spawn-animals=true' if args.fixture in ['network-v0313','network-v0313-guards','network-v0320','network-v0320-final','network-v0320-safety'] else 'spawn-animals=false'))
 
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('mode',choices=['server','client']);p.add_argument('--name',choices=['FactoryOne','FactoryTwo'],default='FactoryOne');p.add_argument('--fixture',choices=['network-v0130','network-v0301','network-v0310','network-v0311','network-v0313','network-v0313-guards','network-v0320','network-v0320-final'],default='network-v0130');p.add_argument('--optional-mods',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('mode',choices=['server','client']);p.add_argument('--name',choices=['FactoryOne','FactoryTwo'],default='FactoryOne');p.add_argument('--fixture',choices=['network-v0130','network-v0301','network-v0310','network-v0311','network-v0313','network-v0313-guards','network-v0320','network-v0320-final','network-v0320-safety'],default='network-v0130');p.add_argument('--optional-mods',action='store_true');args=p.parse_args()
 ROOT=PROJECT/'run-gametest'/args.fixture
-PORT={'network-v0130':25585,'network-v0301':25586,'network-v0310':25587,'network-v0311':25589,'network-v0313':25590,'network-v0313-guards':25591,'network-v0320':25592,'network-v0320-final':25593}[args.fixture]
+PORT={'network-v0130':25585,'network-v0301':25586,'network-v0310':25587,'network-v0311':25589,'network-v0313':25590,'network-v0313-guards':25591,'network-v0320':25592,'network-v0320-final':25593,'network-v0320-safety':25594}[args.fixture]
 prepare();kind='server' if args.mode=='server' else 'client'
 vm=PROJECT/f'build/moddev/{kind}RunVmArgs.txt';program=PROJECT/f'build/moddev/{kind}RunProgramArgs.txt'
 if not vm.is_file() or not program.is_file():raise SystemExit('Run ./gradlew writeClientLegacyClasspath writeServerLegacyClasspath prepareClientRun prepareServerRun first.')
@@ -65,7 +65,7 @@ if args.mode=='client':
         original=PROJECT/'run/options.txt';lines=original.read_text().splitlines() if original.exists() else []
         values={line.partition(':')[0]:line.partition(':')[2] for line in lines if ':' in line}
         values.update(renderDistance='3',simulationDistance='3',maxFps='10',guiScale='2',pauseOnLostFocus='false',soundCategory_master='0.0',fullscreen='false',lang='ru_ru')
-        if args.fixture in ['network-v0301','network-v0310','network-v0311','network-v0313','network-v0320','network-v0320-final']:values.update(maxFps='30',soundCategory_master='0.7',lang='en_us' if args.name=='FactoryOne' else 'ru_ru')
+        if args.fixture in ['network-v0301','network-v0310','network-v0311','network-v0313','network-v0320','network-v0320-final','network-v0320-safety']:values.update(maxFps='30',soundCategory_master='0.7',lang='en_us' if args.name=='FactoryOne' else 'ru_ru')
         options.write_text(''.join(k+':'+v+'\n' for k,v in values.items()))
 modfolders='factorycraft%%'+str(PROJECT/'build/classes/java/main')+':factorycraft%%'+str(PROJECT/'build/resources/main')
 properties=dict(line.split('=',1) for line in (PROJECT/'gradle.properties').read_text().splitlines() if '=' in line and not line.startswith('#'))
@@ -74,5 +74,5 @@ classpath=os.pathsep.join([str(game),str(PROJECT/'build/classes/java/main'),str(
 command=[str(java),'-Dfml.modFolders='+modfolders,'@'+str(vm),'-Xmx'+('1G' if args.mode=='server' else '1280M'),'-cp',classpath,'@'+str(program)]
 if args.mode=='server':
     if '--nogui' not in program.read_text():command.append('--nogui')
-else:command.extend(['--username',args.name,'--quickPlayMultiplayer','127.0.0.1:'+str(PORT),'--width','1280' if args.fixture in ['network-v0301','network-v0310','network-v0311','network-v0313','network-v0320','network-v0320-final'] else '854','--height','720' if args.fixture in ['network-v0301','network-v0310','network-v0311','network-v0313','network-v0320','network-v0320-final'] else '480'])
+else:command.extend(['--username',args.name,'--quickPlayMultiplayer','127.0.0.1:'+str(PORT),'--width','1280' if args.fixture in ['network-v0301','network-v0310','network-v0311','network-v0313','network-v0320','network-v0320-final','network-v0320-safety'] else '854','--height','720' if args.fixture in ['network-v0301','network-v0310','network-v0311','network-v0313','network-v0320','network-v0320-final','network-v0320-safety'] else '480'])
 os.chdir(folder);os.execv(str(java),command)

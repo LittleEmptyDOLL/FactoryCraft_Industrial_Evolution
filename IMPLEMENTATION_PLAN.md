@@ -1,3 +1,15 @@
+# Issue15 authorized continuation — Priority1 / signal safety
+
+Continue from72844d0 (hosted CI44805203791 succeeded). Implement local topology/body readiness and bounded dependent aspect notifications; prevent unrelated edits starving an active flood; stop repeated paid creep after real source braking at red. Keep all old343JUnit/577native, exact ledgers and old worlds.
+
+New real-native acceptance exercises two3-car opposing trains using an actual directed passing loop; selected blue-chain open/blocked alternatives on a curved four-block grade;1/3/16/64car whole-body occupancy and tail release;259.2km/h ordinary/chain red braking; independent ready movement while another graph component is rebuilding. New worlds use v0320-safety suffixes; all failures remain archived without reset. Final receipts belong in validation/v0320-safety.
+
+Verified346JUnit,584fresh+584independent-JVM native, exact held-red/limited-slot ledger and actual optional EN/RU two-client passing-loop/red→blue sample. Signal model facing corrected without changing attachment directions. Publish this checked slice normally to main and report hosted status once. Do not infer eight-active-train/high-speed junction/complete16-heading acceptance from these smaller scenarios.
+
+Remaining in Gate1: full opposing/one-way/paired/neighboring-curve/overpass/four-way-turnout and dynamic deletion/unload/claimed-junction matrix, native8+active mixed16/64-car workload versus retained baseline, and full visual orientation/grade acceptance. Then Gate2 source route/origin policy, pass-through/temporary navigation and component-aware waits; then Gate3 operational shared groups/interrupts/wildcard editors/runtime. No0.33 and no full0.32 completion claim.
+
+---
+
 # 0.32.0 — issue15 basic automation checkpoint (full milestone incomplete)
 
 Implemented source devices/research/recipes; protected multipart placement and one-return demolition; fractional UUID edge points and paired cuts; bounded regions/claims/pathfinder adapted from pinned MIT Create; native automatic intent using existing physics/fuel/ports; named station slots/priorities; explicit waits and guarded EN/RU editors; four-color contacts and diagnostic/client fixture. Existing schema1 resources/default tags stay exact.

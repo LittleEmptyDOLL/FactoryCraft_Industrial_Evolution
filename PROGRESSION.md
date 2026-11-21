@@ -1,3 +1,9 @@
+# 0.32 automation progression (current continuation)
+
+Automated Rail Transportation remains a separate source technology after Railway:200red/green units ×30seconds. It unlocks ordinary signal, chain signal and train stop recipes with the pinned source bills. This safety continuation changes no recipe, research, science, fuel balance or train type. Advanced schedule groups/interrupts remain unfinished behavior, not new fake technology unlocks. Three conveyor lifts/four circuit colors are unchanged.
+
+---
+
 ## 0.29 source-reachable solar and nuclear progression
 
 ## 0.31 rolling stock

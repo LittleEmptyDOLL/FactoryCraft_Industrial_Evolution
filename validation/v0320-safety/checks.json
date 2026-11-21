@@ -1,0 +1,17 @@
+{
+  "base": "72844d0d80146c4bfabffeb75ad8ff0d5e86c106",
+  "scope": "Priority1 safety slice, not full Issue15 Gate1/2/3 completion",
+  "junit": 346,
+  "failures": 0,
+  "native_fresh": 584,
+  "native_independent_jvm": 584,
+  "jar_sha256": "57b71696ab57b5ab91099bb096f99d06a005296a4907d39da3ae0a0f576261cb",
+  "held_chain_train": "e9f73a8d-4caa-4860-b35c-d8cbc0ef58ab",
+  "held_ticks_without_fuel_debit": 20,
+  "source_initial_kmh": 259.2,
+  "initial_kinetic_state": "declared diagnostic input; not a survival acceleration claim",
+  "native_gameplay_jar_sha256": "2c65f19b731ca5142271559d9f92c876bf1fff42f2637da82f532e4e2ad2be11",
+  "post_native_difference": "Only two signal visual blockstate rotations; real optional EN/RU client hot reload verified, final Gradle build passed; gameplay Java unchanged.",
+  "client_optional_scene": "PASS: two real trains / six cars / fourteen finite iron, native assertions with both EN/RU observers; red -> blue and corrected approach-facing lamps",
+  "full_optional_native_profile": "Left to hosted CI; local optional acceptance is the affected scene with real clients, not all584cases."
+}

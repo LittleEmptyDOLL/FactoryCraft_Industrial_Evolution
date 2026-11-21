@@ -127,6 +127,8 @@ public final class RailAutomationData extends SavedData {
   public RailwayData rails;
   private final LinkedHashSet<UUID> reconcile = new LinkedHashSet<>(),
       dirtySignals = new LinkedHashSet<>();
+  private final Map<UUID, Set<UUID>> pendingBodyEdges = new HashMap<>(),
+      pendingEdgeBodies = new HashMap<>();
   private final Map<UUID, RailSignals.View> views = new HashMap<>();
   private final Map<UUID, Set<UUID>> groupSignals = new HashMap<>(),
       signalParents = new HashMap<>();
@@ -178,7 +180,7 @@ public final class RailAutomationData extends SavedData {
     for (var edge : rails.graph.edges()) blocks.changed(edge.id());
     var trains = TrainData.get(level);
     for (var t : trains.trains()) {
-      reconcile.add(t.id);
+      pendingTrain(t);
       if (t.automation.destination != null) slots.restore(t.id, t.automation.destination);
     }
   }
@@ -356,26 +358,63 @@ public final class RailAutomationData extends SavedData {
     return !blocks.busy() && reconcile.isEmpty();
   }
 
+  /** Readiness of this body only. Unrelated rebuilds must not freeze a ready network. */
+  public boolean runtimeReady(TrainData.Train t) {
+    if (reconcile.contains(t.id)) return false;
+    var body = claims.body(t.id);
+    if (body.isEmpty()) return false;
+    for (var region : body) if (blocks.region(region) == null) return false;
+    return true;
+  }
+
+  private void pendingBody(UUID train, UUID edge) {
+    reconcile.add(train);
+    if (pendingBodyEdges.computeIfAbsent(train, k -> new HashSet<>()).add(edge)) {
+      pendingEdgeBodies.computeIfAbsent(edge, k -> new HashSet<>()).add(train);
+      blocks.hold(edge);
+    }
+  }
+
+  private void pendingTrain(TrainData.Train t) {
+    for (var span : TrackOccupancy.span(t.path, t.rear(), t.front()))
+      pendingBody(t.id, span.edge());
+  }
+
+  private void bodyReconciled(UUID train) {
+    reconcile.remove(train);
+    var edges = pendingBodyEdges.remove(train);
+    if (edges == null) return;
+    for (var edge : edges) {
+      var owners = pendingEdgeBodies.get(edge);
+      owners.remove(train);
+      if (owners.isEmpty()) {
+        pendingEdgeBodies.remove(edge);
+        blocks.release(edge);
+        for (var id : byEdge.getOrDefault(edge, Set.of())) queueSignal(id);
+      }
+    }
+  }
+
   public void trainChanged(TrainData.Train t) {
     var body = new HashSet<UUID>();
     for (var span : TrackOccupancy.span(t.path, t.rear(), t.front())) {
       if (rails.graph.edge(span.edge()) == null)
         continue; // quarantined owner; physical recovery hull still blocks
-      var members = blocks.covering(span.edge(), span.min(), span.max());
+      var members = blocks.coveringForReconciliation(span.edge(), span.min(), span.max());
       if (members == null) {
-        reconcile.add(t.id);
+        pendingTrain(t);
         return;
       }
       body.addAll(members);
     }
     claims.occupy(t.id, body);
-    reconcile.remove(t.id);
+    bodyReconciled(t.id);
   }
 
   public void trainRemoved(UUID id) {
     claims.remove(id);
     slots.release(id);
-    reconcile.remove(id);
+    bodyReconciled(id);
   }
 
   public int trainNumber(TrainData.Train t) {
@@ -409,9 +448,11 @@ public final class RailAutomationData extends SavedData {
     blocks.advance(512);
     topologyNanos += System.nanoTime() - start;
     for (var edge : blocks.takeInvalidatedEdges()) {
-      reconcile.addAll(trains.occupancy.owners(edge));
+      for (var owner : trains.occupancy.owners(edge)) pendingBody(owner, edge);
       for (var id : byEdge.getOrDefault(edge, Set.of())) queueSignal(id);
     }
+    for (var edge : blocks.takePublishedEdges())
+      for (var id : byEdge.getOrDefault(edge, Set.of())) queueSignal(id);
     int work = 0;
     for (var id : List.copyOf(reconcile)) {
       if (++work > 128) break;
@@ -420,9 +461,11 @@ public final class RailAutomationData extends SavedData {
         trainRemoved(id);
         continue;
       }
+      reconcile.remove(id);
+      reconcile.add(id); // rotate unavailable owners instead of starving later ready bodies
       trainChanged(t);
     }
-    if (runtimeReady()) {
+    {
       for (var block : claims.takeChanged())
         dirtySignals.addAll(groupSignals.getOrDefault(block, Set.of()));
       work = 0;

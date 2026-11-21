@@ -18,6 +18,11 @@ public final class RailBlockClaims {
     return Set.copyOf(bodies.getOrDefault(block, Set.of()));
   }
 
+  /** Immutable already-indexed body regions; readiness checks allocate no new intervals/sets. */
+  public Set<UUID> body(UUID train) {
+    return byTrain.getOrDefault(train, Set.of());
+  }
+
   public UUID reservation(UUID block) {
     return reserved.get(block);
   }

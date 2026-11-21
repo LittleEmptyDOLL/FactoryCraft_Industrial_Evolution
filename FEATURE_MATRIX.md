@@ -1,3 +1,17 @@
+## Issue15 continuation — Priority1 safety slice
+
+| Change | Acceptance |
+|---|---|
+| Local topology/occupant readiness | Held regions remain closed until all indexed bodies reconcile; unrelated native automatic movement continues |
+| Build progress/notifications | Unrelated churn cannot cancel an active flood; bounded affected-edge publication/hold notices refresh signals |
+| Red-stop fuel | Real source braking latches saved HeldSignal; stopped retries do not purchase traction; release resumes existing physics |
+| Native shared rail checks | Blue selected-open and selected-blocked exit on4-block grade; two3-car opposing passing loop;1/3/16/64car tail occupancy |
+| High speed | Declared initial259.2km/h ordinary/chain red braking, no nose crossing or backward snap; ordinary release reaches the station |
+| Continuation validation |346JUnit,584fresh+584independent-JVM native; actual optional EN/RU two-client passing/red→blue, approaching-side lamps corrected |
+| Full milestone | Remaining Gate1 broad traffic/dynamic/8+active/visual matrix, then Gate2 and Gate3 remain **pending in the same issue** |
+
+---
+
 ## 0.32.0 / issue15 — basic checkpoint, full milestone remains open
 
 | Mechanic | Current implementation / acceptance |

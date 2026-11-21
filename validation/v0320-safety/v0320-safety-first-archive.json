@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-safety-first",
+  "archive": "/workspace/work/v0320-safety-first-failed.tar.xz",
+  "sha256": "832f1d45db7c798167ad658d2fd9ce1f0cccaaa4031e078aaa30f706fc075fdc",
+  "bytes": 16147912,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "FAIL: three new assertions; passing-loop route history checked after legitimate trim, two new fork fixture signal foundations overlapped another branch before placement. All original tests retained; exact logs preserved."
+}

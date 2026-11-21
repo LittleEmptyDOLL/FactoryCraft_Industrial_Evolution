@@ -17,6 +17,8 @@ public final class TrainAutomation {
     a.routed = false;
     a.arrived = false;
     a.destination = null;
+    a.heldSignal = null;
+    a.blockingSignal = null;
     a.reserved = Set.of();
     var system = RailAutomationData.peek(d.level);
     if (system != null) {
@@ -56,7 +58,7 @@ public final class TrainAutomation {
         a.routeJob = null;
       }
     }
-    if (!s.runtimeReady()) {
+    if (!s.runtimeReady(t)) {
       a.phase = AutoTrainState.Phase.UNLOADED;
       return false;
     }
@@ -169,6 +171,8 @@ public final class TrainAutomation {
     t.path = route.path();
     t.direction = route.direction();
     a.targetHead = route.targetHead();
+    a.heldSignal = null;
+    a.blockingSignal = null;
     a.reservationEnd = t.direction > 0 ? t.rear() : t.front();
     a.destination = route.destination();
     a.routed = true;
@@ -200,12 +204,13 @@ public final class TrainAutomation {
     return penalty;
   }
 
-  private record Boundary(RailEdgePoints.Point point, double distance) {}
+  private record Boundary(RailEdgePoints.Point point, UUID cut, double distance) {}
 
   /** Ordered scout on the already installed directed path; never scans the whole railway. */
   public static double freeDistance(TrainData d, TrainData.Train t, double lookahead) {
     var s = RailAutomationData.get(d.level);
     var a = t.automation;
+    a.blockingSignal = null;
     double target = Math.max(0, (a.targetHead - t.head) * t.direction);
     double nose = t.direction > 0 ? t.front() : t.rear();
     var boundaries = new ArrayList<Boundary>();
@@ -239,7 +244,7 @@ public final class TrainAutomation {
         double distance = (coordinate - nose) * t.direction;
         if (distance <= target + 1e-7) {
           var side = s.signals.side(travel, p.offset());
-          boundaries.add(new Boundary(side, distance));
+          boundaries.add(new Boundary(side, p.id(), distance));
           if (side != null && side.kind() == RailEdgePoints.Kind.CHAIN && distance <= lookahead)
             seekingExit = true;
           if (side != null && side.kind() == RailEdgePoints.Kind.SIGNAL && seekingExit) {
@@ -311,7 +316,11 @@ public final class TrainAutomation {
       }
       if (chain && !exit) okay = false;
       if (!okay || !s.claims.reserve(t.id, prospective)) {
+        a.blockingSignal = b.point() == null ? b.cut() : b.point().id();
         free = Math.min(free, Math.max(0, b.distance() - .15));
+        // Once source braking has brought us to rest at this refusal, do not repeatedly
+        // purchase tiny acceleration/braking cycles. Only a successful scout releases it.
+        if (t.speed == 0 && a.heldSignal != null && a.heldSignal.equals(a.blockingSignal)) free = 0;
         break;
       }
       a.reservationEnd =
@@ -321,6 +330,7 @@ public final class TrainAutomation {
       wanted = prospective;
       i = last;
     }
+    if (a.blockingSignal == null) a.heldSignal = null;
     s.claims.reserve(t.id, wanted);
     if (!a.reserved.equals(wanted)) {
       a.reserved = Set.copyOf(wanted);

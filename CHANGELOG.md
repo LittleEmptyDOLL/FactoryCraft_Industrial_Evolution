@@ -1,3 +1,14 @@
+# 0.32.0 continuation — shared-network signal safety
+
+* Quarantine topology/body reconstruction per affected region; keep independent ready automatics moving.
+* Preserve in-progress floods during unrelated construction and budget dependent aspect notifications.
+* Persist a real stopped-red hold so repeated probes do not buy tiny acceleration/braking cycles.
+* Add native selected blue/occupied-exit recovery, opposing passing loop, curved grade,1/3/16/64car body and259.2km/h red-stop checks, retaining all earlier cases and failed evidence.
+* Correct ordinary/chain model lamp facing toward approaching stock; retain physical direction/UUID bindings.
+* This completes a tested safety slice, not all Issue15 gates, advanced dispatch or full0.32.
+
+---
+
 # 0.32.0 — Railway automation basic checkpoint (issue15 remains open)
 
 * Add source-cost signals, chain signals and stops, protected one-item structures and original models.

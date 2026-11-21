@@ -16,6 +16,7 @@ public final class RailSignalBlocks {
     public final UUID id;
     public final List<Span> spans;
     private boolean ready;
+    private int holds;
 
     Region(List<Span> spans) {
       this.spans = List.copyOf(spans);
@@ -23,7 +24,7 @@ public final class RailSignalBlocks {
     }
 
     public boolean ready() {
-      return ready;
+      return ready && holds == 0;
     }
   }
 
@@ -33,9 +34,12 @@ public final class RailSignalBlocks {
   private final Map<UUID, Span> spans = new HashMap<>();
   private final Map<UUID, Region> membership = new HashMap<>();
   private final Map<UUID, Region> regions = new HashMap<>();
+  private final Set<UUID> heldEdges = new HashSet<>();
   private final LinkedHashSet<UUID> pending = new LinkedHashSet<>();
-  private final LinkedHashSet<UUID> invalidatedEdges = new LinkedHashSet<>();
+  private final LinkedHashSet<UUID> invalidatedEdges = new LinkedHashSet<>(),
+      publishedEdges = new LinkedHashSet<>();
   private Job job;
+  private final ArrayDeque<Iterator<Span>> reconciliationNotices = new ArrayDeque<>();
   private long revision, visited;
 
   private static final class Job {
@@ -43,6 +47,7 @@ public final class RailSignalBlocks {
     final LinkedHashMap<UUID, Span> found = new LinkedHashMap<>();
     Region publishing;
     int cursor;
+    boolean notifying;
 
     Job(Span first) {
       frontier.add(first);
@@ -64,7 +69,7 @@ public final class RailSignalBlocks {
   }
 
   public boolean busy() {
-    return job != null || !pending.isEmpty();
+    return job != null || !pending.isEmpty() || !reconciliationNotices.isEmpty();
   }
 
   public List<Span> spans(UUID edge) {
@@ -73,13 +78,42 @@ public final class RailSignalBlocks {
 
   public Region region(UUID id) {
     var value = regions.get(id);
-    return value != null && value.ready ? value : null;
+    return value != null && value.ready() ? value : null;
+  }
+
+  /**
+   * Occupancy reconstruction is local and separate from topology. No partially reconciled region
+   * can authorize another train even when its topology publication has finished.
+   */
+  public void hold(UUID edge) {
+    if (!heldEdges.add(edge)) return;
+    for (var span : spans(edge)) {
+      var region = membership.get(span.id());
+      if (region != null && region.holds++ == 0 && region.ready)
+        reconciliationNotices.addLast(region.spans.iterator());
+    }
+  }
+
+  public void release(UUID edge) {
+    if (!heldEdges.remove(edge)) return;
+    for (var span : spans(edge)) {
+      var region = membership.get(span.id());
+      if (region != null && --region.holds == 0 && region.ready)
+        reconciliationNotices.addLast(region.spans.iterator());
+    }
   }
 
   /** Old component edges, for adapters to reconcile only indexed affected train owners. */
   public Set<UUID> takeInvalidatedEdges() {
     var result = Set.copyOf(invalidatedEdges);
     invalidatedEdges.clear();
+    return result;
+  }
+
+  /** Completed local publications wake dependent projections without a global signal scan. */
+  public Set<UUID> takePublishedEdges() {
+    var result = Set.copyOf(publishedEdges);
+    publishedEdges.clear();
     return result;
   }
 
@@ -119,10 +153,25 @@ public final class RailSignalBlocks {
     }
   }
 
+  private boolean touchesJob(UUID edgeId) {
+    if (job == null || job.notifying) return false;
+    for (var span : spans(edgeId)) if (job.found.containsKey(span.id())) return true;
+    var edge = graph.edge(edgeId);
+    var neighbors = new ArrayList<Span>();
+    // New edges have no old spans yet; inspect actual endpoint incidence in that case too.
+    if (edge != null) {
+      neighborsAt(edge.curve().start, edgeId, neighbors);
+      neighborsAt(edge.curve().end, edgeId, neighbors);
+    }
+    for (var span : spans(edgeId)) neighbors.addAll(neighbors(span));
+    for (var span : neighbors) if (job.found.containsKey(span.id())) return true;
+    return false;
+  }
+
   /** Call only for physical adjacency or signal-boundary edits, never volume/occupancy changes. */
   public void changed(UUID edgeId) {
-    if (job != null) {
-      // Abort publication atomically; no partly published component becomes ready.
+    if (touchesJob(edgeId)) {
+      // Abort only a touched flood/publication; unrelated construction must not starve it.
       for (var s : job.found.values()) if (current(s)) pending.add(s.id());
       job = null;
     }
@@ -171,6 +220,14 @@ public final class RailSignalBlocks {
   public int advance(int budget) {
     if (budget < 0) throw new IllegalArgumentException("Budget");
     int work = 0;
+    int notificationBudget = Math.max(1, budget / 4);
+    while (work < budget && work < notificationBudget && !reconciliationNotices.isEmpty()) {
+      var notice = reconciliationNotices.getFirst();
+      if (notice.hasNext()) {
+        publishedEdges.add(notice.next().edge());
+        work++;
+      } else reconciliationNotices.removeFirst();
+    }
     while (work < budget) {
       if (job == null) {
         if (pending.isEmpty()) break;
@@ -181,16 +238,27 @@ public final class RailSignalBlocks {
         if (span == null || region != null && region.ready) continue;
         job = new Job(span);
       }
+      if (job.notifying) {
+        if (job.cursor < job.publishing.spans.size()) {
+          publishedEdges.add(job.publishing.spans.get(job.cursor++).edge());
+          work++;
+          continue;
+        }
+        job = null;
+        continue;
+      }
       if (job.publishing != null) {
         if (job.cursor < job.publishing.spans.size()) {
           var span = job.publishing.spans.get(job.cursor++);
           membership.put(span.id(), job.publishing);
+          if (heldEdges.contains(span.edge())) job.publishing.holds++;
           work++;
           continue;
         }
         job.publishing.ready = true;
         regions.put(job.publishing.id, job.publishing);
-        job = null;
+        job.notifying = true;
+        job.cursor = 0;
         revision++;
         continue;
       }
@@ -222,18 +290,27 @@ public final class RailSignalBlocks {
       else hi = mid;
     }
     var region = membership.get(all.get(lo).id());
-    return region != null && region.ready ? region : null;
+    return region != null && region.ready() ? region : null;
   }
 
   /** Null means unknown, never an empty set that would authorize entry during a rebuild. */
   public Set<UUID> covering(UUID edge, double from, double to) {
+    return covering(edge, from, to, true);
+  }
+
+  /** Only the canonical body reconciler may read a topology-ready but held region. */
+  public Set<UUID> coveringForReconciliation(UUID edge, double from, double to) {
+    return covering(edge, from, to, false);
+  }
+
+  private Set<UUID> covering(UUID edge, double from, double to, boolean requireSettled) {
     var all = spans(edge);
     if (all.isEmpty()) return null;
     var result = new HashSet<UUID>();
     for (var s : all) {
       if (s.to() < from + 1e-8 || s.from() > to - 1e-8) continue;
       var region = membership.get(s.id());
-      if (region == null || !region.ready) return null;
+      if (region == null || !region.ready || requireSettled && region.holds != 0) return null;
       result.add(region.id);
     }
     return Set.copyOf(result);

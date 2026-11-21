@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-safety-third",
+  "archive": "/workspace/work/v0320-safety-third-checkpoint.tar.xz",
+  "sha256": "6b418c93759578b5dd68bef472a955e929de5cc4e48f2707bc0f81c37e37bb16",
+  "bytes": 29594080,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "PASS:584 fresh and584 independent-JVM native; exact held chain red, one limited destination slot, full finite owners/route/energy/cargo replay; every old test and thirty chains retained."
+}

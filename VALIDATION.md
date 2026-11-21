@@ -1,3 +1,17 @@
+# Issue15 safety continuation —21November2026
+
+Build/346JUnit pass, zero failures/errors/skips. **584/584required native GameTests** pass on a fresh `v0320-safety-third` world and **584/584again in a genuinely independent JVM** on that same unreset world. All earlier registered cases and thirty finite production chains remain enabled. Two earlier failing worlds/logs remain in byte-compared archives with manifests.
+
+New actual native checks: selected-open blue chain on a curved4-block grade, selected-occupied blue route held then released; opposing3-car trains passing on one real directed bypass network;1/3/16/64-car whole-body/tail claims; declared initial259.2km/h ordinary and chain red braking with no nose crossing/backward snap;20stopped ticks without fuel debit; ordinary release actually reaches the station; independent ready automatic movement during unrelated rebuild. The speed fixture declares initial kinetic state, not a survival acceleration result.
+
+The independent-JVM held-red record compares complete canonical train/route/automation/energy/cargo NBT and restores exactly one commitment to a limit1destination. The read-only ledger verifies2trains/4cars/7component-bearing iron/96MJcoal+buffer+spent (270kJspent), saved HeldSignal and0speed. Source physics,1:10fluids and legacy default-omitted schema1 owners remain covered by the existing suite.
+
+Real EN/RU optional-mod clients observed the same6-car opposing passing loop, live source motion and the red→blue transition after exit clearance. The normal/chain lamp facing was corrected by a180degree **visual blockstate rotation only** and reloaded/inspected on both clients from the approaching side. Server blockstate checks and rendered lights agree. The scene's native assertions also passed with FTB Teams/Library, Architectury, EMI, JEI, Jade, Apothic/Placebo present. This is not a new complete optional-native regression run; that hosted profile remains CI. QA used explicit5TPS/freeze/step for inspection, then restored20TPS to complete the actual scene; its wall time is not a performance measurement.
+
+Final artifact hash, logs, before/after progress counts, restart ledger, screenshots and exact remaining coverage: [validation/v0320-safety](validation/v0320-safety). Gameplay Java is identical to the two full native passes; the later difference is the two visually tested JSON signal rotations. Full gates remain open: broader dynamic traffic/claimed-junction/overpass/16-heading matrix and a new8+active-auto workload, then Gate2 dispatch/pass-through/temporary/component-aware controls and Gate3 operational groups/interrupts/wildcards. Do not infer these from the passing small scenarios or the pre-existing hosted heavy jobs. No0.33.
+
+---
+
 # 0.32.0 / issue15 — validated basic automation checkpoint, full milestone remains open
 
 Final build: **343JUnit, zero failures/errors/skips**. Native GameTestServer:575fresh base;576on the same untouched world in an independent JVM;577with FTB Teams/Library/Architectury, EMI/JEI, Jade and Apothic/Placebo; latest577/577with the recovery fairness correction and strict torch/flower readiness. Every original571case and thirty finite production chains remain mandatory. Final package hash and exact scope are in [validation/v0320/build.json](validation/v0320/build.json). The only subsequent code difference from the final577native pass is a diagnostic-only duplicate-forceload dirty-flag guard, built/JUnit-checked; gameplay/rendering code is unchanged.

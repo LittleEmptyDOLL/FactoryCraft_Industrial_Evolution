@@ -371,4 +371,90 @@ class RailAutomationKernelTest {
     assertFalse(
         RailWait.ready(List.of(condition), c -> OptionalLong.of(1230), c -> c.value() * 10));
   }
+
+  @Test
+  void bodyReconciliationHoldsOnlyItsPublishedRegionUntilEveryOwnerIsIndexed() {
+    var g = new RailGraph();
+    var a = edge(g, 0, 70, 0, -32);
+    var b = edge(g, 0, 70, -32, -64);
+    var other = edge(g, 16, 70, 0, -64);
+    var blocks = new RailSignalBlocks(g, new RailEdgePoints());
+    blocks.hold(a.id());
+    blocks.hold(b.id());
+    for (var e : g.edges()) blocks.changed(e.id());
+    finish(blocks);
+    assertNotNull(blocks.at(other.id(), 10, true));
+    assertNull(blocks.at(a.id(), 10, true));
+    assertNotNull(blocks.coveringForReconciliation(a.id(), 0, 20));
+    blocks.release(a.id());
+    assertNull(blocks.at(a.id(), 10, true));
+    blocks.release(b.id());
+    assertNotNull(blocks.at(a.id(), 10, true));
+    blocks.hold(a.id());
+    blocks.hold(a.id()); // repeated invalidations cannot leave a permanent hold
+    blocks.changed(a.id());
+    blocks.advance(1);
+    blocks.changed(b.id()); // publication abort must not leak holds into the replacement
+    finish(blocks);
+    assertNull(blocks.at(b.id(), 10, true));
+    blocks.release(a.id());
+    assertNotNull(blocks.at(b.id(), 10, true));
+  }
+
+  @Test
+  void divergentChainIsBlueAndEachSelectedExitRemainsIndependentlyProtected() {
+    var g = new RailGraph();
+    var approach = edge(g, 0, 70, 0, -64);
+    var straight = edge(g, 0, 70, -64, -128);
+    var fork =
+        new RailGraph.Edge(
+            UUID.randomUUID(),
+            RailCurve.plan(approach.curve().end, new RailEnd(32, 74, -96, new RailHeading(4))));
+    g.add(fork);
+    var points = new RailEdgePoints();
+    var chain = point(approach.id(), 40, false, RailEdgePoints.Kind.CHAIN);
+    var a = point(straight.id(), 20, false, RailEdgePoints.Kind.SIGNAL);
+    var b = point(fork.id(), 20, false, RailEdgePoints.Kind.SIGNAL);
+    for (var p : List.of(chain, a, b)) points.put(p, g);
+    var blocks = new RailSignalBlocks(g, points);
+    for (var e : g.edges()) blocks.changed(e.id());
+    finish(blocks);
+    var claims = new RailBlockClaims();
+    var signals = new RailSignals(g, points, blocks, claims, p -> true, p -> false);
+    var blocked = blocks.at(straight.id(), 20, true).id;
+    var open = blocks.at(fork.id(), 20, true).id;
+    var junction = blocks.at(approach.id(), 40, true).id;
+    var parked = UUID.randomUUID();
+    var arriving = UUID.randomUUID();
+    claims.occupy(parked, Set.of(blocked));
+    assertEquals(RailSignals.Aspect.BLUE, signals.view(chain).aspect());
+    assertFalse(claims.reserve(arriving, Set.of(junction, blocked)));
+    assertNull(claims.reservation(junction));
+    assertTrue(claims.reserve(arriving, Set.of(junction, open)));
+    assertEquals(RailSignals.Aspect.YELLOW, signals.view(chain).aspect());
+    claims.occupy(arriving, Set.of(junction, open));
+    assertEquals(RailSignals.Aspect.RED, signals.view(chain).aspect());
+    claims.remove(arriving);
+    claims.remove(parked);
+    assertEquals(RailSignals.Aspect.GREEN, signals.view(chain).aspect());
+  }
+
+  @Test
+  void continuousUnrelatedEditsCannotAbortAndStarveAnInProgressLocalFlood() {
+    var g = new RailGraph();
+    var main = new ArrayList<RailGraph.Edge>();
+    for (int i = 0; i < 80; i++) main.add(edge(g, 0, 70, -i * 16, -(i + 1) * 16));
+    var unrelated = edge(g, 32, 70, 0, -32);
+    var points = new RailEdgePoints();
+    var blocks = new RailSignalBlocks(g, points);
+    for (var e : main) blocks.changed(e.id());
+    blocks.advance(1);
+    for (int i = 0; i < 500 && blocks.at(main.getFirst().id(), 4, true) == null; i++) {
+      blocks.changed(unrelated.id());
+      assertTrue(blocks.advance(2) <= 2);
+    }
+    assertNotNull(blocks.at(main.getFirst().id(), 4, true), "unrelated churn starved publication");
+    assertTrue(blocks.visited() <= 85, "untouched component was repeatedly reflooded");
+    finish(blocks);
+  }
 }

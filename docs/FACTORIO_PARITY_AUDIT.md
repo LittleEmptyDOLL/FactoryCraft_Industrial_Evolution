@@ -1,3 +1,13 @@
+# Current0.32 / issue15 continuation — scope and source boundaries
+
+Basic source-cost signals/stops, fractional blocks, named explicit-wait schedules and native driverless paid movement are implemented. This continuation repairs local fail-closed body publication and paid red-stop retry creep; real shared-network blue-chain/grade/passing-loop and1/3/16/64car body checks are covered in validation/v0320-safety. The original3×60Hz source motion, exact metric intervals, native resource owners and1:10fluid scale are preserved.
+
+Remaining differences: adapted1000/block routing penalty and incomplete origin dispatch policy; pass-through/temporary destinations; component-aware wait editor; operational groups/interrupts/wildcards; full junction/opposing/overpass/high-speed/8+active-workload/16-heading visual acceptance. No at-grade diamonds or hidden mid-edge junctions are introduced. Source maximum-speed fixtures declare initial kinetic state; they do not establish survival acceleration. Full0.32 is not complete.
+
+The dated foundation audits below are historical; later0.32 status above supersedes their old no-signals/no-code-reuse statements. MIT Create adaptations/provenance and the distributed full license remain in THIRD_PARTY_NOTICES.md; no protected Factorio/Create assets or mandatory Create dependency are included.
+
+---
+
 ## 0.30 railway foundation audit
 
 ## 0.31 rolling stock (issue13)

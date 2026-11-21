@@ -1,3 +1,9 @@
+## Issue15 continuation — local signal safety
+
+Region topology and occupant reconstruction have separate readiness. A ready topology with pending canonical bodies cannot grant entry; another independent network remains usable. Boundary/hold publication wakes indexed signals with bounded work, including after a long partial build. Construction elsewhere cannot repeatedly cancel and starve that build. See validation/v0320-safety for before/after deterministic work receipts and native acceptance boundaries. Normal/chain route claims still go through the original TrackOccupancy and oriented swept hull protections; no diamond or separate motion engine is introduced.
+
+---
+
 # 0.32.0 — physical trackside devices
 
 Rail signal and chain signal use original1×1×2models; train stop is one automatically formed2×2×3structure. Native source recipes/Automated Rail Transportation use Factorio2.1.24 costs: signal or chain1circuit+5iron plates; stop5circuits+6iron plates+6iron sticks+3steel; research200red/green×30s, prerequisite Railway. Physical metadata records source health100/100/250; a general damageable-machine health layer is not added by this checkpoint.

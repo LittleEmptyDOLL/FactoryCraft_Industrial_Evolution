@@ -1,0 +1,2 @@
+{"profile":"deterministic-local-publication-progress","mainEdges":80,"budgetPerAdvance":4,"readyDuringUnrelatedEdits":true,"advancesToReady":40,"visited":80,"work":160}
+{"profile":"deterministic-local-publication-progress","mainEdges":1000,"budgetPerAdvance":4,"readyDuringUnrelatedEdits":true,"advancesToReady":500,"visited":1000,"work":2000}
