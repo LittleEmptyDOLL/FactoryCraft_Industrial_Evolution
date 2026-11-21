@@ -1,3 +1,9 @@
+## Issue15 traffic verification
+
+The finite native matrix now covers an actual2-approach/2-exit turnout built only from existing endpoint junctions, independent overlaid tracks8blocks apart, source-max braking before a selected congested blue route, and saved occupied/reserved junction reconciliation followed by actual completion after restart. Dynamic station/signal loss and real chunk unload restore canonical identities without changing paid rail ownership. No at-grade diamond or virtual paid rail split was introduced. Eight native automatic trains are measured on independent lines; this does not certify eight-way shared-junction congestion. Remaining16-heading/grade art/arrival ghosts belong to the same Issue15 continuation.
+
+---
+
 ## Issue15 continuation — local signal safety
 
 Region topology and occupant reconstruction have separate readiness. A ready topology with pending canonical bodies cannot grant entry; another independent network remains usable. Boundary/hold publication wakes indexed signals with bounded work, including after a long partial build. Construction elsewhere cannot repeatedly cancel and starve that build. See validation/v0320-safety for before/after deterministic work receipts and native acceptance boundaries. Normal/chain route claims still go through the original TrackOccupancy and oriented swept hull protections; no diamond or separate motion engine is introduced.

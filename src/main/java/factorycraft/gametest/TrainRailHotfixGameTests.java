@@ -79,10 +79,17 @@ public final class TrainRailHotfixGameTests {
     h.startSequence()
         .thenWaitUntil(
             () -> {
-              for (long key : pins)
-                h.assertTrue(
-                    h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
-                    "waiting for real torch-drop entity visibility");
+              // Only the actual loot chunk owns this drop. Far padding pins do not
+              // participate in the item transaction and may still be loading asynchronously.
+              long key = new net.minecraft.world.level.ChunkPos(o.north(8)).toLong();
+              h.assertTrue(
+                  h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
+                  "waiting for actual torch-drop chunk "
+                      + key
+                      + " entities="
+                      + h.getLevel().areEntitiesLoaded(key)
+                      + " ticking="
+                      + h.getLevel().shouldTickBlocksAt(key));
             })
         .thenExecute(
             () -> {
@@ -372,10 +379,17 @@ public final class TrainRailHotfixGameTests {
     h.startSequence()
         .thenWaitUntil(
             () -> {
-              for (long key : pins)
-                h.assertTrue(
-                    h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
-                    "waiting for real flower-drop entity visibility");
+              // Only the actual loot chunk owns this drop. Far padding pins do not
+              // participate in the item transaction and may still be loading asynchronously.
+              long key = new net.minecraft.world.level.ChunkPos(o.north(8)).toLong();
+              h.assertTrue(
+                  h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
+                  "waiting for actual flower-drop chunk "
+                      + key
+                      + " entities="
+                      + h.getLevel().areEntitiesLoaded(key)
+                      + " ticking="
+                      + h.getLevel().shouldTickBlocksAt(key));
             })
         .thenExecute(
             () -> {

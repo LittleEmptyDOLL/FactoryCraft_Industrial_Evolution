@@ -1,3 +1,16 @@
+## Issue15 traffic continuation — tested native coverage
+
+| Area | Implemented / verified |
+|---|---|
+|Eight automatic trains|Opt-in native8/150 /6144m /72devices, no riders, both stop visits/directions, finite items/fluid/fuel, real unload/reload, two exact independent-JVM verifications|
+|Shared traffic|Actual2-in/2-out endpoint turnout (no diamond), opposing passing loop retained, separate upper/lower tracks|
+|Dynamic changes|Real unload/reload; committed station removal/brake/same-name alternate; occupied signal protection/environment loss/one-refund restoration|
+|Congestion/braking|Declared initial259.2km/h selected blocked exit on real divergent turnout; no crossing/snap/unpaid retry; real release/arrival|
+|Claimed junction restart|Full canonical snapshots, exclusive claim restored before release, both actual trains complete after independent startup|
+|Remaining Issue15|Gate2 source dispatch/pass-through/temporary/component UI; Gate3 groups/interrupts/wildcards runtime/editors; broad client16-angle/grade/arrival art and8-way shared congestion are not certified by the finite cases|
+
+---
+
 ## Issue15 continuation — Priority1 safety slice
 
 | Change | Acceptance |

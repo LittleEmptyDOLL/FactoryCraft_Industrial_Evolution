@@ -3,6 +3,8 @@ package factorycraft.diagnostics;
 import com.google.gson.*;
 import factorycraft.FactoryCraft;
 import factorycraft.rail.*;
+import factorycraft.rail.automation.*;
+import factorycraft.research.ResearchTeams;
 import factorycraft.simulation.benchmark.TickSamples;
 import factorycraft.simulation.rail.*;
 import factorycraft.simulation.trains.*;
@@ -110,8 +112,14 @@ public final class TrainServerBenchmark {
     final Path root;
     final TrainData data;
     final RailwayData rails;
-    final boolean verify;
+    final boolean verify, automatic;
     final int[] sizes = {1, 3, 8, 16, 32, 64, 8, 16};
+    final long[] movingByConsist = new long[8], visits = new long[8];
+    final boolean[] wasArrived = new boolean[8];
+    final double[] lastDistance = new double[8],
+        forwardDistance = new double[8],
+        reverseDistance = new double[8];
+    boolean devicesSeeded;
     final List<List<UUID>> lines = new ArrayList<>();
     final List<Set<Long>> tickets = new ArrayList<>();
     final ArrayList<TrainData.Train> trains = new ArrayList<>();
@@ -141,6 +149,8 @@ public final class TrainServerBenchmark {
       data = TrainData.get(level);
       rails = RailwayData.get(level);
       verify = System.getProperty("factorycraft.trainBenchmark.mode").equals("verify");
+      automatic = Boolean.getBoolean("factorycraft.trainBenchmark.automatic");
+      if (automatic) sizes[0] = 3; // a real outward locomotive at each end, no fake driver
     }
 
     void start() throws Exception {
@@ -158,8 +168,23 @@ public final class TrainServerBenchmark {
                 .getCompound("Rails")
                 .equals(rails.save(new CompoundTag(), level.registryAccess())),
             "Independent JVM rail claims mismatch");
+        FactoryBenchmarkWorld.require(
+            expected.getBoolean("Automatic") == automatic, "Checkpoint control profile mismatch");
+        if (automatic) {
+          var system = RailAutomationData.get(level);
+          FactoryBenchmarkWorld.require(
+              expected
+                  .getCompound("Automation")
+                  .equals(system.save(new CompoundTag(), level.registryAccess())),
+              "Independent JVM trackside identity/settings mismatch");
+          for (var t : data.trains())
+            FactoryBenchmarkWorld.require(
+                Objects.equals(system.slots.destination(t.id), t.automation.destination),
+                "Independent JVM destination commitment mismatch");
+        }
         var r = new JsonObject();
         r.addProperty("status", "PASS");
+        r.addProperty("automatic", automatic);
         r.addProperty("independentJvmExactOwners", true);
         r.addProperty("trains", data.trains().size());
         r.addProperty("cars", data.trains().stream().mapToInt(t -> t.cars.size()).sum());
@@ -237,7 +262,7 @@ public final class TrainServerBenchmark {
             new TrainData.Train(
                 UUID.randomUUID(),
                 builder.getUUID(),
-                "vanilla:train-load-qa",
+                automatic ? ResearchTeams.resolve(builder).orElseThrow() : "vanilla:train-load-qa",
                 new TrainPath(legs),
                 Math.max(96, sizes[line] * 7 + 20));
         for (int i = 0; i < sizes[line]; i++) {
@@ -249,7 +274,7 @@ public final class TrainServerBenchmark {
           if (kind == StockSpec.LOCOMOTIVE) {
             c.items.setStackInSlot(0, new ItemStack(Items.COAL, 8));
             initialFuel += 32000000L;
-            c.reversed = i == sizes[line] - 1 && i > 0;
+            c.reversed = i == sizes[line] - 1 && i > 0 || automatic && i % 8 == 0 && i / 8 % 2 == 1;
           } else if (kind == StockSpec.CARGO) {
             var item = new ItemStack(Items.IRON_INGOT, 31);
             item.set(DataComponents.CUSTOM_NAME, Component.literal("finite train load cargo"));
@@ -272,12 +297,13 @@ public final class TrainServerBenchmark {
     }
 
     boolean ready() {
-      return trains.stream()
-          .allMatch(
-              t ->
-                  TrainWorld.available(data, t)
-                      && t.cars.stream()
-                          .allMatch(c -> level.getEntity(c.id) instanceof StockEntity));
+      return (!automatic || devicesSeeded && RailAutomationData.get(level).runtimeReady())
+          && trains.stream()
+              .allMatch(
+                  t ->
+                      TrainWorld.available(data, t)
+                          && t.cars.stream()
+                              .allMatch(c -> level.getEntity(c.id) instanceof StockEntity));
     }
 
     ServerPlayer driver(StockEntity view) {
@@ -301,6 +327,10 @@ public final class TrainServerBenchmark {
     }
 
     void drive(boolean release) {
+      if (automatic) {
+        observeAutomatic(release);
+        return;
+      }
       for (int i = 0; i < trains.size(); i++) {
         if (release && i == 3) continue;
         var t = trains.get(i);
@@ -326,11 +356,101 @@ public final class TrainServerBenchmark {
       }
     }
 
+    RailAutomationData.Device device(
+        int line, int at, boolean reverse, TracksideKind kind, String name) {
+      int x = 2048 + line * 128;
+      var anchor = new BlockPos(x + (reverse ? -4 : 3), 80, -2048 - at);
+      for (int dx = 0; dx < kind.width; dx++)
+        for (int dz = 0; dz < kind.width; dz++)
+          level.setBlockAndUpdate(anchor.offset(dx, -1, dz), Blocks.STONE.defaultBlockState());
+      builder.setPos(anchor.getX() + .5, 80, anchor.getZ() + 2.5);
+      builder.setItemInHand(
+          net.minecraft.world.InteractionHand.MAIN_HAND,
+          new ItemStack(TracksideContent.ITEMS.get(kind).get()));
+      var plan = TracksidePlacement.plan(level, anchor, kind, reverse ? 0 : 180);
+      FactoryBenchmarkWorld.require(
+          plan.edge() != null && plan.reverse() == reverse,
+          "Native auto-profile directed attachment");
+      FactoryBenchmarkWorld.require(
+          TracksidePlacement.place(builder, net.minecraft.world.InteractionHand.MAIN_HAND, plan)
+              .equals("ready"),
+          "Native auto-profile device placement");
+      var system = RailAutomationData.get(level);
+      var device = system.at(anchor);
+      var config = device.settings();
+      config.putString("Name", name);
+      config.putInt("Limit", 1);
+      system.configure(device, config);
+      return device;
+    }
+
+    void seedDevices() {
+      for (int i = 0; i < 8; i++) {
+        device(i, 744, false, TracksideKind.STOP, "Profile north " + i);
+        device(i, 24, true, TracksideKind.STOP, "Profile south " + i);
+        if (sizes[i] <= 16) {
+          for (int at : new int[] {192, 256, 448, 512}) {
+            boolean entry = at == 192 || at == 448;
+            device(
+                i, at, false, entry ? TracksideKind.CHAIN : TracksideKind.SIGNAL, "Forward " + at);
+            device(
+                i, at, true, entry ? TracksideKind.SIGNAL : TracksideKind.CHAIN, "Reverse " + at);
+          }
+        } else
+          for (int at : new int[] {256, 512})
+            for (boolean reverse : new boolean[] {false, true})
+              device(i, at, reverse, TracksideKind.SIGNAL, "Long block " + at);
+        var wait = new RailWait.Condition(RailWait.Type.TIME, "", RailWait.Comparison.GE, 2, false);
+        trains.get(i).automation.schedule =
+            new RailSchedule(
+                List.of(
+                    new RailSchedule.Entry("Profile north " + i, List.of(wait)),
+                    new RailSchedule.Entry("Profile south " + i, List.of(wait))),
+                List.of());
+        lastDistance[i] = trains.get(i).distance;
+      }
+      data.setDirty();
+      devicesSeeded = true;
+    }
+
+    void observeAutomatic(boolean release) {
+      for (int i = 0; i < 8; i++) {
+        var t = trains.get(i);
+        FactoryBenchmarkWorld.require(
+            t.automation.automatic
+                && t.driver == null
+                && t.cars.stream()
+                    .noneMatch(
+                        c ->
+                            level.getEntity(c.id) instanceof StockEntity view
+                                && !view.getPassengers().isEmpty()),
+            "Automatic profile has a driver or lost its mode");
+        if (t.automation.arrived && !wasArrived[i]) visits[i]++;
+        wasArrived[i] = t.automation.arrived;
+        double delta = t.distance - lastDistance[i];
+        lastDistance[i] = t.distance;
+        if (delta > 0) forwardDistance[i] += delta;
+        else reverseDistance[i] -= delta;
+        if (t.speed > 0) {
+          movingSamples++;
+          movingByConsist[i]++;
+          if (t.direction < 0) reverseSamples[i]++;
+        }
+      }
+    }
+
+    boolean allServiced() {
+      for (int i = 0; i < 8; i++)
+        if (visits[i] < 2 || forwardDistance[i] < 16 || reverseDistance[i] < 16) return false;
+      return true;
+    }
+
     CompoundTag snapshot(TrainData.Train t) {
       var n = new CompoundTag();
       n.putDouble("Head", t.head);
       n.putDouble("Speed", t.speed);
       n.putDouble("Distance", t.distance);
+      if (automatic) n.put("Automation", t.automation.save());
       var list = new ListTag();
       for (var c : t.cars) list.add(c.save(level.registryAccess()));
       n.put("Cars", list);
@@ -372,7 +492,13 @@ public final class TrainServerBenchmark {
         case "settle" -> {
           if (trains.isEmpty()
               && lines.stream().flatMap(Collection::stream).allMatch(rails::available)) seed();
+          if (automatic && !trains.isEmpty() && !devicesSeeded) seedDevices();
           if (!trains.isEmpty() && ready()) {
+            if (automatic) {
+              for (var t : trains)
+                FactoryBenchmarkWorld.require(
+                    TrainAutomation.automatic(data, t), "Automatic profile startup");
+            }
             audit();
             next("warmup");
           }
@@ -396,9 +522,9 @@ public final class TrainServerBenchmark {
         case "reversals" -> {
           drive(false);
           audit();
-          if (tick >= 180) {
+          if (automatic ? allServiced() : tick >= 180) {
             var t = trains.get(3);
-            drivers.get(3).stopRiding();
+            if (!automatic) drivers.get(3).stopRiding();
             frozen = snapshot(t);
             stale =
                 ((StockEntity) level.getEntity(t.cars.getFirst().id))
@@ -410,6 +536,9 @@ public final class TrainServerBenchmark {
               level.setChunkForced(ChunkPos.getX(c), ChunkPos.getZ(c), false);
             next("unload");
           }
+          if (automatic && tick > 2400)
+            throw new IllegalStateException(
+                "Automatic complete outbound/return service timeout " + Arrays.toString(visits));
         }
         case "unload" -> {
           drive(true);
@@ -452,12 +581,41 @@ public final class TrainServerBenchmark {
       // Freeze exactly at the measured paid pose, including nonzero speed, before the process
       // exits.
       var checkpoint = new CompoundTag();
+      if (automatic) {
+        checkpoint.putBoolean("Automatic", true);
+        checkpoint.put(
+            "Automation",
+            RailAutomationData.get(level).save(new CompoundTag(), level.registryAccess()));
+        FactoryBenchmarkWorld.require(
+            drivers.isEmpty(), "Automatic workload used a mounted driver");
+        for (int i = 0; i < 8; i++)
+          FactoryBenchmarkWorld.require(
+              visits[i] >= 2
+                  && forwardDistance[i] > 16
+                  && reverseDistance[i] > 16
+                  && movingByConsist[i] > 20,
+              "Incomplete real two-ended automatic service");
+      }
       checkpoint.put("Trains", data.save(new CompoundTag(), level.registryAccess()));
       checkpoint.put("Rails", rails.save(new CompoundTag(), level.registryAccess()));
       NbtIo.writeCompressed(checkpoint, root.resolve("checkpoint.nbt"));
       var r = new JsonObject();
       r.addProperty("status", "PASS");
       r.addProperty("trains", 8);
+      r.addProperty("automatic", automatic);
+      r.add("sizes", JSON.toJsonTree(sizes));
+      if (automatic) {
+        r.add("movingSamplesByConsist", JSON.toJsonTree(movingByConsist));
+        r.add("completedStopVisits", JSON.toJsonTree(visits));
+        r.add("forwardMeters", JSON.toJsonTree(forwardDistance));
+        r.add("reverseMeters", JSON.toJsonTree(reverseDistance));
+        var system = RailAutomationData.get(level);
+        r.addProperty("tracksideDevices", system.devices.size());
+        r.addProperty("topologyNanos", system.topologyNanos);
+        r.addProperty("routeNodes", system.pathNodes);
+        r.addProperty("routeNanos", system.pathNanos);
+        r.addProperty("aspectUpdates", system.aspectUpdates);
+      }
       r.addProperty("cars", Arrays.stream(sizes).sum());
       r.addProperty("railSegments", 48);
       r.addProperty("railLength", 6144);

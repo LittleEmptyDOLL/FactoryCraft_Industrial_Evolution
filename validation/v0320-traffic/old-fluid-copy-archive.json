@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/gametest-before-fluid-unload-fix-v030",
+  "archive": "/workspace/work/old-fluid-unload-v030-preserved.tar.xz",
+  "sha256": "a81f3e237ea431c2eb5accb6993f044025602c50ef1ce7a95fdc11f308b306d3",
+  "bytes": 4216340,
+  "verified": "tar --compare before removing closed pre-existing diagnostic copy",
+  "purpose": "disk headroom; historic failed fluid evidence remains losslessly preserved"
+}

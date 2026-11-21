@@ -106,6 +106,7 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'factorycraft.trainBenchmark.fixture', providers.gradleProperty('trainFixture').getOrElse('trains-v0311-local')
             systemProperty 'factorycraft.trainBenchmark.mode', providers.gradleProperty('trainMode').getOrElse('measure')
+            systemProperty 'factorycraft.trainBenchmark.automatic', providers.gradleProperty('trainControl').map { it == 'automatic' ? 'true' : 'false' }.getOrElse('false')
             jvmArgument '-Xms512m'
             jvmArgument '-Xmx2G'
         }
@@ -347,12 +348,14 @@ tasks.named('runFluidBenchmarkServer') {
 
 // Separate opt-in train workload. Existing worlds are never reset or reseeded.
 def trainFixture = providers.gradleProperty('trainFixture').getOrElse('trains-v0311-local')
-if (!(trainFixture ==~ /trains-v031[01]-[a-z0-9-]+/)) throw new GradleException('Invalid isolated train fixture.')
+if (!(trainFixture ==~ /trains-v0(?:310|311|320)-[a-z0-9-]+/)) throw new GradleException('Invalid isolated train fixture.')
 def trainDir = project.file('run-benchmark/' + trainFixture)
 def trainMode = providers.gradleProperty('trainMode').getOrElse('measure')
+def trainControl = providers.gradleProperty('trainControl').getOrElse('manual')
 tasks.register('prepareTrainBenchmark') {
     doLast {
         if (!(trainMode in ['measure','verify'])) throw new GradleException('Invalid train mode.')
+        if (!(trainControl in ['manual','automatic'])) throw new GradleException('Invalid train control.')
         def marker = new File(trainDir,'train-benchmark.marker')
         if (java.nio.file.Files.isSymbolicLink(trainDir.toPath()) || trainDir.exists() && trainDir.list().length > 0 && (!marker.isFile() || marker.text != 'FactoryCraft train workload v1\n')) throw new GradleException('Unmarked train world.')
         if (trainMode == 'measure' && new File(trainDir,'world/level.dat').exists()) throw new GradleException('Existing train world must not be reseeded.')

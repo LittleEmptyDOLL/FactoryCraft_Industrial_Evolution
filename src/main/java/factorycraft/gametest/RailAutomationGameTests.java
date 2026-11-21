@@ -30,9 +30,9 @@ public final class RailAutomationGameTests {
     double side = reverse ? -3.5 : 3.5;
     var anchor =
         BlockPos.containing(
-            q.x() - frame.tangent().z() * side - kind.width * .5,
+            q.x() - frame.tangent().z() * side - kind.width * .5 + 1e-7,
             q.y(),
-            q.z() + frame.tangent().x() * side - kind.width * .5);
+            q.z() + frame.tangent().x() * side - kind.width * .5 + 1e-7);
     for (int x = 0; x < kind.width; x++)
       for (int z = 0; z < kind.width; z++) {
         h.getLevel().setBlock(anchor.offset(x, -1, z), Blocks.STONE.defaultBlockState(), 3);

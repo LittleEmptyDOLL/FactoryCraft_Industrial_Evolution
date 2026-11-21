@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-safety-traffic-first",
+  "archive": "/workspace/work/v0320-safety-traffic-first-failed.tar.xz",
+  "sha256": "f6451602646ac4beca9824b7fec14149d28eb9ebccc4c608314d395b2fac2439",
+  "bytes": 17592220,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "FAIL: 584 prior cases plus3 traffic cases; four-way-like endpoint junction passed. Fixture failures: readiness guarded irrelevant padding chunks, upper-stop integer-floor precision at large coordinates, unload guard applied while controller still online."
+}

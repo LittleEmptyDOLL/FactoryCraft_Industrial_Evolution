@@ -1,3 +1,15 @@
+# Issue15 continuation — Gate1 native traffic and automatic workload
+
+Baseb326cb2 / hosted44855730148success. Added an opt-in native8/150 automatic profile while preserving default manual8/148. Two finite runs and independent-JVM owner/device/slot comparisons pass; compare controls/stock honestly, never claim optimization from a changed workload. All thirty old finite chains and original346JUnit/584native remain mandatory.
+
+Actual native additions: shared2-approach/2-exit endpoint turnout; separated upper/lower opposing traffic; real chunk unload/freeze/reload; destruction of a committed stop with braking and same-name alternate arrival; source-max259.2km/h approach to a blue divergent turnout whose selected exit is occupied; live occupied/reserved junction snapshot with exact independent-JVM restore and actual completion; protected/environmental signal removal, merged occupied-region quarantine, one real refund, new-controller restoration and actual arrival. Fixture fixes retain strict drop/energy/count checks: actual loot-chunk readiness and large-coordinate floor tolerance in the test placement helper only.
+
+Verified346JUnit,590fresh+590independent-JVM and591final native; both automatic workload runs and both exact JVM verifications pass. Current receipts and explicit limits belong in validation/v0320-traffic. Do not call groups/interrupt helpers operational or all0.32complete. Preserve every failed/passed world or byte-verified archive. Publish checked main normally after the final native/build checks; report hosted status once.
+
+Next concrete work stays in Issue15, **Gate2**: reviewed source routing penalties and repath/origin fairness, real pass-through/temporary destinations with safe return and persistence, component-aware complete wait editor. Finish relevant route/stop diagnostics and16-heading/grade signal art/arrival footprints as practical; current tests do not certify every client visual/angle combination or8trains sharing one congested junction. Then **Gate3**: operational scoped groups, shared named interrupts, typed wildcard bindings, actual detours/return and real EN/RU editors with versioned server checks. Active-interrupt independent-JVM and updated client acceptance must accompany that runtime work. No0.33.
+
+---
+
 # Issue15 authorized continuation — Priority1 / signal safety
 
 Continue from72844d0 (hosted CI44805203791 succeeded). Implement local topology/body readiness and bounded dependent aspect notifications; prevent unrelated edits starving an active flood; stop repeated paid creep after real source braking at red. Keep all old343JUnit/577native, exact ledgers and old worlds.

@@ -1,0 +1,20 @@
+# Issue15 traffic continuation — native acceptance and eight automatic trains
+
+Baseb326cb2 had successful hosted run44855730148. This slice extends server acceptance/diagnostics around the existing production rail engine. Gates2/3and full0.32remain unfinished.
+
+## Actual validation
+
+*346JUnit pass;588native after fixture repairs;590fresh and590independent-JVM native;591final including environmental signal-loss/refund/reformation. Every previous584case and30finite production chains remains mandatory. Final build/log hashes: checks.json and build.log.gz.
+* Native real2-in/2-out endpoint contention, overpass separation, real unload/freeze/reload, committed-stop removal/brake/alternate arrival, source-max approach to a congested selected blue route, and controlled/environmental signal removal with a single refund. Native-final591.log.gz contains the final required pass. Source-max fixtures explicitly declare initial kinetic state; they do not prove survival acceleration.
+* `claimed-turnout-before/after.dat`, `claimed-turnout-after-trains.dat`, `claimed-turnout-ledger.json`: a live occupied/reserved shared junction was saved before completion, compared exactly in another JVM, then actually resumed through the sole native motion engine. Reservation was restored before release; both trains arrived and old owners retired.2trains/6cars/14iron/128MJ. The read-only checker validates the retained marker/owner receipts; the native log proves actual movement/completion.
+* `auto-first/second-measure.json`, matching verify.json/checkpoint.nbt and gzlogs: two genuine dedicated-server runs,8automatic trains/150cars/72devices/6144m and exact finite2573items/4814823mB/896MJ. Both independent-JVM verifications pass. Every consist visited both stations and traveled substantial distance in both directions, with no rider and real chunk unload. The report's nonzero-speed samples can include frozen-speed frames; signed distance/visits prove physical travel. These independent lines are not8-way shared-junction acceptance.
+* Environment.json and BENCHMARKS.md distinguish the new150-car/balanced-traction auto profile from the old148-car manual reference. Stable mean16.003–17.726ms,p9536.943–43.018ms,p9954.577–66.341ms,max61.392–78.704ms; source construction peaks1.436–1.583seconds remain in reports. No general TPS improvement is claimed. Exact main-thread allocations, source motion and0actual JFR packets are retained.
+* Production physics, recipes, saved owner schemas, rendering, GUI and network are unchanged. Prior actual EN/RU/client evidence remains valid but no new graphical or full optional-native pass is asserted here. Hosted CI repeats all old jobs plus the new automatic profile and records current native logs.
+
+## Failure integrity
+
+The first587-case run failed three fixtures: an all-padding entity-readiness prerequisite, a diagnostic upper-stop anchor shifted by floating floor cancellation at large coordinates, and a passage prohibition while a supposedly unloading head was still online (neighboring diagnostic tickets still kept it loaded). The native actual2-in/2-out junction already passed. The fixes wait for the actual loot-owner chunk, preserve strict single-drop/no-orphan assertions, add tolerance only to the test placement helper, and release all test-owned tickets before asserting real unloaded behavior. No world reset/refill or disabled case was used. Native-failed1.log.gz and the byte-compared failed-world manifest retain the evidence; later passed worlds have their own archives. All historic archives remain intact; old-fluid-copy-archive.json records lossless relocation of one old closed diagnostic copy for disk space.
+
+## Remaining in the same issue
+
+Gate2source penalties/origin fairness, actual pass-through/temporary destinations and component-aware wait editor; Gate3operational scoped groups, shared interrupts, typed wildcard dispatch/return and real editors. Full16-heading/grade art and arrival footprints, every64-car shared-junction geometry and8-way congested traffic are not inferred from the passing finite matrix. No0.33. The full source request is archived in issue-body.txt.

@@ -1,3 +1,11 @@
+## Issue15 opt-in native traffic workload
+
+`TrainServerBenchmark` keeps its original manual mode/checkpoint format by default. `trainControl=automatic` selects an explicitly marked, no-rider8/150workload with physical trackside placements, canonical TrainData-owned cars and normal autonomous intent. Both ends have real traction, short lines use chain-safe exits sized for their consists, long trains use normal paired boundaries. Fixture-only tickets/seeding and direct measurements never enter production simulation. Checkpoints add a profile discriminator and canonical trackside data; verification rejects a mismatched control profile and compares full train/rail/device records and destination slots. Existing schema1 owners are unchanged.
+
+The native traffic matrix additionally persists a currently occupied+reserved shared junction. A separate JVM first compares exact saved train/route/resource/slot state, then reopens the diagnostic chunks and proves claim reconciliation plus actual finite completion. Completed diagnostic stages cannot resurrect old owners. This is acceptance scaffolding around the existing engine, not a second rail simulation.
+
+---
+
 # 0.32.0 / issue15 — basic railway automation checkpoint
 
 `RailwayData` and `TrainData` remain the sole physical/material/resource owners. Automation never creates a fake driver, extra stock engine or chunk tickets. Train schema1 reads old records unchanged and omits a default `Automation` tag. Nondefault mode, schedule, phase, metric target, timer, stop commitment, public train number and prospective block leases are saved once on the train; cargo/fluids/fuel remain on its existing car records.

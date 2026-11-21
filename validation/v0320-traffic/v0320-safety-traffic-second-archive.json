@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-safety-traffic-second",
+  "archive": "/workspace/work/v0320-safety-traffic-second-checkpoint.tar.xz",
+  "sha256": "6eae233fb0a2246d9982f6b975681207dec8169120f234a78950f8566a682898",
+  "bytes": 17862460,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "PASS:588 required native; old584 retained; actual shared endpoint2x2, independent vertical levels, real chunk unload/reload and committed-station removal/repath all passed. Exact finite items/fuel preserved."
+}

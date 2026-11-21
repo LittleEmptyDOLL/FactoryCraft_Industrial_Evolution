@@ -1,0 +1,12 @@
+{
+  "initialExclusiveClaim": "063a1607-0219-31a7-8be4-5d1891ff4fd9",
+  "originalClaimOwner": "ef7776c0-7594-4f2c-912a-5917e2c77f7b",
+  "trains": 2,
+  "cars": 6,
+  "finiteCargoItems": 14,
+  "coalBufferPlusSpentJ": 128000000,
+  "independentJvmClaimReplayAndCompletion": true,
+  "retiredOwnersAbsent": true,
+  "beforeSha256": "9d70567275fc7e3990a04624cf69577fcc80ae85dad59a49d055a5ceb98ed9ba",
+  "afterSha256": "b08e81701b0c98fac1357833e8f1f77686bcbc37ebe69270fdb6cf0c132160bc"
+}

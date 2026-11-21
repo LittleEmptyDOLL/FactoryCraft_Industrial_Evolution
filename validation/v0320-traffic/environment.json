@@ -1,0 +1,23 @@
+{
+  "base": "b326cb2356a146c542e9655523b079874a161f9c",
+  "java": "Temurin21.0.13",
+  "neoforge": "21.1.252",
+  "minecraft": "1.21.1",
+  "cpu_quota": "200000 100000",
+  "memory_limit": "8589934592",
+  "active_processor_count": 3,
+  "heap": "512MiB initial /2GiB max for workload",
+  "online_clients": 0,
+  "control": "native autonomous, no rider",
+  "stock_sizes": [
+    3,
+    3,
+    8,
+    16,
+    32,
+    64,
+    8,
+    16
+  ],
+  "manual_reference": "previous8/148 preserved; stock/traction/control differ, no optimization claim"
+}

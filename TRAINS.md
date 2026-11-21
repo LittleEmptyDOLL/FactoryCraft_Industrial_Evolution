@@ -1,3 +1,11 @@
+## Issue15 traffic acceptance and profiler
+
+An explicit native automatic workload is available with `-PtrainControl=automatic`; see BENCHMARKS.md for fresh-world commands and limits. It uses two-ended3/3/8/16/32/64/8/16consists and real named terminals/signals, finite fuel/cargo/tankers and actual chunk lifecycle. The original manual8/148fixture remains unchanged. The automatic fixture's balanced locomotive orientations prove substantial travel both ways instead of relying only on a nonzero velocity sample.
+
+New native shared-junction, overpass, route deletion/recovery, maximum-speed congested-entry and occupied-claim independent-JVM checks are recorded in validation/v0320-traffic. They retain physical interval/hull protection, single resource ownership and same-name stop commitment rules. No player controls, recipes or production train motion were changed in this slice. Gate2/3runtime features and the broad visual matrix remain in Issue15.
+
+---
+
 # 0.32.0 — basic automatic named-stop service
 
 After real source braking stops an automatic train at a refused signal, its optional saved `HeldSignal` identity prevents repeated tiny paid acceleration/braking attempts. Passage is retried by the existing bounded scout, but stopped traction stays unpaid until the selected route is actually available. Manual mode and a successful re-dispatch clear this waiting identity. No fuel, cargo, motion or claim owner is copied. Unknown topology/body reconstruction affects only dependent regions, not every automatic train in the dimension.

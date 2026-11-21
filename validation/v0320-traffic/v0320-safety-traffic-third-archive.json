@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-safety-traffic-third",
+  "archive": "/workspace/work/v0320-safety-traffic-third-checkpoint.tar.xz",
+  "sha256": "ee07f539313ead3b9059e9bbb0d7e4d049fc5282db766ffefb4511eead4a5e4a",
+  "bytes": 41272660,
+  "verified": "tar --compare byte comparison before removing closed diagnostic tree",
+  "result": "PASS:590 fresh,590 independent-JVM with exact live claimed-junction replay/completion,591 final required native including real signal-loss/refund/reformation. Every old case and30finite chains retained; all finite ledgers pass."
+}

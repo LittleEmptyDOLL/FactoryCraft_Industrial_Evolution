@@ -1,3 +1,12 @@
+# 0.32.0 continuation — native traffic and eight autonomous trains
+
+* Add opt-in real8-train/150-car automatic workload with72physical devices, finite cargo/fluid/fuel, genuine two-ended service, chunk lifecycle and exact independent-JVM checkpoints; retain manual8/148and every prior test.
+* Extend native acceptance for shared endpoint junctions, independent levels, station removal/repath, real chunk unload, source-max congested blue-route braking, occupied-junction restart/resume and one-refund signal destruction/reformation.
+* Stabilize test preparation using the actual loot-owner chunk and a test-only large-coordinate placement tolerance; strict drop/resource checks remain unchanged.
+* Add a separate automatic-workload CI job and collect logs from the actual named native fixture paths. Gate2/3and full0.32remain unfinished; no production balance, physics or graphical change is claimed here.
+
+---
+
 # 0.32.0 continuation — shared-network signal safety
 
 * Quarantine topology/body reconstruction per affected region; keep independent ready automatics moving.

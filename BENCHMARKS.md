@@ -1,3 +1,33 @@
+# Issue15 traffic continuation — eight actual automatic trains
+
+The existing `TrainServerBenchmark` now has an opt-in `-PtrainControl=automatic`. Default manual8/148 and its old checkpoints stay unchanged. The automatic profile uses8native unoccupied trains /150cars,48paid physical rail edges /6144blocks,72real signals/chains/stops, limit1destinations and two named terminals per line. It uses the existing TrainAutomation/TrainSimulation only. A3-car two-ended train replaces the old single locomotive, and inner locomotives are balanced for genuine traction both ways, including64cars. Independent parallel lines measure native adapter cost; shared-junction safety is covered by separate actual native traffic cases, not inferred from this stand.
+
+Finite declared inputs:28locomotives×8coal=896MJ,2573component-bearing iron and4814823mBwater. Every tick audits health/counts/components and fuel buffer+remaining+spent; all8must visit both stops and actually travel>16m in **each direction**. Both recorded runs pass, as do both independent-JVM exact train/rail/device/slot checks. Real chunk unload freezes the owned motion/resources, denies a stale port, and reload resumes the workload. Explicit fixture tickets never enter production train code. `movingSamples` are nonzero stored-speed observations (including possible frozen-speed frames); actual displacement/stop counters establish real motion.0online clients and0actual JFR packets; projection requests are not packets.
+
+Two same-host warm runs:2CPUquota, Java21,3workers,2GiBheap;120warmup ticks and400stable ticks. Exact phases/allocation/JFR summaries/checkpoints are in validation/v0320-traffic. The0.31.1reference uses its retained manual8/148profile and different traction/control/worker configuration, so this table is **context, not an equal-work optimization comparison**.
+
+| Whole stable server window | Historical0.31.1 manual8/148 | Current automatic8/150, two runs |
+|---|---:|---:|
+|Mean, ms|19.688|16.003–17.726|
+|p95, ms|44.682|36.943–43.018|
+|p99, ms|65.274|54.577–66.341|
+|Maximum, ms|93.917|61.392–78.704|
+|Main-thread allocated bytes /400ticks|4467363224|4494783584–4509751896|
+|World reads /400ticks|12059995|12124050|
+
+The second run has a worse p99 than the historical reference; there is no general TPS/speedup claim. Offline native construction remains costly: mean238.7–247.6ms per paid128-block edge, maximum1435.8–1583.3ms. Device/stock settle reaches334–368ms. These setup peaks are retained, not hidden in the stable average. The longer reverse/service phases also remain in raw reports; neither brief unloading nor setup is represented as steady-state throughput. Total retained live memory was not isolated; allocations are exact main-thread counters.
+
+Reproduce on a **new** marked name:
+
+```sh
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-auto-example
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-auto-example -PtrainMode=verify
+```
+
+CI adds this profile/reload as a separate job, preserving the prior manual train/factory/MIXED/fluid jobs. No fixed wall-time threshold is imposed across hosts.
+
+---
+
 # Issue15 safety continuation — deterministic progress, no TPS claim
 
 The same read-only `tools/RailSignalPublicationProbe.java` was compiled against72844d0 and the current kernels, with independent classes/directories. It changes one unrelated edge between bounded advances while a connected primary component is being published. This counts work/progress, **not elapsed time, allocations or Minecraft TPS**.

@@ -16,7 +16,14 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active continuation — issue #15 safety gates (21 November 2026)
+## Active continuation — issue #15 traffic workload (21 November 2026)
+
+* This traffic slice started from b326cb2; hosted run44855730148 passed. Subsequent continuations use latest main, never reset to that historical base. Preserve346JUnit/584native and all prior worlds/ledgers. Complete remaining Gate1 runtime/dynamic acceptance and a real8+automatic workload before Gate2, then Gate3; no0.33 or full milestone claim without evidence.
+* Extend the existing opt-in native train workload, keeping default manual8/148 profile/evidence unchanged. Automatic trains need real outward end locos and sufficient source traction both ways; declare any different stock mix. No riders, runtime chunk forcing, fake resource refills or invented throughput. Use trains-v0320-auto[-suffix] /v0320-safety-traffic[-suffix] fresh diagnostics and separate-JVM exact owners/claims.
+
+* Traffic checkpoint:346JUnit;590fresh/590independent-JVM and591final required native, with exact occupied+reserved junction restoration and actual completion, real signal-loss/one-refund reformation and no disabled old cases. Two real8/150automatic workloads and two exact JVM verifications pass (2573items/4814823mB/896MJ); default manual8/148preserved. Maintain the new hosted automatic job alongside all seven older jobs. Fixture readiness concerns the actual loot chunk; large-coordinate tolerance is test-only. No new graphical/full optional pass or equal-work TPS improvement is claimed. Next is Gate2, then Gate3in the same issue; practical visual/matrix limits remain explicit.
+
+## Previous continuation — issue #15 safety gates (21 November 2026)
 
 * Continue from published72844d0 and its successful hosted run44805203791. The updated issue requires Gates1→2→3 in order; first complete actual shared-network signal safety and local fail-closed rebuild/reconciliation. Do not duplicate the base, start0.33, or advertise advanced dispatch helpers as operational features.
 * Preserve343JUnit/577native, all original finite chains/worlds, source physics and components. New v0320-safety[-suffix] and network-v0320-safety[-suffix] worlds only. Real moving train and separate-JVM receipts must distinguish tested traffic from pure aspect helpers. Keep failures and exact ownership comparisons.

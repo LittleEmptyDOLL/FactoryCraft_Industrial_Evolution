@@ -1,0 +1,230 @@
+{
+  "status": "PASS",
+  "trains": 8,
+  "automatic": true,
+  "sizes": [
+    3,
+    3,
+    8,
+    16,
+    32,
+    64,
+    8,
+    16
+  ],
+  "movingSamplesByConsist": [
+    1953,
+    1953,
+    1956,
+    1955,
+    1959,
+    1959,
+    1956,
+    1959
+  ],
+  "completedStopVisits": [
+    4,
+    4,
+    3,
+    2,
+    2,
+    2,
+    3,
+    2
+  ],
+  "forwardMeters": [
+    1756.303813620247,
+    1756.303813620247,
+    1307.957544947007,
+    608.1747055824584,
+    507.8515081466179,
+    397.0170290308332,
+    1307.957544947007,
+    608.2935610015406
+  ],
+  "reverseMeters": [
+    1397.9494614321634,
+    1397.9494614321634,
+    672.4775810415074,
+    607.981002445195,
+    495.96858627759434,
+    271.9942281658771,
+    672.4775810415074,
+    607.981002445195
+  ],
+  "tracksideDevices": 72,
+  "topologyNanos": 4769527,
+  "routeNodes": 192,
+  "routeNanos": 4053569,
+  "aspectUpdates": 1603,
+  "cars": 150,
+  "railSegments": 48,
+  "railLength": 6144,
+  "movingSamples": 15650,
+  "reverseSamplesByConsist": [
+    846,
+    846,
+    691,
+    541,
+    596,
+    524,
+    691,
+    541
+  ],
+  "initialFuelJ": 896000000,
+  "items": 2573,
+  "fluidMB": 4814823,
+  "actualChunkUnload": true,
+  "onlineClients": 0,
+  "projectionUpdateRequests": 295136,
+  "worldReads": 59587120,
+  "stockEntities": 150,
+  "stages": {
+    "build": {
+      "count": 48,
+      "meanMs": 238.66758610416665,
+      "p50Ms": 177.030406,
+      "p95Ms": 522.860236,
+      "p99Ms": 1435.81177,
+      "maxMs": 1435.81177,
+      "over50Ms": 48,
+      "trainAdapter": {
+        "count": 48,
+        "meanMs": 0.003058,
+        "p50Ms": 0.001833,
+        "p95Ms": 0.009353,
+        "p99Ms": 0.012649,
+        "maxMs": 0.012649,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 2425669088,
+      "worldReads": 0
+    },
+    "settle": {
+      "count": 3,
+      "meanMs": 156.02184533333335,
+      "p50Ms": 86.312437,
+      "p95Ms": 368.228736,
+      "p99Ms": 368.228736,
+      "maxMs": 368.228736,
+      "over50Ms": 2,
+      "trainAdapter": {
+        "count": 3,
+        "meanMs": 48.80017766666666,
+        "p50Ms": 71.249179,
+        "p95Ms": 75.150683,
+        "p99Ms": 75.150683,
+        "maxMs": 75.150683,
+        "over50Ms": 2
+      },
+      "mainThreadAllocatedBytes": 49092776,
+      "worldReads": 60515
+    },
+    "warmup": {
+      "count": 120,
+      "meanMs": 17.463129066666667,
+      "p50Ms": 14.661874,
+      "p95Ms": 42.626167,
+      "p99Ms": 50.635855,
+      "maxMs": 53.394931,
+      "over50Ms": 3,
+      "trainAdapter": {
+        "count": 120,
+        "meanMs": 11.970652516666668,
+        "p50Ms": 9.623151,
+        "p95Ms": 32.856892,
+        "p99Ms": 43.267967,
+        "maxMs": 44.998196,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 709965680,
+      "worldReads": 3614025
+    },
+    "stable": {
+      "count": 400,
+      "meanMs": 16.00308187,
+      "p50Ms": 13.101612,
+      "p95Ms": 36.943419,
+      "p99Ms": 54.576816,
+      "maxMs": 61.39239,
+      "over50Ms": 9,
+      "trainAdapter": {
+        "count": 400,
+        "meanMs": 8.089997655,
+        "p50Ms": 6.480921,
+        "p95Ms": 16.23571,
+        "p99Ms": 39.40337,
+        "maxMs": 47.162572,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 4509751896,
+      "worldReads": 12124050
+    },
+    "reversals": {
+      "count": 1427,
+      "meanMs": 10.626531030133147,
+      "p50Ms": 10.054843,
+      "p95Ms": 14.359001,
+      "p99Ms": 19.492143,
+      "maxMs": 64.694174,
+      "over50Ms": 1,
+      "trainAdapter": {
+        "count": 1427,
+        "meanMs": 5.588800515767344,
+        "p50Ms": 5.249738,
+        "p95Ms": 7.120302,
+        "p99Ms": 10.514855,
+        "maxMs": 30.316907,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 8300709448,
+      "worldReads": 43257060
+    },
+    "unload": {
+      "count": 2,
+      "meanMs": 35.92146,
+      "p50Ms": 22.383468,
+      "p95Ms": 49.459452,
+      "p99Ms": 49.459452,
+      "maxMs": 49.459452,
+      "over50Ms": 0,
+      "trainAdapter": {
+        "count": 2,
+        "meanMs": 9.498433,
+        "p50Ms": 9.355799,
+        "p95Ms": 9.641067,
+        "p99Ms": 9.641067,
+        "maxMs": 9.641067,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 10541720,
+      "worldReads": 54105
+    },
+    "reload": {
+      "count": 16,
+      "meanMs": 14.7743653125,
+      "p50Ms": 10.415998,
+      "p95Ms": 61.702622,
+      "p99Ms": 61.702622,
+      "maxMs": 61.702622,
+      "over50Ms": 1,
+      "trainAdapter": {
+        "count": 16,
+        "meanMs": 5.540784125,
+        "p50Ms": 5.321417,
+        "p95Ms": 8.193115,
+        "p99Ms": 8.193115,
+        "maxMs": 8.193115,
+        "over50Ms": 0
+      },
+      "mainThreadAllocatedBytes": 95727424,
+      "worldReads": 477365
+    }
+  },
+  "packets": {
+    "sentPackets": 0,
+    "sentEncodedBytes": 0,
+    "receivedPackets": 0,
+    "receivedEncodedBytes": 0
+  }
+}

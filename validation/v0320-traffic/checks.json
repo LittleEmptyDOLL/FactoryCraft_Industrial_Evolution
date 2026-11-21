@@ -1,0 +1,32 @@
+{
+  "base": "b326cb2356a146c542e9655523b079874a161f9c",
+  "scope": "Issue15 native Gate1 traffic coverage and opt-in automatic workload; Gates2/3 pending",
+  "junit": 346,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "native_fresh": 590,
+  "native_independent_jvm": 590,
+  "native_final": 591,
+  "automatic_workload_runs": 2,
+  "automatic_workload_independent_jvm_verifications": 2,
+  "automatic_workload_stock": [
+    3,
+    3,
+    8,
+    16,
+    32,
+    64,
+    8,
+    16
+  ],
+  "automatic_workload_resource_ledger": {
+    "cars": 150,
+    "finiteItems": 2573,
+    "fluidMB": 4814823,
+    "coalBufferPlusSpentJ": 896000000
+  },
+  "jar_sha256": "4219c86e6ff8cdd0ecd0ae04bf5e1ed317eba7c6c504f73d0027be27928cc5d4",
+  "new_client_QA": "Not repeated: production renderer, UI, motion and network unchanged; previous actual EN/RU evidence retained. New scoped native/player-dependent fixtures are not a claim of new graphical acceptance.",
+  "optional_profile": "New full optional native profile left to hosted CI; previous base commit passed all seven hosted jobs."
+}
