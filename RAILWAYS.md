@@ -1,3 +1,11 @@
+## Issue15 Gate2 routing continuation
+
+The existing rail UUIDs, paid material owners, signals, stops, turnouts and physical movement remain the only engine. Route choice now reads documented source costs for intermediate stops, circuit-forced red, actual occupied logical regions and canonical train states. Region metric length is cached at publication; consecutive physical edges in a region share pricing progress. Finite costs express preference and never grant permission through an occupied/unavailable block.
+
+A stopped held-signal route can be reconsidered with the existing bounded search while keeping the old stop commitment and safe-exit claims. Successful replacement transfers the destination slot once; blocked/failing searches retain the old resource/route owners. Source coefficients and explicit Dijkstra/branch-length/ordinary-signal timing adaptations are described in TRAINS.md and validation/v0320-routing/source-review.md. No new rail geometry, recipes, renderer or GUI is introduced; full Issue15 remains unfinished.
+
+---
+
 ## Issue15 traffic verification
 
 The finite native matrix now covers an actual2-approach/2-exit turnout built only from existing endpoint junctions, independent overlaid tracks8blocks apart, source-max braking before a selected congested blue route, and saved occupied/reserved junction reconciliation followed by actual completion after restart. Dynamic station/signal loss and real chunk unload restore canonical identities without changing paid rail ownership. No at-grade diamond or virtual paid rail split was introduced. Eight native automatic trains are measured on independent lines; this does not certify eight-way shared-junction congestion. Remaining16-heading/grade art/arrival ghosts belong to the same Issue15 continuation.

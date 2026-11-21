@@ -10,7 +10,8 @@ import java.util.*;
 public final class TrainRouteJob {
   private record Candidate(int direction, TrainPath.Leg start, RailPathSearch search) {}
 
-  public record Result(int direction, TrainPath path, double targetHead, UUID destination) {}
+  public record Result(
+      int direction, TrainPath path, double targetHead, UUID destination, double cost) {}
 
   private final List<Candidate> candidates = new ArrayList<>();
   private final TrainPath originalPath;
@@ -47,7 +48,7 @@ public final class TrainRouteJob {
               travel,
               offset,
               targets,
-              (edge, from, to) -> TrainAutomation.routePenalty(d, t, system, edge, from, to),
+              new TrainRoutePolicy(d, t, system),
               16384);
       candidates.add(new Candidate(direction, start, search));
     }
@@ -119,6 +120,7 @@ public final class TrainRouteJob {
         best.direction,
         path,
         originalHead + best.direction * route.distance(),
-        route.target().id());
+        route.target().id(),
+        route.cost());
   }
 }

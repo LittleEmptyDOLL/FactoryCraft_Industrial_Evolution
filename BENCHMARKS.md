@@ -1,3 +1,33 @@
+# Issue15 Gate2 — same automatic8/150 functional regression profile
+
+One new real-server run uses the unchanged opt-in automatic profile:8driverless trains,150cars,6144m/48paid edges,72devices, the same3/3/8/16/32/64/8/16mix and two-ended traction. All8visit both stops and travel substantially in each direction; the64-car train reverses271.994m. The native chunk unload/reload and independent-JVM exact train/rail/device/slot verification pass. The finite ledger stays2573component-bearing iron,4814823mBwater and896MJcoal+buffer+spent. Independent lines are a native adapter workload, not eight-way shared-junction acceptance.
+
+Same host controls:2CPUquota, Java21,3workers,2GiBheap, no clients,120warmup and400stable ticks. The previous two automatic samples are retained under validation/v0320-traffic; this is one new sample, **not an optimization or universal TPS claim**.
+
+|Metric|Previous automatic samples|Current route-cost run|
+|---|---:|---:|
+|Stable mean, ms|16.003–17.726|16.584|
+|Stable p95, ms|36.943–43.018|33.536|
+|Stable p99, ms|54.577–66.341|59.904|
+|Stable maximum, ms|61.392–78.704|72.294|
+|Main-thread allocation /400ticks, bytes|4494783584–4509751896|4520665040|
+|Stable world reads|12124050|12124050|
+|Total recorded route nodes|192|192|
+|Total recorded route search, ms|4.054–4.382|10.702|
+
+More complete source-cost observations make the recorded search cost higher, and allocation is slightly higher too. Search totals include dispatch/setup/first-use work; this is not a warmed isolated cost-per-node measurement. Stable mean/tails remain within the earlier observed ranges except the improved p95; one new sample cannot establish a speedup. No artificial timing pass threshold was introduced. Native offline setup still peaks1215.571ms per paid128mrail edge (mean240.747ms), settle278.556ms; these peaks are separate from the stable window, not hidden. Full raw phases/JFR/requests/actual0packets remain in the marked diagnostic directory; committed reports/checkpoint/logs are in validation/v0320-routing. `movingSamples` remains stored-speed observations; actual stop visits and directional displacement establish movement.
+
+Reproduce on a **new** diagnostic name:
+
+```sh
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-routing-example
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-routing-example -PtrainMode=verify
+```
+
+The default manual8/148profile, all earlier reports and the existing eight independent CI jobs are preserved. Full factory/MIXED/fluid/manual/optional regressions remain hosted; no new graphical performance claim.
+
+---
+
 # Issue15 traffic continuation — eight actual automatic trains
 
 The existing `TrainServerBenchmark` now has an opt-in `-PtrainControl=automatic`. Default manual8/148 and its old checkpoints stay unchanged. The automatic profile uses8native unoccupied trains /150cars,48paid physical rail edges /6144blocks,72real signals/chains/stops, limit1destinations and two named terminals per line. It uses the existing TrainAutomation/TrainSimulation only. A3-car two-ended train replaces the old single locomotive, and inner locomotives are balanced for genuine traction both ways, including64cars. Independent parallel lines measure native adapter cost; shared-junction safety is covered by separate actual native traffic cases, not inferred from this stand.

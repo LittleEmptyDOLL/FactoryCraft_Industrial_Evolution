@@ -1,0 +1,20 @@
+{
+  "factorioVersion": "2.1.24",
+  "url": "https://raw.githubusercontent.com/wube/factorio-data/2.1.24/core/prototypes/utility-constants.lua",
+  "fileSha256": "84ebce38da5b3e1d85dab87e5bc9069c9a6f15eaf77c9a6f04afb053fb02cffa",
+  "field": "train_path_finding",
+  "numericWeights": {
+    "train_stop_penalty": 2000,
+    "stopped_manually_controlled_train_penalty": 2000,
+    "stopped_manually_controlled_train_without_passenger_penalty": 7000,
+    "signal_reserved_by_circuit_network_penalty": 1000,
+    "train_in_station_penalty": 500,
+    "train_in_station_with_no_other_valid_stops_in_schedule": 1000,
+    "train_arriving_to_station_penalty": 100,
+    "train_arriving_to_signal_penalty": 100,
+    "train_waiting_at_signal_penalty": 100,
+    "train_waiting_at_signal_tick_multiplier_penalty": 0.1,
+    "train_with_no_path_penalty": 1000,
+    "train_auto_without_schedule_penalty": 7000
+  }
+}

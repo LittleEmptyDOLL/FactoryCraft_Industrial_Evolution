@@ -1,3 +1,15 @@
+## Issue15 Gate2 continuation — routing subset
+
+|Mechanic|State|
+|---|---|
+|Source route weights|Implemented numeric Factorio2.1.24 stop/circuit/train constants, actual region transitions and target UUID exclusion; existing bounded Dijkstra and cached branching-region length are documented adapters|
+|Stopped route replacement|Implemented5s/multiple-name and30s/single-name chain retries with original slot/claims retained until successful replacement; no paid creep or entered-chain safe-exit surrender|
+|Persistence|Nonzero wait ticks are additive/default-omitted on the sole existing train; native exact independent-JVM receipts are recorded in validation/v0320-routing|
+|Remaining Gate2|Origin-priority fairness, no-wait pass-through, temporary navigation/return and full component-aware wait editor are pending|
+|Gate3|Shared groups/named interrupts/typed wildcards and real editors/runtime remain pending in the same Issue15; full0.32is not complete|
+
+---
+
 ## Issue15 traffic continuation — tested native coverage
 
 | Area | Implemented / verified |

@@ -30,6 +30,10 @@ public final class AutoTrainState {
   /** Current scout refusal only; never another resource/reservation owner. */
   public transient UUID blockingSignal;
 
+  public int signalWaitTicks;
+  public transient boolean repathing;
+  public transient long repathAt;
+
   public int number;
   public Set<UUID> reserved = Set.of();
   public RailInterrupt.Match binding;
@@ -52,6 +56,7 @@ public final class AutoTrainState {
         && entry == 0
         && destination == null
         && heldSignal == null
+        && signalWaitTicks == 0
         && activeInterrupt == null
         && invalid == null;
   }
@@ -82,6 +87,7 @@ public final class AutoTrainState {
     n.putInt("IdleTicks", idleTicks);
     if (destination != null) n.putUUID("Destination", destination);
     if (heldSignal != null) n.putUUID("HeldSignal", heldSignal);
+    if (signalWaitTicks != 0) n.putInt("SignalWaitTicks", signalWaitTicks);
     if (activeInterrupt != null) {
       n.putUUID("ActiveInterrupt", activeInterrupt);
       n.putInt("TemporaryEntry", temporaryEntry);
@@ -119,6 +125,7 @@ public final class AutoTrainState {
       state.idleTicks = n.getInt("IdleTicks");
       if (n.hasUUID("Destination")) state.destination = n.getUUID("Destination");
       if (n.hasUUID("HeldSignal")) state.heldSignal = n.getUUID("HeldSignal");
+      state.signalWaitTicks = n.getInt("SignalWaitTicks");
       if (n.hasUUID("ActiveInterrupt")) {
         state.activeInterrupt = n.getUUID("ActiveInterrupt");
         state.temporaryEntry = n.getInt("TemporaryEntry");
@@ -136,6 +143,7 @@ public final class AutoTrainState {
           || state.entry >= 64
           || state.stationTicks < 0
           || state.idleTicks < 0
+          || state.signalWaitTicks < 0
           || !Double.isFinite(state.targetHead + state.reservationEnd)
           || state.temporaryEntry < 0
           || state.temporaryEntry >= 16

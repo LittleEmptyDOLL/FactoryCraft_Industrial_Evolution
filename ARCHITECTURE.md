@@ -1,3 +1,11 @@
+## Issue15 Gate2 — indexed route pricing and safe replacement
+
+The existing MIT-derived `RailPathSearch.Rules` now has an optional nonmutating contextual price callback; old functional callers retain their original behavior. Each frontier prefix carries the last logical region and encountered-block ordinal. Target probes have independent immutable progress, and exclude only their actual target UUID. `RailSignalBlocks.Region.length` is cached once on publication. `TrainRoutePolicy` reads only current indexed spans, canonical occupant IDs, physical attachments and actual passenger/state observations; it never walks all trains or sums a large region during each expansion. This is a documented bounded Dijkstra adaptation with one prefix label, not a reproduction of Factorio's closed-source optimizer.
+
+The existing TrainRouteJob handles stopped replacement searches using the same global node budget. The old path, committed slot and all resource owners remain authoritative until a fully checked route/slot can commit. Failed or stale jobs leave those unchanged. Replanning cannot surrender outstanding safe-exit leases of an entered chain. HeldSignal survives replacement and the normal scout alone releases it after proving passage; no stopped traction/fuel is purchased just because a job finished. Only nonzero SignalWaitTicks is added to schema1 persistence. Jobs/retry deadlines remain transient and restart from the actual stationary owner after load.
+
+---
+
 ## Issue15 opt-in native traffic workload
 
 `TrainServerBenchmark` keeps its original manual mode/checkpoint format by default. `trainControl=automatic` selects an explicitly marked, no-rider8/150workload with physical trackside placements, canonical TrainData-owned cars and normal autonomous intent. Both ends have real traction, short lines use chain-safe exits sized for their consists, long trains use normal paired boundaries. Fixture-only tickets/seeding and direct measurements never enter production simulation. Checkpoints add a profile discriminator and canonical trackside data; verification rejects a mismatched control profile and compares full train/rail/device records and destination slots. Existing schema1 owners are unchanged.
@@ -18,7 +26,7 @@ The native traffic matrix additionally persists a currently occupied+reserved sh
 
 One item forms a signal/chain signal or2×2×3stop. Only the base BE has identity/circuit metadata; service parts own no resources. Protected native placement stages/rolls back every part, revalidates player/held item after callbacks, and retires the canonical device before demolition callbacks. Unloaded retired parts have indexed persistent cleanup positions. A rotating bounded recovery queue keeps unavailable claims from starving loaded returns; queue order is reconstructed from the canonical map on load. Port/menu access checks current UUID, loaded structure, player/team rights and physical distance. No cargo/item/fluid/FE capability is exported by a stop.
 
-Create1.21.1 MIT code was actually adapted for ordered points, boundary-stopped flood and bounded search; see THIRD_PARTY_NOTICES.md and docs/RAIL_AUTOMATION_DESIGN.md. No Create assets/runtime dependency. Full source dispatch penalties, origin priority, temporary routes, groups/interrupt runtime and pass-through acceptance remain pending in issue15; this is not full0.32 parity.
+Create1.21.1 MIT code was actually adapted for ordered points, boundary-stopped flood and bounded search; see THIRD_PARTY_NOTICES.md and docs/RAIL_AUTOMATION_DESIGN.md. No Create assets/runtime dependency. The expanded documented source-cost adapter is described above; origin priority, temporary routes, groups/interrupt runtime and pass-through acceptance remain pending in issue15; this is not full0.32 parity.
 
 ---
 

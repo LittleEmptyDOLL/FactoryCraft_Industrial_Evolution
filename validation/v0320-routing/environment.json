@@ -1,0 +1,8 @@
+{
+  "base": "aa9f3d18ed9e71cd97107fd2c6143f6438b1bfe8",
+  "java": "/workspace/work/jdk21",
+  "javaWorkers": 3,
+  "cpuQuota": "200000 100000",
+  "clientCount": 0,
+  "scope": "Issue15 Gate2 source route costs and safe held-signal repath; not full Gate2/Gate3"
+}

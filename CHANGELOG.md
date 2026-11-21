@@ -1,3 +1,11 @@
+# 0.32.0 continuation — route pricing and safe signal repath
+
+* Replace the generic occupancy/reservation surcharge with documented Factorio2.1.24 stop/circuit/train weights and encountered-block discount in the existing directed search. Target probes keep independent immutable prefixes; consecutive paid edges in one logical region do not repeat its occupied-block charge.
+* Reconsider a real stopped chain wait at5seconds for multiple same-name destinations or30seconds for one, retaining the prior slot/path/claims until a full replacement can commit. Preserve the no-paid-creep hold and entered-chain safe exit; source physics/resources remain unchanged.
+* Add default-omitted wait metadata and native finite detour/restart, pricing and prolonged-wait acceptance. Origin fairness, pass-through, temporary routes, complete wait editor and Gate3 remain pending in Issue15.
+
+---
+
 # 0.32.0 continuation — native traffic and eight autonomous trains
 
 * Add opt-in real8-train/150-car automatic workload with72physical devices, finite cargo/fluid/fuel, genuine two-ended service, chunk lifecycle and exact independent-JVM checkpoints; retain manual8/148and every prior test.

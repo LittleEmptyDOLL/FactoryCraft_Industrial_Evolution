@@ -1,3 +1,15 @@
+# Issue15 Gate2 — route costs and stopped repath
+
+Pathfinding now prices intermediate directed stops (2000), circuit-forced red (1000), actual occupied-region length/distance and canonical train state. Stopped manual trains cost7000 without a real passenger or2000 with one; stopped station trains cost500 or1000 for a terminal schedule, arriving trains100, no-path trains1000. Signal waiting adds0.3per Minecraft20Hz tick to100 (the source rate is0.1at60Hz). The destination UUID is excluded from passing-stop costs; one logical region continuing over several saved physical edges is not repeatedly charged. No extra generic1000cost is imposed just for an unoccupied prospective lease.
+
+A really stopped train at a refused chain may search again after5seconds when multiple same-name stations exist, or30seconds for one. Ordinary held signals retry at a bounded5seconds; this polling interval is a FactoryCraft adapter, not a claim of exact source event timing. Searching retains the original incoming station slot and all existing claims; failure leaves the old route intact. A successful complete route acquires its replacement slot before replacing future physical legs. An entered chain's outstanding safe-exit leases prohibit reconsideration until covered by the body. Preserving HeldSignal on a blocked replacement prevents paid creep. No movement is issued while a replacement job is pending.
+
+Nonzero `SignalWaitTicks` is additive/default-omitted schema1 metadata on the existing train, never another owner. Unknown/unloaded topology/physical attachments are not priced as free track. Source physics/fuel, full-body claims, component-exact cargo/fluid, ordinary reach and all four logic colors remain unchanged. Prefix pricing is nonmutating and budgeted by the existing2048nodes/tick shared frontier.
+
+**Adaptations:** this remains the existing Create-derived directed Dijkstra, not proprietary Factorio A*. A branching region's metric length is the cached sum of its physical spans; one cheapest prefix is retained per directed physical edge, so path-dependent block-discount weights are not claimed to reproduce the source's hidden global optimizer. Route costs observe train states on expansion and all prospective movement is rechecked by the existing atomic scout. Terminal classification currently recognizes distinct schedule station names, without recursively searching every other schedule entry during pricing. Full origin-priority fairness, pass-through/temporary stops, component-aware wait editor and Gate3 remain pending in Issue15.
+
+---
+
 ## Issue15 traffic acceptance and profiler
 
 An explicit native automatic workload is available with `-PtrainControl=automatic`; see BENCHMARKS.md for fresh-world commands and limits. It uses two-ended3/3/8/16/32/64/8/16consists and real named terminals/signals, finite fuel/cargo/tankers and actual chunk lifecycle. The original manual8/148fixture remains unchanged. The automatic fixture's balanced locomotive orientations prove substantial travel both ways instead of relying only on a nonzero velocity sample.
@@ -8,7 +20,7 @@ New native shared-junction, overpass, route deletion/recovery, maximum-speed con
 
 # 0.32.0 — basic automatic named-stop service
 
-After real source braking stops an automatic train at a refused signal, its optional saved `HeldSignal` identity prevents repeated tiny paid acceleration/braking attempts. Passage is retried by the existing bounded scout, but stopped traction stays unpaid until the selected route is actually available. Manual mode and a successful re-dispatch clear this waiting identity. No fuel, cargo, motion or claim owner is copied. Unknown topology/body reconstruction affects only dependent regions, not every automatic train in the dimension.
+After real source braking stops an automatic train at a refused signal, its optional saved `HeldSignal` identity prevents repeated tiny paid acceleration/braking attempts. Passage is retried by the existing bounded scout, but stopped traction stays unpaid until the selected route is actually available. Manual mode and a successful passage scout clear this waiting identity; a replacement search preserves it until passage is proved. No fuel, cargo, motion or claim owner is copied. Unknown topology/body reconstruction affects only dependent regions, not every automatic train in the dimension.
 
 Open a stopped locomotive's ordinary inventory, then **Schedule**. Add/reorder named stops and explicit waits, save, and switch Manual/Automatic. Automatic motion does not require a rider; entering a train does not stop it. Explicit driver input takes over in Manual and cancels prospective automatic/stop commitments while preserving physical body claims and cargo. Saving a changed schedule deliberately switches to Manual before replacing the definition.
 

@@ -1,3 +1,15 @@
+# Issue15 continuation — Gate2 source costs and stopped signal repath
+
+Continue from aa9f3d1, whose hosted44929597697 passed all eight jobs. Preserve346JUnit/591native, all thirty finite chains, both old workload profiles, all owners and prior evidence. This is a checked subset of Gate2, not completed Gate2/3 or full0.32.
+
+Implemented source numeric stop/circuit/train weights, immutable path-local logical-block pricing and cached region length in the existing search; budgeted stopped5s/30s chain reconsideration retaining the original route/slot/claims until a complete replacement commits. HeldSignal survives blocked replacement so retries cannot purchase creep. Add only default-omitted SignalWaitTicks to schema1. Actual scalar source/provenance and solver adaptations are recorded in validation/v0320-routing/source-review.md and source-reference.json.
+
+Validation checkpoint:350JUnit,596fresh+596independent-JVM pass; exact held-chain/slot/resource replay and real finite detour complete. Receipts are in validation/v0320-routing. First native run kept all591old cases and three new cases passing; two new fixtures placed exits too close to the divergent track. Preserve the failed world in its byte-compared archive. Both native support positions were moved beyond physical divergence; full required/restart suites passed without resetting the new diagnostic world. The existing opt-in automatic8/150workload and exact independent-JVM reload pass; hosted full factory/MIXED/fluid/optional jobs remain unchanged. No new client visual/network acceptance is claimed for this nonvisual slice.
+
+**Next concrete work in the SAME Issue15:** origin-priority dispatch fairness among stopped, ready, same-scope/name requests, including unequal bounded route-search durations, stable ties and retaining the occupied departure's limit slot while Destination full. Follow with real no-wait pass-through and temporary go-to/cancel/return without editing the canonical schedule, exact persistence and actual EN/RU controls. Complete component-aware wait editing. Only then Gate3: operational scoped shared groups and versioned edits, shared named interrupts, typed wildcard matching/detours/return, independent-JVM and actual two-client editors. Current definition helpers do not count as those runtime features. Retain broader16-heading/grade/arrival visual and shared-congestion coverage limits; no0.33.
+
+---
+
 # Issue15 continuation — Gate1 native traffic and automatic workload
 
 Baseb326cb2 / hosted44855730148success. Added an opt-in native8/150 automatic profile while preserving default manual8/148. Two finite runs and independent-JVM owner/device/slot comparisons pass; compare controls/stock honestly, never claim optimization from a changed workload. All thirty old finite chains and original346JUnit/584native remain mandatory.

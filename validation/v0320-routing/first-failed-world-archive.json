@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-routing-first",
+  "archive": "/workspace/work/v0320-routing-first-failed.tar.xz",
+  "sha256": "75920ea1ed8c5a6e0b3435f3071060ba6b197a721e568f269b09244f0b56979a",
+  "bytes": 16899120,
+  "verified": "tar --compare exact closed-world comparison before removal",
+  "result": "596 native completed, 2 new placement fixtures failed. All591 prior scenarios and3 new route/long-wait cases passed. Signal fixture cleared branch bed near the turnout; corrected by moving exits beyond physical divergence. No old tests disabled or assertion weakened."
+}

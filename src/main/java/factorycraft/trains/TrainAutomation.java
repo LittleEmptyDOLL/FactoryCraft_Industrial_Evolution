@@ -14,6 +14,9 @@ public final class TrainAutomation {
     a.automatic = false;
     a.phase = AutoTrainState.Phase.MANUAL;
     a.routeJob = null;
+    a.repathing = false;
+    a.signalWaitTicks = 0;
+    a.repathAt = 0;
     a.routed = false;
     a.arrived = false;
     a.destination = null;
@@ -39,6 +42,8 @@ public final class TrainAutomation {
     t.automation.automatic = true;
     t.automation.retryAt = 0;
     t.automation.routeJob = null;
+    t.automation.repathing = false;
+    t.automation.repathAt = 0;
     d.active.add(t.id);
     d.setDirty();
     return true;
@@ -76,7 +81,8 @@ public final class TrainAutomation {
     }
     if (!a.routed) {
       if (t.speed > 0) return true; // change definition/destination only after a real brake
-      dispatch(d, t, s);
+      a.repathing = false;
+      dispatch(d, t, s, false);
       if (!a.routed) return false;
     }
     var stop = s.device(a.destination);
@@ -84,6 +90,17 @@ public final class TrainAutomation {
     if (!s.online(stop.point)) {
       a.phase = AutoTrainState.Phase.UNLOADED;
       return false;
+    }
+    if (t.speed == 0 && a.heldSignal != null) {
+      a.signalWaitTicks = Math.min(Integer.MAX_VALUE - 1, a.signalWaitTicks + 1);
+      d.setDirty();
+      if (repathAtSignal(d, t, s)) return false;
+      stop = s.device(a.destination);
+      if (stop == null) return false;
+    } else if (a.signalWaitTicks != 0) {
+      a.signalWaitTicks = 0;
+      a.repathAt = 0;
+      d.setDirty();
     }
     double remaining = (a.targetHead - t.head) * t.direction;
     if (t.speed == 0 && remaining >= -1e-6 && remaining <= .06) {
@@ -126,14 +143,42 @@ public final class TrainAutomation {
     return true;
   }
 
-  private static void dispatch(TrainData d, TrainData.Train t, RailAutomationData s) {
+  /** A stopped scout may reconsider its path, never surrender an entered chain's safe exit. */
+  private static boolean repathAtSignal(TrainData d, TrainData.Train t, RailAutomationData s) {
+    var a = t.automation;
+    if (!a.repathing) {
+      if (!s.claims.body(t.id).containsAll(a.reserved)) return false;
+      var signal = s.points.get(a.heldSignal);
+      if (signal == null) return false;
+      int interval =
+          signal.kind() == RailEdgePoints.Kind.CHAIN
+              ? RailRoutePenalties.chainRetryTicks(
+                  Math.max(
+                      1,
+                      s.slots.named(t.scope, a.schedule.entries().get(a.entry).station()).size()))
+              : 100;
+      long due = a.repathAt == 0 ? interval : a.repathAt;
+      if (a.signalWaitTicks < due) return false;
+      a.repathAt = (long) a.signalWaitTicks + interval;
+      a.repathing = true;
+      a.routeJob = null;
+      a.retryAt = 0;
+    }
+    dispatch(d, t, s, true);
+    if (a.routeJob != null) return true; // paused, not partially published
+    a.repathing = false;
+    return false;
+  }
+
+  private static void dispatch(
+      TrainData d, TrainData.Train t, RailAutomationData s, boolean replacement) {
     var a = t.automation;
     long now = d.level.getGameTime();
     boolean changed =
         a.checkedGraph != s.rails.graph.revisions()
             || a.checkedRules != s.revision + s.slots.revision();
     if (a.routeJob == null) {
-      if (!changed && now < a.retryAt) return;
+      if (!replacement && !changed && now < a.retryAt) return;
       a.checkedGraph = s.rails.graph.revisions();
       a.checkedRules = s.revision + s.slots.revision();
       a.retryAt = now + 20;
@@ -145,12 +190,15 @@ public final class TrainAutomation {
           targets.add(new RailPathSearch.Target(stop.id(), device.point, stop.priority()));
       }
       if (targets.isEmpty()) {
-        a.phase =
-            named.isEmpty() ? AutoTrainState.Phase.NO_PATH : AutoTrainState.Phase.DESTINATION_FULL;
+        if (!replacement)
+          a.phase =
+              named.isEmpty()
+                  ? AutoTrainState.Phase.NO_PATH
+                  : AutoTrainState.Phase.DESTINATION_FULL;
         return;
       }
       a.routeJob = new TrainRouteJob(d, t, s, targets);
-      a.phase = AutoTrainState.Phase.DISPATCHING;
+      a.phase = replacement ? AutoTrainState.Phase.SIGNAL_WAIT : AutoTrainState.Phase.DISPATCHING;
     }
     if (s.searchBudget() <= 0) return;
     long start = System.nanoTime();
@@ -161,17 +209,21 @@ public final class TrainAutomation {
     a.routeJob = null;
     var route = job.result(t, s.rails.graph);
     if (route == null) {
-      a.phase = job.limited ? AutoTrainState.Phase.ROUTE_LIMIT : AutoTrainState.Phase.NO_PATH;
+      if (!replacement)
+        a.phase = job.limited ? AutoTrainState.Phase.ROUTE_LIMIT : AutoTrainState.Phase.NO_PATH;
       return;
     }
     if (!s.slots.acquire(t.id, route.destination())) {
-      a.phase = AutoTrainState.Phase.DESTINATION_FULL;
+      if (!replacement) a.phase = AutoTrainState.Phase.DESTINATION_FULL;
       return;
     }
     t.path = route.path();
     t.direction = route.direction();
     a.targetHead = route.targetHead();
-    a.heldSignal = null;
+    if (!replacement) {
+      a.heldSignal = null;
+      a.signalWaitTicks = 0;
+    }
     a.blockingSignal = null;
     a.reservationEnd = t.direction > 0 ? t.rear() : t.front();
     a.destination = route.destination();
@@ -183,25 +235,6 @@ public final class TrainAutomation {
     a.checkedRules = s.revision + s.slots.revision();
     d.index(t);
     d.setDirty();
-  }
-
-  /**
-   * Metric distance plus explicitly documented blocking adaptation, not claimed as exact source
-   * penalties.
-   */
-  static double routePenalty(
-      TrainData d,
-      TrainData.Train t,
-      RailAutomationData s,
-      RailGraph.Directed travel,
-      double from,
-      double to) {
-    if (!s.signals.directionAllowed(travel, from, to)) return Double.POSITIVE_INFINITY;
-    var regions = s.blocks.covering(travel.edge(), Math.min(from, to), Math.max(from, to));
-    if (regions == null) return Double.POSITIVE_INFINITY;
-    double penalty = 0;
-    for (var region : regions) if (!s.claims.available(region, t.id)) penalty += 1000;
-    return penalty;
   }
 
   private record Boundary(RailEdgePoints.Point point, UUID cut, double distance) {}

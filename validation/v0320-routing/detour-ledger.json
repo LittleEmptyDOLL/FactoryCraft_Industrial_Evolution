@@ -1,0 +1,16 @@
+{
+  "initialTrain": "01e39aeb-e32c-4074-bb04-36e98fffaa26",
+  "initialDestination": "dd2a5e7f-8f29-4812-b60f-297c34775e71",
+  "alternateDestination": "41c1ad3a-a78e-4f46-957b-e02876a8e7a8",
+  "savedWaitTicks": 20,
+  "cars": 4,
+  "componentBearingCargo": 7,
+  "coalBufferPlusSpentJ": 96000000,
+  "exactIndependentJvmReplayAndNativeDetourCompletion": true,
+  "retiredOwnersAbsent": true,
+  "sha256": {
+    "before": "2a36521382956722fb47ed8185d675c4be92e4486467a3d0c85aeaca7cac4bee",
+    "after": "7a1377b1ebe3ce8440202787b0d2ff810d1d00a437152821c286b16fd11204b4",
+    "after_trains": "a4eeed38def3978a255b93e7113b04fba15250cc0de5a2a7cbf3a5fc840fbe70"
+  }
+}

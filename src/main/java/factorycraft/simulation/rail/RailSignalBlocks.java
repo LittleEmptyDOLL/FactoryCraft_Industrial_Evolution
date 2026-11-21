@@ -15,11 +15,16 @@ public final class RailSignalBlocks {
   public static final class Region {
     public final UUID id;
     public final List<Span> spans;
+
+    /** Cached once at publication, not summed during each route expansion. */
+    public final double length;
+
     private boolean ready;
     private int holds;
 
     Region(List<Span> spans) {
       this.spans = List.copyOf(spans);
+      length = spans.stream().mapToDouble(s -> s.to() - s.from()).sum();
       id = spans.stream().map(Span::id).min(UUID::compareTo).orElseThrow();
     }
 

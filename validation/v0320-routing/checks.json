@@ -1,0 +1,20 @@
+{
+  "base": "aa9f3d18ed9e71cd97107fd2c6143f6438b1bfe8",
+  "scope": "Issue15 Gate2 source route costs and safe held-signal replacement; origin fairness/pass-through/temporary/complete wait UI and Gate3 pending",
+  "junit": {
+    "tests": 350,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "nativeFresh": 596,
+  "nativeIndependentJvm": 596,
+  "preservedOriginalNative": 591,
+  "preservedFiniteChains": 30,
+  "automaticWorkloadRuns": 1,
+  "automaticWorkloadIndependentJvmVerifications": 1,
+  "jarSha256": "7e0ec9f8fb7f50fc65646b6de02ef96225e47a9495b02727e682c3ad59174b3a",
+  "clientQa": "Not repeated: renderer/UI/protocol unchanged; previous actual captures retained",
+  "hostedChecks": "All eight jobs on base aa9f3d1 passed; new full/optional jobs execute after publication, not awaited",
+  "artifactNote": "Fresh596 precedes the final nonzero-empty metadata guard; final independent596 includes that guard, legacy/nonzero/malformed roundtrips and stricter completed-retry assertion. Actual runtime held timers were already nonempty in the fresh run."
+}

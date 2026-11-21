@@ -31,11 +31,24 @@ public final class RailPathSearch {
   public interface Rules {
     /** Extra nonnegative cost; infinity means illegal direction/point, not a traversable red. */
     double penalty(RailGraph.Directed edge, double canonicalFrom, double canonicalTo);
+
+    /** Optional path-local pricing; evaluating a target must not mutate the frontier's prefix. */
+    default Price price(
+        RailGraph.Directed edge, double from, double to, Progress progress, UUID destination) {
+      return new Price(penalty(edge, from, to), progress);
+    }
   }
+
+  public record Progress(UUID region, int blocks) {
+    public static final Progress START = new Progress(null, 0);
+  }
+
+  public record Price(double penalty, Progress progress) {}
 
   private record Key(RailGraph.Directed edge, boolean initial) {}
 
-  private record Node(Key key, double position, double distance, double cost, Node parent) {}
+  private record Node(
+      Key key, double position, double distance, double cost, Progress progress, Node parent) {}
 
   private record Candidate(Target target, Node node, double distance, double cost) {}
 
@@ -81,7 +94,7 @@ public final class RailPathSearch {
     highestPriority = priority;
     if (destinations.isEmpty()) status = Status.NO_PATH;
     double position = start.reverse() ? edge.curve().length() - canonicalOffset : canonicalOffset;
-    var node = new Node(new Key(start, true), position, 0, 0, null);
+    var node = new Node(new Key(start, true), position, 0, 0, Progress.START, null);
     frontier.add(node);
     best.put(node.key, 0.0);
   }
@@ -98,13 +111,25 @@ public final class RailPathSearch {
     return result;
   }
 
-  private double penalty(RailGraph.Directed direction, double from, double to, double length) {
-    double value =
-        rules.penalty(
+  private Price price(
+      RailGraph.Directed direction,
+      double from,
+      double to,
+      double length,
+      Progress progress,
+      UUID destination) {
+    var value =
+        rules.price(
             direction,
             direction.reverse() ? length - from : from,
-            direction.reverse() ? length - to : to);
-    if (Double.isNaN(value) || value < 0) throw new IllegalArgumentException("Negative route cost");
+            direction.reverse() ? length - to : to,
+            progress,
+            destination);
+    if (value == null
+        || value.progress() == null
+        || Double.isNaN(value.penalty())
+        || value.penalty() < 0
+        || value.progress().blocks() < 0) throw new IllegalArgumentException("Invalid route cost");
     return value;
   }
 
@@ -131,7 +156,9 @@ public final class RailPathSearch {
         double offset =
             node.key.edge.reverse() ? length - target.point.offset() : target.point.offset();
         if (offset < node.position - 1e-8 || offset > length) continue;
-        double extra = penalty(node.key.edge, node.position, offset, length);
+        double extra =
+            price(node.key.edge, node.position, offset, length, node.progress, target.id())
+                .penalty();
         if (!Double.isFinite(extra)) continue;
         var next =
             new Candidate(
@@ -146,7 +173,8 @@ public final class RailPathSearch {
                     || Math.abs(next.cost - candidate.cost) < 1e-8
                         && next.target.id().compareTo(candidate.target.id()) < 0)) candidate = next;
       }
-      double extra = penalty(node.key.edge, node.position, length, length);
+      var priced = price(node.key.edge, node.position, length, length, node.progress, null);
+      double extra = priced.penalty();
       if (Double.isFinite(extra)) {
         double distance = node.distance + length - node.position;
         double cost = node.cost + length - node.position + extra;
@@ -154,7 +182,7 @@ public final class RailPathSearch {
           var key = new Key(direction, false);
           if (cost >= best.getOrDefault(key, Double.POSITIVE_INFINITY) - 1e-9) continue;
           best.put(key, cost);
-          frontier.add(new Node(key, 0, distance, cost, node));
+          frontier.add(new Node(key, 0, distance, cost, priced.progress(), node));
         }
       }
       if (candidate != null

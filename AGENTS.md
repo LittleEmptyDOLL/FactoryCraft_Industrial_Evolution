@@ -16,7 +16,16 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active continuation — issue #15 traffic workload (21 November 2026)
+## Active continuation — issue #15 Gate2 route pricing and safe repath (22 November 2026)
+
+* Continue from aa9f3d1; hosted44929597697 succeeded in all eight jobs. This continuation starts with346JUnit/591native and all thirty finite chains, original manual8/148 and automatic8/150 profiles, owners and old evidence. No0.33 or full0.32 completion claim.
+* Scope is documented source route weights and a stopped, budgeted signal repath. Reuse the existing MIT search, canonical TrainPath, source physics and claims. Never release the committed stop or an entered chain's safe exit merely to search, publish partial routes, erase HeldSignal to buy creep, force chunks, or mutate resources during pricing.
+* Add only default-omitted wait metadata; independent JVM must compare exact old destination/claim/resource/wait state before reopening diagnostic chunks, then prove actual detour completion. New v0320-routing[-suffix] and trains-v0320-routing[-suffix] fixtures only. Keep failed worlds/receipts.
+* Origin-priority dispatch, pass-through/temporary navigation and complete component-aware wait UI remain Gate2 follow-ups; groups/named interrupts/typed wildcard runtime and real editors remain Gate3 in the SAME issue. Do not advertise these as implemented. Native/independent-JVM and a bounded actual automatic workload validate changed routing; unchanged UI/rendering/network does not require repeating old client captures. Keep all eight hosted jobs and query once after normal publication.
+
+* Routing checkpoint:350JUnit;596fresh and596independent-JVM required native pass. Exact20-tick held-chain restore,4cars/7typed iron/96MJ and real alternate arrival;620-tick blocked wait includes completed retry with no paid creep. Scalar weights are pinned to2.1.24 utility constants. Actual automatic8/150workload/restart also pass (2573items/4814823mB/896MJ), stable mean16.584ms/p9959.904ms; route search/allocation are higher, no optimization claim. Keep both failed/final archived worlds and all raw receipts; no full Gate2/3claim.
+
+## Previous continuation — issue #15 traffic workload (21 November 2026)
 
 * This traffic slice started from b326cb2; hosted run44855730148 passed. Subsequent continuations use latest main, never reset to that historical base. Preserve346JUnit/584native and all prior worlds/ledgers. Complete remaining Gate1 runtime/dynamic acceptance and a real8+automatic workload before Gate2, then Gate3; no0.33 or full milestone claim without evidence.
 * Extend the existing opt-in native train workload, keeping default manual8/148 profile/evidence unchanged. Automatic trains need real outward end locos and sufficient source traction both ways; declare any different stock mix. No riders, runtime chunk forcing, fake resource refills or invented throughput. Use trains-v0320-auto[-suffix] /v0320-safety-traffic[-suffix] fresh diagnostics and separate-JVM exact owners/claims.

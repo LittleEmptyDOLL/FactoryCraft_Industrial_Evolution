@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-routing-second",
+  "archive": "/workspace/work/v0320-routing-final-checkpoint.tar.xz",
+  "sha256": "888fa0e023499cc711a7d08179c058ede759be2890496d671de75b514dd885b4",
+  "bytes": 28513484,
+  "verified": "tar --compare exact closed-world comparison before removal",
+  "result": "596 fresh and596 independent-JVM required cases passed. Exact partial-wait/slot/claims/fuel/cargo restore, then native detour and finite completion; before/after raw checkpoints and read-only ledger are committed separately. Final independent run also includes stricter additive/legacy/malformed wait metadata checks."
+}
