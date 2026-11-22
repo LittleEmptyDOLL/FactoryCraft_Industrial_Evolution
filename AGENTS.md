@@ -16,7 +16,16 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active continuation — issue #15 Gate2 origin dispatch (22 November 2026)
+## Active continuation — issue #15 Gate2 real pass-through (22 November 2026)
+
+* Start from checked main e9433d6; hosted44969663103 passed. Preserve360JUnit/600native, all thirty finite chains, prior worlds/receipts, source motion/resource owners, three lifts and four circuit colors. No0.33 or full Issue15 completion claim.
+* Empty waits are real waypoints only with a prepared forward continuation. Extend the existing bounded route search and canonical historical TrainPath; never fake a station-wait tick, teleport, change source fuel/physics, or release an entered chain exit at a waypoint. Unknown/full continuations must brake at the last verified end. Preserve real origin slots while stopped and deduplicate future leases per train/stop.
+* Persist only bounded, default-omitted waypoint metadata on the sole TrainData owner. Native actual forward/reverse, chain-tail, blocked continuation and exact independent-JVM prepared-route checks are required. New v0320-pass[-suffix], trains-v0320-pass[-suffix] and network-v0320-pass[-suffix] diagnostic names only. Preserve failures and old evidence.
+* Run build/JUnit, required native/reload, affected automatic workload/reload and actual EN/RU editor QA. Shared2048/per-train256 node budgets remain; keep all eight hosted jobs. Publish checked main normally, query hosted status once, report unfinished Gate2/3 requirements in the SAME issue and end.
+
+* Waypoint checkpoint:364JUnit;606fresh required native, exact independent prepared-owner/path/phase/two-slot replay then real paid passage, final606required native after inherited stock-visibility/return-queue fixture fixes. No disabled assertions or manufactured refunds. Actual EN/RU editor acknowledgments and healthy second-line visual passage; native7typed iron/64MJ and client62plainiron/512MJ exact. Automatic8/150and exact JVM reload pass; mean16.863ms,p9952.652ms, mixed metrics/no speedup claim. Preserve all failed/final worlds/archives/receipts (validation/v0320-pass), including operator-destroyed first-line waypoint; no reset/refill. Next stays temporary navigation/full waits/Gate3 in the SAME issue.
+
+## Previous continuation — issue #15 Gate2 origin dispatch (22 November 2026)
 
 * Start from latest main8663251 (hosted44957031847passed). Preserve350JUnit/596native, all thirty finite chains, source physics/components, four circuit colors, existing manual/automatic workloads and every prior world/receipt. No0.33or full Issue15 completion claim.
 * Separate a physically docked departure's slot from its next incoming commitment; count a train once per stop. Waiting Destination full/no path/no fuel must not free the actual origin, and a prospective target cannot read origin cargo. First real displacement clears the origin before native callbacks. Manual/retirement/rename/removal/unload must clean only appropriate derived indexes; persist canonical origin pose/identity and FIFO order once on TrainData.

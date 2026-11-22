@@ -211,93 +211,109 @@ public final class TrainRailHotfixGameTests {
           h.getLevel().getChunk((int) c, (int) (c >> 32));
           h.getLevel().setChunkForced((int) c, (int) (c >> 32), true);
         }
-    h.runAfterDelay(
-        8,
-        () -> {
-          var d = TrainData.get(h.getLevel());
-          var car = new TrainCar(UUID.randomUUID(), StockSpec.LOCOMOTIVE, d::setDirty);
-          var t =
-              new TrainData.Train(
-                  UUID.randomUUID(),
-                  player.getUUID(),
-                  "diagnostic",
-                  new TrainPath(
-                      RailwayData.get(h.getLevel()).graph, new RailGraph.Directed(id, false)),
-                  20);
-          t.cars.add(car);
-          d.add(t);
-          TrainWorld.views(d, t);
-          var stock = (StockEntity) h.getLevel().getEntity(car.id);
-          var c = stock.position();
-          var cow = EntityType.COW.create(h.getLevel());
-          cow.setNoAi(true);
-          cow.setNoGravity(true);
-          cow.moveTo(c.x + 2.7, c.y + .6, c.z + 2.7);
-          h.getLevel().addFreshEntity(cow);
-          h.assertTrue(
-              stock.getBoundingBox().intersects(cow.getBoundingBox())
-                  && h.getLevel().noCollision(cow, cow.getBoundingBox()),
-              "empty rotated AABB corner blocks native collision");
-          var emptyCorner = BlockPos.containing(c.add(2.5, 1, 2.5));
-          h.getLevel().setBlock(emptyCorner, Blocks.STONE.defaultBlockState(), 18);
-          h.assertTrue(
-              TrainWorld.inspect(d, t, t.head, t.head, null).equals("ready"),
-              "solid wall in empty rotated AABB corner blocks the body");
-          h.getLevel().removeBlock(emptyCorner, false);
-          var underneath = BlockPos.containing(c).below();
-          h.getLevel().setBlock(underneath, Blocks.OAK_FENCE.defaultBlockState(), 18);
-          h.assertTrue(
-              TrainWorld.inspect(d, t, t.head, t.head, null).equals("blocked"),
-              "fence extending from below was skipped");
-          h.getLevel().removeBlock(underneath, false);
-          var from = c.add(2.95, 1, 6);
-          var end = c.add(2.95, 1, 2.95);
-          var miss =
-              net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
-                  player, from, end, new AABB(from, end).inflate(.1), e -> e == stock, 100);
-          h.assertTrue(miss == null, "native entity picking hit empty AABB corner");
-          h.assertTrue(
-              net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
+    h.startSequence()
+        .thenWaitUntil(
+            () -> {
+              // Projection creation intentionally waits for native entity visibility. Fixed tick
+              // delays are not a readiness guarantee on independent reloads or a busy server.
+              var center = plan.curve.sample(20, false).position();
+              long key =
+                  new net.minecraft.world.level.ChunkPos(
+                          BlockPos.containing(center.x(), center.y(), center.z()))
+                      .toLong();
+              h.assertTrue(
+                  h.getLevel().areEntitiesLoaded(key) && h.getLevel().shouldTickBlocksAt(key),
+                  "waiting for actual rotated stock entity chunk " + key);
+            })
+        .thenExecute(
+            () -> {
+              var d = TrainData.get(h.getLevel());
+              var car = new TrainCar(UUID.randomUUID(), StockSpec.LOCOMOTIVE, d::setDirty);
+              var t =
+                  new TrainData.Train(
+                      UUID.randomUUID(),
+                      player.getUUID(),
+                      "diagnostic",
+                      new TrainPath(
+                          RailwayData.get(h.getLevel()).graph, new RailGraph.Directed(id, false)),
+                      20);
+              t.cars.add(car);
+              d.add(t);
+              TrainWorld.views(d, t);
+              var stock = (StockEntity) h.getLevel().getEntity(car.id);
+              var c = stock.position();
+              var cow = EntityType.COW.create(h.getLevel());
+              cow.setNoAi(true);
+              cow.setNoGravity(true);
+              cow.moveTo(c.x + 2.7, c.y + .6, c.z + 2.7);
+              h.getLevel().addFreshEntity(cow);
+              h.assertTrue(
+                  stock.getBoundingBox().intersects(cow.getBoundingBox())
+                      && h.getLevel().noCollision(cow, cow.getBoundingBox()),
+                  "empty rotated AABB corner blocks native collision");
+              var emptyCorner = BlockPos.containing(c.add(2.5, 1, 2.5));
+              h.getLevel().setBlock(emptyCorner, Blocks.STONE.defaultBlockState(), 18);
+              h.assertTrue(
+                  TrainWorld.inspect(d, t, t.head, t.head, null).equals("ready"),
+                  "solid wall in empty rotated AABB corner blocks the body");
+              h.getLevel().removeBlock(emptyCorner, false);
+              var underneath = BlockPos.containing(c).below();
+              h.getLevel().setBlock(underneath, Blocks.OAK_FENCE.defaultBlockState(), 18);
+              h.assertTrue(
+                  TrainWorld.inspect(d, t, t.head, t.head, null).equals("blocked"),
+                  "fence extending from below was skipped");
+              h.getLevel().removeBlock(underneath, false);
+              var from = c.add(2.95, 1, 6);
+              var end = c.add(2.95, 1, 2.95);
+              var miss =
+                  net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
+                      player, from, end, new AABB(from, end).inflate(.1), e -> e == stock, 100);
+              h.assertTrue(miss == null, "native entity picking hit empty AABB corner");
+              h.assertTrue(
+                  net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
+                          h.getLevel(),
+                          player,
+                          from,
+                          end,
+                          new AABB(from, end).inflate(.1),
+                          e -> e == stock,
+                          .3f)
+                      == null,
+                  "native projectile picking hit empty rotated corner");
+              from = c.add(6, 1, 0);
+              end = c.add(-6, 1, 0);
+              var hit =
+                  net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
+                      player, from, end, new AABB(from, end).inflate(.1), e -> e == stock, 200);
+              h.assertTrue(
+                  hit != null && hit.getEntity() == stock,
+                  "precise native picking lost a chassis hit");
+              var projectileHit =
+                  net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
                       h.getLevel(),
                       player,
                       from,
                       end,
                       new AABB(from, end).inflate(.1),
                       e -> e == stock,
-                      .3f)
-                  == null,
-              "native projectile picking hit empty rotated corner");
-          from = c.add(6, 1, 0);
-          end = c.add(-6, 1, 0);
-          var hit =
-              net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
-                  player, from, end, new AABB(from, end).inflate(.1), e -> e == stock, 200);
-          h.assertTrue(
-              hit != null && hit.getEntity() == stock, "precise native picking lost a chassis hit");
-          var projectileHit =
-              net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
-                  h.getLevel(),
-                  player,
-                  from,
-                  end,
-                  new AABB(from, end).inflate(.1),
-                  e -> e == stock,
-                  .3f);
-          h.assertTrue(
-              projectileHit != null && projectileHit.getEntity() == stock,
-              "native projectile picking lost a chassis hit");
-          cow.moveTo(c.x + 6, c.y + .5, c.z);
-          cow.move(MoverType.SELF, new Vec3(-10, 0, 0));
-          h.assertTrue(
-              cow.getX() > c.x && !TrainCollision.intersects(stock.hull(), cow.getBoundingBox()),
-              "native movement tunnelled through chassis");
-          cow.discard();
-          player.setPos(c.x + 2, c.y, c.z);
-          h.assertTrue(StockPlacement.pack(d, t, car.id, player), "rotated retrieval");
-          RailwayData.get(h.getLevel()).remove(id);
-          for (long key : pins) h.getLevel().setChunkForced((int) key, (int) (key >> 32), false);
-          h.succeed();
-        });
+                      .3f);
+              h.assertTrue(
+                  projectileHit != null && projectileHit.getEntity() == stock,
+                  "native projectile picking lost a chassis hit");
+              cow.moveTo(c.x + 6, c.y + .5, c.z);
+              cow.move(MoverType.SELF, new Vec3(-10, 0, 0));
+              h.assertTrue(
+                  cow.getX() > c.x
+                      && !TrainCollision.intersects(stock.hull(), cow.getBoundingBox()),
+                  "native movement tunnelled through chassis");
+              cow.discard();
+              player.setPos(c.x + 2, c.y, c.z);
+              h.assertTrue(StockPlacement.pack(d, t, car.id, player), "rotated retrieval");
+              RailwayData.get(h.getLevel()).remove(id);
+              for (long key : pins)
+                h.getLevel().setChunkForced((int) key, (int) (key >> 32), false);
+              h.succeed();
+            });
   }
 
   @GameTest(template = "empty", batch = "rail_v0311", timeoutTicks = 150)

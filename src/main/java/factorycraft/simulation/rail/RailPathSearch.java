@@ -56,6 +56,7 @@ public final class RailPathSearch {
   private final long revision;
   private final Rules rules;
   private final int maxNodes, highestPriority;
+  private final double minimumDistance;
   private final Map<UUID, List<Target>> targets = new HashMap<>();
   private final Map<Key, Double> best = new HashMap<>();
   private final PriorityQueue<Node> frontier =
@@ -76,6 +77,21 @@ public final class RailPathSearch {
       Collection<Target> destinations,
       Rules rules,
       int maxNodes) {
+    this(graph, start, canonicalOffset, destinations, rules, maxNodes, 0);
+  }
+
+  /** A waypoint continuation must travel, rather than select its own zero-distance marker. */
+  public RailPathSearch(
+      RailGraph graph,
+      RailGraph.Directed start,
+      double canonicalOffset,
+      Collection<Target> destinations,
+      Rules rules,
+      int maxNodes,
+      double minimumDistance) {
+    if (!Double.isFinite(minimumDistance) || minimumDistance < 0)
+      throw new IllegalArgumentException("Minimum route distance");
+    this.minimumDistance = minimumDistance;
     this.graph = graph;
     revision = graph.revisions();
     this.rules = rules;
@@ -155,7 +171,9 @@ public final class RailPathSearch {
         if (target.point.reverse() != node.key.edge.reverse()) continue;
         double offset =
             node.key.edge.reverse() ? length - target.point.offset() : target.point.offset();
-        if (offset < node.position - 1e-8 || offset > length) continue;
+        if (offset < node.position - 1e-8
+            || offset > length
+            || node.distance + offset - node.position < minimumDistance) continue;
         double extra =
             price(node.key.edge, node.position, offset, length, node.progress, target.id())
                 .penalty();

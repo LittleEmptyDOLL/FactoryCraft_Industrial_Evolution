@@ -1,3 +1,13 @@
+## Issue15 Gate2 waypoint continuation
+
+| Capability | Current implementation / boundary |
+|---|---|
+| Empty-wait station entry | Prepared direction-locked continuation; source-paid movement promotes entries without a station-wait tick |
+| Future stop limits | Saved canonical waypoint list, derived deduplicated real leases, atomic promotion; new lookahead slots yield to stopped contenders |
+| Safety | Existing whole-body/scout/chain claims retained; unavailable continuation brakes at last verified endpoint; runtime never forces chunks |
+| Editor | Remove the final condition to select pass-through; restore a condition to make an ordinary stop; server validates current menu and distance |
+| Remaining Issue15 | Temporary navigation, full component-aware wait editor and operational Gate3 groups/shared interrupts/wildcards; no full0.32claim |
+
 ## Issue15 Gate2 — origin dispatch slice
 
 |Mechanic|State|
@@ -8,7 +18,7 @@
 |Lifecycle|Selective rename/removal, manual/retirement cleanup, unavailable request removal and actual idle unload/reload recovery|
 |Station circuitry|Actual dock's cargo/ID only; prospective target counts reservation without exposing cargo; unavailable content is unknown; four colors retained|
 |Persistence|Default-omitted scoped origin pose/order on sole train; derived leases/queue restored; exact pending FIFO and disabled dual-lease JVM checks|
-|Remaining Issue15|No-wait pass-through, temporary navigation/return, full component-aware waits, then Gate3 operational groups/interrupts/wildcards and editors; no full0.32claim|
+|Remaining Issue15|Temporary navigation/return, full component-aware waits, then Gate3 operational groups/interrupts/wildcards and editors; no full0.32claim|
 
 ---
 
@@ -19,7 +29,7 @@
 |Source route weights|Implemented numeric Factorio2.1.24 stop/circuit/train constants, actual region transitions and target UUID exclusion; existing bounded Dijkstra and cached branching-region length are documented adapters|
 |Stopped route replacement|Implemented5s/multiple-name and30s/single-name chain retries with original slot/claims retained until successful replacement; no paid creep or entered-chain safe-exit surrender|
 |Persistence|Nonzero wait ticks are additive/default-omitted on the sole existing train; native exact independent-JVM receipts are recorded in validation/v0320-routing|
-|Remaining Gate2|Origin-priority fairness, no-wait pass-through, temporary navigation/return and full component-aware wait editor are pending|
+|Remaining Gate2|Origin-priority fairness and prepared no-wait pass-through are implemented above; temporary navigation/return and complete component-aware waits remain pending|
 |Gate3|Shared groups/named interrupts/typed wildcards and real editors/runtime remain pending in the same Issue15; full0.32is not complete|
 
 ---
@@ -33,7 +43,7 @@
 |Dynamic changes|Real unload/reload; committed station removal/brake/same-name alternate; occupied signal protection/environment loss/one-refund restoration|
 |Congestion/braking|Declared initial259.2km/h selected blocked exit on real divergent turnout; no crossing/snap/unpaid retry; real release/arrival|
 |Claimed junction restart|Full canonical snapshots, exclusive claim restored before release, both actual trains complete after independent startup|
-|Remaining Issue15|Gate2 source dispatch/pass-through/temporary/component UI; Gate3 groups/interrupts/wildcards runtime/editors; broad client16-angle/grade/arrival art and8-way shared congestion are not certified by the finite cases|
+|Remaining Issue15|Gate2 temporary navigation/complete component UI; Gate3 groups/interrupts/wildcards runtime/editors; broad client16-angle/grade/arrival art and8-way shared congestion are not certified by the finite cases|
 
 ---
 

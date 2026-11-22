@@ -1,3 +1,15 @@
+# Issue15 continuation — Gate2 real pass-through
+
+Base e9433d6 / hosted44969663103success. Preserve360JUnit/600native, thirty finite chains and all previous diagnostics. Implement no-wait waypoints through the existing bounded search, explicit historical path and original source-paid engine, with real future stop leases and tail-safe promotion. No0.33 or full0.32completion claim.
+
+Implemented: direction-locked future search anchors, bounded prepared windows, positive-distance continuation, deduplicated current/origin/future slot references, actual committed-pose promotion, fail-closed braking when continuation is unavailable, additive saved waypoint metadata, and editor support for removing the last wait. Local validation is recorded in validation/v0320-pass; do not infer pass status from this implementation list.
+
+Validated:364JUnit;606fresh required native pass, exact independent prepared-route/phase/two-future-slot replay with real paid passage, then final606required pass after fixing inherited entity visibility and budgeted-return timing assumptions. Actual EN/RU current-menu add/remove-last-condition/save and healthy second-line visual passage pass; client2/6/62plainiron/512MJ and native2/7typed iron/64MJ ledgers are exact. Automatic8/150measurement and exact JVM reload pass (2573items/4814823mB/896MJ), mean16.863ms,p9952.652ms; no speedup claim. Preserve all failed worlds/receipts/archive manifests in validation/v0320-pass. All eight hosted jobs remain; optional/full factory/MIXED are not rerun locally.
+
+**Next concrete task in the SAME Issue15:** temporary go-to/cancel/return without corrupting the canonical schedule, including missing/renamed targets, Manual, split/merge, unload and independent-JVM recovery plus real EN/RU controls. Complete component-aware wait editing. Then Gate3: operational scoped shared groups/versioned edits, named shared interrupts, typed wildcard detours/return, restart and actual two-client editors. Broader16-heading/grade/high-speed visual and congested-eight-train coverage remain explicit limits. Do not start0.33.
+
+---
+
 # Issue15 continuation — Gate2 origin dispatch
 
 Base8663251 / hosted44957031847success. Preserve all350old JUnit/596native, thirty finite chains, manual8/148 and automatic8/150profiles, source physics/1:10fluids/four colors and every earlier world/receipt. This slice implements source-origin priority and physical station occupancy, not all Gate2/3 or0.32.

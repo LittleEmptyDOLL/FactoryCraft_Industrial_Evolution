@@ -1,0 +1,17 @@
+{
+  "archive": "/workspace/work/v0320-pass-preserved-old-client-worlds.tar.xz",
+  "sha256": "0d26d62f5be7f644cacc4f4446aa14442dcaa86b5a92bea6f7a3bc228066e672",
+  "paths": [
+    "run-gametest/network-v0130",
+    "run-gametest/network-v0301",
+    "run-gametest/network-v0310",
+    "run-gametest/network-v0311",
+    "run-gametest/network-v0313",
+    "run-gametest/network-v0313-guards",
+    "run-gametest/network-v0320",
+    "run-gametest/network-v0320-final",
+    "run-gametest/network-v0320-safety"
+  ],
+  "byte_compared": true,
+  "reason": "Closed historical marked client diagnostics preserved without reset or refill."
+}

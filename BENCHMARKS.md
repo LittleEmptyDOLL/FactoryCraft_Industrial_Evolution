@@ -1,3 +1,29 @@
+# Issue15 prepared waypoints — automatic8/150 regression
+
+The unchanged real automatic profile passes:8unoccupied trains/150cars (3/3/8/16/32/64/8/16),48paid edges/6144m,72devices, actual forward/reverse travel and stop visits for every consist, and real chunk unload. Finite2573items/4814823mB/896MJcoal+buffer+spent remain exact. This wait-based independent-line profile guards ordinary automation; it is not a congested eight-train waypoint/junction benchmark. Real no-wait passage is checked by native finite cases and the client stand.
+
+Both samples declare2CPUquota/Java21/3workers/2GiBheap/0clients,120warmup and400stable ticks. No other game/client/test process was running during the new measurement. Each column is one contextual regression sample, not a performance optimization experiment.
+
+|Metric|Prior origin dispatch|Prepared-waypoint extension|
+|---|---:|---:|
+|Stable mean, ms|16.243|16.863|
+|Stable p95, ms|32.651|34.736|
+|Stable p99, ms|63.028|52.652|
+|Stable maximum, ms|69.750|56.418|
+|Main-thread allocated bytes /400ticks|4532658152|4503126760|
+|Stable world reads|12124050|12124050|
+|Recorded route nodes|192|192|
+|Recorded search total, ms|10.517|10.339|
+
+Mean and p95 are higher; p99, maximum and allocation are lower. No general TPS/speedup claim, CPU-specific pass threshold or repeatability claim. Route totals include startup/setup. Client packets remain0with0clients; projection requests are not network packets. Construction/initial lag lies outside the stable window. Source waits, fuel, physical braking, actual native chunk quarantine and existing workloads are preserved. Raw JSON/log/checkpoint receipts: validation/v0320-pass. Full factory/MIXED/fluid/manual/optional jobs remain hosted.
+
+```sh
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-pass-example
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-pass-example -PtrainMode=verify
+```
+
+---
+
 # Issue15 origin dispatch — automatic8/150 regression receipt
 
 The unchanged real automatic profile passes again:8unoccupied trains/150cars,6144m/48paid edges,72physical devices, real visits to both stops and substantial motion in each direction. All actual chunk lifecycle checks and the separate-JVM exact train/rail/device/slot owner comparison pass. Finite2573component-bearing iron,4814823mBwater and896MJcoal+buffer+spent remain exact. Independent lines measure this native adapter workload; they are not eight-way shared-junction acceptance.

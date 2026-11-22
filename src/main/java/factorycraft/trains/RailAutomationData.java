@@ -187,6 +187,10 @@ public final class RailAutomationData extends SavedData {
       if (origin != null && origin.scope.equals(t.scope)) slots.restoreOrigin(t.id, origin.id);
       var target = device(t.automation.destination);
       if (target != null && target.scope.equals(t.scope)) slots.restore(t.id, target.id);
+      for (var waypoint : t.automation.upcoming) {
+        var future = device(waypoint.destination());
+        if (future != null && future.scope.equals(t.scope)) slots.restorePlanned(t.id, future.id);
+      }
       nextDispatchOrder = Math.max(nextDispatchOrder, t.automation.dispatchOrder + 1);
     }
   }
@@ -327,12 +331,16 @@ public final class RailAutomationData extends SavedData {
       var t = data.train(id);
       if (t == null) continue;
       var a = t.automation;
-      if (a.departure != null && !a.departure.equals(slots.origin(id))) a.departure = null;
+      if (a.departure != null && !a.departure.equals(slots.origin(id))) {
+        a.departure = null;
+        a.departurePass = false;
+      }
       if (a.destination != null && !a.destination.equals(slots.destination(id))) {
         a.destination = null;
         a.routed = false;
         a.arrived = false;
       }
+      TrainAutomation.clearUpcoming(t, this);
       a.routeJob = null;
       a.dispatchTarget = null;
       dispatch.remove(id);

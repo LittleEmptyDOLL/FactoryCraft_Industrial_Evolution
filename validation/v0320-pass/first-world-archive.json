@@ -1,0 +1,10 @@
+{
+  "archive": "/workspace/work/v0320-pass-first-cleanup-failed.tar.xz",
+  "sha256": "9dced27f9154631ed40399129910d34dcc36b482b6523b864ee6a833be516876",
+  "path": "run-gametest/v0320-pass-first",
+  "byte_compared": true,
+  "fresh_required": 605,
+  "independent_required": 606,
+  "independent_failed": 1,
+  "failure": "New diagnostic player lacked creative cleanup authority after exact checkpoint replay and movement assertions. No runtime permission or conservation check weakened."
+}

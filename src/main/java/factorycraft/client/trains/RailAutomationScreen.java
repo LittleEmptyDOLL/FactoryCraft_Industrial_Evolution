@@ -176,7 +176,7 @@ public final class RailAutomationScreen extends AbstractContainerScreen<RailAuto
           189,
           150,
           () -> {
-            if (!entries.isEmpty() && waits.size() > 1) {
+            if (!entries.isEmpty() && !waits.isEmpty()) {
               var list = new ArrayList<>(waits);
               list.remove(condition);
               entries.set(selected, new RailSchedule.Entry(name.getValue(), list));
@@ -356,7 +356,8 @@ public final class RailAutomationScreen extends AbstractContainerScreen<RailAuto
         if (list.size() >= 32) return;
         list.add(c);
         condition = list.size() - 1;
-      } else list.set(condition, c);
+      } else if (!list.isEmpty()) list.set(condition, c);
+      else return;
       entries.set(selected, new RailSchedule.Entry(name.getValue(), list));
       rebuild();
       error = "";
@@ -390,6 +391,8 @@ public final class RailAutomationScreen extends AbstractContainerScreen<RailAuto
           20,
           0xffffff,
           false);
+      if (!entries.isEmpty() && entries.get(selected).waits().isEmpty())
+        g.drawString(font, text("pass_through"), 168, 195, 0x8ee1be, false);
       g.drawString(font, text("filter_hint"), 10, 130, 0xccd8df, false);
       g.drawString(font, text("units"), 10, 215, 0xccd8df, false);
       int phase =

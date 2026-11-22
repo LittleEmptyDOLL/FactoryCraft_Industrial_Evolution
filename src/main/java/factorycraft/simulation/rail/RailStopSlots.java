@@ -25,6 +25,7 @@ public final class RailStopSlots {
   private final Map<Name, Set<UUID>> names = new HashMap<>();
   private final Map<UUID, UUID> trains = new HashMap<>();
   private final Map<UUID, UUID> departures = new HashMap<>();
+  private final Map<UUID, Set<UUID>> planned = new HashMap<>();
   private final Map<UUID, Set<UUID>> approaching = new HashMap<>();
   private long revision;
 
@@ -65,6 +66,7 @@ public final class RailStopSlots {
       if (previous.isEmpty()) names.remove(new Name(old.scope(), old.name()));
       var affected = new HashSet<UUID>();
       for (var train : Set.copyOf(approaching.getOrDefault(stop.id(), Set.of()))) {
+        if (unplan(train, stop.id())) affected.add(train);
         if (stop.id().equals(trains.get(train))) {
           releaseTarget(train);
           affected.add(train);
@@ -90,6 +92,7 @@ public final class RailStopSlots {
     if (namesake.isEmpty()) names.remove(new Name(old.scope(), old.name()));
     var released = Set.copyOf(approaching.getOrDefault(stop, Set.of()));
     for (var train : released) {
+      unplan(train, stop);
       if (stop.equals(trains.get(train))) releaseTarget(train);
       if (stop.equals(departures.get(train))) releaseOrigin(train);
     }
@@ -100,7 +103,7 @@ public final class RailStopSlots {
   public boolean available(UUID stop, UUID train) {
     var target = stops.get(stop);
     if (target == null) return false;
-    if (stop.equals(trains.get(train)) || stop.equals(departures.get(train))) return true;
+    if (references(train, stop)) return true;
     return target.enabled()
         && target.limit() != 0
         && (target.limit() < 0 || count(stop) < target.limit());
@@ -127,6 +130,7 @@ public final class RailStopSlots {
   }
 
   public void release(UUID train) {
+    clearPlanned(train);
     releaseTarget(train);
     releaseOrigin(train);
   }
@@ -152,15 +156,62 @@ public final class RailStopSlots {
   public void releaseOrigin(UUID train) {
     var stop = departures.remove(train);
     if (stop == null) return;
-    if (!stop.equals(trains.get(train))) uncount(train, stop);
+    if (!references(train, stop)) uncount(train, stop);
     revision++;
   }
 
   private void releaseTarget(UUID train) {
     var stop = trains.remove(train);
     if (stop == null) return;
-    if (!stop.equals(departures.get(train))) uncount(train, stop);
+    if (!references(train, stop)) uncount(train, stop);
     revision++;
+  }
+
+  private boolean references(UUID train, UUID stop) {
+    return stop.equals(trains.get(train))
+        || stop.equals(departures.get(train))
+        || planned.getOrDefault(train, Set.of()).contains(stop);
+  }
+
+  /** A bounded prepared waypoint holds a real lease before its path is published. */
+  public boolean plan(UUID train, UUID stop) {
+    if (!available(stop, train)) return false;
+    return restorePlanned(train, stop);
+  }
+
+  public boolean restorePlanned(UUID train, UUID stop) {
+    if (!stops.containsKey(stop)) return false;
+    if (planned.computeIfAbsent(train, k -> new HashSet<>()).add(stop)) {
+      approaching.computeIfAbsent(stop, k -> new HashSet<>()).add(train);
+      revision++;
+    }
+    return true;
+  }
+
+  public boolean planned(UUID train, UUID stop) {
+    return planned.getOrDefault(train, Set.of()).contains(stop);
+  }
+
+  /** Promote without any transient release/reacquire gap, even for repeated physical stops. */
+  public boolean promote(UUID train, UUID stop, Set<UUID> remaining) {
+    if (!planned(train, stop)) return false;
+    acquire(train, stop);
+    for (var old : Set.copyOf(planned.getOrDefault(train, Set.of())))
+      if (!remaining.contains(old)) unplan(train, old);
+    return true;
+  }
+
+  public void clearPlanned(UUID train) {
+    for (var stop : Set.copyOf(planned.getOrDefault(train, Set.of()))) unplan(train, stop);
+  }
+
+  private boolean unplan(UUID train, UUID stop) {
+    var set = planned.get(train);
+    if (set == null || !set.remove(stop)) return false;
+    if (set.isEmpty()) planned.remove(train);
+    if (!references(train, stop)) uncount(train, stop);
+    revision++;
+    return true;
   }
 
   private void uncount(UUID train, UUID stop) {

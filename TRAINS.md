@@ -1,3 +1,17 @@
+# Issue15 Gate2 — prepared no-wait waypoints
+
+An entry with no wait conditions is a waypoint. Remove its last condition in the schedule editor to use it; adding a condition restores an ordinary stop. The server accepts this only from the current authorized nearby menu. Normal wait entries retain their existing behavior.
+
+Before arrival, the existing Create-derived bounded search prepares a direction-locked continuation from the future leading-nose pose. A complete result extends the canonical historical TrainPath without altering source traction, braking, fuel, or any carriage's resources. A window contains at most64future markers, prepares at most8legs per call within the existing256nodes/train and2048nodes/world budget, and extends at least128blocks or stopping distance + whole-body length +32. This is a Minecraft adapter, not a claim about Factorio's private pathfinder.
+
+Prepared targets hold actual stop-limit leases; references to the same train/stop count once. Lookahead yields new slots to indexed stopped dispatch contenders. A crossed marker atomically promotes the next commitment before native callbacks, without station-wait timers, while retaining entered logical blocks and chain exit leases until the tail clears. Unknown, unavailable or full continuations do not authorize motion beyond the last verified endpoint. A genuinely blocked waypoint may stop; it then retains its physical origin until actual movement and dispatches normally, including a legal stopped reversal. Positive-distance search prevents a single no-wait marker from repeatedly selecting itself at zero distance.
+
+Only default-omitted `Upcoming`, `WaypointDirection` and stopped `DeparturePass` metadata are added to schema1; resources still live once on TrainData. The installed historical path supplies geometry. Restart reconstructs derived future slots; malformed ordering/directions are quarantined. Rename/removal/manual mode invalidate only appropriate future commitments and never release physical collision protection. Dynamic device loss is conservatively fail-closed; seamless continuation after arbitrary mid-chain infrastructure destruction is not promised.
+
+Temporary go-to/cancel/return, the full component-aware wait editor and operational Gate3 groups/shared named interrupts/typed wildcards remain in the SAME Issue15. No0.33 or full0.32completion claim. New receipts: validation/v0320-pass.
+
+---
+
 # Issue15 Gate2 — priority at departure and occupied origins
 
 A train whose wait conditions have completed continues to occupy its source station while the next destination is full, unreachable or still being searched. When a route is ready it can reserve the next station while physically remaining at the origin, including with no fuel. The origin is released on the first real displacement. Each station counts that train once; a single-stop loop cannot count it twice.
@@ -8,7 +22,7 @@ Changing the source priority affects pending dispatch; destination priority/limi
 
 Origin UUID/pose/direction and nonzero FIFO order are saved once on the existing train, without copying cargo/fuel/fluids. New-origin checkpoint fields are omitted by default. Existing schema1 resources remain intact; older pending departures without a saved origin are not guessed from nearby tracks. Native/restart receipts are in validation/v0320-dispatch. No new graphical-client pass is claimed: renderer, UI and protocol are unchanged.
 
-Next in Issue15: actual no-wait pass-through, temporary go-to/cancel/return and complete component-aware waits, then operational groups/named interrupts/typed wildcards/editors. Full0.32remains unfinished; no0.33.
+Origin dispatch is now followed by the prepared pass-through extension above. Next in Issue15: temporary go-to/cancel/return and complete component-aware waits, then operational groups/named interrupts/typed wildcards/editors. Full0.32remains unfinished; no0.33.
 
 ---
 
@@ -20,7 +34,7 @@ A really stopped train at a refused chain may search again after5seconds when mu
 
 Nonzero `SignalWaitTicks` is additive/default-omitted schema1 metadata on the existing train, never another owner. Unknown/unloaded topology/physical attachments are not priced as free track. Source physics/fuel, full-body claims, component-exact cargo/fluid, ordinary reach and all four logic colors remain unchanged. Prefix pricing is nonmutating and budgeted by the existing2048nodes/tick shared frontier.
 
-**Adaptations:** this remains the existing Create-derived directed Dijkstra, not proprietary Factorio A*. A branching region's metric length is the cached sum of its physical spans; one cheapest prefix is retained per directed physical edge, so path-dependent block-discount weights are not claimed to reproduce the source's hidden global optimizer. Route costs observe train states on expansion and all prospective movement is rechecked by the existing atomic scout. Terminal classification currently recognizes distinct schedule station names, without recursively searching every other schedule entry during pricing. Full origin-priority fairness, pass-through/temporary stops, component-aware wait editor and Gate3 remain pending in Issue15.
+**Adaptations:** this remains the existing Create-derived directed Dijkstra, not proprietary Factorio A*. A branching region's metric length is the cached sum of its physical spans; one cheapest prefix is retained per directed physical edge, so path-dependent block-discount weights are not claimed to reproduce the source's hidden global optimizer. Route costs observe train states on expansion and all prospective movement is rechecked by the existing atomic scout. Terminal classification currently recognizes distinct schedule station names, without recursively searching every other schedule entry during pricing. Origin fairness and prepared pass-through are implemented in the later extensions above. Temporary stops, complete component-aware wait editing and Gate3 remain pending in Issue15.
 
 ---
 
@@ -44,7 +58,7 @@ Time/inactivity advance only while loaded and really stopped at the destination;
 
 Regular signals split logical regions at metric positions; opposite sides enable two-way passage. Chains reserve the selected route through a regular exit with enough space for every car. A signal's global blue indication is distinct from permission for a particular chosen route. Actual interval/hull collisions still protect manual traffic. Paused/unloaded trains do not spend movement fuel or simulate offline cargo transfers. Head/nose targeting uses the source braking recurrence and0.06-block alignment tolerance.
 
-Current checkpoint requires an explicit wait in each GUI schedule entry. Empty-condition pass-through, temporary go-to actions, origin-priority dispatch, synchronized groups and shared named interrupts/wildcards are **not yet playable**, despite bounded definition codecs/pure wildcard helpers being present. Issue15 remains open; no0.33 work is included. See validation/v0320 for precise actual checks and limitations.
+This historical basic checkpoint required explicit waits. The later extensions above add origin-priority dispatch and real empty-condition pass-through. Temporary go-to actions, synchronized groups and shared named interrupts/wildcards remain **not yet playable**; definition codecs/pure wildcard helpers do not implement them. Issue15 remains open; no0.33 work is included. See validation/v0320 for precise actual checks and limitations.
 
 ---
 

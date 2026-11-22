@@ -1,0 +1,9 @@
+{
+  "archive": "/workspace/work/v0320-pass-final-606-checkpoint.tar.xz",
+  "sha256": "24c2e02f31ea8c66c6de32943cccbc337ce94511ee22e93c1d23e2519c8280f5",
+  "path": "run-gametest/v0320-pass-safe",
+  "byte_compared": true,
+  "required_passed": 606,
+  "required_failed": 0,
+  "note": "Final successful repeated native run; no world reset/refill. Exact prepared-waypoint owner was independently restored and actually moved in the preceding separate process; both later receipts retain the frozen expected state and no completed owner resurrects."
+}

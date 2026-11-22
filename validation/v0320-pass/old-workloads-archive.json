@@ -1,0 +1,16 @@
+{
+  "archive": "/workspace/work/v0320-pass-preserved-old-train-workloads.tar.xz",
+  "sha256": "6675ec1ba15cf465416f8c522417443247af31fe4aa905aabf495f5db6d7d18d",
+  "paths": [
+    "run-benchmark/trains-v0310-completion-after1",
+    "run-benchmark/trains-v0310-completion-after2",
+    "run-benchmark/trains-v0310-completion-before",
+    "run-benchmark/trains-v0310-completion-before2",
+    "run-benchmark/trains-v0311-after-artifact",
+    "run-benchmark/trains-v0311-after-sections",
+    "run-benchmark/trains-v0311-before-artifact",
+    "run-benchmark/trains-v0311-before-sections"
+  ],
+  "byte_compared": true,
+  "reason": "Closed historical diagnostic worlds preserved losslessly for disk headroom; no tests reset/refilled."
+}

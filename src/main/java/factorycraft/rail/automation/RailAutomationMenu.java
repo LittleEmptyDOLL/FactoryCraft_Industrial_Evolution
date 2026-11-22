@@ -123,10 +123,8 @@ public final class RailAutomationMenu extends AbstractContainerMenu {
           else return TrainAutomation.automatic(d, t);
         } else if (n.getString("Action").equals("schedule")) {
           var schedule = RailScheduleCodec.load(n.getCompound("Schedule"));
-          // No pretend pass-through: Gate B requires explicit waits; advancing without braking is
-          // Gate C.
-          if (schedule.entries().stream().anyMatch(e -> e.waits().isEmpty())
-              || !schedule.interrupts().isEmpty()) return false;
+          // Empty waits are actual server-side waypoints; interrupts need their own runtime.
+          if (!schedule.interrupts().isEmpty()) return false;
           TrainAutomation.manual(d, t);
           t.automation.schedule = schedule;
           t.automation.entry = 0;

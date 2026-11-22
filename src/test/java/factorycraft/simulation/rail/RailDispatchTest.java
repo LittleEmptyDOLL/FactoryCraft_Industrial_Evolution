@@ -19,6 +19,51 @@ class RailDispatchTest {
   }
 
   @Test
+  void preparedWaypointsCountOnceAndPromoteWithoutLosingFutureOrOrigin() {
+    var s = slots();
+    assertTrue(s.plan(train, target));
+    assertTrue(s.plan(train, origin));
+    assertEquals(1, s.count(origin));
+    assertEquals(1, s.count(target));
+    assertFalse(s.plan(UUID.randomUUID(), target));
+    assertTrue(s.promote(train, target, Set.of(origin)));
+    assertEquals(target, s.destination(train));
+    assertEquals(1, s.count(origin));
+    assertTrue(s.promote(train, origin, Set.of()));
+    assertEquals(1, s.count(origin));
+    assertEquals(0, s.count(target));
+    s.release(train);
+    assertEquals(0, s.count(origin));
+  }
+
+  @Test
+  void renameOfPreparedStopInvalidatesOnlyItsLeaseAndReportsItsTrain() {
+    var s = slots();
+    s.plan(train, target);
+    assertEquals(Set.of(train), s.put(new RailStopSlots.Stop(target, "team", "Other", true, 1, 1)));
+    assertFalse(s.planned(train, target));
+    assertEquals(origin, s.destination(train));
+    assertEquals(0, s.count(target));
+    assertTrue(s.plan(train, target));
+    assertEquals(Set.of(train), s.remove(target));
+    assertEquals(1, s.count(origin));
+  }
+
+  @Test
+  void independentSavedWaypointsRestoreEvenAfterLimitReductionAndClearWithoutFreeingTarget() {
+    var s = slots();
+    s.put(new RailStopSlots.Stop(target, "team", "Unload", false, 0, 0));
+    assertTrue(s.restorePlanned(train, target));
+    assertTrue(s.plan(train, target));
+    assertTrue(s.promote(train, target, Set.of(target)));
+    s.clearPlanned(train);
+    assertEquals(1, s.count(target));
+    assertEquals(target, s.destination(train));
+    s.release(train);
+    assertEquals(0, s.count(target));
+  }
+
+  @Test
   void readyDepartureCountsUntilActualMovementAndCanOwnOneIncomingSlotToo() {
     var s = slots();
     assertTrue(s.depart(train, origin));

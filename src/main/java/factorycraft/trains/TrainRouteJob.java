@@ -5,7 +5,8 @@ import factorycraft.simulation.trains.*;
 import java.util.*;
 
 /**
- * Bounded two-ended dispatch. Source speed/pose stay stopped until a complete actual route commits.
+ * Bounded two-ended stopped dispatch or direction-locked future continuation. Only complete routes
+ * commit.
  */
 public final class TrainRouteJob {
   private record Candidate(int direction, TrainPath.Leg start, RailPathSearch search) {}
@@ -16,6 +17,8 @@ public final class TrainRouteJob {
   private final List<Candidate> candidates = new ArrayList<>();
   private final TrainPath originalPath;
   private final double originalHead;
+  private final boolean continuation;
+  private final int fixedDirection;
   private final long graphRevision, rulesRevision;
   private final int stepLimit;
   private Result resolved;
@@ -37,17 +40,36 @@ public final class TrainRouteJob {
       RailAutomationData system,
       List<RailPathSearch.Target> targets,
       int stepLimit) {
+    this(d, t, system, targets, stepLimit, t.head, false);
+  }
+
+  /** Same bounded search, anchored at a future leading-nose pose in the current direction. */
+  public TrainRouteJob(
+      TrainData d,
+      TrainData.Train t,
+      RailAutomationData system,
+      List<RailPathSearch.Target> targets,
+      int stepLimit,
+      double anchorHead,
+      boolean continuation) {
+    this.continuation = continuation;
+    fixedDirection = t.direction;
     if (stepLimit < 1 || stepLimit > 256) throw new IllegalArgumentException("Route step budget");
     this.stepLimit = stepLimit;
     originalPath = t.path;
-    originalHead = t.head;
+    originalHead = anchorHead;
     graphRevision = system.rails.graph.revisions();
     rulesRevision = system.revision;
     for (int direction : new int[] {1, -1}) {
+      if (continuation && direction != fixedDirection) continue;
       var leading = t.cars.get(direction > 0 ? 0 : t.cars.size() - 1);
       if (leading.kind != StockSpec.LOCOMOTIVE || (leading.reversed ? -1 : 1) != direction)
         continue;
-      double nose = direction > 0 ? t.front() : t.rear();
+      double nose =
+          anchorHead
+              + (direction > 0
+                  ? StockSpec.HALF_LENGTH
+                  : -(t.cars.size() - 1) * StockSpec.SPACING - StockSpec.HALF_LENGTH);
       var start = t.path.at(nose);
       if (start == null) continue;
       var travel =
@@ -63,7 +85,8 @@ public final class TrainRouteJob {
               offset,
               targets,
               new TrainRoutePolicy(d, t, system),
-              16384);
+              16384,
+              continuation || t.automation.departurePass ? .001 : 0);
       candidates.add(new Candidate(direction, start, search));
     }
     done = candidates.isEmpty();
@@ -71,8 +94,9 @@ public final class TrainRouteJob {
 
   public int advance(TrainData.Train t, RailAutomationData system, int budget) {
     if (t.path != originalPath
-        || t.head != originalHead
-        || t.speed != 0
+        || (continuation
+            ? t.direction != fixedDirection || (t.head - originalHead) * fixedDirection > .061
+            : t.head != originalHead || t.speed != 0)
         || graphRevision != system.rails.graph.revisions()
         || rulesRevision != system.revision) {
       done = stale = true;

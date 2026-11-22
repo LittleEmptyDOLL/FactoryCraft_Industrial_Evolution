@@ -28,6 +28,36 @@ class RailAutomationKernelTest {
   }
 
   @Test
+  void waypointSearchRejectsOwnZeroDistanceButFindsLaterSameName() {
+    var g = new RailGraph();
+    var e = edge(g, 0, 70, 0, -96);
+    var zero =
+        new RailPathSearch.Target(
+            UUID.randomUUID(), point(e.id(), 40, false, RailEdgePoints.Kind.STOP), 0);
+    var later =
+        new RailPathSearch.Target(
+            UUID.randomUUID(), point(e.id(), 72, false, RailEdgePoints.Kind.STOP), 0);
+    var job =
+        new RailPathSearch(
+            g,
+            new RailGraph.Directed(e.id(), false),
+            40,
+            List.of(zero, later),
+            (d, a, b) -> 0,
+            100,
+            .001);
+    job.advance(100);
+    assertEquals(later, job.result().target());
+    assertEquals(32, job.result().distance(), 1e-8);
+    var end =
+        new RailPathSearch(
+            g, new RailGraph.Directed(e.id(), false), 40, List.of(zero), (d, a, b) -> 0, 100, .001);
+    end.advance(100);
+    assertNull(end.result());
+    assertEquals(RailPathSearch.Status.NO_PATH, end.status());
+  }
+
+  @Test
   void orderedPointPortFindsStrictNextInBothDirectionsAndKeepsPairedCuts() {
     var graph = new RailGraph();
     var e = edge(graph, 0, 70, 0, -64);

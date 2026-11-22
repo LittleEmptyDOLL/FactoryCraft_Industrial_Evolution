@@ -27,6 +27,20 @@ public final class AutoTrainState {
   public UUID destination, activeInterrupt;
   public UUID departure;
   public double departureHead;
+  public boolean departurePass;
+
+  /** Prepared future stops; the installed TrainPath owns geometry, never duplicate resources. */
+  public record Waypoint(int entry, UUID destination, double head) {}
+
+  public final List<Waypoint> upcoming = new ArrayList<>();
+  public int waypointDirection = 1;
+  public transient TrainRouteJob continuationJob;
+  public transient long continuationRetry;
+
+  public double horizon() {
+    return upcoming.isEmpty() ? targetHead : upcoming.getLast().head();
+  }
+
   public int departureDirection = 1;
   public long dispatchOrder;
   public transient UUID dispatchTarget;
@@ -61,6 +75,8 @@ public final class AutoTrainState {
         && entry == 0
         && destination == null
         && departure == null
+        && upcoming.isEmpty()
+        && !departurePass
         && dispatchOrder == 0
         && heldSignal == null
         && signalWaitTicks == 0
@@ -97,6 +113,19 @@ public final class AutoTrainState {
       n.putUUID("Departure", departure);
       n.putDouble("DepartureHead", departureHead);
       n.putInt("DepartureDirection", departureDirection);
+      if (departurePass) n.putBoolean("DeparturePass", true);
+    }
+    if (!upcoming.isEmpty()) {
+      var rows = new ListTag();
+      for (var w : upcoming) {
+        var row = new CompoundTag();
+        row.putInt("Entry", w.entry());
+        row.putUUID("Destination", w.destination());
+        row.putDouble("Head", w.head());
+        rows.add(row);
+      }
+      n.put("Upcoming", rows);
+      n.putInt("WaypointDirection", waypointDirection);
     }
     if (dispatchOrder != 0) n.putLong("DispatchOrder", dispatchOrder);
     if (heldSignal != null) n.putUUID("HeldSignal", heldSignal);
@@ -141,6 +170,7 @@ public final class AutoTrainState {
         state.departure = n.getUUID("Departure");
         state.departureHead = n.getDouble("DepartureHead");
         state.departureDirection = n.getInt("DepartureDirection");
+        state.departurePass = n.getBoolean("DeparturePass");
       }
       state.dispatchOrder = n.getLong("DispatchOrder");
       if (n.hasUUID("HeldSignal")) state.heldSignal = n.getUUID("HeldSignal");
@@ -154,6 +184,32 @@ public final class AutoTrainState {
               new RailInterrupt.Match(
                   RailInterrupt.Type.valueOf(n.getString("WildcardType")),
                   n.getString("WildcardId"));
+      }
+      var upcoming = n.getList("Upcoming", Tag.TAG_COMPOUND);
+      if (upcoming.size() > 64) throw new IllegalArgumentException("Waypoint window");
+      if (!upcoming.isEmpty()) {
+        state.waypointDirection = n.getInt("WaypointDirection");
+        if (Math.abs(state.waypointDirection) != 1
+            || !state.automatic
+            || !state.routed
+            || state.arrived
+            || state.entry >= state.schedule.entries().size())
+          throw new IllegalArgumentException("Waypoint state");
+        int entry = state.entry;
+        double head = state.targetHead;
+        for (var raw : upcoming) {
+          var row = (CompoundTag) raw;
+          if (!state.schedule.entries().get(entry).waits().isEmpty())
+            throw new IllegalArgumentException("Waypoint after wait");
+          entry = (entry + 1) % state.schedule.entries().size();
+          double next = row.getDouble("Head");
+          if (row.getInt("Entry") != entry
+              || !Double.isFinite(next)
+              || (next - head) * state.waypointDirection < .001)
+            throw new IllegalArgumentException("Waypoint order");
+          state.upcoming.add(new Waypoint(entry, row.getUUID("Destination"), next));
+          head = next;
+        }
       }
       state.phase = Phase.valueOf(n.getString("Phase"));
       if (state.number < 0

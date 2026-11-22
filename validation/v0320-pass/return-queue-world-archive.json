@@ -1,0 +1,10 @@
+{
+  "archive": "/workspace/work/v0320-pass-safe-before-return-queue-fixture-fix.tar.xz",
+  "sha256": "f23f0c6979847ba157253701c94eefbcc19a4a939fd195c810ae06d024506f42",
+  "path": "run-gametest/v0320-pass-safe",
+  "byte_compared": true,
+  "required_passed": 605,
+  "required_failed": 1,
+  "saved_return_claims": 219,
+  "failure": "Inherited signal-recovery fixture assumed return is delivered within20ticks; the real recovery queue serves8/tick including unavailable historical claims. Await exactly one native item within original timeout; duplicated refund still fails immediately and all frozen/energy/reform assertions remain."
+}

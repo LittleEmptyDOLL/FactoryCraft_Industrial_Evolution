@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "canonical_train": "17946396-c900-47a3-adec-be81cede22e8",
+  "cars": 2,
+  "component_typed_iron": 7,
+  "coal_buffer_plus_spent_j": 64000000,
+  "prepared_waypoints": 2,
+  "exact_frozen_metadata_preserved": true,
+  "completed_owner_retired": true,
+  "note": "Native independent process compares the live owner before loading chunks and proves actual paid passage; this script checks the closed-world receipts."
+}

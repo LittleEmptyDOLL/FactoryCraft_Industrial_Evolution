@@ -80,6 +80,12 @@ public final class RailDispatchQueue {
     return set != null && !set.isEmpty() && set.first().train().equals(train);
   }
 
+  /** Moving lookahead yields to already enrolled stopped requests for a new slot. */
+  public boolean contested(UUID target) {
+    var set = byTarget.get(target);
+    return set != null && !set.isEmpty();
+  }
+
   public void resolve(UUID train, UUID target) {
     var r = requests.get(train);
     if (r == null || !r.targets().contains(target))

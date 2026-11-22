@@ -1094,5 +1094,6 @@
   "rail.factorycraft.signal_controls": "Истинное условие схемы включает красный.",
   "rail.factorycraft.capacity": "Достигнут предел устройств на участке",
   "gui.factorycraft.logic_option.ForceRed": "Красный по условию: %s",
-  "gui.factorycraft.logic_option.RailState": "Считывать состояние пути: %s"
+  "gui.factorycraft.logic_option.RailState": "Считывать состояние пути: %s",
+  "rail.factorycraft.pass_through": "Проезд без остановки"
 }

@@ -1094,5 +1094,6 @@
   "rail.factorycraft.signal_controls": "Circuit condition forces red when true.",
   "rail.factorycraft.capacity": "Rail attachment limit reached",
   "gui.factorycraft.logic_option.ForceRed": "Force red by condition: %s",
-  "gui.factorycraft.logic_option.RailState": "Read railway state: %s"
+  "gui.factorycraft.logic_option.RailState": "Read railway state: %s",
+  "rail.factorycraft.pass_through": "Pass through"
 }

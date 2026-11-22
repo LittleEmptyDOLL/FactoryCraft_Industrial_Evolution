@@ -1,3 +1,9 @@
+## Issue15 Gate2 prepared waypoint extension
+
+No-wait station entries use the existing bounded RailPathSearch/TrainRouteJob and single TrainSimulation. A continuation anchors at the next future leading-nose pose, locks the actual travel direction, and publishes only a complete splice preserving every historical body leg. Shared world and per-train search budgets include both stopped dispatch and continuation work. Wait-only schedules avoid continuation searches.
+
+AutoTrainState owns at most64ordered future station/entry/head records, persisted additively/default-omitted; no duplicated car, fuel, fluid or cargo state. RailStopSlots indexes current/origin/future references and counts each train once per physical stop. Atomic promotion occurs at committed poses before native callbacks and retains logical chain exits and body claims. Scouting/braking uses the last prepared endpoint; an unavailable next leg cannot buy motion into unknown track. Physical origin remains counted if a waypoint genuinely blocks. Runtime chunks are never forced.
+
 ## Issue15 Gate2 — origin-priority dispatch and physical departure leases
 
 `RailStopSlots` now derives two references from the sole canonical train: a docked departure origin and an incoming target. A train is counted once per station, including when both references name the same stop. Completing waits transfers the old incoming reference into the departure reference; it does not free a stationary origin. A new target can be acquired without erasing that origin. First actual displacement releases the origin during canonical indexing, before native impact/projection callbacks. Rename invalidates incoming targets while retaining a same-scope physical origin; destruction/scope changes release only matching references. Manual/retirement clears both.
@@ -38,7 +44,7 @@ The native traffic matrix additionally persists a currently occupied+reserved sh
 
 One item forms a signal/chain signal or2×2×3stop. Only the base BE has identity/circuit metadata; service parts own no resources. Protected native placement stages/rolls back every part, revalidates player/held item after callbacks, and retires the canonical device before demolition callbacks. Unloaded retired parts have indexed persistent cleanup positions. A rotating bounded recovery queue keeps unavailable claims from starving loaded returns; queue order is reconstructed from the canonical map on load. Port/menu access checks current UUID, loaded structure, player/team rights and physical distance. No cargo/item/fluid/FE capability is exported by a stop.
 
-Create1.21.1 MIT code was actually adapted for ordered points, boundary-stopped flood and bounded search; see THIRD_PARTY_NOTICES.md and docs/RAIL_AUTOMATION_DESIGN.md. No Create assets/runtime dependency. The expanded documented source-cost adapter is described above; origin priority, temporary routes, groups/interrupt runtime and pass-through acceptance remain pending in issue15; this is not full0.32 parity.
+Create1.21.1 MIT code was actually adapted for ordered points, boundary-stopped flood and bounded search; see THIRD_PARTY_NOTICES.md and docs/RAIL_AUTOMATION_DESIGN.md. No Create assets/runtime dependency. The expanded documented source-cost adapter is described above; origin priority and prepared pass-through are covered by the later extensions above; temporary routes and groups/interrupt runtime remain pending in issue15; this is not full0.32 parity.
 
 ---
 

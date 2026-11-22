@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "trains": 2,
+  "cars": 6,
+  "plain_iron": 62,
+  "coal_buffer_plus_spent_j": 512000000,
+  "spent_j": 71580000,
+  "saved_empty_waits_both_trains": true,
+  "trains_final": [
+    {
+      "head": 42.54978773306977,
+      "speed": 0.0,
+      "distance": 12.54978773306977,
+      "automatic": false,
+      "entry": 0,
+      "phase": "MANUAL"
+    },
+    {
+      "head": 27.063736645906648,
+      "speed": 0.10106474510981539,
+      "distance": -2.9362633540933523,
+      "automatic": true,
+      "entry": 2,
+      "phase": "DRIVING"
+    }
+  ],
+  "sha256": {
+    "factorycraft_trains": "dc07083baf5e8a87e97aabedbbf584b3fb48a8e7423da4dfcc5d435d999bb155",
+    "factorycraft_rail_automation": "6659fe74045e063fd93c6c518de82a1002a16ea8b745295398d5de905bf55509",
+    "factorycraft_railways": "65bb9f9c2ba68949c101890bd25339d29d7d2bfe5cac0c7edfb2dfb9fbd29a7a"
+  },
+  "note": "One client, actual EN and RU sessions and current-menu acknowledgments. Operator observer platform at 4,70,-24 replaced one first-line waypoint part: expected refund and safe no-path brake; retained without reseeding. Healthy second-line passage captured from safe x30 platform. Closed dedicated-world ledger, not separate-JVM client reload. Component-bearing cargo is covered by native fixtures; this original client stand has plain iron."
+}

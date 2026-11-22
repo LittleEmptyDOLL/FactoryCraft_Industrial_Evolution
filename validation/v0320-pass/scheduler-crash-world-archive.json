@@ -1,0 +1,7 @@
+{
+  "archive": "/workspace/work/v0320-pass-final-native-scheduler-crash.tar.xz",
+  "sha256": "ea5dd41baee106d0ff8338958fb238e152427c4c9b6a703f4dc930b5eec37d2d",
+  "path": "run-gametest/v0320-pass-final",
+  "byte_compared": true,
+  "failure": "New fixture registered onEachTick from a runAfterDelay callback while vanilla GameTestInfo iterated Object2LongOpenHashMap. Fixed fixture sequencing; no runtime checks weakened."
+}

@@ -21,6 +21,9 @@ public final class TrainAutomation {
     a.arrived = false;
     a.destination = null;
     a.departure = null;
+    a.departurePass = false;
+    a.upcoming.clear();
+    a.continuationJob = null;
     a.dispatchOrder = 0;
     a.dispatchTarget = null;
     a.heldSignal = null;
@@ -46,6 +49,8 @@ public final class TrainAutomation {
     t.automation.automatic = true;
     t.automation.retryAt = 0;
     t.automation.routeJob = null;
+    t.automation.continuationJob = null;
+    t.automation.continuationRetry = 0;
     t.automation.dispatchTarget = null;
     t.automation.repathing = false;
     t.automation.repathAt = 0;
@@ -106,11 +111,14 @@ public final class TrainAutomation {
   /** Indexing runs before impact callbacks can inspect the committed new pose. */
   public static void departed(TrainData d, TrainData.Train t) {
     var a = t.automation;
-    if (a.departure == null || t.head == a.departureHead) return;
     var s = RailAutomationData.peek(d.level);
-    if (s != null) s.slots.releaseOrigin(t.id);
-    a.departure = null;
-    d.setDirty();
+    if (a.departure != null && t.head != a.departureHead) {
+      if (s != null) s.slots.releaseOrigin(t.id);
+      a.departure = null;
+      a.departurePass = false;
+      d.setDirty();
+    }
+    if (s != null) passed(d, t, s);
   }
 
   /** An incoming commitment alone never exposes cargo at the target station. */
@@ -135,6 +143,7 @@ public final class TrainAutomation {
   public static boolean prepare(TrainData d, TrainData.Train t) {
     var a = t.automation;
     var s = RailAutomationData.get(d.level);
+    int searchStart = s.searchBudget();
     t.desired = 0;
     t.brake = true;
     if (a.routed && a.checkedGraph != s.rails.graph.revisions()) {
@@ -143,6 +152,7 @@ public final class TrainAutomation {
         a.routed = false;
         a.arrived = false;
         a.routeJob = null;
+        clearUpcoming(t, s);
       }
     }
     if (!s.runtimeReady(t)) {
@@ -158,6 +168,7 @@ public final class TrainAutomation {
     if (a.entry >= a.schedule.entries().size()) a.entry = 0;
     if (a.departure != null && !a.departure.equals(s.slots.origin(t.id))) {
       a.departure = null;
+      a.departurePass = false;
       d.setDirty();
     }
     if (a.departure != null) {
@@ -174,6 +185,7 @@ public final class TrainAutomation {
       a.routed = false;
       a.arrived = false;
       a.routeJob = null;
+      clearUpcoming(t, s);
     }
     if (!a.routed) {
       if (t.speed > 0) return true; // change definition/destination only after a real brake
@@ -198,8 +210,29 @@ public final class TrainAutomation {
       a.repathAt = 0;
       d.setDirty();
     }
+    if (!a.upcoming.isEmpty()) {
+      boolean valid = a.waypointDirection == t.direction;
+      for (var w : a.upcoming) {
+        var future = s.device(w.destination());
+        if (future == null
+            || !future.scope.equals(t.scope)
+            || !s.online(future.point)
+            || !s.slots.planned(t.id, w.destination())) {
+          valid = false;
+          break;
+        }
+      }
+      if (!valid) clearUpcoming(t, s);
+    }
+    extend(d, t, s, Math.max(0, 256 - (searchStart - s.searchBudget())));
+    passed(d, t, s);
     double remaining = (a.targetHead - t.head) * t.direction;
     if (t.speed == 0 && remaining >= -1e-6 && remaining <= .06) {
+      if (a.schedule.entries().get(a.entry).waits().isEmpty()) {
+        // A genuinely unavailable continuation may stop here. No fake station-wait tick.
+        departure(d, t, s, true);
+        return false;
+      }
       if (!a.arrived) {
         a.arrived = true;
         a.stationTicks = 0;
@@ -218,23 +251,7 @@ public final class TrainAutomation {
       var waits = a.schedule.entries().get(a.entry).waits();
       if (RailWait.ready(
           waits, c -> TrainWaitSamples.sample(d, t, s, c), TrainWaitSamples::threshold)) {
-        if (!s.slots.depart(t.id, a.destination)) {
-          a.phase = AutoTrainState.Phase.INVALID_CONFIG;
-          return false;
-        }
-        a.departure = a.destination;
-        a.departureHead = t.head;
-        a.departureDirection = t.direction;
-        a.destination = null;
-        a.routed = false;
-        a.arrived = false;
-        a.entry = (a.entry + 1) % a.schedule.entries().size();
-        a.routeJob = null;
-        a.retryAt = 0;
-        a.dispatchTarget = null;
-        a.dispatchOrder = 0;
-        enroll(d, t, s);
-        d.setDirty();
+        departure(d, t, s, false);
       }
       return false;
     }
@@ -246,6 +263,136 @@ public final class TrainAutomation {
     t.desired = t.direction;
     t.brake = false;
     return true;
+  }
+
+  public static void clearUpcoming(TrainData.Train t, RailAutomationData s) {
+    t.automation.upcoming.clear();
+    t.automation.continuationJob = null;
+    t.automation.continuationRetry = 0;
+    s.slots.clearPlanned(t.id);
+    // Prospective station slots are not already-entered logical block/chain exit claims.
+  }
+
+  private static void departure(
+      TrainData d, TrainData.Train t, RailAutomationData s, boolean pass) {
+    var a = t.automation;
+    if (!s.slots.depart(t.id, a.destination)) {
+      a.phase = AutoTrainState.Phase.INVALID_CONFIG;
+      return;
+    }
+    clearUpcoming(t, s);
+    a.departure = a.destination;
+    a.departureHead = t.head;
+    a.departureDirection = t.direction;
+    a.departurePass = pass;
+    a.destination = null;
+    a.routed = false;
+    a.arrived = false;
+    a.entry = (a.entry + 1) % a.schedule.entries().size();
+    a.routeJob = null;
+    a.retryAt = 0;
+    a.dispatchTarget = null;
+    a.dispatchOrder = 0;
+    a.phase = AutoTrainState.Phase.DISPATCHING;
+    enroll(d, t, s);
+    d.setDirty();
+  }
+
+  /** Called only at canonical committed poses, including before native impact callbacks. */
+  private static void passed(TrainData d, TrainData.Train t, RailAutomationData s) {
+    var a = t.automation;
+    while (a.automatic
+        && a.routed
+        && !a.upcoming.isEmpty()
+        && a.schedule.entries().get(a.entry).waits().isEmpty()
+        && (a.targetHead - t.head) * t.direction <= (t.speed == 0 ? .06 : 1e-7)) {
+      var next = a.upcoming.getFirst();
+      var remaining = new HashSet<UUID>();
+      for (int i = 1; i < a.upcoming.size(); i++) remaining.add(a.upcoming.get(i).destination());
+      if (t.speed == 0 && a.departure == null) {
+        if (!s.slots.depart(t.id, a.destination)) break;
+        a.departure = a.destination;
+        a.departureHead = t.head;
+        a.departureDirection = t.direction;
+        a.departurePass = true;
+      }
+      if (!s.slots.promote(t.id, next.destination(), remaining)) break;
+      a.upcoming.removeFirst();
+      a.entry = next.entry();
+      a.destination = next.destination();
+      a.targetHead = next.head();
+      a.arrived = false;
+      a.stationTicks = a.idleTicks = 0;
+      a.lastCargo = Long.MIN_VALUE;
+      // Keep entered-chain exit leases and the exact TrainPath under every carriage.
+      d.setDirty();
+    }
+  }
+
+  /** Prepare a bounded window ahead using the same path search, never publish a partial result. */
+  private static void extend(TrainData d, TrainData.Train t, RailAutomationData s, int allowance) {
+    var a = t.automation;
+    int end = a.upcoming.isEmpty() ? a.entry : a.upcoming.getLast().entry();
+    if (!a.schedule.entries().get(end).waits().isEmpty() || allowance <= 0) return;
+    double weight = 0, braking = 0;
+    for (var car : t.cars) {
+      weight += car.kind.weight;
+      braking += car.kind.brake;
+    }
+    double horizon =
+        Math.max(
+            128,
+            TrainMotion.stoppingDistance(t.speed, weight, braking) + t.front() - t.rear() + 32);
+    for (int count = 0; count < 8 && a.upcoming.size() < 64; count++) {
+      int last = a.upcoming.isEmpty() ? a.entry : a.upcoming.getLast().entry();
+      if (!a.schedule.entries().get(last).waits().isEmpty()
+          || (a.horizon() - t.head) * t.direction > horizon) return;
+      int next = (last + 1) % a.schedule.entries().size();
+      if (a.continuationJob == null) {
+        if (d.level.getGameTime() < a.continuationRetry) return;
+        var targets = new ArrayList<RailPathSearch.Target>();
+        for (var stop : s.slots.named(t.scope, a.schedule.entries().get(next).station())) {
+          var device = s.device(stop.id());
+          if (device != null
+              && s.online(device.point)
+              && s.slots.available(stop.id(), t.id)
+              && (!s.dispatch.contested(stop.id())
+                  || stop.id().equals(s.slots.destination(t.id))
+                  || s.slots.planned(t.id, stop.id())))
+            targets.add(new RailPathSearch.Target(stop.id(), device.point, stop.priority()));
+        }
+        if (targets.isEmpty()) {
+          a.continuationRetry = d.level.getGameTime() + 20;
+          return;
+        }
+        a.continuationJob = new TrainRouteJob(d, t, s, targets, 256, a.horizon(), true);
+      }
+      if (s.searchBudget() <= 0 || allowance <= 0) return;
+      long start = System.nanoTime();
+      int work = a.continuationJob.advance(t, s, Math.min(allowance, s.searchBudget()));
+      allowance -= work;
+      s.spentSearch(work, System.nanoTime() - start);
+      if (!a.continuationJob.done) return;
+      var job = a.continuationJob;
+      var route = job.result(t, s.rails.graph);
+      a.continuationJob = null;
+      if (route == null) {
+        a.continuationRetry = d.level.getGameTime() + (job.stale ? 0 : 20);
+        return;
+      }
+      if ((s.dispatch.contested(route.destination())
+              && !route.destination().equals(s.slots.destination(t.id))
+              && !s.slots.planned(t.id, route.destination()))
+          || !s.slots.plan(t.id, route.destination())) {
+        a.continuationRetry = d.level.getGameTime() + 20;
+        return;
+      }
+      t.path = route.path();
+      a.waypointDirection = t.direction;
+      a.upcoming.add(new AutoTrainState.Waypoint(next, route.destination(), route.targetHead()));
+      d.index(t);
+      d.setDirty();
+    }
   }
 
   /** A stopped scout may reconsider its path, never surrender an entered chain's safe exit. */
@@ -266,6 +413,7 @@ public final class TrainAutomation {
       if (a.signalWaitTicks < due) return false;
       a.repathAt = (long) a.signalWaitTicks + interval;
       a.repathing = true;
+      clearUpcoming(t, s);
       a.routeJob = null;
       a.retryAt = 0;
     }
@@ -376,7 +524,7 @@ public final class TrainAutomation {
     var s = RailAutomationData.get(d.level);
     var a = t.automation;
     a.blockingSignal = null;
-    double target = Math.max(0, (a.targetHead - t.head) * t.direction);
+    double target = Math.max(0, (a.horizon() - t.head) * t.direction);
     double nose = t.direction > 0 ? t.front() : t.rear();
     var boundaries = new ArrayList<Boundary>();
     var legs = t.path.legs();

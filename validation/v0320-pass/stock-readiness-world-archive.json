@@ -1,0 +1,10 @@
+{
+  "archive": "/workspace/work/v0320-pass-safe-before-stock-readiness-fix.tar.xz",
+  "sha256": "2da3fd635a4e35284a53fe464addb47d96aa77c4dab932f530453d5e2279d9c5",
+  "path": "run-gametest/v0320-pass-safe",
+  "byte_compared": true,
+  "fresh_required_passed": 606,
+  "independent_required_passed": 605,
+  "independent_failed": 1,
+  "failure": "Existing rotated native picking fixture assumed stock projection exists after8ticks; no entity visibility guarantee. New independent waypoint/typed cargo/fuel/phase/leases and actual passage all passed. Preserve the failed original world before further validation."
+}

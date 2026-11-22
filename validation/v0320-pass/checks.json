@@ -1,0 +1,19 @@
+{
+  "tests": 364,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "jar_sha256": "3ecc5902b6c3bdfe12e9c921bb162625fc00316332b9995b6b108eda6f32617c",
+  "base": "e9433d6696f3de3ebd77ef5520935e6d809dcbdd",
+  "final_native": "PASS",
+  "automatic_workload": "PASS 8 trains/150 cars, finite2573 items/4814823mB/896MJ and actual chunk unload",
+  "native_fresh_required_passed": 606,
+  "native_final_required_passed": 606,
+  "prepared_independent_jvm": "PASS exact owner/phase/path/two future leases then actual paid arrival",
+  "client_en_ru": "PASS actual current-menu add/remove-last-wait/save acknowledgments and saved schedule reopen",
+  "automatic_independent_jvm": "PASS exact canonical train/rail/device/slot owners",
+  "all_original_native_cases_retained": 600,
+  "all_thirty_finite_chains_retained": true,
+  "optional_profiles": "left to GitHub Actions",
+  "full_issue15_complete": false
+}

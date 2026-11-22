@@ -73,10 +73,14 @@ public final class RailAutomationDiagnostics {
                 .then(
                     Commands.literal("railautoqa")
                         .requires(s -> s.hasPermission(4))
-                        .executes(c -> build(c.getSource()))));
+                        .executes(c -> build(c.getSource(), false)))
+                .then(
+                    Commands.literal("railpassqa")
+                        .requires(s -> s.hasPermission(4))
+                        .executes(c -> build(c.getSource(), true))));
   }
 
-  private static int build(CommandSourceStack source)
+  private static int build(CommandSourceStack source, boolean pass)
       throws com.mojang.brigadier.exceptions.CommandSyntaxException {
     var l = source.getLevel();
     var p = source.getPlayerOrException();
@@ -91,6 +95,7 @@ public final class RailAutomationDiagnostics {
         || !root.getFileName().toString().startsWith("network-v0320")
         || !java.nio.file.Files.isRegularFile(root.resolve("factorycraft-network.marker"))
         || !p.isCreative()) return 0;
+    if (pass && !root.getFileName().toString().startsWith("network-v0320-pass")) return 0;
     var marker =
         l.getDataStorage()
             .computeIfAbsent(
@@ -152,12 +157,14 @@ public final class RailAutomationDiagnostics {
         side(p, x + 3, 70, -40, TracksideKind.SIGNAL, "Exit");
         side(p, x - 4, 70, -40, TracksideKind.CHAIN, "Opposite entry");
         var train = TrainData.get(l).owner(front.getUUID());
-        train.automation.schedule =
-            new RailSchedule(
-                List.of(
-                    new RailSchedule.Entry("Unload", List.of(wait5())),
-                    new RailSchedule.Entry("Load", List.of(wait5()))),
-                List.of());
+        var rows = new ArrayList<RailSchedule.Entry>();
+        if (pass) {
+          side(p, x + 3, 70, -24, TracksideKind.STOP, "Waypoint");
+          rows.add(new RailSchedule.Entry("Waypoint", List.of()));
+        }
+        rows.add(new RailSchedule.Entry("Unload", List.of(wait5())));
+        rows.add(new RailSchedule.Entry("Load", List.of(wait5())));
+        train.automation.schedule = new RailSchedule(rows, List.of());
         // Player explicitly starts via the same real GUI used in survival, rather than a
         // diagnostic-only drive path.
         TrainData.get(l).setDirty();
