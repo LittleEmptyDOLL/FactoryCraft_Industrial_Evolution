@@ -80,9 +80,10 @@ final class TrainRoutePolicy implements RailPathSearch.Rules {
           : RailRoutePenalties.Obstruction.MANUAL_EMPTY;
     }
     if (a.schedule.entries().isEmpty()) return RailRoutePenalties.Obstruction.EMPTY_SCHEDULE;
-    if (a.arrived && other.speed == 0) {
-      String current =
-          a.schedule.entries().get(Math.min(a.entry, a.schedule.entries().size() - 1)).station();
+    var station = TrainAutomation.station(other, system);
+    if (station != null && other.speed == 0) {
+      var stop = system.device(station);
+      String current = stop == null ? "" : stop.name;
       boolean another = a.schedule.entries().stream().anyMatch(e -> !e.station().equals(current));
       return another
           ? RailRoutePenalties.Obstruction.STATION

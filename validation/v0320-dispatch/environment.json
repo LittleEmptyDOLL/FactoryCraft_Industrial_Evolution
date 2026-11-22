@@ -1,0 +1,8 @@
+{
+  "base": "8663251d4a1d69efe6710b7e4fe81c00a579c4fc",
+  "java": "/workspace/work/jdk21",
+  "workers": 3,
+  "cpuQuota": "200000 100000",
+  "onlineClients": 0,
+  "scope": "Issue15 Gate2 origin-priority arbitration and docked/incoming leases; no full0.32 claim"
+}

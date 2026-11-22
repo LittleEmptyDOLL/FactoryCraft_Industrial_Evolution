@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-dispatch-first",
+  "archive": "/workspace/work/v0320-dispatch-first-failed.tar.xz",
+  "sha256": "efa2d512c6abd3cbc08ee3c13b3629a417c785ece9749228be5ee74c02553502",
+  "bytes": 18244812,
+  "verified": "tar --compare exact closed diagnostic tree before removal",
+  "result": "600 complete; all596 prior plus two new persistence seeds pass. Two new fixture failures: observer stopped after first packed train; requiring NO_PATH after target already became full. Preserve actual ownership/ledger assertions."
+}

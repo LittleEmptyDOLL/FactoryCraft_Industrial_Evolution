@@ -1,0 +1,12 @@
+{
+  "sources": [
+    "/workspace/work/FactoryCraft/run-benchmark/trains-v0320-auto-first",
+    "/workspace/work/FactoryCraft/run-benchmark/trains-v0320-auto-second",
+    "/workspace/work/FactoryCraft/run-benchmark/trains-v0320-routing-first"
+  ],
+  "archive": "/workspace/work/v0320-prior-automatic-worlds-preserved.tar.xz",
+  "sha256": "02c9782f3ecc8346d41e64a36046a01be789d54fae7ba911af0360036e1d096f",
+  "bytes": 8102568,
+  "verified": "tar --compare all closed prior automatic worlds before removing expanded trees",
+  "reason": "Headroom for final native independent-JVM run; all source worlds, JFR, checkpoint and logs retained losslessly. No remeasurement, reset or refill."
+}

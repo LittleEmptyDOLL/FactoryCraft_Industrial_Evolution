@@ -1,3 +1,31 @@
+# Issue15 origin dispatch — automatic8/150 regression receipt
+
+The unchanged real automatic profile passes again:8unoccupied trains/150cars,6144m/48paid edges,72physical devices, real visits to both stops and substantial motion in each direction. All actual chunk lifecycle checks and the separate-JVM exact train/rail/device/slot owner comparison pass. Finite2573component-bearing iron,4814823mBwater and896MJcoal+buffer+spent remain exact. Independent lines measure this native adapter workload; they are not eight-way shared-junction acceptance.
+
+Same declared controls:2CPUquota, Java21,3workers,2GiBheap,0clients,120warmup and400stable ticks. One prior route-cost sample and one new sample are context, not a performance optimization experiment.
+
+|Metric|Prior route-cost run|Origin-dispatch run|
+|---|---:|---:|
+|Stable mean, ms|16.584|16.243|
+|Stable p95, ms|33.536|32.651|
+|Stable p99, ms|59.904|63.028|
+|Stable maximum, ms|72.294|69.750|
+|Main-thread allocated bytes /400ticks|4520665040|4532658152|
+|Stable world reads|12124050|12124050|
+|Recorded route nodes|192|192|
+|Recorded total search, ms|10.702|10.517|
+
+The sampled mean is lower but p99 and allocation are higher. No general TPS/speedup claim or hardware-dependent pass threshold. Search totals include setup/first use, not isolated warmed per-node cost. Offline paid128mrail construction averages225.428ms and peaks1332.188ms; these setup peaks are separate from the stable window. Actual JFR packets remain0with0clients; projection requests are not packets. Actual visits/displacements, not stored-speed samples, establish movement. Full raw phases/JFR remain in the marked current diagnostic world; committed JSON/log/checkpoint receipts are in validation/v0320-dispatch.
+
+```sh
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-dispatch-example
+./gradlew runTrainBenchmarkServer -PtrainControl=automatic -PtrainFixture=trains-v0320-dispatch-example -PtrainMode=verify
+```
+
+Use a fresh marked name; do not invoke a previously archived name without restoring its exact archive. Prior automatic worlds were byte-verified in a lossless archive to free disk space; old reports/checkpoints and the manual8/148profile remain preserved. Full factory/MIXED/fluid/manual/optional workloads remain CI.
+
+---
+
 # Issue15 Gate2 — same automatic8/150 functional regression profile
 
 One new real-server run uses the unchanged opt-in automatic profile:8driverless trains,150cars,6144m/48paid edges,72devices, the same3/3/8/16/32/64/8/16mix and two-ended traction. All8visit both stops and travel substantially in each direction; the64-car train reverses271.994m. The native chunk unload/reload and independent-JVM exact train/rail/device/slot verification pass. The finite ledger stays2573component-bearing iron,4814823mBwater and896MJcoal+buffer+spent. Independent lines are a native adapter workload, not eight-way shared-junction acceptance.

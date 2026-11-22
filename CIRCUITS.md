@@ -1,3 +1,11 @@
+## Railway station observations — Gate2 origin leases
+
+A ready train can retain its docked origin and reserve its next target simultaneously. Both station counts include their one canonical reference, but contents and `train_id` are read only at the actual stopped metric pose/direction. A prospective target never reads the origin's cargo. Full-train unavailability makes the observation unknown rather than publishing false empty contents. Native loaded recovery reopens an idle train's existing ports; no extra inventory owner is introduced.
+
+The original red/green/blue/white contacts, signal set-red behavior, masks, budgets and native units are unchanged. New native acceptance compares the actual source's7typed iron/ID/count with an incoming target's0cargo/0ID/count1, then transfers one real coal through the stopped fuel capability and proves paid arrival after an independent JVM restart. This is server-domain acceptance, not a new graphical or wire-network implementation.
+
+---
+
 # 0.32.0 — trackside contacts
 
 Signals/stops join the existing red/green/blue/white buses through the sole root identity; every physical part resolves to that contact. There is no casing inventory/energy proxy. Wiring and settings enforce native reach/protection/team checks; unloads/unknown inputs fail closed.

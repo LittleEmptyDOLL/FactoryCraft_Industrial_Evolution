@@ -24,6 +24,7 @@ public final class RailStopSlots {
   private final Map<UUID, Stop> stops = new HashMap<>();
   private final Map<Name, Set<UUID>> names = new HashMap<>();
   private final Map<UUID, UUID> trains = new HashMap<>();
+  private final Map<UUID, UUID> departures = new HashMap<>();
   private final Map<UUID, Set<UUID>> approaching = new HashMap<>();
   private long revision;
 
@@ -37,6 +38,10 @@ public final class RailStopSlots {
 
   public UUID destination(UUID train) {
     return trains.get(train);
+  }
+
+  public UUID origin(UUID train) {
+    return departures.get(train);
   }
 
   public Set<UUID> trains(UUID stop) {
@@ -54,8 +59,23 @@ public final class RailStopSlots {
     var old = stops.get(stop.id());
     if (stop.equals(old)) return Set.of();
     Set<UUID> released = Set.of();
-    if (old != null && (!old.scope().equals(stop.scope()) || !old.name().equals(stop.name())))
-      released = remove(stop.id());
+    if (old != null && (!old.scope().equals(stop.scope()) || !old.name().equals(stop.name()))) {
+      var previous = names.get(new Name(old.scope(), old.name()));
+      previous.remove(old.id());
+      if (previous.isEmpty()) names.remove(new Name(old.scope(), old.name()));
+      var affected = new HashSet<UUID>();
+      for (var train : Set.copyOf(approaching.getOrDefault(stop.id(), Set.of()))) {
+        if (stop.id().equals(trains.get(train))) {
+          releaseTarget(train);
+          affected.add(train);
+        }
+        if (!old.scope().equals(stop.scope()) && stop.id().equals(departures.get(train))) {
+          releaseOrigin(train);
+          affected.add(train);
+        }
+      }
+      released = Set.copyOf(affected);
+    }
     stops.put(stop.id(), stop);
     names.computeIfAbsent(new Name(stop.scope(), stop.name()), k -> new HashSet<>()).add(stop.id());
     revision++;
@@ -69,7 +89,10 @@ public final class RailStopSlots {
     namesake.remove(stop);
     if (namesake.isEmpty()) names.remove(new Name(old.scope(), old.name()));
     var released = Set.copyOf(approaching.getOrDefault(stop, Set.of()));
-    for (var train : released) release(train);
+    for (var train : released) {
+      if (stop.equals(trains.get(train))) releaseTarget(train);
+      if (stop.equals(departures.get(train))) releaseOrigin(train);
+    }
     revision++;
     return released;
   }
@@ -77,7 +100,7 @@ public final class RailStopSlots {
   public boolean available(UUID stop, UUID train) {
     var target = stops.get(stop);
     if (target == null) return false;
-    if (stop.equals(trains.get(train))) return true;
+    if (stop.equals(trains.get(train)) || stop.equals(departures.get(train))) return true;
     return target.enabled()
         && target.limit() != 0
         && (target.limit() < 0 || count(stop) < target.limit());
@@ -87,7 +110,7 @@ public final class RailStopSlots {
   public boolean acquire(UUID train, UUID stop) {
     if (!available(stop, train)) return false;
     if (stop.equals(trains.get(train))) return true;
-    release(train);
+    releaseTarget(train);
     trains.put(train, stop);
     approaching.computeIfAbsent(stop, k -> new HashSet<>()).add(train);
     revision++;
@@ -104,12 +127,46 @@ public final class RailStopSlots {
   }
 
   public void release(UUID train) {
+    releaseTarget(train);
+    releaseOrigin(train);
+  }
+
+  /** A docked ready train remains counted here until its first actual displacement. */
+  public boolean depart(UUID train, UUID stop) {
+    if (!stop.equals(trains.get(train))
+        || departures.containsKey(train) && !stop.equals(departures.get(train))) return false;
+    departures.put(train, stop);
+    releaseTarget(train);
+    revision++;
+    return true;
+  }
+
+  public boolean restoreOrigin(UUID train, UUID stop) {
+    if (!stops.containsKey(stop) || departures.containsKey(train)) return false;
+    departures.put(train, stop);
+    approaching.computeIfAbsent(stop, k -> new HashSet<>()).add(train);
+    revision++;
+    return true;
+  }
+
+  public void releaseOrigin(UUID train) {
+    var stop = departures.remove(train);
+    if (stop == null) return;
+    if (!stop.equals(trains.get(train))) uncount(train, stop);
+    revision++;
+  }
+
+  private void releaseTarget(UUID train) {
     var stop = trains.remove(train);
     if (stop == null) return;
+    if (!stop.equals(departures.get(train))) uncount(train, stop);
+    revision++;
+  }
+
+  private void uncount(UUID train, UUID stop) {
     var set = approaching.get(stop);
     set.remove(train);
     if (set.isEmpty()) approaching.remove(stop);
-    revision++;
   }
 
   public List<Stop> named(String scope, String name) {

@@ -1,0 +1,22 @@
+{
+  "base": "8663251d4a1d69efe6710b7e4fe81c00a579c4fc",
+  "scope": "Issue15 Gate2 origin priority and docked/incoming leases; pass-through/temporary/full waits and Gate3 pending",
+  "junit": {
+    "tests": 360,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "preservedOriginalNative": 596,
+  "preservedFiniteChains": 30,
+  "nativeFresh": 600,
+  "nativeIndependentJvm": 600,
+  "nativeFinalFresh": 600,
+  "nativeFinalIndependentJvm": 600,
+  "automaticWorkloadRuns": 1,
+  "automaticWorkloadIndependentJvmVerifications": 1,
+  "jarSha256": "584c045a95ae3784ae66dba823a17259fbaa27c9540422bab33fcb81eea04303",
+  "clientQa": "No new renderer/UI/protocol changes; no new graphical pass claimed. Existing captures retained.",
+  "hosted": "Base8663251 passed all eight jobs in44957031847. New optional/manual/full factory/MIXED/fluid jobs execute after publication, not awaited.",
+  "artifactNote": "Final fresh600 includes stale-frontier priority retention. Final independent600 also invalidates selected-route cache through the actual repeated Automatic domain action; canonical saved origin/order/resource format is unchanged between those runs."
+}

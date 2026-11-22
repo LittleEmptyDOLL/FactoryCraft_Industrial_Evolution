@@ -20,6 +20,8 @@ public final class TrainSimulation {
     var rails = RailwayData.get(l);
     d.ensureIndex();
     if (!TrainWorld.available(d, t)) {
+      var system = RailAutomationData.peek(l);
+      if (system != null) system.dispatch.remove(t.id);
       boolean lost = false;
       for (var leg : t.path.legs())
         if (leg.end() >= t.rear()
@@ -36,6 +38,10 @@ public final class TrainSimulation {
       d.active.remove(t.id);
       return;
     }
+    // A reloaded idle automatic can return from prepare before the movement status update.
+    // Availability has now genuinely passed; do not leave its stopped ports frozen forever.
+    if (t.status == TrainData.Status.UNLOADED)
+      t.status = t.speed == 0 ? TrainData.Status.STOPPED : TrainData.Status.DRIVING;
     net.minecraft.server.level.ServerPlayer driver = null;
     if (t.driver != null)
       for (var car : t.cars)

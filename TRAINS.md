@@ -1,3 +1,17 @@
+# Issue15 Gate2 — priority at departure and occupied origins
+
+A train whose wait conditions have completed continues to occupy its source station while the next destination is full, unreachable or still being searched. When a route is ready it can reserve the next station while physically remaining at the origin, including with no fuel. The origin is released on the first real displacement. Each station counts that train once; a single-stop loop cannot count it twice.
+
+Competing ready trains use their origin station's priority, then persistent FIFO ready order and a stable UUID tie. FIFO and priority0 for a request without an origin are explicit FactoryCraft adapters; no hidden Factorio tie algorithm is claimed. Slower bounded searches retain their rank against faster completed searches. A stale search restarts without a rank gap. Actual no-path searches yield for one second before retry; unavailable contenders leave the derived queue. Candidate sets are conservative until a search resolves, then narrow to the selected physical stop. Independent target/name/scope indexes are not a global railway lock.
+
+Changing the source priority affects pending dispatch; destination priority/limits/disable do not evict an already committed incoming train. A renamed same-scope origin retains its physical occupancy; removing either endpoint releases only that endpoint's reference. Manual mode and retirement clear automation commitments, while physical collision protection remains. Direct station circuit reads show cargo/train ID at the actual dock, not at the prospective target. Availability recovery reopens genuinely loaded idle ports.
+
+Origin UUID/pose/direction and nonzero FIFO order are saved once on the existing train, without copying cargo/fuel/fluids. New-origin checkpoint fields are omitted by default. Existing schema1 resources remain intact; older pending departures without a saved origin are not guessed from nearby tracks. Native/restart receipts are in validation/v0320-dispatch. No new graphical-client pass is claimed: renderer, UI and protocol are unchanged.
+
+Next in Issue15: actual no-wait pass-through, temporary go-to/cancel/return and complete component-aware waits, then operational groups/named interrupts/typed wildcards/editors. Full0.32remains unfinished; no0.33.
+
+---
+
 # Issue15 Gate2 — route costs and stopped repath
 
 Pathfinding now prices intermediate directed stops (2000), circuit-forced red (1000), actual occupied-region length/distance and canonical train state. Stopped manual trains cost7000 without a real passenger or2000 with one; stopped station trains cost500 or1000 for a terminal schedule, arriving trains100, no-path trains1000. Signal waiting adds0.3per Minecraft20Hz tick to100 (the source rate is0.1at60Hz). The destination UUID is excluded from passing-stop costs; one logical region continuing over several saved physical edges is not repeatedly charged. No extra generic1000cost is imposed just for an unoccupied prospective lease.

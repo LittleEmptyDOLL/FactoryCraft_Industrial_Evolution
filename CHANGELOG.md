@@ -1,3 +1,12 @@
+# 0.32.0 continuation — origin-priority dispatch and docked station ownership
+
+* Retain a physically docked origin while waiting for a destination or fuel; acquire an incoming target separately, count once per stop and clear origin only on actual displacement before callbacks.
+* Arbitrate pending/completed paths by source priority and stable saved FIFO order; narrow resolved candidates, remove unavailable/no-path contenders, preserve rank during stale-frontier replacement and invalidate selected-route cache on repeated Automatic actions.
+* Restore scoped origin pose/order/leases across independent JVMs; preserve default-omitted schema1 resources. Fix loaded idle availability and prevent prospective targets from reading origin cargo.
+* Add pure/native finite contention, real unload/reload, disabled-limit/no-fuel restart and one-coal arrival checks. All old tests/workloads remain mandatory. No new UI/art/recipe or full0.32claim.
+
+---
+
 # 0.32.0 continuation — route pricing and safe signal repath
 
 * Replace the generic occupancy/reservation surcharge with documented Factorio2.1.24 stop/circuit/train weights and encountered-block discount in the existing directed search. Target probes keep independent immutable prefixes; consecutive paid edges in one logical region do not repeat its occupied-block charge.

@@ -1,3 +1,17 @@
+## Issue15 Gate2 — origin dispatch slice
+
+|Mechanic|State|
+|---|---|
+|Origin priority|Implemented indexed physical-target contention; slow high-ranked searches beat completed lower ones, including stale-frontier replacement|
+|Equal-priority order|Persistent FIFO ready order/UUID tie, explicitly a deterministic FactoryCraft adapter|
+|Station limits|Docked origin retained through full/no-path/no-fuel waits; separate incoming reference; each train counted once per stop; real motion releases source|
+|Lifecycle|Selective rename/removal, manual/retirement cleanup, unavailable request removal and actual idle unload/reload recovery|
+|Station circuitry|Actual dock's cargo/ID only; prospective target counts reservation without exposing cargo; unavailable content is unknown; four colors retained|
+|Persistence|Default-omitted scoped origin pose/order on sole train; derived leases/queue restored; exact pending FIFO and disabled dual-lease JVM checks|
+|Remaining Issue15|No-wait pass-through, temporary navigation/return, full component-aware waits, then Gate3 operational groups/interrupts/wildcards and editors; no full0.32claim|
+
+---
+
 ## Issue15 Gate2 continuation — routing subset
 
 |Mechanic|State|

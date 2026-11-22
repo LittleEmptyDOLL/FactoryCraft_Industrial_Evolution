@@ -36,7 +36,9 @@ public final class RailCircuitAdapter {
       // Commitments are already indexed by station; avoid scanning unrelated cargo owners.
       for (var trainId : data.slots.trains(d.id)) {
         var t = TrainData.get(l).train(trainId);
-        if (t == null || !t.automation.arrived || !t.scope.equals(d.scope)) continue;
+        if (t == null || !t.scope.equals(d.scope) || !d.id.equals(TrainAutomation.station(t, data)))
+          continue;
+        if (!TrainData.get(l).stopped(t)) return new CircuitDevices.Reading(false, SignalSet.EMPTY);
         if (circuit.settings().state()) out.add(SignalKey.virtual("train_id"), data.trainNumber(t));
         if (circuit.settings().contents())
           for (var car : t.cars) {

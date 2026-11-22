@@ -20,12 +20,16 @@ public final class TrainAutomation {
     a.routed = false;
     a.arrived = false;
     a.destination = null;
+    a.departure = null;
+    a.dispatchOrder = 0;
+    a.dispatchTarget = null;
     a.heldSignal = null;
     a.blockingSignal = null;
     a.reserved = Set.of();
     var system = RailAutomationData.peek(d.level);
     if (system != null) {
       system.slots.release(t.id);
+      system.dispatch.remove(t.id);
       system.claims.reserve(t.id, Set.of());
     }
     t.desired = 0;
@@ -42,11 +46,89 @@ public final class TrainAutomation {
     t.automation.automatic = true;
     t.automation.retryAt = 0;
     t.automation.routeJob = null;
+    t.automation.dispatchTarget = null;
     t.automation.repathing = false;
     t.automation.repathAt = 0;
     d.active.add(t.id);
+    if (!t.automation.routed) enroll(d, t, s);
     d.setDirty();
     return true;
+  }
+
+  /** Enroll the bounded active batch before any of its trains can take a slot. */
+  public static void enroll(TrainData d, TrainData.Train t, RailAutomationData s) {
+    var a = t.automation;
+    if (t.provisional
+        || !a.automatic
+        || a.routed
+        || t.speed != 0
+        || a.invalid != null
+        || a.schedule.entries().isEmpty()
+        || !s.runtimeReady(t)
+        || !TrainWorld.available(d, t)) {
+      s.dispatch.remove(t.id);
+      return;
+    }
+    if ((a.phase == AutoTrainState.Phase.NO_PATH || a.phase == AutoTrainState.Phase.ROUTE_LIMIT)
+        && d.level.getGameTime() < a.retryAt) {
+      // Unrelated slot churn must not immediately re-enroll a failed high-priority search
+      // before the lower-ranked completed search gets a chance to commit.
+      s.dispatch.remove(t.id);
+      return;
+    }
+    if (a.entry >= a.schedule.entries().size()) a.entry = 0;
+    var origin = a.departure == null ? null : s.device(a.departure);
+    if (a.departure != null
+        && (origin == null || !origin.scope.equals(t.scope) || !s.online(origin.point))) {
+      s.dispatch.remove(t.id);
+      return;
+    }
+    if (a.dispatchOrder == 0) {
+      a.dispatchOrder = s.dispatchOrder();
+      d.setDirty();
+    }
+    String name = a.schedule.entries().get(a.entry).station();
+    var targets = new HashSet<UUID>();
+    for (var stop : s.slots.named(t.scope, name)) targets.add(stop.id());
+    if (a.dispatchTarget != null) targets.retainAll(Set.of(a.dispatchTarget));
+    s.dispatch.put(
+        new RailDispatchQueue.Request(
+            t.id,
+            t.scope,
+            name,
+            a.departure,
+            origin == null ? 0 : s.stop(origin).priority(),
+            a.dispatchOrder,
+            targets,
+            a.dispatchTarget != null));
+  }
+
+  /** Indexing runs before impact callbacks can inspect the committed new pose. */
+  public static void departed(TrainData d, TrainData.Train t) {
+    var a = t.automation;
+    if (a.departure == null || t.head == a.departureHead) return;
+    var s = RailAutomationData.peek(d.level);
+    if (s != null) s.slots.releaseOrigin(t.id);
+    a.departure = null;
+    d.setDirty();
+  }
+
+  /** An incoming commitment alone never exposes cargo at the target station. */
+  public static UUID station(TrainData.Train t, RailAutomationData s) {
+    var a = t.automation;
+    if (t.speed != 0) return null;
+    if (a.arrived) return a.destination;
+    var origin = a.departure == null ? null : s.device(a.departure);
+    if (origin == null || t.head != a.departureHead) return null;
+    double nose = a.departureDirection > 0 ? t.front() : t.rear();
+    var leg = t.path.at(nose);
+    if (leg == null || !leg.edge().edge().equals(origin.point.edge())) return null;
+    boolean reverse = a.departureDirection > 0 ? leg.edge().reverse() : !leg.edge().reverse();
+    double at = Math.clamp(nose - leg.begin(), 0, leg.length());
+    if (leg.edge().reverse()) at = leg.length() - at;
+    return reverse == origin.point.reverse() && Math.abs(at - origin.point.offset()) <= .061
+        ? origin.id
+        : null;
   }
 
   /** Safe before fuel reservation, including during a budgeted topology publication. */
@@ -64,14 +146,28 @@ public final class TrainAutomation {
       }
     }
     if (!s.runtimeReady(t)) {
+      s.dispatch.remove(t.id);
       a.phase = AutoTrainState.Phase.UNLOADED;
       return false;
     }
     if (a.schedule.entries().isEmpty()) {
+      s.dispatch.remove(t.id);
       a.phase = AutoTrainState.Phase.NO_PATH;
       return t.speed > 0;
     }
     if (a.entry >= a.schedule.entries().size()) a.entry = 0;
+    if (a.departure != null && !a.departure.equals(s.slots.origin(t.id))) {
+      a.departure = null;
+      d.setDirty();
+    }
+    if (a.departure != null) {
+      var origin = s.device(a.departure);
+      if (origin == null || !s.online(origin.point)) {
+        s.dispatch.remove(t.id);
+        a.phase = AutoTrainState.Phase.UNLOADED;
+        return false;
+      }
+    }
     if (a.routed
         && (s.device(a.destination) == null
             || !Objects.equals(s.slots.destination(t.id), a.destination))) {
@@ -122,13 +218,22 @@ public final class TrainAutomation {
       var waits = a.schedule.entries().get(a.entry).waits();
       if (RailWait.ready(
           waits, c -> TrainWaitSamples.sample(d, t, s, c), TrainWaitSamples::threshold)) {
-        s.slots.release(t.id);
+        if (!s.slots.depart(t.id, a.destination)) {
+          a.phase = AutoTrainState.Phase.INVALID_CONFIG;
+          return false;
+        }
+        a.departure = a.destination;
+        a.departureHead = t.head;
+        a.departureDirection = t.direction;
         a.destination = null;
         a.routed = false;
         a.arrived = false;
         a.entry = (a.entry + 1) % a.schedule.entries().size();
         a.routeJob = null;
         a.retryAt = 0;
+        a.dispatchTarget = null;
+        a.dispatchOrder = 0;
+        enroll(d, t, s);
         d.setDirty();
       }
       return false;
@@ -174,6 +279,10 @@ public final class TrainAutomation {
       TrainData d, TrainData.Train t, RailAutomationData s, boolean replacement) {
     var a = t.automation;
     long now = d.level.getGameTime();
+    if (!replacement) {
+      enroll(d, t, s);
+      if (s.dispatch.get(t.id) == null) return;
+    }
     boolean changed =
         a.checkedGraph != s.rails.graph.revisions()
             || a.checkedRules != s.revision + s.slots.revision();
@@ -195,6 +304,7 @@ public final class TrainAutomation {
               named.isEmpty()
                   ? AutoTrainState.Phase.NO_PATH
                   : AutoTrainState.Phase.DESTINATION_FULL;
+        if (!replacement && named.isEmpty()) s.dispatch.remove(t.id);
         return;
       }
       a.routeJob = new TrainRouteJob(d, t, s, targets);
@@ -206,17 +316,39 @@ public final class TrainAutomation {
     s.spentSearch(work, System.nanoTime() - start);
     if (!a.routeJob.done) return;
     var job = a.routeJob;
-    a.routeJob = null;
     var route = job.result(t, s.rails.graph);
     if (route == null) {
+      a.routeJob = null;
+      a.dispatchTarget = null;
+      if (job.stale && !replacement) {
+        // Revalidation is not a proof that this higher-priority request has no path.
+        // Keep its rank while restarting, rather than opening a one-tick slot-stealing gap.
+        a.retryAt = 0;
+        a.phase = AutoTrainState.Phase.DISPATCHING;
+        enroll(d, t, s);
+        return;
+      }
+      if (!replacement) s.dispatch.remove(t.id);
+      a.retryAt = job.stale ? 0 : now + 20;
       if (!replacement)
         a.phase = job.limited ? AutoTrainState.Phase.ROUTE_LIMIT : AutoTrainState.Phase.NO_PATH;
       return;
     }
+    if (!replacement) {
+      a.dispatchTarget = route.destination();
+      s.dispatch.resolve(t.id, route.destination());
+      if (!s.dispatch.first(t.id, route.destination())) return;
+    }
     if (!s.slots.acquire(t.id, route.destination())) {
+      a.routeJob = null;
+      a.dispatchTarget = null;
       if (!replacement) a.phase = AutoTrainState.Phase.DESTINATION_FULL;
       return;
     }
+    a.routeJob = null;
+    a.dispatchTarget = null;
+    a.dispatchOrder = 0;
+    s.dispatch.remove(t.id);
     t.path = route.path();
     t.direction = route.direction();
     a.targetHead = route.targetHead();

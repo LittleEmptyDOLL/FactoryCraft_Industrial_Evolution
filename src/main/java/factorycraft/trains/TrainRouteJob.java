@@ -17,6 +17,8 @@ public final class TrainRouteJob {
   private final TrainPath originalPath;
   private final double originalHead;
   private final long graphRevision, rulesRevision;
+  private final int stepLimit;
+  private Result resolved;
   private int cursor;
   public boolean done, stale, limited;
 
@@ -25,6 +27,18 @@ public final class TrainRouteJob {
       TrainData.Train t,
       RailAutomationData system,
       List<RailPathSearch.Target> targets) {
+    this(d, t, system, targets, 256);
+  }
+
+  /** Per-job cooperative allowance; shared world budget still applies. */
+  public TrainRouteJob(
+      TrainData d,
+      TrainData.Train t,
+      RailAutomationData system,
+      List<RailPathSearch.Target> targets,
+      int stepLimit) {
+    if (stepLimit < 1 || stepLimit > 256) throw new IllegalArgumentException("Route step budget");
+    this.stepLimit = stepLimit;
     originalPath = t.path;
     originalHead = t.head;
     graphRevision = system.rails.graph.revisions();
@@ -56,7 +70,6 @@ public final class TrainRouteJob {
   }
 
   public int advance(TrainData.Train t, RailAutomationData system, int budget) {
-    if (done) return 0;
     if (t.path != originalPath
         || t.head != originalHead
         || t.speed != 0
@@ -65,6 +78,8 @@ public final class TrainRouteJob {
       done = stale = true;
       return 0;
     }
+    if (done) return 0;
+    budget = Math.min(budget, stepLimit);
     int work = 0;
     for (int attempts = 0; attempts < candidates.size() && work < budget; attempts++) {
       var c = candidates.get(cursor++ % candidates.size());
@@ -77,6 +92,7 @@ public final class TrainRouteJob {
 
   public Result result(TrainData.Train t, RailGraph graph) {
     if (!done || stale) return null;
+    if (resolved != null) return resolved;
     var best =
         candidates.stream()
             .filter(c -> c.search.result() != null)
@@ -116,11 +132,12 @@ public final class TrainRouteJob {
     }
     var path = new TrainPath(legs);
     if (!path.connected(graph)) return null;
-    return new Result(
-        best.direction,
-        path,
-        originalHead + best.direction * route.distance(),
-        route.target().id(),
-        route.cost());
+    return resolved =
+        new Result(
+            best.direction,
+            path,
+            originalHead + best.direction * route.distance(),
+            route.target().id(),
+            route.cost());
   }
 }

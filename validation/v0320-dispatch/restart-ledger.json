@@ -1,0 +1,30 @@
+{
+  "fifo": {
+    "cars": 6,
+    "componentBearingCargo": 14,
+    "coalBufferPlusSpentJ": 128000000,
+    "spentJ": 1650000,
+    "savedReadyOrder": [
+      36,
+      37
+    ],
+    "nativeIndependentJvmReplayAndFiniteCompletion": true,
+    "retiredOwnersAbsent": true
+  },
+  "dual": {
+    "cars": 3,
+    "componentBearingCargo": 7,
+    "coalBufferPlusSpentJ": 0,
+    "spentJ": 0,
+    "externalCoalJValidatedByNativeHandoffAndArrival": 4000000,
+    "nativeIndependentJvmReplayAndFiniteCompletion": true,
+    "retiredOwnersAbsent": true
+  },
+  "sha256": {
+    "fifo_before": "aa84f2e24027c30544f83870fb8c345fc6f15d6f1e859abc4959322c3d7629d1",
+    "fifo_after": "4cfa3e791b72c70f2112d4be9b67dcabfc592fa0f5a4516b5e266d3607443dec",
+    "dual_before": "e558d13a5f69d46e92edc5589902f0f91a94592bbeeb26872cfbdc69b0acb102",
+    "dual_after": "5b7983bc834e27b5cc35188e0620bc45b8021213f3c6513bb606e6e8649a4efb",
+    "after_trains": "00c178a3c088731ae5ac5f115c34c4bcd642178229db1103c2181750dad26fc0"
+  }
+}

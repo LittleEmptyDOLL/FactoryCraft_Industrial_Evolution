@@ -25,6 +25,11 @@ public final class AutoTrainState {
   public String group = "";
   public int entry, stationTicks, idleTicks, temporaryEntry, returnEntry;
   public UUID destination, activeInterrupt;
+  public UUID departure;
+  public double departureHead;
+  public int departureDirection = 1;
+  public long dispatchOrder;
+  public transient UUID dispatchTarget;
   public UUID heldSignal;
 
   /** Current scout refusal only; never another resource/reservation owner. */
@@ -55,6 +60,8 @@ public final class AutoTrainState {
         && group.isEmpty()
         && entry == 0
         && destination == null
+        && departure == null
+        && dispatchOrder == 0
         && heldSignal == null
         && signalWaitTicks == 0
         && activeInterrupt == null
@@ -86,6 +93,12 @@ public final class AutoTrainState {
     n.putInt("StationTicks", stationTicks);
     n.putInt("IdleTicks", idleTicks);
     if (destination != null) n.putUUID("Destination", destination);
+    if (departure != null) {
+      n.putUUID("Departure", departure);
+      n.putDouble("DepartureHead", departureHead);
+      n.putInt("DepartureDirection", departureDirection);
+    }
+    if (dispatchOrder != 0) n.putLong("DispatchOrder", dispatchOrder);
     if (heldSignal != null) n.putUUID("HeldSignal", heldSignal);
     if (signalWaitTicks != 0) n.putInt("SignalWaitTicks", signalWaitTicks);
     if (activeInterrupt != null) {
@@ -124,6 +137,12 @@ public final class AutoTrainState {
       state.stationTicks = n.getInt("StationTicks");
       state.idleTicks = n.getInt("IdleTicks");
       if (n.hasUUID("Destination")) state.destination = n.getUUID("Destination");
+      if (n.hasUUID("Departure")) {
+        state.departure = n.getUUID("Departure");
+        state.departureHead = n.getDouble("DepartureHead");
+        state.departureDirection = n.getInt("DepartureDirection");
+      }
+      state.dispatchOrder = n.getLong("DispatchOrder");
       if (n.hasUUID("HeldSignal")) state.heldSignal = n.getUUID("HeldSignal");
       state.signalWaitTicks = n.getInt("SignalWaitTicks");
       if (n.hasUUID("ActiveInterrupt")) {
@@ -144,6 +163,12 @@ public final class AutoTrainState {
           || state.stationTicks < 0
           || state.idleTicks < 0
           || state.signalWaitTicks < 0
+          || state.dispatchOrder < 0
+          || state.dispatchOrder == Long.MAX_VALUE
+          || state.departure != null
+              && (!state.automatic
+                  || !Double.isFinite(state.departureHead)
+                  || Math.abs(state.departureDirection) != 1)
           || !Double.isFinite(state.targetHead + state.reservationEnd)
           || state.temporaryEntry < 0
           || state.temporaryEntry >= 16

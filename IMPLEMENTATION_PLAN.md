@@ -1,3 +1,15 @@
+# Issue15 continuation — Gate2 origin dispatch
+
+Base8663251 / hosted44957031847success. Preserve all350old JUnit/596native, thirty finite chains, manual8/148 and automatic8/150profiles, source physics/1:10fluids/four colors and every earlier world/receipt. This slice implements source-origin priority and physical station occupancy, not all Gate2/3 or0.32.
+
+Implemented: distinct docked/incoming references (count once per stop), indexed candidate-target arbitration across unequal bounded searches, persistent FIFO order, selective rename/removal, failure cooldown, stale-frontier rank retention and repeat-Automatic cache invalidation. Existing128-active rotation, one source engine and canonical resource owners remain. Restore actual availability of idle reloaded trains; read cargo/ID only at the real dock. Schema1 additions omit defaults; do not infer missing pre-overhaul origins.
+
+Verified360JUnit;600fresh+600independent-JVM, then final600fresh+600independent-JVM; actual automatic8/150workload and its exact JVM reload also pass. Evidence: validation/v0320-dispatch. Keep the first failed world, exact pending/dual-lease before/after records and all closed-world archives. Native fixtures use genuine paid trajectories, a1-node cooperative search allowance to expose the arbitration race, actual chunk unload, no-path fallthrough and a real single-coal fuel handoff. Full factory/MIXED/fluid/manual/optional jobs remain hosted; renderer/UI/protocol unchanged, no new graphical pass claimed.
+
+**Next concrete work in this same Issue15:** genuine no-wait pass-through. Current GUI requires a wait and TrainRouteJob commits only stopped poses; plan the following leg before reaching the waypoint, preserve historical body legs and already-entered chain exits, then transfer station commitments without a synthetic stop or teleport. Follow with temporary go-to/cancel/return without overwriting the canonical schedule and exact restart plus actual EN/RU controls. Complete component-aware wait editing. Then Gate3 shared scoped groups/versioned edits, shared named interrupts, typed wildcard detours/return and independent-JVM/two-client editors. Broader16-heading/grade/arrival visual and congested-eight-train matrices remain explicit limits. No0.33.
+
+---
+
 # Issue15 continuation — Gate2 source costs and stopped signal repath
 
 Continue from aa9f3d1, whose hosted44929597697 passed all eight jobs. Preserve346JUnit/591native, all thirty finite chains, both old workload profiles, all owners and prior evidence. This is a checked subset of Gate2, not completed Gate2/3 or full0.32.

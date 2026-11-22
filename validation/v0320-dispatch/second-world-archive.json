@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-dispatch-second",
+  "archive": "/workspace/work/v0320-dispatch-second-checkpoint.tar.xz",
+  "sha256": "8c2b668e442c670b7a845027d595d8a0144ad47939f342f31a111c43a809f6dd",
+  "bytes": 29492304,
+  "verified": "tar --compare exact closed diagnostic tree before removal",
+  "result": "600 fresh +600 independent-JVM pass. Exact FIFO order/origin and no-fuel dual-lease snapshots then actual finite arrivals; raw records copied before archive. Final independent run also includes real source/target circuit reads, metadata quarantine, full real unload guard and failure backoff."
+}

@@ -29,9 +29,8 @@ public final class TrainWaitSamples {
         yield bool(c.type() == RailWait.Type.PASSENGER ? rider : !rider);
       }
       case AT_STATION, NOT_AT_STATION -> {
-        var stop = s.device(a.destination);
-        boolean at =
-            a.arrived && stop != null && (c.filter().isEmpty() || stop.name.equals(c.filter()));
+        var stop = s.device(TrainAutomation.station(t, s));
+        boolean at = stop != null && (c.filter().isEmpty() || stop.name.equals(c.filter()));
         yield bool(c.type() == RailWait.Type.AT_STATION ? at : !at);
       }
       case NO_PATH -> bool(a.phase == AutoTrainState.Phase.NO_PATH);
@@ -42,7 +41,7 @@ public final class TrainWaitSamples {
         yield bool(c.type() == RailWait.Type.STATION_AVAILABLE ? free : !free);
       }
       case CIRCUIT -> {
-        var device = s.device(a.destination);
+        var device = s.device(TrainAutomation.station(t, s));
         var root = device == null ? null : s.entity(device);
         var circuit = root == null ? null : root.circuit(false);
         if (circuit == null || !circuit.available() || !circuit.inputReady)

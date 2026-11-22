@@ -1,3 +1,9 @@
+## Issue15 Gate2 — dispatch ownership
+
+Origin priority now arbitrates unfinished and completed searches for the same physical destination. Docked source occupancy is separate from the next incoming commitment, with one train counted once per stop. The queue is derived and loaded-only; old rail UUIDs/paid ledgers, whole-body logical/spatial protection and source motion remain unchanged. See TRAINS.md and ARCHITECTURE.md for FIFO, failed-search cooldown and canonical persistence adapters. Pass-through, temporary navigation and Gate3 remain in the same issue.
+
+---
+
 ## Issue15 Gate2 routing continuation
 
 The existing rail UUIDs, paid material owners, signals, stops, turnouts and physical movement remain the only engine. Route choice now reads documented source costs for intermediate stops, circuit-forced red, actual occupied logical regions and canonical train states. Region metric length is cached at publication; consecutive physical edges in a region share pricing progress. Finite costs express preference and never grant permission through an occupied/unavailable block.

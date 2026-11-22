@@ -121,6 +121,7 @@ public final class RailAutomationData extends SavedData {
   public final RailEdgePoints points = new RailEdgePoints();
   public final RailBlockClaims claims = new RailBlockClaims();
   public final RailStopSlots slots = new RailStopSlots();
+  public final RailDispatchQueue dispatch = new RailDispatchQueue();
   public RailSignalBlocks blocks;
   public RailSignals signals;
   public ServerLevel level;
@@ -134,6 +135,7 @@ public final class RailAutomationData extends SavedData {
       signalParents = new HashMap<>();
   private final Map<UUID, Boolean> forcedCache = new HashMap<>();
   private int nextTrainId = 1;
+  private long nextDispatchOrder = 1;
   public long revision, pathNodes, pathNanos, topologyNanos, aspectUpdates;
   private long lastTick = Long.MIN_VALUE;
   private int pathBudget;
@@ -181,7 +183,11 @@ public final class RailAutomationData extends SavedData {
     var trains = TrainData.get(level);
     for (var t : trains.trains()) {
       pendingTrain(t);
-      if (t.automation.destination != null) slots.restore(t.id, t.automation.destination);
+      var origin = device(t.automation.departure);
+      if (origin != null && origin.scope.equals(t.scope)) slots.restoreOrigin(t.id, origin.id);
+      var target = device(t.automation.destination);
+      if (target != null && target.scope.equals(t.scope)) slots.restore(t.id, target.id);
+      nextDispatchOrder = Math.max(nextDispatchOrder, t.automation.dispatchOrder + 1);
     }
   }
 
@@ -269,7 +275,7 @@ public final class RailAutomationData extends SavedData {
     points.put(device.point, rails.graph);
     devices.put(device.id, device);
     index(device);
-    if (device.kind == TracksideKind.STOP) slots.put(stop(device));
+    if (device.kind == TracksideKind.STOP) syncStop(device);
     else {
       blocks.changed(device.point.edge());
       dirtySignals.add(device.id);
@@ -292,7 +298,7 @@ public final class RailAutomationData extends SavedData {
   }
 
   public void changed(Device d) {
-    if (d.kind == TracksideKind.STOP) invalidateStops(slots.put(stop(d)));
+    if (d.kind == TracksideKind.STOP) syncStop(d);
     queueSignal(d.id);
     revision++;
     var root = entity(d);
@@ -305,7 +311,7 @@ public final class RailAutomationData extends SavedData {
     if (d.kind == TracksideKind.STOP) {
       var next = stop(d);
       if (next.equals(slots.get(id))) return;
-      invalidateStops(slots.put(next));
+      syncStop(d);
     } else {
       boolean next = forced(d.point);
       var old = forcedCache.put(id, next);
@@ -320,14 +326,42 @@ public final class RailAutomationData extends SavedData {
     for (var id : trains) {
       var t = data.train(id);
       if (t == null) continue;
-      t.automation.destination = null;
-      t.automation.routed = false;
-      t.automation.arrived = false;
-      t.automation.searching = null;
+      var a = t.automation;
+      if (a.departure != null && !a.departure.equals(slots.origin(id))) a.departure = null;
+      if (a.destination != null && !a.destination.equals(slots.destination(id))) {
+        a.destination = null;
+        a.routed = false;
+        a.arrived = false;
+      }
+      a.routeJob = null;
+      a.dispatchTarget = null;
+      dispatch.remove(id);
       t.automation.retryAt = 0;
       data.active.add(id);
       data.setDirty();
     }
+  }
+
+  private void syncStop(Device device) {
+    var old = slots.get(device.id);
+    var current = stop(device);
+    invalidateStops(slots.put(current));
+    if (old != null) refreshDispatchName(old.scope(), old.name());
+    refreshDispatchName(current.scope(), current.name());
+    dispatch.priority(device.id, current.priority());
+  }
+
+  private void refreshDispatchName(String scope, String name) {
+    var targets = new HashSet<UUID>();
+    for (var stop : slots.named(scope, name)) targets.add(stop.id());
+    dispatch.targets(scope, name, targets);
+  }
+
+  public long dispatchOrder() {
+    if (nextDispatchOrder == Long.MAX_VALUE)
+      throw new IllegalStateException("Dispatch order capacity");
+    setDirty();
+    return nextDispatchOrder++;
   }
 
   public void trackChanged(UUID edge) {
@@ -412,6 +446,7 @@ public final class RailAutomationData extends SavedData {
   }
 
   public void trainRemoved(UUID id) {
+    dispatch.remove(id);
     claims.remove(id);
     slots.release(id);
     bodyReconciled(id);
@@ -550,6 +585,7 @@ public final class RailAutomationData extends SavedData {
     }
     points.remove(id);
     invalidateStops(slots.remove(id));
+    if (d.kind == TracksideKind.STOP) refreshDispatchName(d.scope, d.name);
     views.remove(id);
     if (d.kind != TracksideKind.STOP) blocks.changed(d.point.edge());
     for (var p : d.cells())
@@ -657,6 +693,8 @@ public final class RailAutomationData extends SavedData {
     if (n.getInt("Schema") != 1) throw new IllegalArgumentException("Rail automation schema");
     var data = new RailAutomationData();
     data.nextTrainId = Math.max(1, n.getInt("NextTrainId"));
+    data.nextDispatchOrder = n.contains("NextDispatchOrder") ? n.getLong("NextDispatchOrder") : 1;
+    if (data.nextDispatchOrder < 1) throw new IllegalArgumentException("Dispatch order");
     for (var raw : n.getList("Devices", Tag.TAG_COMPOUND)) {
       var x = (CompoundTag) raw;
       try {
@@ -726,6 +764,7 @@ public final class RailAutomationData extends SavedData {
   public CompoundTag save(CompoundTag n, HolderLookup.Provider r) {
     n.putInt("Schema", 1);
     n.putInt("NextTrainId", nextTrainId);
+    if (nextDispatchOrder != 1) n.putLong("NextDispatchOrder", nextDispatchOrder);
     var list = new ListTag();
     for (var d : devices.values()) {
       var x = new CompoundTag();

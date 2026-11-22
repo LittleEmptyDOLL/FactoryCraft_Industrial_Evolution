@@ -16,7 +16,17 @@ These rules reduce repeated remote work, not correctness or conservation guarant
 * **Failure integrity:** never silently reset, refill, delete, reseed or overwrite a diagnostic world to make a test pass. Keep the failed evidence and report any validation still outstanding.
 
 
-## Active continuation — issue #15 Gate2 route pricing and safe repath (22 November 2026)
+## Active continuation — issue #15 Gate2 origin dispatch (22 November 2026)
+
+* Start from latest main8663251 (hosted44957031847passed). Preserve350JUnit/596native, all thirty finite chains, source physics/components, four circuit colors, existing manual/automatic workloads and every prior world/receipt. No0.33or full Issue15 completion claim.
+* Separate a physically docked departure's slot from its next incoming commitment; count a train once per stop. Waiting Destination full/no path/no fuel must not free the actual origin, and a prospective target cannot read origin cargo. First real displacement clears the origin before native callbacks. Manual/retirement/rename/removal/unload must clean only appropriate derived indexes; persist canonical origin pose/identity and FIFO order once on TrainData.
+* Higher-priority pending searches must outrank completed lower-priority searches for a contested physical target, without blocking unrelated targets/scopes. Use indexed requests and the existing bounded search, retain active-batch rotation, cancel unavailable/no-path requests and give failed searches a real backoff. Persist stable equal-priority order; do not fake motion or source path results. A smaller cooperative node allowance may make unequal-search native acceptance deterministic, never relax safety.
+* New v0320-dispatch[-suffix]/trains-v0320-dispatch[-suffix] diagnostics only. Run build/JUnit, required native and exact separate-JVM pending/dual-lease receipts plus the affected bounded automatic profile/restart. UI/render/protocol unchanged: do not claim a new graphical pass. Preserve all eight hosted jobs; normal main push and query-once handoff.
+* Pass-through/temporary routes, full component-aware wait UI and operational Gate3 groups/interrupts/wildcards remain follow-ups in the SAME issue.
+
+* Origin checkpoint:360JUnit;600fresh/600independent and final600fresh/600independent required native pass. Actual slow-search/stale-frontier priority, repeat-Automatic cache, real idle unload/reload, no-path fallthrough, FIFO order and disabled dual-lease restart/one-coal paid arrival;14typed iron/128MJ and7typed iron/4MJ conserved. Automatic8/150and exact JVM reload pass; mean16.243ms,p9963.028ms, allocation/p99higher than prior sample, no speedup claim. Preserve final raw receipts/byte-compared archives; full0.32and remaining Gate2/3are not complete.
+
+## Previous continuation — issue #15 Gate2 route pricing and safe repath (22 November 2026)
 
 * Continue from aa9f3d1; hosted44929597697 succeeded in all eight jobs. This continuation starts with346JUnit/591native and all thirty finite chains, original manual8/148 and automatic8/150 profiles, owners and old evidence. No0.33 or full0.32 completion claim.
 * Scope is documented source route weights and a stopped, budgeted signal repath. Reuse the existing MIT search, canonical TrainPath, source physics and claims. Never release the committed stop or an entered chain's safe exit merely to search, publish partial routes, erase HeldSignal to buy creep, force chunks, or mutate resources during pricing.

@@ -1,0 +1,8 @@
+{
+  "source": "/workspace/work/FactoryCraft/run-gametest/v0320-dispatch-final",
+  "archive": "/workspace/work/v0320-dispatch-final-checkpoint.tar.xz",
+  "sha256": "18e7d07dd41896ad62d2e5126b5aedd2ee418c0c7fe00fefe201c224fbc4621b",
+  "bytes": 29468408,
+  "verified": "tar --compare exact closed diagnostic tree before removing expanded copy",
+  "result": "Final600 fresh +600 independent-JVM pass. Same canonical persistence and resource ledgers; final run also checks stale-frontier priority retention and repeat-Automatic selected-cache invalidation. Raw before/after records copied separately."
+}

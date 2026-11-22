@@ -216,6 +216,7 @@ public final class TrainData extends SavedData {
   }
 
   void index(Train t) {
+    TrainAutomation.departed(this, t);
     t.checkedTick = Long.MIN_VALUE;
     unindex(t.id);
     var keys = new HashSet<Long>();
@@ -254,6 +255,8 @@ public final class TrainData extends SavedData {
       var t = trains.get(id);
       if (t != null) {
         t.status = Status.UNLOADED;
+        var automation = RailAutomationData.peek(level);
+        if (automation != null) automation.dispatch.remove(t.id);
         for (var car : t.cars)
           if (level.getEntity(car.id) instanceof StockEntity view) view.pauseVisual();
         active.remove(id);
@@ -270,6 +273,8 @@ public final class TrainData extends SavedData {
     for (var id : occupancy.owners(edge)) {
       var t = trains.get(id);
       if (t != null) {
+        var system = RailAutomationData.peek(level);
+        if (system != null) system.dispatch.remove(t.id);
         for (var car : t.cars)
           if (level.getEntity(car.id) instanceof StockEntity view) view.pauseVisual();
         t.status = Status.BROKEN_TRACK;
@@ -303,8 +308,15 @@ public final class TrainData extends SavedData {
       }
     }
     long started = System.nanoTime();
+    var batch = List.copyOf(active);
+    if (batch.size() > 128) batch = batch.subList(0, 128);
+    if (automation != null)
+      for (var id : batch) {
+        var t = trains.get(id);
+        if (t != null) TrainAutomation.enroll(this, t, automation);
+      }
     int work = 0;
-    for (var id : List.copyOf(active)) {
+    for (var id : batch) {
       var t = trains.get(id);
       if (t == null) continue;
       if (++work > 128) break;
